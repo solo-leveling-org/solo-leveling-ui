@@ -1,28 +1,31 @@
 .homepage-view {
-  padding: 2px;
+  padding: 16px;
   box-sizing: border-box;
   display: block;
   position: relative;
   height: 100%;
   overflow-y: auto;
-  --cv-blue: 212 96% 54%;
+  background: #f7f9fb;
+  border-radius: 24px;
+  font-family: 'Inter', system-ui, sans-serif;
+  --cv-blue: 220 90% 56%;
   --cv-purple: 259 97% 66%;
   --cv-dropzone-border-color: hsl(var(--cv-blue) / 0.5);
-  --cv-dropzone-bg-color: hsl(var(--cv-blue) / 0.2);
+  --cv-dropzone-bg-color: hsl(var(--cv-blue) / 0.08);
   --cv-droptarget-border-color: hsl(var(--cv-purple) / 1);
-  --cv-droptarget-bg-color: hsl(var(--cv-purple) / 0.4);
-  --cv-stripe-width: 1.5px;
-  --cv-stripe-gap: 9px;
-  --cv-stripe-color: hsl(var(--cv-blue) / 0.2);
-  --cv-layout-border-color: var(--lumo-contrast-40pct);
-  --cv-checkerboard-color1: hsl(0 0% 0% / 0.05);
-  --cv-checkerboard-color2: hsl(0 0% 100% / 0.05);
-  --cv-checkerboard-size: 16px;
+  --cv-droptarget-bg-color: hsl(var(--cv-purple) / 0.12);
+  --cv-stripe-width: 2px;
+  --cv-stripe-gap: 12px;
+  --cv-stripe-color: hsl(var(--cv-blue) / 0.08);
+  --cv-layout-border-color: #e0e7ef;
+  --cv-checkerboard-color1: #f1f5fd;
+  --cv-checkerboard-color2: #e0e7ef;
+  --cv-checkerboard-size: 20px;
 }
 
 .homepage-view[dragging] {
-  --cv-checkerboard-color1: hsl(var(--cv-blue) / 0.2);
-  --cv-checkerboard-color2: hsl(var(--cv-blue) / 0.1);
+  --cv-checkerboard-color1: hsl(var(--cv-blue) / 0.12);
+  --cv-checkerboard-color2: hsl(var(--cv-blue) / 0.08);
   --cv-layout-border-color: var(--cv-dropzone-border-color);
 }
 
@@ -30,7 +33,6 @@
   display: contents;
 }
 
-/* The root layout is not necessarily inside a flex box so width/height needs to be used */
 .homepage-view .preview-container > .layout[style*='align-self: stretch'] {
   width: 100%;
 }
@@ -38,29 +40,29 @@
   height: 100%;
 }
 
-/* Apply some default gap and padding to layouts that don't have inline styles for them while dragging. */
 .homepage-view[dragging] .layout:not([style*='gap:']) {
-  gap: 8px;
+  gap: 12px;
 }
 
 .homepage-view[dragging] .layout:not([style*='padding:'], [empty]) {
-  padding: 8px;
+  padding: 12px;
 }
 
 .homepage-view .cover-overlay {
   position: absolute;
-  border-radius: 1px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
 }
 
 .homepage-view:not([starting-drag]) .cover-overlay.editable-hovering {
-  outline: 2px solid hsl(var(--cv-blue) / 1);
+  outline: 2px solid #2563eb;
   outline-offset: -1px;
 }
 
 .homepage-view:not([starting-drag]) .cover-overlay.editable-editing {
-  outline: 1px solid hsl(var(--cv-blue) / 1);
+  outline: 1px solid #2563eb;
   outline-offset: -1px;
-  box-shadow: inset 0 0 0 2px var(--lumo-base-color);
+  box-shadow: 0 0 0 2px #f7f9fb;
 }
 
 .homepage-view .overlays,
@@ -80,13 +82,13 @@
 .homepage-view .drop-zone {
   position: absolute;
   box-sizing: border-box;
-  border-radius: 1px;
+  border-radius: 8px;
   min-height: 10px;
   min-width: 10px;
 }
 
 .homepage-view[dragging] .drop-zone:not([empty-layout]) {
-  outline: 1px dashed var(--cv-dropzone-border-color);
+  outline: 1.5px dashed var(--cv-dropzone-border-color);
   outline-offset: -2px;
   background-color: var(--cv-dropzone-bg-color);
 }
@@ -103,9 +105,9 @@
 
 .homepage-view[dragging] .drop-zone[drag-over] {
   background: var(--cv-droptarget-bg-color);
-  outline: 1px solid var(--cv-droptarget-border-color);
+  outline: 1.5px solid var(--cv-droptarget-border-color);
   outline-offset: -1px;
-  box-shadow: inset 0 0 0 2px var(--lumo-base-color);
+  box-shadow: 0 0 0 2px #f7f9fb;
 }
 
 .drop-zone[empty-layout] {
@@ -114,11 +116,11 @@
 
 .homepage-view:not([readonly]) .layout[empty],
 vaadin-form-layout[empty] {
-  border-radius: 1px;
+  border-radius: 8px;
   background: repeating-conic-gradient(var(--cv-checkerboard-color1) 0% 25%, var(--cv-checkerboard-color2) 0% 50%) 50% /
     var(--cv-checkerboard-size) var(--cv-checkerboard-size);
   background-clip: content-box;
-  outline: 1px dashed var(--cv-layout-border-color);
+  outline: 1.5px dashed var(--cv-layout-border-color);
   outline-offset: -2px;
 }
 .homepage-view[dragging]:not([readonly]) vaadin-form-layout[empty] {
@@ -148,7 +150,7 @@ vaadin-form-layout[empty] {
 }
 
 .homepage-view[dragging] vaadin-form-layout {
-  padding: 8px;
+  padding: 12px;
 }
 .homepage-view vaadin-form-layout[empty]::before {
   content: '';

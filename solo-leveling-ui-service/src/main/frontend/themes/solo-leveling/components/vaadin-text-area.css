@@ -1,0 +1,17 @@
+
+[part="input-field"] {
+  box-shadow: inset 0 0 0 1px #e0e7ef;
+  background-color: #fff;
+  border-radius: 8px;
+  transition: box-shadow 0.2s, background 0.2s;
+}
+
+:host([focus-ring]) [part="input-field"] {
+  box-shadow: 0 0 0 2px #2563eb33, inset 0 0 0 1px #2563eb;
+  background: #f1f5fd;
+}
+
+:host([invalid]) [part="input-field"] {
+  box-shadow: inset 0 0 0 1px #ef4444;
+  background: #fff0f0;
+}

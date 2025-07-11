@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+@import url('./main-layout.css');
+@import url('./views/homepage-view.css');
+@import url('./views/my-view-view.css');
+
+html {
+  font-family: 'Inter', system-ui, sans-serif;
+  --lumo-primary-color: #2563eb; /* Modern blue */
+  --lumo-primary-color-50pct: rgba(37, 99, 235, 0.5);
+  --lumo-primary-color-10pct: rgba(37, 99, 235, 0.1);
+  --lumo-success-color: #22c55e;
+  --lumo-success-color-50pct: rgba(34, 197, 94, 0.5);
+  --lumo-success-color-10pct: rgba(34, 197, 94, 0.1);
+  --lumo-base-color: #f7f9fb; /* Soft light background */
+  --lumo-body-text-color: #222;
+  --lumo-primary-text-color: #2563eb;
+  --lumo-secondary-text-color: #64748b;
+  --lumo-border-radius-s: 8px;
+  --lumo-border-radius-m: 16px;
+  --lumo-border-radius-l: 24px;
+  --lumo-box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+}
+
+body, #outlet {
+  background: var(--lumo-base-color);
+  color: var(--lumo-body-text-color);
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  font-family: inherit;
+}
+
+[theme~="dark"] {
+  /* Not used, but reserved for future dark mode */
+}
