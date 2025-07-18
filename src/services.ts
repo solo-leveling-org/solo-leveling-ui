@@ -19,6 +19,13 @@ const mockUser: User = {
   second_name: 'Doe',
   username: 'johndoe',
   photo_url: 'https://randomuser.me/api/portraits/men/1.jpg',
+  completed_tasks: 42,
+  level: 5,
+  experience: 1200,
+  experience_to_next_level: 1500,
+  strength: 18,
+  agility: 15,
+  intelligence: 20,
 };
 
 function generateRandomTask(id: string, selectedTopics: TaskTopic[]): Task {
@@ -190,12 +197,16 @@ function generateMockPlayerTasks(selectedTopics: TaskTopic[]): PlayerTask[] {
 // Mock tasks (empty by default)
 let userTasks: PlayerTask[] = [];
 
+// Временное хранилище для топиков пользователя
+let userSelectedTopics: TaskTopic[] = [];
+let firstTimeFlag: boolean = true;
+
 export const api = {
   getTopics: async (): Promise<TaskTopic[]> => {
     return new Promise((resolve) => setTimeout(() => resolve(topics), 300));
   },
   getUser: async (): Promise<User> => {
-    return new Promise((resolve) => setTimeout(() => resolve(mockUser), 300));
+    return new Promise((resolve) => setTimeout(() => resolve(mockUser), 1200)); // задержка 1.2 сек
   },
   getTasks: async (): Promise<PlayerTask[]> => {
     return new Promise((resolve) => setTimeout(() => resolve(userTasks), 300));
@@ -207,6 +218,17 @@ export const api = {
   resetTasks: async (): Promise<void> => {
     userTasks = [];
     return new Promise((resolve) => setTimeout(() => resolve(), 200));
+  },
+  getPlayerTasks: async (): Promise<{ count: number; tasks: PlayerTask[] }> => {
+    return new Promise((resolve) => setTimeout(() => resolve({ count: userTasks.length, tasks: [...userTasks] }), 1000));
+  },
+  getUserTopics: async (): Promise<{ topics: TaskTopic[]; first_time: boolean }> => {
+    return new Promise((resolve) => setTimeout(() => resolve({ topics: [...userSelectedTopics], first_time: firstTimeFlag }), 500));
+  },
+  saveUserTopics: async (topics: TaskTopic[]): Promise<void> => {
+    userSelectedTopics = [...topics];
+    firstTimeFlag = false;
+    return new Promise((resolve) => setTimeout(resolve, 300));
   },
 };
 

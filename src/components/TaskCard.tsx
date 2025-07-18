@@ -21,15 +21,15 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
     <div className={`task-card ${statusMod}`} onClick={onClick}>
       {status === PlayerTaskStatus.PREPARING ? (
         <>
-          <div className="skeleton-title skeleton-shimmer" style={{ width: '70%', height: '1.2em', margin: '1.2rem auto 0.7rem auto' }} />
-          <div className="skeleton-desc skeleton-shimmer" style={{ width: '90%', height: '1em', margin: '0 auto 1.2rem auto' }} />
+          <div className="skeleton-title shimmer-effect" style={{ width: '70%', height: '1.2em', margin: '1.2rem auto 0.7rem auto' }} />
+          <div className="skeleton-desc shimmer-effect" style={{ width: '90%', height: '1em', margin: '0 auto 1.2rem auto' }} />
           <div className="preparing-label">Задача генерируется...</div>
         </>
       ) : (
         <>
-          <div className="task-card-header">
+          <div className="task-card-header" style={{position: 'relative'}}>
             <span className="task-card-title">{task.title}</span>
-            <span className={`rarity-pill shimmer-rarity rarity-${task.rarity.toLowerCase()}`}>{task.rarity}</span>
+            <span className={`rarity-pill rarity-${task.rarity.toLowerCase()}`}></span>
           </div>
           <div className="task-card-desc">{task.description}</div>
           <div className="task-labels">

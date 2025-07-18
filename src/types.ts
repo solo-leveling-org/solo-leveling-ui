@@ -48,6 +48,16 @@ export interface PlayerTask {
   closedAt?: Date;
 }
 
+export type PlayerTasksResponse = {
+  count: number;
+  tasks: PlayerTask[];
+};
+
+export type UserTopicsResponse = {
+  topics: TaskTopic[];
+  first_time: boolean;
+};
+
 // User profile type
 export interface User {
   id: string;
@@ -55,4 +65,11 @@ export interface User {
   second_name: string;
   username: string;
   photo_url: string;
+  completed_tasks: number;
+  level: number;
+  experience: number;
+  experience_to_next_level: number;
+  strength: number;
+  agility: number;
+  intelligence: number;
 } 

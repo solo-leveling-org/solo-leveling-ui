@@ -3,14 +3,14 @@ import React from 'react';
 const TaskCardSkeleton: React.FC = () => (
   <div className="task-card skeleton">
     <div className="task-card-header">
-      <span className="skeleton-title skeleton-shimmer" />
-      <span className="skeleton-pill skeleton-shimmer" />
+      <span className="skeleton-title shimmer-effect" />
+      <span className="skeleton-pill shimmer-effect" />
     </div>
-    <div className="skeleton-desc skeleton-shimmer" />
-    <div className="skeleton-desc skeleton-shimmer long" />
+    <div className="skeleton-desc shimmer-effect" />
+    <div className="skeleton-desc shimmer-effect long" />
     <div className="task-labels">
-      <span className="skeleton-label skeleton-shimmer" />
-      <span className="skeleton-label skeleton-shimmer" />
+      <span className="skeleton-label shimmer-effect" />
+      <span className="skeleton-label shimmer-effect" />
     </div>
   </div>
 );

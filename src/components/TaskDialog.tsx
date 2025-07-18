@@ -10,9 +10,9 @@ const TaskDialog: React.FC<TaskDialogProps> = ({ task, onClose }) => (
   <div className="dialog-backdrop" onClick={onClose}>
     <div className="task-dialog" onClick={e => e.stopPropagation()}>
       <button className="dialog-close" onClick={onClose}>&times;</button>
-      <div className="dialog-header">
-        <h2 className="task-title">{task.title}</h2>
-        <span className={`rarity-pill shimmer-rarity rarity-${task.rarity.toLowerCase()}`}>{task.rarity}</span>
+      <div className="dialog-header" style={{position: 'relative'}}>
+        <h2 className="task-title" style={{paddingRight: 32}}>{task.title}</h2>
+        <span className={`rarity-pill rarity-${task.rarity.toLowerCase()}`}></span>
       </div>
       <div className="task-desc">{task.description}</div>
       <div className="task-attributes">
