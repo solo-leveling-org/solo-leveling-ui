@@ -8,17 +8,37 @@ import ProfileTab, { ProfileSkeleton } from './features/Profile/ProfileTab';
 import TopBar from './components/TopBar';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import TopicsTab from './features/Topics/TopicsTab';
+import { useTelegram } from './useTelegram';
+import { auth } from './auth';
 
 function AppRoutes() {
   const [user, setUser] = useState<User | null>(null);
   const [tasks, setTasks] = useState<PlayerTask[]>([]);
-  const [topics, setTopics] = useState<TaskTopic[]>([]);
-  const [selectedTopics, setSelectedTopics] = useState<TaskTopic[]>([]);
+  const [selectedTopics] = useState<TaskTopic[]>([]);
   const [loading, setLoading] = useState(false);
-  const [tasksCount, setTasksCount] = useState<number>(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user: tgUser, initData, tgWebAppData } = useTelegram();
+  const [showNoTelegramError, setShowNoTelegramError] = useState(false);
+  const [isTelegramChecked, setIsTelegramChecked] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const allTopics = Object.values(TaskTopic);
+
+  useEffect(() => {
+    if (initData !== undefined && tgWebAppData !== undefined) {
+      if (initData && tgWebAppData) {
+        auth.loginWithTelegram(initData, tgWebAppData)
+          .then(() => setAuthError(null))
+          .catch((e) => setAuthError(e.message || 'Ошибка авторизации'));
+        setShowNoTelegramError(false);
+      } else {
+        setShowNoTelegramError(true);
+        setAuthError(null);
+      }
+      setIsTelegramChecked(true);
+    }
+  }, [initData, tgWebAppData]);
 
   // tabList для SideDrawer
   const tabList = [
@@ -41,7 +61,6 @@ function AppRoutes() {
 
   useEffect(() => {
     api.getUser().then(setUser);
-    api.getTopics().then(setTopics);
   }, []);
 
   // Загрузка задач с новым endpoint
@@ -51,7 +70,6 @@ function AppRoutes() {
       setTasks([]);
       api.getPlayerTasks().then((res: PlayerTasksResponse) => {
         setTasks(res.tasks);
-        setTasksCount(res.count);
         setLoading(false);
       });
     }
@@ -63,20 +81,44 @@ function AppRoutes() {
 
   return (
     <div className="App">
-      <TopBar
-        title={''}
-        onHamburgerClick={() => setDrawerOpen(!drawerOpen)}
-        hamburgerOpen={drawerOpen}
-      />
-      <SideDrawer open={drawerOpen} tabs={tabList} onClose={() => setDrawerOpen(false)} />
-      <main className="tab-content">
-        <Routes>
-          <Route path="/tasks" element={<TasksTab tasks={tasks} topics={topics} selectedTopics={selectedTopics} onTopicToggle={() => {}} onGenerateTasks={() => {}} onResetTasks={() => {}} loading={loading} setTasks={setTasks} onGoToTopics={() => navigate('/topics')} />} />
-          <Route path="/topics" element={<TopicsTab allTopics={topics} />} />
-          <Route path="/profile" element={user ? <ProfileTab user={user} /> : <ProfileSkeleton />} />
-          <Route path="*" element={<Navigate to="/tasks" replace />} />
-        </Routes>
-      </main>
+      {!isTelegramChecked ? null : (
+        <>
+          {showNoTelegramError && (
+            <div className="no-telegram-error-overlay">
+              <div className="no-telegram-error">
+                <b>Ошибка:</b> Данное приложение предназначено для запуска только внутри Telegram Mini App.<br/>
+                Данные Telegram не найдены.
+              </div>
+            </div>
+          )}
+          {authError && !showNoTelegramError && (
+            <div className="no-telegram-error-overlay">
+              <div className="no-telegram-error">
+                <b>Ошибка авторизации:</b><br/>
+                {authError}
+              </div>
+            </div>
+          )}
+          {!showNoTelegramError && !authError && (
+            <>
+              <TopBar
+                title={''}
+                onHamburgerClick={() => setDrawerOpen(!drawerOpen)}
+                hamburgerOpen={drawerOpen}
+              />
+              <SideDrawer open={drawerOpen} tabs={tabList} onClose={() => setDrawerOpen(false)} />
+              <main className="tab-content">
+                <Routes>
+                  <Route path="/tasks" element={<TasksTab tasks={tasks} topics={allTopics} selectedTopics={selectedTopics} onTopicToggle={() => {}} onGenerateTasks={() => {}} onResetTasks={() => {}} loading={loading} setTasks={setTasks} onGoToTopics={() => navigate('/topics')} />} />
+                  <Route path="/topics" element={<TopicsTab allTopics={allTopics} />} />
+                  <Route path="/profile" element={user ? <ProfileTab user={user} /> : <ProfileSkeleton />} />
+                  <Route path="*" element={<Navigate to="/tasks" replace />} />
+                </Routes>
+              </main>
+            </>
+          )}
+        </>
+      )}
     </div>
   );
 }

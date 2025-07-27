@@ -1,0 +1,159 @@
+openapi: 3.0.3
+info:
+  title: Telegram Auth API
+  version: 1.0.0
+  description: API for authentication via Telegram WebApp and JWT tokens
+
+paths:
+  /api/v1/auth/login:
+    post:
+      tags:
+        - jwt
+      operationId: login
+      summary: Authenticate using Telegram Web App data
+      description: Authenticates the user using Telegram Web App data and returns JWT tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TgAuthData'
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtResponse'
+        '401':
+          description: Invalid Telegram data or signature
+        '400':
+          description: Bad request
+
+  /api/v1/auth/refresh:
+    post:
+      tags:
+        - jwt
+      operationId: refresh
+      summary: Refresh access token using refresh token
+      description: Generates a new access token using a valid refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  description: The refresh token to use for generating a new access token
+              required:
+                - refreshToken
+      responses:
+        '200':
+          description: New access token generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtToken'
+        '401':
+          description: Invalid or expired refresh token
+        '400':
+          description: Bad request
+
+components:
+  schemas:
+    JwtTokenType:
+      type: string
+      enum:
+        - ACCESS
+        - REFRESH
+
+    JwtToken:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token string
+        expiration:
+          type: string
+          format: date-time
+          description: Expiration time of the token
+        type:
+          $ref: '#/components/schemas/JwtTokenType'
+      required:
+        - token
+        - expiration
+        - type
+
+    JwtResponse:
+      type: object
+      properties:
+        accessToken:
+          $ref: '#/components/schemas/JwtToken'
+        refreshToken:
+          $ref: '#/components/schemas/JwtToken'
+      required:
+        - accessToken
+        - refreshToken
+
+    TgUserData:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        photo_url:
+          type: string
+        language_code:
+          type: string
+        added_to_attachment_menu:
+          type: boolean
+        allows_write_to_pm:
+          type: boolean
+        is_bot:
+          type: boolean
+        is_premium:
+          type: boolean
+      required:
+        - id
+
+    TgWebAppData:
+      type: object
+      properties:
+        auth_date:
+          type: string
+          format: date-time
+        chat_type:
+          type: string
+        chat_instance:
+          type: string
+        hash:
+          type: string
+          description: Signature hash of the data
+        signature:
+          type: string
+        user:
+          $ref: '#/components/schemas/TgUserData'
+      required:
+        - auth_date
+        - hash
+        - user
+
+    TgAuthData:
+      type: object
+      properties:
+        tg_web_app_data:
+          $ref: '#/components/schemas/TgWebAppData'
+        init_data:
+          type: string
+          description: Raw init data string from Telegram Web App
+      required:
+        - tg_web_app_data
+        - init_data

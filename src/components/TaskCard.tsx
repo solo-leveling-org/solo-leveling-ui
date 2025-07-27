@@ -1,7 +1,8 @@
 import React from 'react';
-import { PlayerTask, PlayerTaskStatus } from '../types';
+import { PlayerTask, PlayerTaskStatus, TaskTopic } from '../types';
 import { ReactComponent as DoneIcon } from '../assets/icons/done.svg';
 import { ReactComponent as RefreshIcon } from '../assets/icons/refresh.svg';
+import { topicIcons, topicLabels } from '../topicMeta';
 
 type TaskCardProps = {
   playerTask: PlayerTask;
@@ -34,7 +35,9 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
           <div className="task-card-desc">{task.description}</div>
           <div className="task-labels">
             {task.topics.map((t) => (
-              <span className="topic-label" key={t}>{t.replace('_', ' ')}</span>
+              <span className="topic-label" key={t}>
+                {topicIcons[t] || '❓'} {topicLabels[t] || t}
+              </span>
             ))}
           </div>
           {status === PlayerTaskStatus.IN_PROGRESS && (

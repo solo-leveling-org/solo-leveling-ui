@@ -1,5 +1,6 @@
 import React from 'react';
 import { Task } from '../types';
+import { topicIcons, topicLabels } from '../topicMeta';
 
 type TaskDialogProps = {
   task: Task;
@@ -39,7 +40,9 @@ const TaskDialog: React.FC<TaskDialogProps> = ({ task, onClose }) => (
       </div>
       <div className="task-labels">
         {task.topics.map((t) => (
-          <span className="topic-label" key={t}>{t.replace('_', ' ')}</span>
+          <span className="topic-label" key={t}>
+            {topicIcons[t] || '❓'} {topicLabels[t] || t}
+          </span>
         ))}
       </div>
     </div>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Inter');
 
 body, .App {
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
@@ -135,10 +135,11 @@ body, .App {
   margin-bottom: 12px;
 }
 .task-card--inprogress {
-  border-left: 6px solid #4f8cff !important;
+  border-left: 6px solid #cceaff !important; /* очень светлый голубой */
 }
 .task-card--pending {
-  border-left: 6px solid #27ae60 !important;
+  border-left: 6px solid #d6f9d6 !important; /* очень светлый зеленый */
+  background: #f6fff6 !important; /* почти белый с легким салатовым */
 }
 .task-card-header {
   display: flex;
@@ -1012,5 +1013,29 @@ body, .App {
   50% { background-position: 100% 50%; filter: blur(1.8px); }
   75% { background-position: 50% 100%; filter: blur(1.2px); }
   100% { background-position: 0% 50%; filter: blur(0.5px); }
+}
+
+.no-telegram-error-overlay {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-telegram-error {
+  background: #fff;
+  padding: 2rem 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.15);
+  font-size: 1.25rem;
+  color: #b00020;
+  text-align: center;
+  max-width: 90vw;
 }
 

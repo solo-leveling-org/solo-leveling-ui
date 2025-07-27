@@ -2,17 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { TaskTopic, UserTopicsResponse } from '../../types';
 import { api } from '../../services';
 import { useNavigate } from 'react-router-dom';
-
-const topicIcons: Record<string, string> = {
-  PHYSICAL_ACTIVITY: '🏃‍♂️',
-  MENTAL_HEALTH: '🧠',
-  EDUCATION: '📚',
-  SOCIAL: '🤝',
-  CREATIVITY: '🎨',
-  FINANCE: '💸',
-  CAREER: '💼',
-  MINDFULNESS: '🧘‍♂️',
-};
+import { topicIcons, topicLabels } from '../../topicMeta';
 
 const TopicsTab: React.FC<{ allTopics: TaskTopic[] }> = ({ allTopics }) => {
   const [userTopics, setUserTopics] = useState<TaskTopic[]>([]);
@@ -53,7 +43,7 @@ const TopicsTab: React.FC<{ allTopics: TaskTopic[] }> = ({ allTopics }) => {
             onClick={() => handleToggle(topic)}
           >
             <span className="topic-card-icon">{topicIcons[topic] || '❓'}</span>
-            <span className="topic-card-label">{topic.replace('_', ' ')}</span>
+            <span className="topic-card-label">{topicLabels[topic] || topic}</span>
             {userTopics.includes(topic) && <span className="topic-card-check">✔</span>}
           </button>
         ))}
