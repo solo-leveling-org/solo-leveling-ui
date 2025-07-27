@@ -51,7 +51,6 @@ export interface PlayerTask {
 }
 
 export type PlayerTasksResponse = {
-  count: number;
   tasks: PlayerTask[];
 };
 
