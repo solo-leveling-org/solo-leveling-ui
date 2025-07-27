@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: react-ts-app
+  name: solo-leveling-ui
 spec:
   selector:
-    app: react-ts-app
+    app: solo-leveling-ui
   ports:
     - protocol: TCP
       port: 80

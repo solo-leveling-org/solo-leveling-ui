@@ -1,4 +1,4 @@
-name: Docker build, Push and Deploy React App to Kubernetes
+name: Docker build, Push and Deploy to Kubernetes
 
 on:
   workflow_dispatch:
