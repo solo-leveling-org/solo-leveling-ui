@@ -5,10 +5,11 @@ info:
   description: API for authentication via Telegram WebApp and JWT tokens
 
 paths:
+  # =============== AUTHENTICATION ===============
   /api/v1/auth/login:
     post:
       tags:
-        - jwt
+        - auth
       operationId: login
       summary: Authenticate using Telegram Web App data
       description: Authenticates the user using Telegram Web App data and returns JWT tokens
@@ -17,14 +18,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TgAuthData'
+              $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
           description: Successful authentication
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/JwtResponse'
+                $ref: '#/components/schemas/LoginResponse'
         '401':
           description: Invalid Telegram data or signature
         '400':
@@ -33,7 +34,7 @@ paths:
   /api/v1/auth/refresh:
     post:
       tags:
-        - jwt
+        - auth
       operationId: refresh
       summary: Refresh access token using refresh token
       description: Generates a new access token using a valid refresh token
@@ -42,27 +43,437 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                refreshToken:
-                  type: string
-                  description: The refresh token to use for generating a new access token
-              required:
-                - refreshToken
+              $ref: '#/components/schemas/RefreshRequest'
       responses:
         '200':
           description: New access token generated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/JwtToken'
+                $ref: '#/components/schemas/RefreshResponse'
         '401':
           description: Invalid or expired refresh token
         '400':
           description: Bad request
 
+  # =============== USER ===============
+  /api/v1/user/{userId}:
+    get:
+      tags:
+        - user
+      summary: Get user by ID
+      operationId: getUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserResponse'
+
+  /api/v1/user/me:
+    get:
+      tags:
+        - user
+      summary: Get current user (from JWT)
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: Current user data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserResponse'
+
+  # =============== PLAYER ===============
+  /api/v1/player/{playerId}/topics:
+    get:
+      tags:
+        - player
+      summary: Get player's topics with levels by player ID
+      operationId: getPlayerTopics
+      parameters:
+        - name: playerId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Player's topic levels
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPlayerTopicsResponse'
+
+  /api/v1/player/topics:
+    get:
+      tags:
+        - player
+      summary: Get current player's topics with levels
+      operationId: getCurrentPlayerTopics
+      responses:
+        '200':
+          description: Current player's topic levels
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPlayerTopicsResponse'
+
+    post:
+      tags:
+        - player
+      summary: Save current player's preferred topics
+      operationId: savePlayerTopics
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SavePlayerTopicsRequest'
+      responses:
+        '204':
+          description: Topics saved successfully
+
+  /api/v1/player/tasks/active:
+    get:
+      tags:
+        - player
+      summary: Get active tasks for current player
+      operationId: getActiveTasks
+      responses:
+        '200':
+          description: List of active tasks for current player
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetActiveTasksResponse'
+
+  /api/v1/player/tasks/generate:
+    post:
+      tags:
+        - player
+      summary: Generate new tasks for current player
+      operationId: generateTasks
+      responses:
+        '204':
+          description: Tasks generated successfully
+
+  /api/v1/player/tasks/complete:
+    post:
+      tags:
+        - player
+      summary: Complete a task
+      operationId: completeTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskRequest'
+      responses:
+        '204':
+          description: Task completed successfully
+
+  /api/v1/player/tasks/skip:
+    post:
+      tags:
+        - player
+      summary: Skip a task
+      operationId: skipTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkipTaskRequest'
+      responses:
+        '204':
+          description: Task skipped successfully
+
 components:
   schemas:
+    # --- REQUESTS ---
+    LoginRequest:
+      $ref: '#/components/schemas/TgAuthData'
+
+    RefreshRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+          description: The refresh token to use for generating a new access token
+      description: Request body for refreshing the access token
+
+    SavePlayerTopicsRequest:
+      type: object
+      required:
+        - topics
+      properties:
+        topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskTopic'
+
+    CompleteTaskRequest:
+      type: object
+      required:
+        - playerTask
+      properties:
+        playerTask:
+          $ref: '#/components/schemas/PlayerTask'
+
+    SkipTaskRequest:
+      type: object
+      required:
+        - playerTask
+      properties:
+        playerTask:
+          $ref: '#/components/schemas/PlayerTask'
+
+    # --- RESPONSES ---
+    LoginResponse:
+      type: object
+      required:
+        - accessToken
+        - refreshToken
+      properties:
+        accessToken:
+          $ref: '#/components/schemas/JwtToken'
+        refreshToken:
+          $ref: '#/components/schemas/JwtToken'
+      description: Response containing JWT tokens after successful authentication
+
+    RefreshResponse:
+      type: object
+      required:
+        - accessToken
+      properties:
+        accessToken:
+          $ref: '#/components/schemas/JwtToken'
+      description: Response containing a new access token after refresh
+
+    GetUserResponse:
+      type: object
+      required:
+        - user
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+
+    GetPlayerTopicsResponse:
+      type: object
+      required:
+        - playerTaskTopics
+      properties:
+        playerTaskTopics:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerTaskTopic'
+
+    GetActiveTasksResponse:
+      type: object
+      required:
+        - tasks
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerTask'
+        firstTime:
+          type: boolean
+
+    # --- Enums ---
+    UserRole:
+      type: string
+      enum: [ USER, ADMIN ]
+
+    TaskRarity:
+      type: string
+      enum: [ COMMON, UNCOMMON, RARE, EPIC, LEGENDARY ]
+
+    TaskTopic:
+      type: string
+      enum:
+        - PHYSICAL_ACTIVITY
+        - MENTAL_HEALTH
+        - EDUCATION
+        - CREATIVITY
+        - SOCIAL_SKILLS
+        - HEALTHY_EATING
+        - PRODUCTIVITY
+        - EXPERIMENTS
+        - ECOLOGY
+        - TEAMWORK
+
+    Assessment:
+      type: string
+      enum: [ S, A, B, C, D, E ]
+
+    PlayerTaskStatus:
+      type: string
+      enum: [ PREPARING, IN_PROGRESS, PENDING_COMPLETION, COMPLETED, SKIPPED ]
+
+    # --- Domain Objects ---
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        title:
+          type: string
+        description:
+          type: string
+        experience:
+          type: integer
+          format: int32
+        rarity:
+          $ref: '#/components/schemas/TaskRarity'
+        topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskTopic'
+        agility:
+          type: integer
+          format: int32
+        strength:
+          type: integer
+          format: int32
+        intelligence:
+          type: integer
+          format: int32
+
+    Level:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        level:
+          type: integer
+          format: int32
+        totalExperience:
+          type: integer
+          format: int32
+        currentExperience:
+          type: integer
+          format: int32
+        experienceToNextLevel:
+          type: integer
+          format: int32
+        assessment:
+          $ref: '#/components/schemas/Assessment'
+
+    PlayerTaskTopic:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        taskTopic:
+          $ref: '#/components/schemas/TaskTopic'
+        level:
+          $ref: '#/components/schemas/Level'
+
+    Money:
+      type: object
+      properties:
+        currencyCode:
+          type: string
+          example: GCO
+        amount:
+          type: number
+          format: decimal
+
+    PlayerBalance:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        balance:
+          $ref: '#/components/schemas/Money'
+
+    Player:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        version:
+          type: integer
+          format: int32
+        maxTasks:
+          type: integer
+          format: int32
+        level:
+          $ref: '#/components/schemas/Level'
+        balance:
+          $ref: '#/components/schemas/PlayerBalance'
+
+    PlayerTask:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        status:
+          $ref: '#/components/schemas/PlayerTaskStatus'
+        task:
+          $ref: '#/components/schemas/Task'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        version:
+          type: integer
+          format: int32
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        photoUrl:
+          type: string
+        locale:
+          type: string
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+        player:
+          $ref: '#/components/schemas/Player'
+
     JwtTokenType:
       type: string
       enum:
@@ -85,17 +496,6 @@ components:
         - token
         - expiration
         - type
-
-    JwtResponse:
-      type: object
-      properties:
-        accessToken:
-          $ref: '#/components/schemas/JwtToken'
-        refreshToken:
-          $ref: '#/components/schemas/JwtToken'
-      required:
-        - accessToken
-        - refreshToken
 
     TgUserData:
       type: object

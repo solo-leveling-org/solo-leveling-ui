@@ -2,23 +2,24 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { JwtResponse } from '../models/JwtResponse';
-import type { JwtToken } from '../models/JwtToken';
+import type { LoginResponse } from '../models/LoginResponse';
+import type { RefreshRequest } from '../models/RefreshRequest';
+import type { RefreshResponse } from '../models/RefreshResponse';
 import type { TgAuthData } from '../models/TgAuthData';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class JwtService {
+export class AuthService {
     /**
      * Authenticate using Telegram Web App data
      * Authenticates the user using Telegram Web App data and returns JWT tokens
      * @param requestBody
-     * @returns JwtResponse Successful authentication
+     * @returns LoginResponse Successful authentication
      * @throws ApiError
      */
     public static login(
         requestBody: TgAuthData,
-    ): CancelablePromise<JwtResponse> {
+    ): CancelablePromise<LoginResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/v1/auth/login',
@@ -34,17 +35,12 @@ export class JwtService {
      * Refresh access token using refresh token
      * Generates a new access token using a valid refresh token
      * @param requestBody
-     * @returns JwtToken New access token generated
+     * @returns RefreshResponse New access token generated
      * @throws ApiError
      */
     public static refresh(
-        requestBody: {
-            /**
-             * The refresh token to use for generating a new access token
-             */
-            refreshToken: string;
-        },
-    ): CancelablePromise<JwtToken> {
+        requestBody: RefreshRequest,
+    ): CancelablePromise<RefreshResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/v1/auth/refresh',
