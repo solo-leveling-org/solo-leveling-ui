@@ -1,4 +1,4 @@
-import { TaskTopic } from './types';
+import { TaskTopic } from './api/models/TaskTopic';
 
 export const topicIcons: Record<TaskTopic, string> = {
   PHYSICAL_ACTIVITY: '🏃‍♂️',

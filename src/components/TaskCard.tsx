@@ -1,5 +1,6 @@
 import React from 'react';
-import { PlayerTask, PlayerTaskStatus, TaskTopic } from '../types';
+import type { PlayerTask } from '../api/models/PlayerTask';
+import { PlayerTaskStatus } from '../api/models/PlayerTaskStatus';
 import { ReactComponent as DoneIcon } from '../assets/icons/done.svg';
 import { ReactComponent as RefreshIcon } from '../assets/icons/refresh.svg';
 import { topicIcons, topicLabels } from '../topicMeta';
@@ -29,12 +30,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
       ) : (
         <>
           <div className="task-card-header" style={{position: 'relative'}}>
-            <span className="task-card-title">{task.title}</span>
-            <span className={`rarity-pill rarity-${task.rarity.toLowerCase()}`}></span>
+            <span className="task-card-title">{task?.title || ''}</span>
+            <span className={`rarity-pill rarity-${(task?.rarity || 'COMMON').toLowerCase()}`}></span>
           </div>
-          <div className="task-card-desc">{task.description}</div>
+          <div className="task-card-desc">{task?.description || ''}</div>
           <div className="task-labels">
-            {task.topics.map((t) => (
+            {(task?.topics || []).map((t) => (
               <span className="topic-label" key={t}>
                 {topicIcons[t] || '❓'} {topicLabels[t] || t}
               </span>

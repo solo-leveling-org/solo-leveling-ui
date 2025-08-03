@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { PlayerTask, TaskTopic, PlayerTaskStatus } from '../../types';
+import type { PlayerTask } from '../../api/models/PlayerTask';
+import { TaskTopic } from '../../api/models/TaskTopic';
+import { PlayerTaskStatus } from '../../api/models/PlayerTaskStatus';
 import TasksGrid from '../../components/TasksGrid';
 import TaskDialog from '../../components/TaskDialog';
 import { taskActions } from '../../services';
@@ -57,7 +59,7 @@ const TasksTab: React.FC<TasksTabProps> = ({
         }}
         onComplete={async (ptask) => {
           if (loading) return;
-          const updated = await taskActions.completeTask(ptask.id);
+          const updated = await taskActions.completeTask(ptask.id || '');
           setTasks(updated);
         }}
         onReplace={async (ptask) => {
@@ -65,7 +67,7 @@ const TasksTab: React.FC<TasksTabProps> = ({
           // Сначала локально меняем статус на PREPARING
           setTasks((prev: PlayerTask[]) => prev.map((t: PlayerTask) => t.id === ptask.id ? { ...t, status: PlayerTaskStatus.PREPARING } : t));
           // Затем имитируем REST API запрос
-          const updated = await taskActions.replaceTask(ptask.id, selectedTopics);
+          const updated = await taskActions.replaceTask(ptask.id || '', selectedTopics);
           setTasks(updated);
         }}
       />

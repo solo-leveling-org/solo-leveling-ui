@@ -1,5 +1,6 @@
 import React from 'react';
-import { PlayerTask, PlayerTaskStatus } from '../types';
+import type { PlayerTask } from '../api/models/PlayerTask';
+import { PlayerTaskStatus } from '../api/models/PlayerTaskStatus';
 import TaskCard from './TaskCard';
 import TaskCardSkeleton from './TaskCardSkeleton';
 

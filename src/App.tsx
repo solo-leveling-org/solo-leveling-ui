@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import { api } from './services';
-import { PlayerTask, TaskTopic, User, PlayerTasksResponse } from './types';
+import type { PlayerTask } from './api/models/PlayerTask';
+import { TaskTopic } from './api/models/TaskTopic';
+import type { User } from './api/models/User';
+import type { GetActiveTasksResponse } from './api/models/GetActiveTasksResponse';
 import SideDrawer from './components/SideDrawer';
 import TasksTab from './features/Tasks/TasksTab';
 import ProfileTab, { ProfileSkeleton } from './features/Profile/ProfileTab';
@@ -68,7 +71,7 @@ function AppRoutes() {
     if (location.pathname === '/tasks') {
       setLoading(true);
       setTasks([]);
-      api.getPlayerTasks().then((res: PlayerTasksResponse) => {
+      api.getPlayerTasks().then((res: GetActiveTasksResponse) => {
         setTasks(res.tasks);
         setLoading(false);
       });
