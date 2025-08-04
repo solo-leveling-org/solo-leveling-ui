@@ -341,6 +341,9 @@ components:
         experience:
           type: integer
           format: int32
+        currencyReward:
+          type: integer
+          format: int32
         rarity:
           $ref: '#/components/schemas/TaskRarity'
         topics:

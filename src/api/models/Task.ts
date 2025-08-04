@@ -10,6 +10,7 @@ export type Task = {
     title?: string;
     description?: string;
     experience?: number;
+    currencyReward?: number;
     rarity?: TaskRarity;
     topics?: Array<TaskTopic>;
     agility?: number;
