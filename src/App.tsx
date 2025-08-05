@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import { api } from './services';
-import type { PlayerTask } from './api/models/PlayerTask';
-import { TaskTopic } from './api/models/TaskTopic';
-import type { User } from './api/models/User';
-import type { GetActiveTasksResponse } from './api/models/GetActiveTasksResponse';
+import type { PlayerTask } from './api';
+import { TaskTopic } from './api';
+import type { User } from './api';
+import type { GetActiveTasksResponse } from './api';
 import SideDrawer from './components/SideDrawer';
 import TasksTab from './features/Tasks/TasksTab';
 import ProfileTab, { ProfileSkeleton } from './features/Profile/ProfileTab';
@@ -22,7 +22,7 @@ function AppRoutes() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user: tgUser, initData, tgWebAppData } = useTelegram();
+  const {initData, tgWebAppData } = useTelegram();
   const [showNoTelegramError, setShowNoTelegramError] = useState(false);
   const [isTelegramChecked, setIsTelegramChecked] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);

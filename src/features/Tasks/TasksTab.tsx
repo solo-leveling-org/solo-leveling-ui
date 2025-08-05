@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import type { PlayerTask } from '../../api/models/PlayerTask';
-import { TaskTopic } from '../../api/models/TaskTopic';
+import type { PlayerTask } from '../../api';
+import { TaskTopic } from '../../api';
 import TasksGrid from '../../components/TasksGrid';
 import TaskDialog from '../../components/TaskDialog';
 import { taskActions } from '../../services';
@@ -29,7 +29,7 @@ const TasksTab: React.FC<TasksTabProps> = ({
   setTasks,
   onGoToTopics,
 }) => {
-  const [dialogTask, setDialogTask] = useState<PlayerTask | null>();
+  const [dialogTask, setDialogTask] = useState<PlayerTask | null>(null);
 
   if (loading) {
     return <TasksGrid tasks={[]} loading={true} onTaskClick={() => {}} />;
@@ -53,17 +53,17 @@ const TasksTab: React.FC<TasksTabProps> = ({
       <TasksGrid
         tasks={tasks}
         loading={loading}
-        onTaskClick={(ptask) => {
-          if (ptask.task) setDialogTask(ptask);
+        onTaskClick={(playerTask) => {
+          if (playerTask.task) setDialogTask(playerTask);
         }}
-        onComplete={async (ptask) => {
+        onComplete={async (playerTask) => {
           if (loading) return;
-          const updated = await taskActions.completeTask(ptask);
+          const updated = await taskActions.completeTask(playerTask);
           setTasks(updated);
         }}
-        onReplace={async (ptask) => {
+        onReplace={async (playerTask) => {
           if (loading) return;
-          const updated = await taskActions.replaceTask(ptask);
+          const updated = await taskActions.replaceTask(playerTask);
           setTasks(updated);
         }}
       />

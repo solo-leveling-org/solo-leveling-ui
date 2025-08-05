@@ -1,5 +1,5 @@
 import React from 'react';
-import type { User } from '../../api/models/User';
+import type { User } from '../../api';
 
 type ProfileTabProps = {
   user: User;

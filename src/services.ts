@@ -1,11 +1,11 @@
-import { UserService } from './api/services/UserService';
-import { PlayerService } from './api/services/PlayerService';
-import type { User as ApiUser } from './api/models/User';
-import type { PlayerTask as ApiPlayerTask, PlayerTask } from './api/models/PlayerTask';
-import type { TaskTopic as ApiTaskTopic } from './api/models/TaskTopic';
-import type { GetActiveTasksResponse } from './api/models/GetActiveTasksResponse';
-import type { GetPlayerTopicsResponse } from './api/models/GetPlayerTopicsResponse';
-import type { GetUserResponse } from './api/models/GetUserResponse';
+import {PlayerTask, UserService} from './api';
+import {PlayerService} from './api';
+import type {User as ApiUser} from './api/models/User';
+import type {PlayerTask as ApiPlayerTask} from './api/models/PlayerTask';
+import type {TaskTopic as ApiTaskTopic} from './api/models/TaskTopic';
+import type {GetActiveTasksResponse} from './api';
+import type {GetPlayerTopicsResponse} from './api';
+import type {GetUserResponse} from './api';
 
 export const api = {
   getUser: async (): Promise<ApiUser> => {
@@ -17,11 +17,11 @@ export const api = {
       throw error;
     }
   },
-  
+
   generateTasks: async (): Promise<ApiPlayerTask[]> => {
     try {
       await PlayerService.generateTasks();
-      
+
       // Получаем активные задачи
       const response: GetActiveTasksResponse = await PlayerService.getActiveTasks();
       return response.tasks;
@@ -30,21 +30,19 @@ export const api = {
       throw error;
     }
   },
-  
+
   getPlayerTasks: async (): Promise<GetActiveTasksResponse> => {
     try {
-      const response: GetActiveTasksResponse = await PlayerService.getActiveTasks();
-      return response;
+      return await PlayerService.getActiveTasks();
     } catch (error) {
       console.error('Error getting player tasks:', error);
       throw error;
     }
   },
-  
+
   getUserTopics: async (): Promise<GetPlayerTopicsResponse> => {
     try {
-      const response: GetPlayerTopicsResponse = await PlayerService.getCurrentPlayerTopics();
-      return response;
+      return await PlayerService.getCurrentPlayerTopics();
     } catch (error) {
       console.error('Error getting user topics:', error);
       // Возвращаем пустой список топиков при ошибке
@@ -53,7 +51,7 @@ export const api = {
       };
     }
   },
-  
+
   saveUserTopics: async (topics: ApiTaskTopic[]): Promise<void> => {
     try {
       await PlayerService.savePlayerTopics({
@@ -67,18 +65,12 @@ export const api = {
 };
 
 export const taskActions = {
-  completeTask: async (ptask: PlayerTask): Promise<ApiPlayerTask[]> => {
+  completeTask: async (playerTask: PlayerTask): Promise<ApiPlayerTask[]> => {
     try {
-      if (!ptask) {
-        throw new Error('Task not found');
-      }
-      
-      // Выполняем задачу
       await PlayerService.completeTask({
-        playerTask: ptask
+        playerTask: playerTask
       });
-      
-      // Получаем обновленный список задач
+
       const updatedResponse: GetActiveTasksResponse = await PlayerService.getActiveTasks();
       return updatedResponse.tasks;
     } catch (error) {
@@ -86,19 +78,13 @@ export const taskActions = {
       throw error;
     }
   },
-  
-  replaceTask: async (ptask: PlayerTask): Promise<ApiPlayerTask[]> => {
+
+  replaceTask: async (playerTask: PlayerTask): Promise<ApiPlayerTask[]> => {
     try {
-      if (!ptask) {
-        throw new Error('Task not found');
-      }
-      
-      // Пропускаем задачу
       await PlayerService.skipTask({
-        playerTask: ptask
+        playerTask: playerTask
       });
-      
-      // Получаем обновленный список задач
+
       const updatedResponse: GetActiveTasksResponse = await PlayerService.getActiveTasks();
       return updatedResponse.tasks;
     } catch (error) {

@@ -1,6 +1,6 @@
 import React from 'react';
-import type { PlayerTask } from '../api/models/PlayerTask';
-import { PlayerTaskStatus } from '../api/models/PlayerTaskStatus';
+import type { PlayerTask } from '../api';
+import { PlayerTaskStatus } from '../api';
 import { ReactComponent as DoneIcon } from '../assets/icons/done.svg';
 import { ReactComponent as RefreshIcon } from '../assets/icons/refresh.svg';
 import { topicIcons, topicLabels } from '../topicMeta';

@@ -1,7 +1,7 @@
-import { AuthService } from './api/services/AuthService';
-import type { LoginResponse } from './api/models/LoginResponse';
-import type { TgAuthData } from './api/models/TgAuthData';
-import { OpenAPI } from './api/core/OpenAPI';
+import {AuthService} from './api';
+import type {LoginResponse} from './api';
+import type {TgAuthData} from './api';
+import {OpenAPI} from './api';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
@@ -70,8 +70,7 @@ async function handle401Error(): Promise<string | null> {
   refreshPromise = refreshTokenIfNeeded();
   
   try {
-    const newToken = await refreshPromise;
-    return newToken;
+    return await refreshPromise;
   } finally {
     isRefreshing = false;
     refreshPromise = null;

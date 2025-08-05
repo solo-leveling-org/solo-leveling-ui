@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { TaskTopic } from '../../api/models/TaskTopic';
-import type { GetPlayerTopicsResponse } from '../../api/models/GetPlayerTopicsResponse';
+import { TaskTopic } from '../../api';
+import type { GetPlayerTopicsResponse } from '../../api';
 import { api } from '../../services';
 import { useNavigate } from 'react-router-dom';
 import { topicIcons, topicLabels } from '../../topicMeta';

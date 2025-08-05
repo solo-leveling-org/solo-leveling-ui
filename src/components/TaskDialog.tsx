@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Task } from '../api/models/Task';
+import type { Task } from '../api';
 import { topicIcons, topicLabels } from '../topicMeta';
 
 type TaskDialogProps = {
