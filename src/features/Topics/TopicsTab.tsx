@@ -26,7 +26,7 @@ const TopicsTab: React.FC<{ allTopics: TaskTopic[] }> = ({ allTopics }) => {
     setSaving(true);
     await api.saveUserTopics(userTopics);
     if (firstTime) {
-      await api.generateTasks(userTopics);
+      await api.generateTasks();
     }
     setSaving(false);
     if (firstTime) navigate('/tasks');

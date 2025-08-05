@@ -1,7 +1,7 @@
 import { UserService } from './api/services/UserService';
 import { PlayerService } from './api/services/PlayerService';
 import type { User as ApiUser } from './api/models/User';
-import type { PlayerTask as ApiPlayerTask } from './api/models/PlayerTask';
+import type { PlayerTask as ApiPlayerTask, PlayerTask } from './api/models/PlayerTask';
 import type { TaskTopic as ApiTaskTopic } from './api/models/TaskTopic';
 import type { GetActiveTasksResponse } from './api/models/GetActiveTasksResponse';
 import type { GetPlayerTopicsResponse } from './api/models/GetPlayerTopicsResponse';
@@ -18,14 +18,8 @@ export const api = {
     }
   },
   
-  generateTasks: async (selectedTopics: ApiTaskTopic[]): Promise<ApiPlayerTask[]> => {
+  generateTasks: async (): Promise<ApiPlayerTask[]> => {
     try {
-      // Сначала сохраняем топики
-      await PlayerService.savePlayerTopics({
-        topics: selectedTopics
-      });
-      
-      // Затем генерируем задачи
       await PlayerService.generateTasks();
       
       // Получаем активные задачи
@@ -73,19 +67,15 @@ export const api = {
 };
 
 export const taskActions = {
-  completeTask: async (id: string): Promise<ApiPlayerTask[]> => {
+  completeTask: async (ptask: PlayerTask): Promise<ApiPlayerTask[]> => {
     try {
-      // Получаем текущие задачи
-      const currentTasks: GetActiveTasksResponse = await PlayerService.getActiveTasks();
-      const targetTask = currentTasks.tasks.find(t => t.id === id);
-      
-      if (!targetTask) {
+      if (!ptask) {
         throw new Error('Task not found');
       }
       
       // Выполняем задачу
       await PlayerService.completeTask({
-        playerTask: targetTask
+        playerTask: ptask
       });
       
       // Получаем обновленный список задач
@@ -97,19 +87,15 @@ export const taskActions = {
     }
   },
   
-  replaceTask: async (id: string, selectedTopics: ApiTaskTopic[]): Promise<ApiPlayerTask[]> => {
+  replaceTask: async (ptask: PlayerTask): Promise<ApiPlayerTask[]> => {
     try {
-      // Получаем текущие задачи
-      const currentTasks: GetActiveTasksResponse = await PlayerService.getActiveTasks();
-      const targetTask = currentTasks.tasks.find(t => t.id === id);
-      
-      if (!targetTask) {
+      if (!ptask) {
         throw new Error('Task not found');
       }
       
       // Пропускаем задачу
       await PlayerService.skipTask({
-        playerTask: targetTask
+        playerTask: ptask
       });
       
       // Получаем обновленный список задач
