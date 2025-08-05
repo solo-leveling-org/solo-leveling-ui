@@ -112,9 +112,6 @@ export const taskActions = {
         playerTask: targetTask
       });
       
-      // Генерируем новые задачи
-      await PlayerService.generateTasks();
-      
       // Получаем обновленный список задач
       const updatedResponse: GetActiveTasksResponse = await PlayerService.getActiveTasks();
       return updatedResponse.tasks;
