@@ -1,7 +1,5 @@
+import type {LoginResponse, OpenAPIConfig, TgAuthData} from './api';
 import {AuthService} from './api';
-import type {LoginResponse} from './api';
-import type {TgAuthData} from './api';
-import {OpenAPI} from './api';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
@@ -33,6 +31,7 @@ async function loginWithTelegram(initData: string, tg_web_app_data: any): Promis
     init_data: initData,
     tg_web_app_data,
   };
+
   try {
     const jwt = await AuthService.login(authData);
     if (!jwt || !jwt.accessToken || !jwt.refreshToken || !jwt.accessToken.token || !jwt.refreshToken.token) {
@@ -48,6 +47,7 @@ async function loginWithTelegram(initData: string, tg_web_app_data: any): Promis
 async function refreshTokenIfNeeded(): Promise<string | null> {
   const refreshToken = getRefreshToken();
   if (!refreshToken) return null;
+
   try {
     const newToken = await AuthService.refresh({ refreshToken });
     localStorage.setItem(ACCESS_TOKEN_KEY, newToken.accessToken.token);
@@ -68,7 +68,7 @@ async function handle401Error(): Promise<string | null> {
   // Начинаем обновление токена
   isRefreshing = true;
   refreshPromise = refreshTokenIfNeeded();
-  
+
   try {
     return await refreshPromise;
   } finally {
@@ -77,21 +77,20 @@ async function handle401Error(): Promise<string | null> {
   }
 }
 
-// Настраиваем OpenAPI.TOKEN для автоматической подстановки accessToken
-// но только для запросов, которые не являются login или refresh
-OpenAPI.TOKEN = async (options: any) => {
+// Функция для получения токена (используется в OpenAPI.TOKEN)
+async function getTokenForRequest(config: OpenAPIConfig, options: any): Promise<string> {
   // Не отправляем токен для login и refresh запросов
   if (options.url === '/api/v1/auth/login' || options.url === '/api/v1/auth/refresh') {
     return '';
   }
-  
+
   // Для всех остальных запросов отправляем токен
   let token = getAccessToken();
   if (!token) {
     token = await refreshTokenIfNeeded();
   }
   return token || '';
-};
+}
 
 export const auth = {
   loginWithTelegram,
@@ -100,4 +99,5 @@ export const auth = {
   clearTokens,
   refreshTokenIfNeeded,
   handle401Error,
-}; 
+  getTokenForRequest,
+};
