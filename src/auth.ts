@@ -1,7 +1,7 @@
-import { JwtService } from './api/services/JwtService';
-import type { JwtResponse } from './api/models/JwtResponse';
-import type { TgAuthData } from './api/models/TgAuthData';
-import { OpenAPI } from './api/core/OpenAPI';
+import {AuthService} from './api';
+import type {LoginResponse} from './api';
+import type {TgAuthData} from './api';
+import {OpenAPI} from './api';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
@@ -10,7 +10,7 @@ const REFRESH_TOKEN_KEY = 'refreshToken';
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
 
-function saveTokens(jwt: JwtResponse) {
+function saveTokens(jwt: LoginResponse) {
   localStorage.setItem(ACCESS_TOKEN_KEY, jwt.accessToken.token);
   localStorage.setItem(REFRESH_TOKEN_KEY, jwt.refreshToken.token);
 }
@@ -34,7 +34,7 @@ async function loginWithTelegram(initData: string, tg_web_app_data: any): Promis
     tg_web_app_data,
   };
   try {
-    const jwt = await JwtService.login(authData);
+    const jwt = await AuthService.login(authData);
     if (!jwt || !jwt.accessToken || !jwt.refreshToken || !jwt.accessToken.token || !jwt.refreshToken.token) {
       clearTokens();
       throw new Error('Не удалось получить токены авторизации от backend');
@@ -49,9 +49,9 @@ async function refreshTokenIfNeeded(): Promise<string | null> {
   const refreshToken = getRefreshToken();
   if (!refreshToken) return null;
   try {
-    const newToken = await JwtService.refresh({ refreshToken });
-    localStorage.setItem(ACCESS_TOKEN_KEY, newToken.token);
-    return newToken.token;
+    const newToken = await AuthService.refresh({ refreshToken });
+    localStorage.setItem(ACCESS_TOKEN_KEY, newToken.accessToken.token);
+    return newToken.accessToken.token;
   } catch {
     clearTokens();
     return null;
@@ -70,8 +70,7 @@ async function handle401Error(): Promise<string | null> {
   refreshPromise = refreshTokenIfNeeded();
   
   try {
-    const newToken = await refreshPromise;
-    return newToken;
+    return await refreshPromise;
   } finally {
     isRefreshing = false;
     refreshPromise = null;

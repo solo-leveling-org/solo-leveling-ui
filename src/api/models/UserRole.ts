@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { JwtToken } from './JwtToken';
-export type JwtResponse = {
-    accessToken: JwtToken;
-    refreshToken: JwtToken;
-};
-
+export enum UserRole {
+    USER = 'USER',
+    ADMIN = 'ADMIN',
+}

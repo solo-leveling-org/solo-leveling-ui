@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { TaskTopic, UserTopicsResponse } from '../../types';
+import { TaskTopic } from '../../api';
+import type { GetPlayerTopicsResponse } from '../../api';
 import { api } from '../../services';
 import { useNavigate } from 'react-router-dom';
 import { topicIcons, topicLabels } from '../../topicMeta';
@@ -11,9 +12,9 @@ const TopicsTab: React.FC<{ allTopics: TaskTopic[] }> = ({ allTopics }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.getUserTopics().then((res: UserTopicsResponse) => {
-      setUserTopics(res.topics);
-      setFirstTime(res.first_time);
+    api.getUserTopics().then((res: GetPlayerTopicsResponse) => {
+      setUserTopics(res.playerTaskTopics.map(pt => pt.taskTopic!).filter(Boolean));
+      setFirstTime(res.playerTaskTopics.length === 0);
     });
   }, []);
 
@@ -25,7 +26,7 @@ const TopicsTab: React.FC<{ allTopics: TaskTopic[] }> = ({ allTopics }) => {
     setSaving(true);
     await api.saveUserTopics(userTopics);
     if (firstTime) {
-      await api.generateTasks(userTopics);
+      await api.generateTasks();
     }
     setSaving(false);
     if (firstTime) navigate('/tasks');

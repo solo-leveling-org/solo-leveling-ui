@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { PlayerTask, TaskTopic, PlayerTaskStatus } from '../../types';
+import type { PlayerTask } from '../../api';
+import { TaskTopic } from '../../api';
 import TasksGrid from '../../components/TasksGrid';
 import TaskDialog from '../../components/TaskDialog';
 import { taskActions } from '../../services';
@@ -52,20 +53,17 @@ const TasksTab: React.FC<TasksTabProps> = ({
       <TasksGrid
         tasks={tasks}
         loading={loading}
-        onTaskClick={(ptask) => {
-          if (ptask.task) setDialogTask(ptask);
+        onTaskClick={(playerTask) => {
+          if (playerTask.task) setDialogTask(playerTask);
         }}
-        onComplete={async (ptask) => {
+        onComplete={async (playerTask) => {
           if (loading) return;
-          const updated = await taskActions.completeTask(ptask.id);
+          const updated = await taskActions.completeTask(playerTask);
           setTasks(updated);
         }}
-        onReplace={async (ptask) => {
+        onReplace={async (playerTask) => {
           if (loading) return;
-          // Сначала локально меняем статус на PREPARING
-          setTasks((prev: PlayerTask[]) => prev.map((t: PlayerTask) => t.id === ptask.id ? { ...t, status: PlayerTaskStatus.PREPARING } : t));
-          // Затем имитируем REST API запрос
-          const updated = await taskActions.replaceTask(ptask.id, selectedTopics);
+          const updated = await taskActions.replaceTask(playerTask);
           setTasks(updated);
         }}
       />
