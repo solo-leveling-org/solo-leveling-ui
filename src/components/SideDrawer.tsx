@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 type Tab = {
   label: string;
@@ -12,27 +12,156 @@ type SideDrawerProps = {
   onClose: () => void;
 };
 
-const SideDrawer: React.FC<SideDrawerProps> = ({ open, tabs, onClose }) => (
-  <>
-    <nav
-      className={`fixed top-0 left-0 w-[82vw] max-w-[340px] h-full bg-white shadow-[2px_0_32px_rgba(0,0,0,0.13)] rounded-tr-[28px] rounded-br-[28px] z-[1001] flex flex-col pt-[60px] gap-2 transition-transform duration-250 ease-[cubic-bezier(.4,0,.2,1)] ${open ? 'translate-x-0' : '-translate-x-full'}`}
-    >
-      {tabs.map((tab) => (
-        <button
-          key={tab.label}
-          className={`w-[90%] mx-auto mb-2.5 last:mb-2.5 py-[1.15rem] pl-[2.2rem] bg-none border-none text-[1.13rem] font-medium text-[#888] text-left rounded-2xl transition-colors duration-200 outline-none box-border relative block ${tab.active ? 'text-[#222] bg-gradient-to-r from-[#eaf1ff] to-[#f7f8fa] shadow-md' : 'hover:bg-[#f0f4fa] hover:text-blue-500'} ${tab.active ? '' : ''}`}
-          style={tab.active ? { boxShadow: '0 2px 8px rgba(79,140,255,0.07)' } : {}}
-          onClick={tab.onClick}
-        >
-          {tab.label}
-        </button>
-      ))}
-    </nav>
-    <div
-      className={`fixed inset-0 bg-[rgba(79,140,255,0.08)] z-[1000] transition-opacity duration-200 ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-      onClick={onClose}
-    />
-  </>
-);
+const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
+  // Блокируем скролл при открытом drawer
+  useEffect(() => {
+    if (open) {
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
 
-export default SideDrawer; 
+      return () => {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [open]);
+
+  // Иконки для табов (можно кастомизировать)
+  const getTabIcon = (label: string) => {
+    const iconMap: Record<string, string> = {
+      'Профиль': '👤',
+      'Задачи': '📋',
+      'Темы': '🎯'
+    };
+    return iconMap[label] || '📌';
+  };
+
+  return (
+      <>
+        {/* Backdrop */}
+        <div
+            className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000] transition-all duration-300 ${
+                open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+            }`}
+            onClick={onClose}
+        />
+
+        {/* Side Drawer */}
+        <nav
+            className={`fixed top-0 left-0 w-[85vw] max-w-[360px] h-full bg-white/95 backdrop-blur-xl shadow-2xl border-r border-white/20 z-[1001] flex flex-col transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                open ? 'translate-x-0' : '-translate-x-full'
+            } overflow-hidden`}
+        >
+          {/* Decorative background elements */}
+          <div
+              className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl -translate-y-8 translate-x-8"></div>
+          <div
+              className="absolute bottom-20 left-0 w-32 h-32 bg-gradient-to-tr from-pink-400/10 to-orange-400/10 rounded-full blur-2xl translate-y-4 -translate-x-4"></div>
+
+          {/* Header */}
+          <div className="relative z-10 pt-16 pb-8 px-6">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                Навигация
+              </h2>
+              <button
+                  onClick={onClose}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100/50 backdrop-blur-sm hover:bg-gray-200/50 transition-all duration-200 hover:scale-110 group"
+              >
+                <svg className="w-5 h-5 text-gray-500 group-hover:text-gray-700 transition-colors"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <div
+                className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
+          </div>
+
+          {/* Navigation Items */}
+          <div className="relative z-10 flex-1 px-4 pb-8 space-y-3 overflow-y-auto">
+            {tabs.map((tab, index) => (
+                <button
+                    key={tab.label}
+                    className={`group relative w-full p-4 text-left rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${
+                        tab.active
+                            ? 'bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm border border-blue-200/30 shadow-lg text-gray-800'
+                            : 'bg-white/40 backdrop-blur-sm hover:bg-white/60 border border-transparent hover:border-white/30 text-gray-600 hover:text-gray-800'
+                    }`}
+                    onClick={tab.onClick}
+                    style={{
+                      animationDelay: `${index * 50}ms`,
+                    }}
+                >
+                  {/* Active indicator */}
+                  {tab.active && (
+                      <div
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-blue-500 to-purple-600 rounded-r-full"></div>
+                  )}
+
+                  <div className="flex items-center space-x-4">
+                    {/* Icon */}
+                    <div className={`text-2xl transition-transform duration-200 ${
+                        tab.active ? 'scale-110' : 'group-hover:scale-110'
+                    }`}>
+                      {getTabIcon(tab.label)}
+                    </div>
+
+                    {/* Label */}
+                    <div className="flex-1">
+                      <div className={`font-semibold transition-colors duration-200 ${
+                          tab.active ? 'text-gray-800' : 'text-gray-600 group-hover:text-gray-800'
+                      }`}>
+                        {tab.label}
+                      </div>
+                      {tab.active && (
+                          <div className="text-xs text-blue-500 font-medium mt-1">
+                            Активно
+                          </div>
+                      )}
+                    </div>
+
+                    {/* Arrow indicator */}
+                    <div className={`transition-all duration-200 ${
+                        tab.active ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 group-hover:opacity-60 group-hover:translate-x-0'
+                    }`}>
+                      <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor"
+                           viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                              d="M9 5l7 7-7 7"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Glow effect for active tab */}
+                  {tab.active && (
+                      <div
+                          className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-2xl blur-xl scale-105 -z-10"></div>
+                  )}
+                </button>
+            ))}
+          </div>
+
+          {/* Footer */}
+          <div className="relative z-10 px-6 py-4 border-t border-gray-200/30">
+            <div className="text-center">
+              <div className="text-xs text-gray-400 font-medium">
+                Версия 1.0.0
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom decorative line */}
+          <div
+              className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+        </nav>
+      </>
+  );
+};
+
+export default SideDrawer;
