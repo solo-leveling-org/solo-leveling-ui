@@ -1,8 +1,6 @@
 import React from 'react';
 import type { PlayerTask } from '../api';
 import { PlayerTaskStatus } from '../api';
-import { ReactComponent as DoneIcon } from '../assets/icons/done.svg';
-import { ReactComponent as RefreshIcon } from '../assets/icons/refresh.svg';
 import { topicIcons, topicLabels } from '../topicMeta';
 
 type TaskCardProps = {
@@ -54,16 +52,22 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
     }
   };
 
-  // Современные цвета редкости с яркими градиентами
-  const getRarityGradient = (rarity: string) => {
-    const rarityGradients = {
-      COMMON: 'from-slate-400 via-slate-500 to-slate-600',
-      UNCOMMON: 'from-emerald-400 via-green-500 to-emerald-600',
-      RARE: 'from-blue-400 via-blue-500 to-indigo-600',
-      EPIC: 'from-purple-400 via-violet-500 to-purple-600',
-      LEGENDARY: 'from-amber-400 via-orange-500 to-red-500',
-    };
-    return rarityGradients[rarity as keyof typeof rarityGradients] || rarityGradients.COMMON;
+  // Определяем цвета для анимированных градиентов редкости
+  const getRarityColors = (rarity: string): string[] => {
+    switch (rarity) {
+      case 'COMMON':
+        return ['#9CA3AF', '#6B7280', '#4B5563', '#9CA3AF'];
+      case 'UNCOMMON':
+        return ['#10B981', '#059669', '#047857', '#10B981'];
+      case 'RARE':
+        return ['#3B82F6', '#1D4ED8', '#1E40AF', '#3B82F6'];
+      case 'EPIC':
+        return ['#8B5CF6', '#7C3AED', '#6D28D9', '#8B5CF6'];
+      case 'LEGENDARY':
+        return ['#F59E0B', '#D97706', '#B45309', '#F59E0B'];
+      default:
+        return ['#9CA3AF', '#6B7280', '#4B5563', '#9CA3AF'];
+    }
   };
 
   const colorScheme = getStatusColorScheme(status || PlayerTaskStatus.IN_PROGRESS);
@@ -132,18 +136,26 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
       <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-purple-500/10 rounded-full blur-xl animate-float"></div>
       <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-tr from-pink-400/15 to-orange-400/10 rounded-full blur-lg animate-float-delayed"></div>
 
-      {/* Rarity indicator */}
+      {/* Rarity indicator with animated gradient */}
       <div className="absolute top-4 right-4">
-        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${getRarityGradient(task?.rarity || 'COMMON')} flex items-center justify-center shadow-lg`}>
-          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
+        <div 
+          className={`w-10 h-10 rounded-xl shadow-lg relative overflow-hidden animate-rarity-glow`}
+          style={{
+            background: `linear-gradient(45deg, ${getRarityColors(task?.rarity || 'COMMON').join(', ')})`,
+            backgroundSize: '200% 200%',
+            animation: 'rarityShimmer 3s ease-in-out infinite',
+          }}
+        >
+          <div className="absolute inset-0.5 bg-white/10 rounded-lg backdrop-blur-sm"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className={`w-2 h-2 rounded-full bg-white shadow-sm animate-pulse`}></div>
+          </div>
         </div>
       </div>
 
       <div className="relative z-10 p-6 min-h-[280px] flex flex-col">
-        {/* Header section */}
-        <div className="mb-6">
+        {/* Header section with proper spacing */}
+        <div className="mb-6 pr-16">
           <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight tracking-tight">
             {task?.title || ''}
           </h3>
@@ -182,103 +194,41 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
           )}
         </div>
 
-        {/* Rewards section with glassmorphism */}
-        <div 
-          className="flex items-center justify-between mb-6 p-4 rounded-2xl backdrop-blur-sm border"
-          style={{
-            background: 'rgba(255, 255, 255, 0.2)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-          }}
-        >
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg flex items-center justify-center mr-2 shadow-md">
-                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              </div>
-              <span className="font-bold text-gray-800 text-sm">{task?.experience || 0}</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-green-500 rounded-lg flex items-center justify-center mr-2 shadow-md">
-                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <span className="font-bold text-gray-800 text-sm">{task?.currencyReward || 0}</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Status and actions */}
-        <div className="flex items-center justify-between mt-auto pt-4">
-          <div className="flex items-center">
-            {status === PlayerTaskStatus.IN_PROGRESS && (
-              <div 
-                className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm border ${colorScheme.textColor}`}
-                style={{
-                  background: 'rgba(59, 130, 246, 0.15)',
-                  border: '1px solid rgba(59, 130, 246, 0.2)',
-                }}
-              >
-                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                Активна
-              </div>
-            )}
-            {status === PlayerTaskStatus.PENDING_COMPLETION && (
-              <div 
-                className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm border ${colorScheme.textColor}`}
-                style={{
-                  background: 'rgba(34, 197, 94, 0.15)',
-                  border: '1px solid rgba(34, 197, 94, 0.2)',
-                }}
-              >
-                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                Готово к проверке
-              </div>
-            )}
-            {status === PlayerTaskStatus.COMPLETED && (
-              <div 
-                className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm border ${colorScheme.textColor}`}
-                style={{
-                  background: 'rgba(156, 163, 175, 0.15)',
-                  border: '1px solid rgba(156, 163, 175, 0.2)',
-                }}
-              >
-                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                Завершена
-              </div>
-            )}
-          </div>
 
-          {/* Action buttons - показываем для всех активных задач */}
+        {/* Status indicator as subtle bar */}
+        <div className="mt-auto">
+          <div 
+            className="h-1 w-full rounded-full mb-4"
+            style={{
+              background: colorScheme.bg.replace('0.1', '0.3'),
+            }}
+          ></div>
+
+          {/* Modern action buttons */}
           {status === PlayerTaskStatus.IN_PROGRESS && onComplete && onReplace && (
-            <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+            <div className="flex items-center justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onComplete();
                 }}
-                className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 text-white rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+                className="relative overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 text-emerald-600 rounded-full px-4 py-2 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-emerald-50/30"
                 title="Завершить задачу"
               >
-                <DoneIcon width={16} height={16} />
+                <span className="relative z-10">Готово</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-green-500/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
               </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onReplace();
                 }}
-                className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+                className="relative overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 text-blue-600 rounded-full px-4 py-2 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-blue-50/30"
                 title="Заменить задачу"
               >
-                <RefreshIcon width={16} height={16} />
+                <span className="relative z-10">Заменить</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
               </button>
             </div>
           )}
