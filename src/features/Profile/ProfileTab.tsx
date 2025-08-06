@@ -45,7 +45,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ user }) => {
                     className="relative w-28 h-28 rounded-full object-cover shadow-xl border-4 border-white/50 backdrop-blur-sm transition-transform duration-300 hover:scale-105"
                 />
                 {/* Level badge */}
-                <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-emerald-400 to-cyan-400 text-white rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold shadow-lg border-2 border-white">
+                <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-slate-500 to-slate-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold shadow-lg border-2 border-white">
                   {level}
                 </div>
               </div>
@@ -53,11 +53,10 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ user }) => {
               <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-1">
                 {user.firstName || ''} {user.lastName || ''}
               </h2>
-              <p className="text-blue-500 text-lg font-medium mb-2">@{user.username || ''}</p>
+              <p className="text-slate-500 text-lg font-medium mb-2">@{user.username || ''}</p>
 
               {/* Assessment badge */}
-              <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                <span className="mr-1">⭐</span>
+              <div className="inline-flex items-center bg-gradient-to-r from-slate-600 to-slate-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
                 Уровень {assessment}
               </div>
             </div>
@@ -68,9 +67,9 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ user }) => {
                 <span className="text-sm font-medium text-gray-600">Прогресс</span>
                 <span className="text-sm font-bold text-gray-800">{currentExp} / {maxExp} XP</span>
               </div>
-              <div className="relative w-full bg-gray-200/50 rounded-full h-3 overflow-hidden backdrop-blur-sm">
+              <div className="relative w-full bg-slate-200/50 rounded-full h-3 overflow-hidden backdrop-blur-sm">
                 <div
-                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full transition-all duration-1000 ease-out shadow-lg"
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-slate-500 to-slate-600 rounded-full transition-all duration-1000 ease-out shadow-lg"
                     style={{ width: `${expPercentage}%` }}
                 >
                   <div className="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
@@ -80,36 +79,36 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ user }) => {
 
             {/* Stats grid */}
             <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="bg-gradient-to-br from-red-50 to-red-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-red-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-slate-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                 <div className="text-2xl mb-2">💪</div>
-                <div className="text-xl font-bold text-red-600 mb-1">{statValue}</div>
-                <div className="text-xs text-red-500 font-medium">Сила</div>
+                <div className="text-xl font-bold text-slate-700 mb-1">{statValue}</div>
+                <div className="text-xs text-slate-600 font-medium">Сила</div>
               </div>
 
-              <div className="bg-gradient-to-br from-green-50 to-green-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-green-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-slate-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                 <div className="text-2xl mb-2">⚡</div>
-                <div className="text-xl font-bold text-green-600 mb-1">{statValue}</div>
-                <div className="text-xs text-green-500 font-medium">Ловкость</div>
+                <div className="text-xl font-bold text-slate-700 mb-1">{statValue}</div>
+                <div className="text-xs text-slate-600 font-medium">Ловкость</div>
               </div>
 
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-purple-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-slate-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                 <div className="text-2xl mb-2">🧠</div>
-                <div className="text-xl font-bold text-purple-600 mb-1">{statValue}</div>
-                <div className="text-xs text-purple-500 font-medium">Интеллект</div>
+                <div className="text-xl font-bold text-slate-700 mb-1">{statValue}</div>
+                <div className="text-xs text-slate-600 font-medium">Интеллект</div>
               </div>
             </div>
 
             {/* Achievement section */}
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 backdrop-blur-sm rounded-2xl p-4 border border-amber-200/30">
+            <div className="bg-gradient-to-r from-slate-50 to-slate-100/50 backdrop-blur-sm rounded-2xl p-4 border border-slate-200/30">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="text-2xl mr-3">🏆</div>
                   <div>
-                    <div className="text-sm font-medium text-amber-700">Выполнено задач</div>
-                    <div className="text-lg font-bold text-amber-600">0</div>
+                    <div className="text-sm font-medium text-slate-600">Выполнено задач</div>
+                    <div className="text-lg font-bold text-slate-700">0</div>
                   </div>
                 </div>
-                <div className="text-amber-500 opacity-50">
+                <div className="text-slate-400 opacity-50">
                   <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
                   </svg>

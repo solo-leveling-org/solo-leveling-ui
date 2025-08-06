@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import type {Task} from '../api';
 import {topicIcons, topicLabels} from '../topicMeta';
+import { ReactComponent as CoinsIcon } from '../assets/icons/coins.svg';
 
 type TaskDialogProps = {
   task: Task;
@@ -149,11 +150,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
                 </div>
                 <div
                     className="bg-gradient-to-br from-green-50/80 to-emerald-50/80 backdrop-blur-sm rounded-xl p-3 border border-green-200/30 text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <svg className="w-6 h-6 mx-auto mb-2 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
-                    <path d="M12 1v6m0 10v6m11-7h-6m-10 0H1" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
+                  <CoinsIcon className="w-6 h-6 mx-auto mb-2" />
                   <div className="text-lg font-bold text-green-600">{task.currencyReward || 0}</div>
                   <div className="text-xs text-green-500 font-medium">Монеты</div>
                 </div>
@@ -172,30 +169,21 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
               <div className="grid grid-cols-3 gap-3">
                 <div
                     className="bg-gradient-to-br from-red-50/80 to-red-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-red-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <svg className="w-5 h-5 mx-auto mb-2 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    <circle cx="12" cy="10" r="2" fill="white"/>
-                  </svg>
+                  <div className="text-2xl mb-1">💪</div>
                   <div className="text-lg font-bold text-red-600">{task.strength || 0}</div>
                   <div className="text-xs text-red-500 font-medium">Сила</div>
                 </div>
 
                 <div
                     className="bg-gradient-to-br from-green-50/80 to-green-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-green-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <svg className="w-5 h-5 mx-auto mb-2 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
-                    <path d="M12 6L3 18h18L12 6z" fill="none" stroke="white" strokeWidth="1"/>
-                  </svg>
+                  <div className="text-2xl mb-1">⚡</div>
                   <div className="text-lg font-bold text-green-600">{task.agility || 0}</div>
                   <div className="text-xs text-green-500 font-medium">Ловкость</div>
                 </div>
 
                 <div
                     className="bg-gradient-to-br from-purple-50/80 to-purple-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-purple-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <svg className="w-5 h-5 mx-auto mb-2 text-purple-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
-                    <circle cx="12" cy="12" r="2" fill="white"/>
-                  </svg>
+                  <div className="text-2xl mb-1">🧠</div>
                   <div className="text-lg font-bold text-purple-600">{task.intelligence || 0}</div>
                   <div className="text-xs text-purple-500 font-medium">Интеллект</div>
                 </div>
