@@ -19,7 +19,7 @@ const TaskCardSkeleton: React.FC = () => (
     <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-slate-300/30 to-slate-400/20 rounded-full blur-xl animate-float"></div>
     <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-tr from-slate-200/20 to-slate-300/10 rounded-full blur-lg animate-float-delayed"></div>
     
-    <div className="relative z-10 p-6 h-[280px] flex flex-col">
+    <div className="relative z-10 p-6 min-h-[280px] flex flex-col">
       {/* Rarity indicator skeleton */}
       <div className="absolute top-6 right-6 w-6 h-6 bg-gradient-to-br from-slate-300 to-slate-400 rounded-full animate-pulse"></div>
 

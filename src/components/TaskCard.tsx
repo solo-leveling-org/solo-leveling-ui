@@ -71,7 +71,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
   if (status === PlayerTaskStatus.PREPARING) {
     return (
       <div 
-        className="group relative overflow-hidden cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] animate-fadeIn"
+        className="group relative overflow-hidden cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] animate-fadeIn"
         onClick={onClick}
         style={{
           background: `linear-gradient(135deg, ${colorScheme.bg}, rgba(255, 255, 255, 0.1))`,
@@ -111,7 +111,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
 
   return (
     <div 
-      className="group relative overflow-hidden cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:rotate-1 animate-fadeIn"
+      className="group relative overflow-hidden cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] animate-fadeIn"
       onClick={onClick}
       style={{
         background: `linear-gradient(135deg, ${colorScheme.bg}, rgba(255, 255, 255, 0.05))`,
@@ -132,13 +132,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
       <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-purple-500/10 rounded-full blur-xl animate-float"></div>
       <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-tr from-pink-400/15 to-orange-400/10 rounded-full blur-lg animate-float-delayed"></div>
 
-      {/* Rarity indicator - modern glowing orb */}
-      <div className="absolute top-6 right-6 w-6 h-6 rounded-full shadow-lg overflow-hidden">
-        <div className={`w-full h-full bg-gradient-to-br ${getRarityGradient(task?.rarity || 'COMMON')} animate-pulse`}></div>
-        <div className="absolute inset-0 bg-white/20 animate-ping"></div>
+      {/* Rarity indicator */}
+      <div className="absolute top-6 right-6 w-4 h-4 rounded-full shadow-lg">
+        <div className={`w-full h-full bg-gradient-to-br ${getRarityGradient(task?.rarity || 'COMMON')}`}></div>
       </div>
 
-      <div className="relative z-10 p-6 h-[280px] flex flex-col">
+      <div className="relative z-10 p-6 min-h-[280px] flex flex-col">
         {/* Header section */}
         <div className="mb-6">
           <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight tracking-tight">
@@ -204,7 +203,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
         </div>
 
         {/* Status and actions */}
-        <div className="flex items-center justify-between mt-auto">
+        <div className="flex items-center justify-between mt-auto pt-4">
           <div className="flex items-center">
             {status === PlayerTaskStatus.IN_PROGRESS && (
               <div 
@@ -232,28 +231,28 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
             )}
           </div>
 
-          {/* Modern floating action buttons */}
-          {status === PlayerTaskStatus.IN_PROGRESS && (
-            <div className="flex items-center space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
+          {/* Action buttons - показываем для всех активных задач */}
+          {status === PlayerTaskStatus.IN_PROGRESS && onComplete && onReplace && (
+            <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onComplete && onComplete();
+                  onComplete();
                 }}
-                className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 text-white rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 backdrop-blur-sm"
+                className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 text-white rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
                 title="Завершить задачу"
               >
-                <DoneIcon width={18} height={18} />
+                <DoneIcon width={16} height={16} />
               </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onReplace && onReplace();
+                  onReplace();
                 }}
-                className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 backdrop-blur-sm"
+                className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
                 title="Заменить задачу"
               >
-                <RefreshIcon width={18} height={18} />
+                <RefreshIcon width={16} height={16} />
               </button>
             </div>
           )}
