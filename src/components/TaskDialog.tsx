@@ -31,44 +31,25 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
   const handleClose = () => {
     onClose();
   };
-  // Определяем цвета и стили для редкости
-  const getRarityConfig = (rarity: string) => {
-    const configs = {
-      COMMON: {
-        bg: 'from-gray-400 to-gray-600',
-        border: 'border-gray-300',
-        glow: 'shadow-gray-400/25',
-        text: 'text-gray-700'
-      },
-      UNCOMMON: {
-        bg: 'from-green-400 to-green-600',
-        border: 'border-green-300',
-        glow: 'shadow-green-400/25',
-        text: 'text-green-700'
-      },
-      RARE: {
-        bg: 'from-blue-400 to-blue-600',
-        border: 'border-blue-300',
-        glow: 'shadow-blue-400/25',
-        text: 'text-blue-700'
-      },
-      EPIC: {
-        bg: 'from-purple-400 to-purple-600',
-        border: 'border-purple-300',
-        glow: 'shadow-purple-400/25',
-        text: 'text-purple-700'
-      },
-      LEGENDARY: {
-        bg: 'from-yellow-400 via-orange-500 to-red-500',
-        border: 'border-orange-300',
-        glow: 'shadow-orange-400/25',
-        text: 'text-orange-700'
-      }
-    };
-    return configs[rarity as keyof typeof configs] || configs.COMMON;
+  // Определяем цвета для анимированных градиентов редкости
+  const getRarityColors = (rarity: string): string[] => {
+    switch (rarity) {
+      case 'COMMON':
+        return ['#9CA3AF', '#6B7280', '#4B5563', '#9CA3AF'];
+      case 'UNCOMMON':
+        return ['#10B981', '#059669', '#047857', '#10B981'];
+      case 'RARE':
+        return ['#3B82F6', '#1D4ED8', '#1E40AF', '#3B82F6'];
+      case 'EPIC':
+        return ['#8B5CF6', '#7C3AED', '#6D28D9', '#8B5CF6'];
+      case 'LEGENDARY':
+        return ['#F59E0B', '#D97706', '#B45309', '#F59E0B'];
+      default:
+        return ['#9CA3AF', '#6B7280', '#4B5563', '#9CA3AF'];
+    }
   };
 
-  const rarityConfig = getRarityConfig(task.rarity || 'COMMON');
+
 
   return (
       <div
@@ -107,11 +88,39 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
               </button>
             </div>
 
-            {/* Rarity badge */}
-            <div className="flex justify-center mb-4">
-              <div
-                  className={`inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r ${rarityConfig.bg} text-white text-sm font-bold shadow-lg ${rarityConfig.glow} border-2 ${rarityConfig.border}`}>
-                {task.rarity || 'COMMON'}
+            {/* Rarity indicator - circle with animated gradient */}
+            <div className="flex justify-center mb-8">
+              <div className="relative">
+                {/* Main circle */}
+                <div 
+                  className="w-12 h-12 rounded-full shadow-lg relative overflow-hidden"
+                  style={{
+                    background: `linear-gradient(45deg, ${getRarityColors(task.rarity || 'COMMON').join(', ')})`,
+                    backgroundSize: '200% 200%',
+                    animation: 'rarityShimmer 3s ease-in-out infinite',
+                  }}
+                >
+                  {/* Inner highlight */}
+                  <div className="absolute top-1 left-1 w-4 h-4 bg-white/30 rounded-full"></div>
+                </div>
+                
+                {/* Outer glow ring */}
+                <div 
+                  className="absolute inset-0 w-12 h-12 rounded-full animate-pulse"
+                  style={{
+                    background: `linear-gradient(45deg, ${getRarityColors(task.rarity || 'COMMON').join(', ')})`,
+                    filter: 'blur(6px)',
+                    opacity: '0.6',
+                    zIndex: -1,
+                  }}
+                ></div>
+                
+                {/* Rarity text below */}
+                <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                  <span className="text-xs font-semibold text-gray-600 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full">
+                    {task.rarity || 'COMMON'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

@@ -136,37 +136,29 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
       <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-purple-500/10 rounded-full blur-xl animate-float"></div>
       <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-tr from-pink-400/15 to-orange-400/10 rounded-full blur-lg animate-float-delayed"></div>
 
-      {/* Rarity indicator - crystal/gem design */}
-      <div className="absolute top-3 right-3">
+      {/* Rarity indicator - simple circle with animated gradient */}
+      <div className="absolute top-4 right-4">
         <div className="relative">
-          {/* Main crystal shape */}
+          {/* Main circle */}
           <div 
-            className="w-8 h-8 transform rotate-45 shadow-lg relative overflow-hidden"
+            className="w-6 h-6 rounded-full shadow-lg relative overflow-hidden"
             style={{
               background: `linear-gradient(45deg, ${getRarityColors(task?.rarity || 'COMMON').join(', ')})`,
               backgroundSize: '200% 200%',
               animation: 'rarityShimmer 3s ease-in-out infinite',
-              borderRadius: '6px',
             }}
           >
-            {/* Inner glow effect */}
-            <div className="absolute inset-0.5 bg-white/15 backdrop-blur-sm" style={{ borderRadius: '4px' }}></div>
-            
-            {/* Highlight facet */}
-            <div 
-              className="absolute top-1 left-1 w-2 h-2 bg-white/40 backdrop-blur-sm"
-              style={{ borderRadius: '2px' }}
-            ></div>
+            {/* Inner highlight */}
+            <div className="absolute top-0.5 left-0.5 w-2 h-2 bg-white/30 rounded-full"></div>
           </div>
           
           {/* Outer glow ring */}
           <div 
-            className="absolute inset-0 w-8 h-8 transform rotate-45 animate-pulse"
+            className="absolute inset-0 w-6 h-6 rounded-full animate-pulse"
             style={{
               background: `linear-gradient(45deg, ${getRarityColors(task?.rarity || 'COMMON').join(', ')})`,
-              filter: 'blur(4px)',
-              opacity: '0.6',
-              borderRadius: '6px',
+              filter: 'blur(3px)',
+              opacity: '0.5',
               zIndex: -1,
             }}
           ></div>
@@ -175,7 +167,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
 
       <div className="relative z-10 p-6 min-h-[280px] flex flex-col">
         {/* Header section with proper spacing */}
-        <div className="mb-6 pr-12">
+        <div className="mb-6 pr-10">
           <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight tracking-tight">
             {task?.title || ''}
           </h3>
