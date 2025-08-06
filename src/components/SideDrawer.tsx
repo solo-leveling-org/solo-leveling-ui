@@ -147,18 +147,11 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
             ))}
           </div>
 
-          {/* Footer */}
-          <div className="relative z-10 px-6 py-4 border-t border-gray-200/30">
-            <div className="text-center">
-              <div className="text-xs text-gray-400 font-medium">
-                Версия 1.0.0
-              </div>
-            </div>
-          </div>
-
           {/* Bottom decorative line */}
           <div
-              className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+              className="absolute bottom-0 left-[-1px] right-[-1px] h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 pointer-events-none"
+              aria-hidden="true"
+          />
         </nav>
       </>
   );
