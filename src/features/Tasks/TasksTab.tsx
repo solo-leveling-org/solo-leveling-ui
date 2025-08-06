@@ -49,7 +49,9 @@ const TasksTab: React.FC<TasksTabProps> = ({
                 border: '1px solid rgba(255, 255, 255, 0.2)',
               }}
             >
-              <span className="text-3xl">⚔️</span>
+              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+              </svg>
             </div>
             
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 tracking-tight">
@@ -79,7 +81,9 @@ const TasksTab: React.FC<TasksTabProps> = ({
         <div className="relative z-10 max-w-md mx-auto px-6 text-center">
           {/* Icon */}
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-8 shadow-xl">
-            <span className="text-3xl">📋</span>
+            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+            </svg>
           </div>
 
           {/* Title */}
@@ -97,7 +101,9 @@ const TasksTab: React.FC<TasksTabProps> = ({
             onClick={onGoToTopics}
             className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
           >
-            <span className="mr-2">🎯</span>
+            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9 7.293 5.707a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L11.414 9l2.293-2.293z" clipRule="evenodd" />
+            </svg>
             Выбрать топики
           </button>
 
@@ -125,9 +131,11 @@ const TasksTab: React.FC<TasksTabProps> = ({
               background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(147, 51, 234, 0.15))',
               border: '1px solid rgba(255, 255, 255, 0.2)',
             }}
-          >
-            <span className="text-3xl">⚔️</span>
-          </div>
+                      >
+              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
           
                       <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 tracking-tight">
               Твои задачи
