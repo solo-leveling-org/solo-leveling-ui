@@ -141,24 +141,21 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
         <div className="relative">
           {/* Main circle */}
           <div 
-            className="w-6 h-6 rounded-full shadow-lg relative overflow-hidden"
+            className="w-6 h-6 rounded-full shadow-lg"
             style={{
               background: `linear-gradient(45deg, ${getRarityColors(task?.rarity || 'COMMON').join(', ')})`,
-              backgroundSize: '200% 200%',
-              animation: 'rarityShimmer 3s ease-in-out infinite',
+              backgroundSize: '400% 400%',
+              animation: 'rarityShimmer 2s ease-in-out infinite',
             }}
-          >
-            {/* Inner highlight */}
-            <div className="absolute top-0.5 left-0.5 w-2 h-2 bg-white/30 rounded-full"></div>
-          </div>
+          ></div>
           
           {/* Outer glow ring */}
           <div 
             className="absolute inset-0 w-6 h-6 rounded-full animate-pulse"
             style={{
               background: `linear-gradient(45deg, ${getRarityColors(task?.rarity || 'COMMON').join(', ')})`,
-              filter: 'blur(3px)',
-              opacity: '0.5',
+              filter: 'blur(4px)',
+              opacity: '0.7',
               zIndex: -1,
             }}
           ></div>

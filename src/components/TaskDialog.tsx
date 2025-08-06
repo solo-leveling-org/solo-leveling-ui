@@ -88,40 +88,35 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
               </button>
             </div>
 
-            {/* Rarity indicator - circle with animated gradient */}
-            <div className="flex justify-center mb-8">
+            {/* Rarity indicator - inline with title */}
+            <div className="flex items-center justify-center mb-4 space-x-3">
+              {/* Rarity circle */}
               <div className="relative">
-                {/* Main circle */}
                 <div 
-                  className="w-12 h-12 rounded-full shadow-lg relative overflow-hidden"
+                  className="w-8 h-8 rounded-full shadow-lg"
                   style={{
                     background: `linear-gradient(45deg, ${getRarityColors(task.rarity || 'COMMON').join(', ')})`,
-                    backgroundSize: '200% 200%',
-                    animation: 'rarityShimmer 3s ease-in-out infinite',
-                  }}
-                >
-                  {/* Inner highlight */}
-                  <div className="absolute top-1 left-1 w-4 h-4 bg-white/30 rounded-full"></div>
-                </div>
-                
-                {/* Outer glow ring */}
-                <div 
-                  className="absolute inset-0 w-12 h-12 rounded-full animate-pulse"
-                  style={{
-                    background: `linear-gradient(45deg, ${getRarityColors(task.rarity || 'COMMON').join(', ')})`,
-                    filter: 'blur(6px)',
-                    opacity: '0.6',
-                    zIndex: -1,
+                    backgroundSize: '400% 400%',
+                    animation: 'rarityShimmer 2s ease-in-out infinite',
                   }}
                 ></div>
                 
-                {/* Rarity text below */}
-                <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                  <span className="text-xs font-semibold text-gray-600 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full">
-                    {task.rarity || 'COMMON'}
-                  </span>
-                </div>
+                {/* Outer glow ring */}
+                <div 
+                  className="absolute inset-0 w-8 h-8 rounded-full animate-pulse"
+                  style={{
+                    background: `linear-gradient(45deg, ${getRarityColors(task.rarity || 'COMMON').join(', ')})`,
+                    filter: 'blur(4px)',
+                    opacity: '0.7',
+                    zIndex: -1,
+                  }}
+                ></div>
               </div>
+              
+              {/* Rarity text */}
+              <span className="text-sm font-bold text-gray-700 bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/30">
+                {task.rarity || 'COMMON'}
+              </span>
             </div>
           </div>
 
@@ -154,8 +149,10 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
                 </div>
                 <div
                     className="bg-gradient-to-br from-green-50/80 to-emerald-50/80 backdrop-blur-sm rounded-xl p-3 border border-green-200/30 text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <svg className="w-6 h-6 mx-auto mb-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  <svg className="w-6 h-6 mx-auto mb-2 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                    <path d="M12 1v6m0 10v6m11-7h-6m-10 0H1" stroke="currentColor" strokeWidth="2"/>
                   </svg>
                   <div className="text-lg font-bold text-green-600">{task.currencyReward || 0}</div>
                   <div className="text-xs text-green-500 font-medium">Монеты</div>
@@ -175,8 +172,9 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
               <div className="grid grid-cols-3 gap-3">
                 <div
                     className="bg-gradient-to-br from-red-50/80 to-red-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-red-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <svg className="w-5 h-5 mx-auto mb-2 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                  <svg className="w-5 h-5 mx-auto mb-2 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    <circle cx="12" cy="10" r="2" fill="white"/>
                   </svg>
                   <div className="text-lg font-bold text-red-600">{task.strength || 0}</div>
                   <div className="text-xs text-red-500 font-medium">Сила</div>
@@ -184,8 +182,9 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
 
                 <div
                     className="bg-gradient-to-br from-green-50/80 to-green-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-green-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <svg className="w-5 h-5 mx-auto mb-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+                  <svg className="w-5 h-5 mx-auto mb-2 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
+                    <path d="M12 6L3 18h18L12 6z" fill="none" stroke="white" strokeWidth="1"/>
                   </svg>
                   <div className="text-lg font-bold text-green-600">{task.agility || 0}</div>
                   <div className="text-xs text-green-500 font-medium">Ловкость</div>
@@ -193,8 +192,9 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
 
                 <div
                     className="bg-gradient-to-br from-purple-50/80 to-purple-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-purple-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <svg className="w-5 h-5 mx-auto mb-2 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" clipRule="evenodd" />
+                  <svg className="w-5 h-5 mx-auto mb-2 text-purple-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
+                    <circle cx="12" cy="12" r="2" fill="white"/>
                   </svg>
                   <div className="text-lg font-bold text-purple-600">{task.intelligence || 0}</div>
                   <div className="text-xs text-purple-500 font-medium">Интеллект</div>
