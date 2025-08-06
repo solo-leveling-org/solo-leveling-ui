@@ -14,29 +14,7 @@ body, .App {
   padding: 2.5rem 2rem 2rem 2rem;
 }
 
-.no-telegram-error-overlay {
-  position: fixed;
-  z-index: 9999;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.no-telegram-error {
-  background: #fff;
-  padding: 2rem 2.5rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.15);
-  font-size: 1.25rem;
-  color: #b00020;
-  text-align: center;
-  max-width: 90vw;
-}
 
 /* Responsive padding for mobile */
 @media (max-width: 600px) {

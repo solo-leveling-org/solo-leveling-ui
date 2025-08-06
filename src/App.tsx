@@ -9,6 +9,7 @@ import SideDrawer from './components/SideDrawer';
 import TasksTab from './features/Tasks/TasksTab';
 import ProfileTab, {ProfileSkeleton} from './features/Profile/ProfileTab';
 import TopBar from './components/TopBar';
+import {TelegramWidget} from './components/TelegramWidget';
 import {
   BrowserRouter as Router,
   Routes,
@@ -103,21 +104,10 @@ function AppRoutes() {
         {!isTelegramChecked ? null : (
             <>
               {showNoTelegramError && (
-                  <div className="no-telegram-error-overlay">
-                    <div className="no-telegram-error">
-                      <b>Ошибка:</b> Данное приложение предназначено для запуска только внутри
-                      Telegram Mini App.<br/>
-                      Данные Telegram не найдены.
-                    </div>
-                  </div>
+                  <TelegramWidget type="no-telegram" />
               )}
               {authError && !showNoTelegramError && (
-                  <div className="no-telegram-error-overlay">
-                    <div className="no-telegram-error">
-                      <b>Ошибка авторизации:</b><br/>
-                      {authError}
-                    </div>
-                  </div>
+                  <TelegramWidget type="auth-error" errorMessage={authError} />
               )}
               {!showNoTelegramError && !authError && (
                   <>
