@@ -146,12 +146,6 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
                 </button>
             ))}
           </div>
-
-          {/* Bottom decorative line */}
-          <div
-              className="absolute bottom-0 left-[-1px] right-[-1px] h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 pointer-events-none"
-              aria-hidden="true"
-          />
         </nav>
       </>
   );
