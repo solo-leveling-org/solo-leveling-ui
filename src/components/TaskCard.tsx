@@ -16,46 +16,54 @@ type TaskCardProps = {
 const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, onReplace, index = 0 }) => {
   const { task, status } = playerTask;
 
-  // Определяем цветовые схемы для разных статусов
+  // Определяем цветовые схемы для разных статусов с современным glassmorphism подходом
   const getStatusColorScheme = (status: PlayerTaskStatus) => {
     switch (status) {
       case PlayerTaskStatus.PREPARING:
         return {
-          bg: 'from-gray-50/90 to-gray-100/90',
-          border: 'border-gray-200/50',
-          glow: 'shadow-gray-200/30',
+          bg: 'rgba(255, 255, 255, 0.25)',
+          border: 'rgba(255, 255, 255, 0.18)',
+          statusColor: 'from-slate-400 to-slate-600',
+          accentColor: 'bg-slate-500',
+          textColor: 'text-slate-700',
         };
       case PlayerTaskStatus.IN_PROGRESS:
         return {
-          bg: 'from-blue-50/90 to-indigo-50/90',
-          border: 'border-blue-200/50',
-          glow: 'shadow-blue-200/30',
+          bg: 'rgba(59, 130, 246, 0.1)',
+          border: 'rgba(59, 130, 246, 0.2)',
+          statusColor: 'from-blue-500 to-indigo-600',
+          accentColor: 'bg-blue-500',
+          textColor: 'text-blue-700',
         };
       case PlayerTaskStatus.PENDING_COMPLETION:
         return {
-          bg: 'from-green-50/90 to-emerald-50/90',
-          border: 'border-green-200/50',
-          glow: 'shadow-green-200/30',
+          bg: 'rgba(34, 197, 94, 0.1)',
+          border: 'rgba(34, 197, 94, 0.2)',
+          statusColor: 'from-emerald-500 to-green-600',
+          accentColor: 'bg-emerald-500',
+          textColor: 'text-emerald-700',
         };
       default:
         return {
-          bg: 'from-white/90 to-gray-50/90',
-          border: 'border-gray-200/50',
-          glow: 'shadow-gray-200/30',
+          bg: 'rgba(255, 255, 255, 0.25)',
+          border: 'rgba(255, 255, 255, 0.18)',
+          statusColor: 'from-gray-400 to-gray-600',
+          accentColor: 'bg-gray-500',
+          textColor: 'text-gray-700',
         };
     }
   };
 
-  // Определяем цвет редкости
-  const getRarityColor = (rarity: string) => {
-    const rarityColors = {
-      COMMON: 'from-gray-400 to-gray-500',
-      UNCOMMON: 'from-green-400 to-green-500',
-      RARE: 'from-blue-400 to-blue-500',
-      EPIC: 'from-purple-400 to-purple-500',
-      LEGENDARY: 'from-yellow-400 to-orange-500',
+  // Современные цвета редкости с яркими градиентами
+  const getRarityGradient = (rarity: string) => {
+    const rarityGradients = {
+      COMMON: 'from-slate-400 via-slate-500 to-slate-600',
+      UNCOMMON: 'from-emerald-400 via-green-500 to-emerald-600',
+      RARE: 'from-blue-400 via-blue-500 to-indigo-600',
+      EPIC: 'from-purple-400 via-violet-500 to-purple-600',
+      LEGENDARY: 'from-amber-400 via-orange-500 to-red-500',
     };
-    return rarityColors[rarity as keyof typeof rarityColors] || rarityColors.COMMON;
+    return rarityGradients[rarity as keyof typeof rarityGradients] || rarityGradients.COMMON;
   };
 
   const colorScheme = getStatusColorScheme(status || PlayerTaskStatus.IN_PROGRESS);
@@ -63,25 +71,38 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
   if (status === PlayerTaskStatus.PREPARING) {
     return (
       <div 
-        className={`relative overflow-hidden bg-gradient-to-br ${colorScheme.bg} backdrop-blur-sm rounded-3xl border ${colorScheme.border} p-6 min-h-[200px] shadow-lg ${colorScheme.glow} cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl`}
+        className="group relative overflow-hidden cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] animate-fadeIn"
         onClick={onClick}
         style={{
-          animationDelay: `${index * 100}ms`,
+          background: `linear-gradient(135deg, ${colorScheme.bg}, rgba(255, 255, 255, 0.1))`,
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: `1px solid ${colorScheme.border}`,
+          borderRadius: '24px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+          animationDelay: `${index * 150}ms`,
         }}
       >
-        {/* Decorative background */}
-        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-gray-300/20 to-gray-400/20 rounded-full blur-xl -translate-y-4 translate-x-4"></div>
+        {/* Animated background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100/20 via-transparent to-slate-200/10 animate-pulse"></div>
         
-        <div className="relative z-10 flex flex-col justify-center items-center h-full text-center">
-          {/* Skeleton elements */}
-          <div className="w-3/4 h-6 bg-gray-300 rounded-lg mb-4 animate-pulse"></div>
-          <div className="w-full h-4 bg-gray-300 rounded-lg mb-2 animate-pulse"></div>
-          <div className="w-5/6 h-4 bg-gray-300 rounded-lg mb-6 animate-pulse"></div>
+        {/* Floating orbs */}
+        <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-slate-300/30 to-slate-400/20 rounded-full blur-xl animate-float"></div>
+        <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-tr from-slate-200/20 to-slate-300/10 rounded-full blur-lg animate-float-delayed"></div>
+        
+        <div className="relative z-10 p-6 h-[280px] flex flex-col justify-center items-center text-center">
+          {/* Elegant skeleton with shimmer */}
+          <div className="w-4/5 h-7 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded-xl mb-4 animate-shimmer"></div>
+          <div className="w-full h-5 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded-lg mb-3 animate-shimmer"></div>
+          <div className="w-3/4 h-5 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded-lg mb-8 animate-shimmer"></div>
           
-          {/* Status indicator */}
-          <div className="inline-flex items-center px-4 py-2 bg-gray-400/20 rounded-full">
-            <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2"></div>
-            <span className="text-gray-600 font-medium">Генерируется...</span>
+          {/* Modern loading indicator */}
+          <div className="flex flex-col items-center space-y-4">
+            <div className="relative">
+              <div className="w-12 h-12 border-4 border-slate-200 border-t-slate-400 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 w-12 h-12 border-4 border-transparent border-r-slate-300 rounded-full animate-spin-reverse"></div>
+            </div>
+            <span className="text-slate-600 font-medium tracking-wide">Создается...</span>
           </div>
         </div>
       </div>
@@ -90,108 +111,153 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
 
   return (
     <div 
-      className={`group relative overflow-hidden bg-gradient-to-br ${colorScheme.bg} backdrop-blur-sm rounded-3xl border ${colorScheme.border} p-6 min-h-[200px] shadow-lg ${colorScheme.glow} cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl`}
+      className="group relative overflow-hidden cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:rotate-1 animate-fadeIn"
       onClick={onClick}
       style={{
-        animationDelay: `${index * 100}ms`,
+        background: `linear-gradient(135deg, ${colorScheme.bg}, rgba(255, 255, 255, 0.05))`,
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: `1px solid ${colorScheme.border}`,
+        borderRadius: '24px',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+        animationDelay: `${index * 150}ms`,
       }}
     >
-      {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-xl -translate-y-4 translate-x-4"></div>
-      <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-pink-400/10 to-orange-400/10 rounded-full blur-lg translate-y-2 -translate-x-2"></div>
+      {/* Dynamic background with animated gradients */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5"></div>
+      </div>
+      
+      {/* Floating orbs */}
+      <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-purple-500/10 rounded-full blur-xl animate-float"></div>
+      <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-tr from-pink-400/15 to-orange-400/10 rounded-full blur-lg animate-float-delayed"></div>
 
-      {/* Rarity indicator */}
-      <div className={`absolute top-4 right-4 w-4 h-4 bg-gradient-to-r ${getRarityColor(task?.rarity || 'COMMON')} rounded-full shadow-lg`}></div>
+      {/* Rarity indicator - modern glowing orb */}
+      <div className="absolute top-6 right-6 w-6 h-6 rounded-full shadow-lg overflow-hidden">
+        <div className={`w-full h-full bg-gradient-to-br ${getRarityGradient(task?.rarity || 'COMMON')} animate-pulse`}></div>
+        <div className="absolute inset-0 bg-white/20 animate-ping"></div>
+      </div>
 
-      <div className="relative z-10 flex flex-col h-full">
-        {/* Header */}
-        <div className="mb-4">
-          <h3 className="text-xl font-bold text-gray-800 mb-2 leading-tight">
+      <div className="relative z-10 p-6 h-[280px] flex flex-col">
+        {/* Header section */}
+        <div className="mb-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight tracking-tight">
             {task?.title || ''}
           </h3>
-          <p className="text-gray-600 leading-relaxed line-clamp-3">
+          <p className="text-gray-700 leading-relaxed line-clamp-3 text-sm font-medium">
             {task?.description || ''}
           </p>
         </div>
 
-        {/* Topics */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {(task?.topics || []).slice(0, 3).map((topic) => (
+        {/* Topics with modern pill design */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {(task?.topics || []).slice(0, 2).map((topic) => (
             <span
               key={topic}
-              className="inline-flex items-center px-3 py-1 bg-white/60 backdrop-blur-sm rounded-full text-sm font-medium text-gray-700 border border-white/30"
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide backdrop-blur-sm border"
+              style={{
+                background: 'rgba(255, 255, 255, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: '#374151',
+              }}
             >
-              <span className="mr-1">{topicIcons[topic] || '❓'}</span>
+              <span className="mr-1.5 text-sm">{topicIcons[topic] || '❓'}</span>
               {topicLabels[topic] || topic}
             </span>
           ))}
-          {(task?.topics || []).length > 3 && (
-            <span className="inline-flex items-center px-3 py-1 bg-white/60 backdrop-blur-sm rounded-full text-sm font-medium text-gray-500 border border-white/30">
-              +{(task?.topics || []).length - 3}
+          {(task?.topics || []).length > 2 && (
+            <span 
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide backdrop-blur-sm border"
+              style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#6B7280',
+              }}
+            >
+              +{(task?.topics || []).length - 2}
             </span>
           )}
         </div>
 
-        {/* Rewards */}
-        <div className="flex items-center justify-between mb-4 p-3 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/30">
-          <div className="flex items-center space-x-4 text-sm">
+        {/* Rewards section with glassmorphism */}
+        <div 
+          className="flex items-center justify-between mb-6 p-4 rounded-2xl backdrop-blur-sm border"
+          style={{
+            background: 'rgba(255, 255, 255, 0.2)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+          }}
+        >
+          <div className="flex items-center space-x-6">
             <div className="flex items-center">
-              <span className="text-yellow-500 mr-1">⭐</span>
-              <span className="font-semibold text-gray-700">{task?.experience || 0} XP</span>
+              <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center mr-2 shadow-md">
+                <span className="text-white text-xs font-bold">XP</span>
+              </div>
+              <span className="font-bold text-gray-800 text-sm">{task?.experience || 0}</span>
             </div>
             <div className="flex items-center">
-              <span className="text-green-500 mr-1">💰</span>
-              <span className="font-semibold text-gray-700">{task?.currencyReward || 0}</span>
+              <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full flex items-center justify-center mr-2 shadow-md">
+                <span className="text-white text-xs">💰</span>
+              </div>
+              <span className="font-bold text-gray-800 text-sm">{task?.currencyReward || 0}</span>
             </div>
           </div>
         </div>
 
-        {/* Status indicator */}
+        {/* Status and actions */}
         <div className="flex items-center justify-between mt-auto">
           <div className="flex items-center">
             {status === PlayerTaskStatus.IN_PROGRESS && (
-              <div className="inline-flex items-center px-3 py-1 bg-blue-500/20 text-blue-700 rounded-full text-sm font-medium">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mr-2"></div>
-                В процессе
+              <div 
+                className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm border ${colorScheme.textColor}`}
+                style={{
+                  background: 'rgba(59, 130, 246, 0.15)',
+                  border: '1px solid rgba(59, 130, 246, 0.2)',
+                }}
+              >
+                <div className={`w-2 h-2 ${colorScheme.accentColor} rounded-full animate-pulse mr-2`}></div>
+                Активна
               </div>
             )}
             {status === PlayerTaskStatus.PENDING_COMPLETION && (
-              <div className="inline-flex items-center px-3 py-1 bg-green-500/20 text-green-700 rounded-full text-sm font-medium">
-                <span className="mr-1">✅</span>
-                Готово к проверке
+              <div 
+                className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm border ${colorScheme.textColor}`}
+                style={{
+                  background: 'rgba(34, 197, 94, 0.15)',
+                  border: '1px solid rgba(34, 197, 94, 0.2)',
+                }}
+              >
+                <span className="mr-2">✅</span>
+                Завершена
               </div>
             )}
           </div>
 
-          {/* Action buttons */}
+          {/* Modern floating action buttons */}
           {status === PlayerTaskStatus.IN_PROGRESS && (
-            <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="flex items-center space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onComplete && onComplete();
                 }}
-                className="flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-full transition-colors duration-200 shadow-lg hover:shadow-xl"
+                className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 text-white rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 backdrop-blur-sm"
                 title="Завершить задачу"
               >
-                <DoneIcon width={20} height={20} />
+                <DoneIcon width={18} height={18} />
               </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onReplace && onReplace();
                 }}
-                className="flex items-center justify-center w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition-colors duration-200 shadow-lg hover:shadow-xl"
+                className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 backdrop-blur-sm"
                 title="Заменить задачу"
               >
-                <RefreshIcon width={20} height={20} />
+                <RefreshIcon width={18} height={18} />
               </button>
             </div>
           )}
         </div>
-
-        {/* Hover glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
     </div>
   );
