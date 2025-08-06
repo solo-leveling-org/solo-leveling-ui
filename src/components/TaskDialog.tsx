@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import type {Task} from '../api';
 import {topicIcons, topicLabels} from '../topicMeta';
 
@@ -8,6 +8,29 @@ type TaskDialogProps = {
 };
 
 const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
+  // Блокируем скролл фонового контента при открытии диалога
+  useEffect(() => {
+    // Сохраняем текущую позицию скролла
+    const scrollY = window.scrollY;
+
+    // Блокируем скролл
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+
+    // Cleanup при размонтировании
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+
+  // Обработчик закрытия с восстановлением скролла
+  const handleClose = () => {
+    onClose();
+  };
   // Определяем цвета и стили для редкости
   const getRarityConfig = (rarity: string) => {
     const configs = {
@@ -50,7 +73,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
   return (
       <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-300"
-          onClick={onClose}
+          onClick={handleClose}
       >
         <div
             className="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 w-full max-w-md max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-300"
@@ -73,7 +96,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
 
               {/* Close button */}
               <button
-                  onClick={onClose}
+                  onClick={handleClose}
                   className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100/50 backdrop-blur-sm hover:bg-gray-200/50 transition-all duration-200 hover:scale-110 group"
               >
                 <svg className="w-4 h-4 text-gray-500 group-hover:text-gray-700 transition-colors"
@@ -88,7 +111,6 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
             <div className="flex justify-center mb-4">
               <div
                   className={`inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r ${rarityConfig.bg} text-white text-sm font-bold shadow-lg ${rarityConfig.glow} border-2 ${rarityConfig.border}`}>
-                <span className="mr-2">💎</span>
                 {task.rarity || 'COMMON'}
               </div>
             </div>
