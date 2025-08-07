@@ -19,6 +19,7 @@ import {
   useLocation
 } from 'react-router-dom';
 import TopicsTab from './features/Topics/TopicsTab';
+import WelcomeTab from './features/Welcome/WelcomeTab';
 import {useTelegram} from './useTelegram';
 import {auth} from './auth';
 
@@ -53,6 +54,14 @@ function AppRoutes() {
 
   // tabList для SideDrawer
   const tabList = [
+    {
+      label: 'Главная',
+      active: location.pathname === '/',
+      onClick: () => {
+        navigate('/');
+        setDrawerOpen(false);
+      },
+    },
     {
       label: 'Профиль',
       active: location.pathname === '/profile',
@@ -120,6 +129,7 @@ function AppRoutes() {
                                 onClose={() => setDrawerOpen(false)}/>
                     <main className="tab-content">
                       <Routes>
+                        <Route path="/" element={<WelcomeTab />}/>
                         <Route path="/tasks" element={<TasksTab tasks={tasks} topics={allTopics}
                                                                 selectedTopics={selectedTopics}
                                                                 onTopicToggle={() => {
@@ -130,7 +140,7 @@ function AppRoutes() {
                         <Route path="/topics" element={<TopicsTab allTopics={allTopics}/>}/>
                         <Route path="/profile"
                                element={user ? <ProfileTab user={user}/> : <ProfileSkeleton/>}/>
-                        <Route path="*" element={<Navigate to="/tasks" replace/>}/>
+                        <Route path="*" element={<Navigate to="/" replace/>}/>
                       </Routes>
                     </main>
                   </>
