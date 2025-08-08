@@ -43,9 +43,6 @@ const WelcomeTab: React.FC = () => {
             <div className="relative z-10">
               {/* Welcome text with better typography */}
               <div className="mb-8">
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-6 tracking-tight leading-tight">
-                  Добро пожаловать в
-                </h1>
                 
                 {/* Main animated text with improved styling */}
                 <div className="flex justify-center items-center mb-8">
