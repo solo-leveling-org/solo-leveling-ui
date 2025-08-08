@@ -4,7 +4,7 @@
 
 "use client";
 
-import { ElementType, useEffect, useRef, useState, createElement } from "react";
+import { ElementType, useEffect, useRef, useState, createElement, useMemo, useCallback } from "react";
 import { gsap } from "gsap";
 
 interface TextTypeProps {
@@ -57,16 +57,16 @@ const TextType = ({
   const cursorRef = useRef<HTMLSpanElement>(null);
   const containerRef = useRef<HTMLElement>(null);
 
-  const textArray = Array.isArray(text) ? text : [text];
+  const textArray = useMemo(() => Array.isArray(text) ? text : [text], [text]);
 
-  const getRandomSpeed = () => {
+  const getRandomSpeed = useCallback(() => {
     if (!variableSpeed) return typingSpeed;
     const { min, max } = variableSpeed;
     return Math.random() * (max - min) + min;
-  };
+  }, [variableSpeed, typingSpeed]);
 
   const getCurrentTextColor = () => {
-    if (textColors.length === 0) return "#ffffff";
+    if (textColors.length === 0) return "#000000"; // Изменено на черный цвет по умолчанию
     return textColors[currentTextIndex % textColors.length];
   };
 
@@ -164,7 +164,6 @@ const TextType = ({
     typingSpeed,
     deletingSpeed,
     pauseDuration,
-    textArray,
     currentTextIndex,
     loop,
     initialDelay,
@@ -182,16 +181,16 @@ const TextType = ({
     Component,
     {
       ref: containerRef,
-      className: `inline-block whitespace-pre-wrap tracking-tight ${className}`,
+      className: `inline-block whitespace-pre-wrap tracking-tight font-bold text-2xl md:text-3xl lg:text-4xl text-black leading-tight ${className}`,
       ...props,
     },
-    <span className="inline" style={{ color: getCurrentTextColor() }}>
+    <span className="inline text-black font-bold" style={{ color: getCurrentTextColor() }}>
       {displayedText}
     </span>,
     showCursor && (
       <span
         ref={cursorRef}
-        className={`ml-1 inline-block opacity-100 ${shouldHideCursor ? "hidden" : ""} ${cursorClassName}`}
+        className={`ml-1 inline-block opacity-100 text-black font-bold ${shouldHideCursor ? "hidden" : ""} ${cursorClassName}`}
       >
         {cursorCharacter}
       </span>
