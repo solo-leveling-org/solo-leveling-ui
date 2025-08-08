@@ -3,7 +3,7 @@ import TextType from '../../blocks/TextAnimations/TextType/TextType';
 
 const WelcomeTab: React.FC = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-white p-4">
+    <div className="flex items-start justify-center h-screen bg-white p-4 pt-20 overflow-hidden">
       <div className="text-center">
         <TextType 
           text={[

@@ -181,7 +181,7 @@ const TextType = ({
     Component,
     {
       ref: containerRef,
-      className: `inline-block whitespace-pre-wrap text-4xl md:text-5xl lg:text-6xl font-bold text-black leading-tight ${className}`,
+      className: `inline-block whitespace-pre-wrap text-2xl md:text-3xl lg:text-4xl font-bold text-black leading-tight ${className}`,
       ...props,
     },
     <span className="inline text-black font-bold" style={{ color: getCurrentTextColor() }}>
