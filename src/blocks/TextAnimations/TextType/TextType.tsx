@@ -66,7 +66,7 @@ const TextType = ({
   }, [variableSpeed, typingSpeed]);
 
   const getCurrentTextColor = () => {
-    if (textColors.length === 0) return "#000000"; // Изменено на черный цвет по умолчанию
+    if (textColors.length === 0) return "#000000";
     return textColors[currentTextIndex % textColors.length];
   };
 
@@ -181,7 +181,7 @@ const TextType = ({
     Component,
     {
       ref: containerRef,
-      className: `inline-block whitespace-pre-wrap tracking-tight font-bold text-2xl md:text-3xl lg:text-4xl text-black leading-tight ${className}`,
+      className: `inline-block whitespace-pre-wrap text-4xl md:text-5xl lg:text-6xl font-bold text-black leading-tight ${className}`,
       ...props,
     },
     <span className="inline text-black font-bold" style={{ color: getCurrentTextColor() }}>
