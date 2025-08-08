@@ -171,6 +171,8 @@ const TextType = ({
     reverseMode,
     variableSpeed,
     onSentenceComplete,
+    getRandomSpeed,
+    textArray,
   ]);
 
   const shouldHideCursor =
