@@ -63,6 +63,15 @@ code {
   }
 }
 
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(8deg);
+  }
+}
+
 @keyframes spin-reverse {
   from {
     transform: rotate(360deg);
@@ -140,6 +149,11 @@ code {
 .animate-float-delayed {
   animation: float-delayed 8s ease-in-out infinite;
   animation-delay: 2s;
+}
+
+.animate-float-slow {
+  animation: float-slow 12s ease-in-out infinite;
+  animation-delay: 4s;
 }
 
 .animate-spin-reverse {
