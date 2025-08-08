@@ -21,14 +21,6 @@ const WelcomeTab: React.FC = () => {
         {/* Additional subtle orbs for depth */}
         <div className="absolute top-1/3 right-1/4 w-16 h-16 bg-gradient-to-br from-cyan-400/10 to-blue-500/10 rounded-full blur-xl animate-float-delayed"></div>
         <div className="absolute bottom-1/3 left-1/3 w-20 h-20 bg-gradient-to-tr from-purple-400/8 to-pink-400/8 rounded-full blur-2xl animate-float"></div>
-        
-        {/* Subtle grid pattern with better opacity */}
-        <div className="absolute inset-0 opacity-3">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.2) 1px, transparent 0)`,
-            backgroundSize: '24px 24px'
-          }}></div>
-        </div>
       </div>
 
       {/* Main content with better spacing and flow */}
@@ -59,12 +51,7 @@ const WelcomeTab: React.FC = () => {
                 <div className="flex justify-center items-center mb-8">
                   <div className="relative">
                     <TextType 
-                      text={[
-                        "Solo Leveling",
-                        "Добро пожаловать",
-                        "Готов к развитию?",
-                        "Начнем игру"
-                      ]}
+                      text={["Solo Leveling"]}
                       typingSpeed={75}
                       pauseDuration={1500}
                       showCursor={true}
@@ -75,12 +62,7 @@ const WelcomeTab: React.FC = () => {
                     {/* Enhanced text glow effect */}
                     <div className="absolute inset-0 text-3xl md:text-4xl lg:text-5xl font-bold text-blue-600/15 blur-sm leading-tight">
                       <TextType 
-                        text={[
-                          "Solo Leveling",
-                          "Добро пожаловать",
-                          "Готов к развитию?",
-                          "Начнем игру"
-                        ]}
+                        text={["Solo Leveling"]}
                         typingSpeed={75}
                         pauseDuration={1500}
                         showCursor={false}
