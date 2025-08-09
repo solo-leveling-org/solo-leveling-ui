@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { GetUserResponse } from '../models/GetUserResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
-import { OpenAPI } from '../core/OpenAPI';
+import { OpenAPI } from '../config';
 import { request as __request } from '../core/request';
 export class UserService {
     /**

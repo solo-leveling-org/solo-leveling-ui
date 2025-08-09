@@ -8,7 +8,7 @@ import type { GetPlayerTopicsResponse } from '../models/GetPlayerTopicsResponse'
 import type { SavePlayerTopicsRequest } from '../models/SavePlayerTopicsRequest';
 import type { SkipTaskRequest } from '../models/SkipTaskRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
-import { OpenAPI } from '../core/OpenAPI';
+import { OpenAPI } from '../config';
 import { request as __request } from '../core/request';
 export class PlayerService {
     /**

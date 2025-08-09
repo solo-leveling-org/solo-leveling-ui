@@ -7,6 +7,9 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
+// Экспортируем настроенную конфигурацию с подключенной функцией getTokenForRequest
+export { OpenAPI as configuredOpenAPI } from './config';
+
 export { Assessment } from './models/Assessment';
 export type { CompleteTaskRequest } from './models/CompleteTaskRequest';
 export type { GetActiveTasksResponse } from './models/GetActiveTasksResponse';

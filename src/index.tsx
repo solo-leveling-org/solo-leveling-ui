@@ -4,6 +4,9 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// Инициализируем конфигурацию OpenAPI с функцией getTokenForRequest
+import './api/config';
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );

@@ -1,4 +1,4 @@
-import type {LoginResponse, OpenAPIConfig, TgAuthData} from './api';
+import type {LoginResponse, TgAuthData} from './api';
 import {AuthService} from './api';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
@@ -78,7 +78,8 @@ async function handle401Error(): Promise<string | null> {
 }
 
 // Функция для получения токена (используется в OpenAPI.TOKEN)
-async function getTokenForRequest(config: OpenAPIConfig, options: any): Promise<string> {
+// Сигнатура должна соответствовать типу Resolver<string>: (options: ApiRequestOptions) => Promise<string>
+async function getTokenForRequest(options: any): Promise<string> {
   // Не отправляем токен для login и refresh запросов
   if (options.url === '/api/v1/auth/login' || options.url === '/api/v1/auth/refresh') {
     return '';
