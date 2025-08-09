@@ -99,6 +99,22 @@ code {
   }
 }
 
+/* Улучшенная плавная анимация shimmer для rarity */
+@keyframes rarityShimmerSmooth {
+  0%, 100% {
+    background-position: 0 50%;
+    transform: rotate(0deg);
+  }
+  33% {
+    background-position: 100% 25%;
+    transform: rotate(120deg);
+  }
+  66% {
+    background-position: 50% 100%;
+    transform: rotate(240deg);
+  }
+}
+
 @keyframes dialogBackdropFade {
   from {
     opacity: 0;

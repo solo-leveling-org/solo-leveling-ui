@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import type {Task} from '../api';
 import {topicIcons, topicLabels} from '../topicMeta';
 import { ReactComponent as CoinsIcon } from '../assets/icons/coins.svg';
+import RarityIndicator from './RarityIndicator';
 
 type TaskDialogProps = {
   task: Task;
@@ -32,23 +33,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
   const handleClose = () => {
     onClose();
   };
-  // Определяем цвета для анимированных градиентов редкости
-  const getRarityColors = (rarity: string): string[] => {
-    switch (rarity) {
-      case 'COMMON':
-        return ['#9CA3AF', '#6B7280', '#4B5563', '#9CA3AF'];
-      case 'UNCOMMON':
-        return ['#10B981', '#059669', '#047857', '#10B981'];
-      case 'RARE':
-        return ['#3B82F6', '#1D4ED8', '#1E40AF', '#3B82F6'];
-      case 'EPIC':
-        return ['#8B5CF6', '#7C3AED', '#6D28D9', '#8B5CF6'];
-      case 'LEGENDARY':
-        return ['#F59E0B', '#D97706', '#B45309', '#F59E0B'];
-      default:
-        return ['#9CA3AF', '#6B7280', '#4B5563', '#9CA3AF'];
-    }
-  };
+
 
 
 
@@ -90,34 +75,12 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
             </div>
 
             {/* Rarity indicator - inline with title */}
-            <div className="flex items-center justify-center mb-4 space-x-3">
-              {/* Rarity circle */}
-              <div className="relative">
-                <div 
-                  className="w-8 h-8 rounded-full shadow-lg"
-                  style={{
-                    background: `linear-gradient(45deg, ${getRarityColors(task.rarity || 'COMMON').join(', ')})`,
-                    backgroundSize: '400% 400%',
-                    animation: 'rarityShimmer 2s ease-in-out infinite',
-                  }}
-                ></div>
-                
-                {/* Outer glow ring */}
-                <div 
-                  className="absolute inset-0 w-8 h-8 rounded-full animate-pulse"
-                  style={{
-                    background: `linear-gradient(45deg, ${getRarityColors(task.rarity || 'COMMON').join(', ')})`,
-                    filter: 'blur(4px)',
-                    opacity: '0.7',
-                    zIndex: -1,
-                  }}
-                ></div>
-              </div>
-              
-              {/* Rarity text */}
-              <span className="text-sm font-bold text-gray-700 bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/30">
-                {task.rarity || 'COMMON'}
-              </span>
+            <div className="flex items-center justify-center mb-4">
+              <RarityIndicator 
+                rarity={task.rarity || 'COMMON'} 
+                size="md"
+                showLabel={true}
+              />
             </div>
           </div>
 

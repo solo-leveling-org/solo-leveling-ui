@@ -2,6 +2,7 @@ import React from 'react';
 import type { PlayerTask } from '../api';
 import { PlayerTaskStatus } from '../api';
 import { topicIcons, topicLabels } from '../topicMeta';
+import RarityIndicator from './RarityIndicator';
 
 type TaskCardProps = {
   playerTask: PlayerTask;
@@ -52,23 +53,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
     }
   };
 
-  // Определяем цвета для анимированных градиентов редкости
-  const getRarityColors = (rarity: string): string[] => {
-    switch (rarity) {
-      case 'COMMON':
-        return ['#9CA3AF', '#6B7280', '#4B5563', '#9CA3AF'];
-      case 'UNCOMMON':
-        return ['#10B981', '#059669', '#047857', '#10B981'];
-      case 'RARE':
-        return ['#3B82F6', '#1D4ED8', '#1E40AF', '#3B82F6'];
-      case 'EPIC':
-        return ['#8B5CF6', '#7C3AED', '#6D28D9', '#8B5CF6'];
-      case 'LEGENDARY':
-        return ['#F59E0B', '#D97706', '#B45309', '#F59E0B'];
-      default:
-        return ['#9CA3AF', '#6B7280', '#4B5563', '#9CA3AF'];
-    }
-  };
+
 
   const colorScheme = getStatusColorScheme(status || PlayerTaskStatus.IN_PROGRESS);
 
@@ -136,30 +121,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
       <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-purple-500/10 rounded-full blur-xl animate-float"></div>
       <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-tr from-pink-400/15 to-orange-400/10 rounded-full blur-lg animate-float-delayed"></div>
 
-      {/* Rarity indicator - simple circle with animated gradient */}
+      {/* Rarity indicator */}
       <div className="absolute top-4 right-4">
-        <div className="relative">
-          {/* Main circle */}
-          <div 
-            className="w-6 h-6 rounded-full shadow-lg"
-            style={{
-              background: `linear-gradient(45deg, ${getRarityColors(task?.rarity || 'COMMON').join(', ')})`,
-              backgroundSize: '400% 400%',
-              animation: 'rarityShimmer 2s ease-in-out infinite',
-            }}
-          ></div>
-          
-          {/* Outer glow ring */}
-          <div 
-            className="absolute inset-0 w-6 h-6 rounded-full animate-pulse"
-            style={{
-              background: `linear-gradient(45deg, ${getRarityColors(task?.rarity || 'COMMON').join(', ')})`,
-              filter: 'blur(4px)',
-              opacity: '0.7',
-              zIndex: -1,
-            }}
-          ></div>
-        </div>
+        <RarityIndicator 
+          rarity={task?.rarity || 'COMMON'} 
+          size="sm"
+        />
       </div>
 
       <div className="relative z-10 p-6 min-h-[280px] flex flex-col">
