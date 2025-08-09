@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import type { PlayerTask } from '../../api';
-import TasksGrid from '../../components/TasksGrid';
-import TaskDialog from '../../components/TaskDialog';
-import { taskActions, api } from '../../services';
+import type { PlayerTask } from '../api';
+import TasksGrid from '../components/TasksGrid';
+import TaskDialog from '../components/TaskDialog';
+import { taskActions, api } from '../services';
 import { useNavigate } from 'react-router-dom';
 
 type TasksTabProps = {
