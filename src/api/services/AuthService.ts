@@ -7,7 +7,7 @@ import type { RefreshRequest } from '../models/RefreshRequest';
 import type { RefreshResponse } from '../models/RefreshResponse';
 import type { TgAuthData } from '../models/TgAuthData';
 import type { CancelablePromise } from '../core/CancelablePromise';
-import { OpenAPI } from '../core/OpenAPI';
+import { OpenAPI } from '../config';
 import { request as __request } from '../core/request';
 export class AuthService {
     /**

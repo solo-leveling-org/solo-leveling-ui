@@ -1,8 +1,6 @@
 import React from 'react';
 import type { PlayerTask } from '../api';
 import { PlayerTaskStatus } from '../api';
-import { ReactComponent as DoneIcon } from '../assets/icons/done.svg';
-import { ReactComponent as RefreshIcon } from '../assets/icons/refresh.svg';
 import { topicIcons, topicLabels } from '../topicMeta';
 
 type TaskCardProps = {
@@ -10,53 +8,241 @@ type TaskCardProps = {
   onClick: () => void;
   onComplete?: () => void;
   onReplace?: () => void;
+  index?: number;
 };
 
-const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, onReplace }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, onReplace, index = 0 }) => {
   const { task, status } = playerTask;
-  let statusMod = '';
-  if (status === PlayerTaskStatus.PREPARING) statusMod = 'task-card--preparing';
-  if (status === PlayerTaskStatus.IN_PROGRESS) statusMod = 'task-card--inprogress';
-  if (status === PlayerTaskStatus.PENDING_COMPLETION) statusMod = 'task-card--pending';
+
+  // Определяем цветовые схемы для разных статусов с современным glassmorphism подходом
+  const getStatusColorScheme = (status: PlayerTaskStatus) => {
+    switch (status) {
+      case PlayerTaskStatus.PREPARING:
+        return {
+          bg: 'rgba(255, 255, 255, 0.25)',
+          border: 'rgba(255, 255, 255, 0.18)',
+          statusColor: 'from-slate-400 to-slate-600',
+          accentColor: 'bg-slate-500',
+          textColor: 'text-slate-700',
+        };
+      case PlayerTaskStatus.IN_PROGRESS:
+        return {
+          bg: 'rgba(59, 130, 246, 0.1)',
+          border: 'rgba(59, 130, 246, 0.2)',
+          statusColor: 'from-blue-500 to-indigo-600',
+          accentColor: 'bg-blue-500',
+          textColor: 'text-blue-700',
+        };
+      case PlayerTaskStatus.PENDING_COMPLETION:
+        return {
+          bg: 'rgba(34, 197, 94, 0.1)',
+          border: 'rgba(34, 197, 94, 0.2)',
+          statusColor: 'from-emerald-500 to-green-600',
+          accentColor: 'bg-emerald-500',
+          textColor: 'text-emerald-700',
+        };
+      default:
+        return {
+          bg: 'rgba(255, 255, 255, 0.25)',
+          border: 'rgba(255, 255, 255, 0.18)',
+          statusColor: 'from-gray-400 to-gray-600',
+          accentColor: 'bg-gray-500',
+          textColor: 'text-gray-700',
+        };
+    }
+  };
+
+  // Определяем цвета для анимированных градиентов редкости
+  const getRarityColors = (rarity: string): string[] => {
+    switch (rarity) {
+      case 'COMMON':
+        return ['#9CA3AF', '#6B7280', '#4B5563', '#9CA3AF'];
+      case 'UNCOMMON':
+        return ['#10B981', '#059669', '#047857', '#10B981'];
+      case 'RARE':
+        return ['#3B82F6', '#1D4ED8', '#1E40AF', '#3B82F6'];
+      case 'EPIC':
+        return ['#8B5CF6', '#7C3AED', '#6D28D9', '#8B5CF6'];
+      case 'LEGENDARY':
+        return ['#F59E0B', '#D97706', '#B45309', '#F59E0B'];
+      default:
+        return ['#9CA3AF', '#6B7280', '#4B5563', '#9CA3AF'];
+    }
+  };
+
+  const colorScheme = getStatusColorScheme(status || PlayerTaskStatus.IN_PROGRESS);
+
+  if (status === PlayerTaskStatus.PREPARING) {
+    return (
+      <div 
+        className="group relative overflow-hidden cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] animate-fadeIn"
+        onClick={onClick}
+        style={{
+          background: `linear-gradient(135deg, ${colorScheme.bg}, rgba(255, 255, 255, 0.1))`,
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: `1px solid ${colorScheme.border}`,
+          borderRadius: '24px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+          animationDelay: `${index * 150}ms`,
+        }}
+      >
+        {/* Animated background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100/20 via-transparent to-slate-200/10 animate-pulse"></div>
+        
+        {/* Floating orbs */}
+        <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-slate-300/30 to-slate-400/20 rounded-full blur-xl animate-float"></div>
+        <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-tr from-slate-200/20 to-slate-300/10 rounded-full blur-lg animate-float-delayed"></div>
+        
+        <div className="relative z-10 p-6 h-[280px] flex flex-col justify-center items-center text-center">
+          {/* Elegant skeleton with shimmer */}
+          <div className="w-4/5 h-7 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded-xl mb-4 animate-shimmer"></div>
+          <div className="w-full h-5 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded-lg mb-3 animate-shimmer"></div>
+          <div className="w-3/4 h-5 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded-lg mb-8 animate-shimmer"></div>
+          
+          {/* Modern loading indicator */}
+          <div className="flex flex-col items-center space-y-4">
+            <div className="relative">
+              <div className="w-12 h-12 border-4 border-slate-200 border-t-slate-400 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 w-12 h-12 border-4 border-transparent border-r-slate-300 rounded-full animate-spin-reverse"></div>
+            </div>
+            <span className="text-slate-600 font-medium tracking-wide">Создается...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className={`task-card ${statusMod}`} onClick={onClick}>
-      {status === PlayerTaskStatus.PREPARING ? (
-        <>
-          <div className="skeleton-title shimmer-effect" style={{ width: '70%', height: '1.2em', margin: '1.2rem auto 0.7rem auto' }} />
-          <div className="skeleton-desc shimmer-effect" style={{ width: '90%', height: '1em', margin: '0 auto 1.2rem auto' }} />
-          <div className="preparing-label">Задача генерируется...</div>
-        </>
-      ) : (
-        <>
-          <div className="task-card-header" style={{position: 'relative'}}>
-            <span className="task-card-title">{task?.title || ''}</span>
-            <span className={`rarity-pill rarity-${(task?.rarity || 'COMMON').toLowerCase()}`}></span>
-          </div>
-          <div className="task-card-desc">{task?.description || ''}</div>
-          <div className="task-labels">
-            {(task?.topics || []).map((t) => (
-              <span className="topic-label" key={t}>
-                {topicIcons[t] || '❓'} {topicLabels[t] || t}
-              </span>
-            ))}
-          </div>
-          {status === PlayerTaskStatus.IN_PROGRESS && (
-            <div className="task-actions-row">
+    <div 
+      className="group relative overflow-hidden cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] animate-fadeIn"
+      onClick={onClick}
+      style={{
+        background: `linear-gradient(135deg, ${colorScheme.bg}, rgba(255, 255, 255, 0.05))`,
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: `1px solid ${colorScheme.border}`,
+        borderRadius: '24px',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+        animationDelay: `${index * 150}ms`,
+      }}
+    >
+      {/* Dynamic background with animated gradients */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5"></div>
+      </div>
+      
+      {/* Floating orbs */}
+      <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-purple-500/10 rounded-full blur-xl animate-float"></div>
+      <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-tr from-pink-400/15 to-orange-400/10 rounded-full blur-lg animate-float-delayed"></div>
+
+      {/* Rarity indicator - simple circle with animated gradient */}
+      <div className="absolute top-4 right-4">
+        <div className="relative">
+          {/* Main circle */}
+          <div 
+            className="w-6 h-6 rounded-full shadow-lg"
+            style={{
+              background: `linear-gradient(45deg, ${getRarityColors(task?.rarity || 'COMMON').join(', ')})`,
+              backgroundSize: '400% 400%',
+              animation: 'rarityShimmer 2s ease-in-out infinite',
+            }}
+          ></div>
+          
+          {/* Outer glow ring */}
+          <div 
+            className="absolute inset-0 w-6 h-6 rounded-full animate-pulse"
+            style={{
+              background: `linear-gradient(45deg, ${getRarityColors(task?.rarity || 'COMMON').join(', ')})`,
+              filter: 'blur(4px)',
+              opacity: '0.7',
+              zIndex: -1,
+            }}
+          ></div>
+        </div>
+      </div>
+
+      <div className="relative z-10 p-6 min-h-[280px] flex flex-col">
+        {/* Header section with proper spacing */}
+        <div className="mb-6 pr-10">
+          <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight tracking-tight">
+            {task?.title || ''}
+          </h3>
+          <p className="text-gray-700 leading-relaxed line-clamp-3 text-sm font-medium">
+            {task?.description || ''}
+          </p>
+        </div>
+
+        {/* Topics with modern pill design */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {(task?.topics || []).slice(0, 2).map((topic) => (
+            <span
+              key={topic}
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide backdrop-blur-sm border"
+              style={{
+                background: 'rgba(255, 255, 255, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: '#374151',
+              }}
+            >
+              <span className="mr-1.5 text-sm">{topicIcons[topic] || '❓'}</span>
+              {topicLabels[topic] || topic}
+            </span>
+          ))}
+          {(task?.topics || []).length > 2 && (
+            <span 
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide backdrop-blur-sm border"
+              style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#6B7280',
+              }}
+            >
+              +{(task?.topics || []).length - 2}
+            </span>
+          )}
+        </div>
+
+
+
+        {/* Status indicator as subtle bar */}
+        <div className="mt-auto">
+          <div 
+            className="h-1 w-full rounded-full mb-4"
+            style={{
+              background: colorScheme.bg.replace('0.1', '0.3'),
+            }}
+          ></div>
+
+          {/* Modern action buttons */}
+          {status === PlayerTaskStatus.IN_PROGRESS && onComplete && onReplace && (
+            <div className="flex items-center justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
               <button
-                onClick={e => { e.stopPropagation(); onComplete && onComplete(); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onComplete();
+                }}
+                className="relative overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 text-emerald-600 rounded-full px-4 py-2 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-emerald-50/30"
+                title="Завершить задачу"
               >
-                <DoneIcon width={28} height={28} />
+                <span className="relative z-10">Готово</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-green-500/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
               </button>
               <button
-                onClick={e => { e.stopPropagation(); onReplace && onReplace(); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onReplace();
+                }}
+                className="relative overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 text-blue-600 rounded-full px-4 py-2 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-blue-50/30"
+                title="Заменить задачу"
               >
-                <RefreshIcon width={28} height={28} />
+                <span className="relative z-10">Заменить</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
               </button>
             </div>
           )}
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 };
