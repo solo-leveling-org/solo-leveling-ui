@@ -1,38 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TaskTopic } from '../../api';
 import type { GetPlayerTopicsResponse } from '../../api';
 import { api } from '../../services';
 import { useNavigate } from 'react-router-dom';
 import { topicIcons, topicLabels } from '../../topicMeta';
 
-const TopicsTab: React.FC<{ allTopics: TaskTopic[] }> = ({ allTopics }) => {
-  const [userTopics, setUserTopics] = useState<TaskTopic[]>([]);
+type TopicsTabProps = {
+  isAuthenticated: boolean;
+};
+
+const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
+  const [allTopics] = useState<TaskTopic[]>(Object.values(TaskTopic));
+  const [selectedTopics, setSelectedTopics] = useState<TaskTopic[]>([]);
   const [originalTopics, setOriginalTopics] = useState<TaskTopic[]>([]);
   const [firstTime, setFirstTime] = useState(false);
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
 
+  // Загружаем выбранные темы только при монтировании компонента и если авторизованы
   useEffect(() => {
-    api.getUserTopics().then((res: GetPlayerTopicsResponse) => {
-      const topics = res.playerTaskTopics
-      .map((pt) => pt.taskTopic!)
-      .filter(Boolean);
-      setUserTopics(topics);
-      setOriginalTopics(topics);
-      setFirstTime(res.playerTaskTopics.length === 0);
-    });
-  }, []);
+    if (isAuthenticated) {
+      api.getUserTopics()
+        .then((res: GetPlayerTopicsResponse) => {
+          const topics = res.playerTaskTopics
+          .map((pt) => pt.taskTopic!)
+          .filter(Boolean);
+          setSelectedTopics(topics);
+          setOriginalTopics(topics); // Сохраняем исходные темы для сравнения
+          setFirstTime(res.playerTaskTopics.length === 0);
+        })
+        .catch((error: any) => {
+          console.error('Error getting player topics:', error);
+        });
+    }
+  }, [isAuthenticated]);
 
   // Проверяем, изменились ли топики
   const hasChanges = () => {
-    if (userTopics.length !== originalTopics.length) return true;
-    return !userTopics.every((topic) => originalTopics.includes(topic));
+    if (selectedTopics.length !== originalTopics.length) return true;
+    return !selectedTopics.every((topic) => originalTopics.includes(topic));
   };
 
-  const canSave = userTopics.length > 0 && (firstTime || hasChanges());
+  const canSave = selectedTopics.length > 0 && (firstTime || hasChanges());
 
   const handleToggle = (topic: TaskTopic) => {
-    setUserTopics((prev) =>
+    setSelectedTopics((prev) =>
         prev.includes(topic)
             ? prev.filter((t) => t !== topic)
             : [...prev, topic]
@@ -41,8 +53,8 @@ const TopicsTab: React.FC<{ allTopics: TaskTopic[] }> = ({ allTopics }) => {
 
   const handleSave = async () => {
     setSaving(true);
-    await api.saveUserTopics(userTopics);
-    setOriginalTopics(userTopics)
+    await api.saveUserTopics(selectedTopics);
+    setOriginalTopics(selectedTopics); // Обновляем исходные темы после сохранения
     if (firstTime) {
       await api.generateTasks();
     }
@@ -178,7 +190,7 @@ const TopicsTab: React.FC<{ allTopics: TaskTopic[] }> = ({ allTopics }) => {
           {/* Topics Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
             {allTopics.map((topic, index) => {
-              const isSelected = userTopics.includes(topic);
+              const isSelected = selectedTopics.includes(topic);
               const colorScheme = getTopicColorScheme(topic);
               return (
                   <button
@@ -292,7 +304,7 @@ const TopicsTab: React.FC<{ allTopics: TaskTopic[] }> = ({ allTopics }) => {
                     </div>
                     <div>
                       <div className="text-lg font-bold text-gray-800">
-                        {userTopics.length} / {allTopics.length}
+                        {selectedTopics.length} / {allTopics.length}
                       </div>
                       <div className="text-xs text-gray-600">Выбрано топиков</div>
                     </div>
@@ -354,7 +366,7 @@ const TopicsTab: React.FC<{ allTopics: TaskTopic[] }> = ({ allTopics }) => {
 
             {!canSave && !saving && (
                 <p className="text-gray-500 text-sm mt-3">
-                  {userTopics.length === 0
+                  {selectedTopics.length === 0
                       ? 'Выберите хотя бы один топик для продолжения'
                       : 'Нет изменений для сохранения'}
                 </p>

@@ -1,34 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { PlayerTask } from '../../api';
-import { TaskTopic } from '../../api';
 import TasksGrid from '../../components/TasksGrid';
 import TaskDialog from '../../components/TaskDialog';
-import { taskActions } from '../../services';
+import { taskActions, api } from '../../services';
+import { useNavigate } from 'react-router-dom';
 
 type TasksTabProps = {
-  tasks: PlayerTask[];
-  topics: TaskTopic[];
-  selectedTopics: TaskTopic[];
-  onTopicToggle: (t: TaskTopic) => void;
-  onGenerateTasks: () => void;
-  onResetTasks: () => void;
-  loading: boolean;
-  setTasks: React.Dispatch<React.SetStateAction<PlayerTask[]>>;
-  onGoToTopics: () => void;
+  isAuthenticated: boolean;
 };
 
-const TasksTab: React.FC<TasksTabProps> = ({
-  tasks,
-  topics,
-  selectedTopics,
-  onTopicToggle,
-  onGenerateTasks,
-  onResetTasks,
-  loading,
-  setTasks,
-  onGoToTopics,
-}) => {
+const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
+  const [tasks, setTasks] = useState<PlayerTask[]>([]);
+  const [loading, setLoading] = useState(false);
   const [dialogTask, setDialogTask] = useState<PlayerTask | null>(null);
+  const navigate = useNavigate();
+
+  // Загружаем задачи только при монтировании компонента и если авторизованы
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLoading(true);
+      api.getPlayerTasks()
+        .then((res) => {
+          setTasks(res.tasks);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error getting tasks:', error);
+          setLoading(false);
+        });
+    }
+  }, [isAuthenticated]);
+
+  const handleGoToTopics = () => {
+    navigate('/topics');
+  };
 
   if (loading && tasks.length === 0) {
     return (
@@ -98,17 +103,14 @@ const TasksTab: React.FC<TasksTabProps> = ({
 
           {/* Action button */}
           <button
-            onClick={onGoToTopics}
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
+            onClick={handleGoToTopics}
+            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 border-0 focus:outline-none focus:ring-4 focus:ring-blue-400/30"
           >
-            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9 7.293 5.707a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L11.414 9l2.293-2.293z" clipRule="evenodd" />
+            <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-            Выбрать топики
+            Перейти к темам
           </button>
-
-          {/* Decorative line */}
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto mt-8"></div>
         </div>
       </div>
     );

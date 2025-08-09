@@ -1,11 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { User } from '../../api';
+import { api } from '../../services';
 
 type ProfileTabProps = {
-  user: User;
+  isAuthenticated: boolean;
 };
 
-const ProfileTab: React.FC<ProfileTabProps> = ({ user }) => {
+const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // Загружаем данные пользователя только при монтировании компонента и если авторизованы
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLoading(true);
+      api.getUser()
+        .then((userData) => {
+          setUser(userData);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error getting user:', error);
+          setLoading(false);
+        });
+    }
+  }, [isAuthenticated]);
+
+  if (loading || !user) {
+    return <ProfileSkeleton />;
+  }
+
   const level = user.player?.level?.level || 1;
   const currentExp = user.player?.level?.currentExperience || 0;
   const maxExp = user.player?.level?.experienceToNextLevel || 100;
