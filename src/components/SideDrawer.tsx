@@ -33,9 +33,11 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
   // Иконки для табов (можно кастомизировать)
   const getTabIcon = (label: string) => {
     const iconMap: Record<string, string> = {
+      'Главная': '🏠',
       'Профиль': '👤',
       'Задачи': '📋',
-      'Темы': '🎯'
+      'Темы': '🎯',
+      'Персонаж': '🎭'
     };
     return iconMap[label] || '📌';
   };

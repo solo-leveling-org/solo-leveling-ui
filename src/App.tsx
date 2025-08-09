@@ -15,6 +15,7 @@ import {
 } from 'react-router-dom';
 import TopicsTab from './tabs/TopicsTab';
 import WelcomeTab from './tabs/WelcomeTab';
+import CharacterTab from './tabs/CharacterTab';
 import {useTelegram} from './useTelegram';
 import {auth} from './auth';
 
@@ -93,6 +94,14 @@ function AppRoutes() {
         navigate('/topics');
         setDrawerOpen(false);
       },
+    },
+    {
+      label: 'Персонаж',
+      active: location.pathname === '/character',
+      onClick: () => {
+        navigate('/character');
+        setDrawerOpen(false);
+      },
     }
   ];
 
@@ -121,6 +130,7 @@ function AppRoutes() {
                         <Route path="/tasks" element={<TasksTab isAuthenticated={isAuthenticated} />}/>
                         <Route path="/topics" element={<TopicsTab isAuthenticated={isAuthenticated} />}/>
                         <Route path="/profile" element={<ProfileTab isAuthenticated={isAuthenticated} />}/>
+                        <Route path="/character" element={<CharacterTab isAuthenticated={isAuthenticated} />}/>
                         <Route path="*" element={<Navigate to="/" replace/>}/>
                       </Routes>
                     </main>
