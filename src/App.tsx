@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react';
 import './App.css';
 import SideDrawer from './components/SideDrawer';
-import TasksTab from './features/Tasks/TasksTab';
-import ProfileTab from './features/Profile/ProfileTab';
+import TasksTab from './tabs/TasksTab';
+import ProfileTab from './tabs/ProfileTab';
 import TopBar from './components/TopBar';
 import {TelegramWidget} from './components/TelegramWidget';
 import {
@@ -13,8 +13,8 @@ import {
   Navigate,
   useLocation
 } from 'react-router-dom';
-import TopicsTab from './features/Topics/TopicsTab';
-import WelcomeTab from './features/Welcome/WelcomeTab';
+import TopicsTab from './tabs/TopicsTab';
+import WelcomeTab from './tabs/WelcomeTab';
 import {useTelegram} from './useTelegram';
 import {auth} from './auth';
 

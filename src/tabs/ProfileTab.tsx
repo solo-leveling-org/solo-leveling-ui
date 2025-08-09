@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import type { User } from '../../api';
-import { api } from '../../services';
+import type { User } from '../api';
+import { api } from '../services';
 
 type ProfileTabProps = {
   isAuthenticated: boolean;

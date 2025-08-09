@@ -46,19 +46,15 @@ async function loginWithTelegram(initData: string, tg_web_app_data: any): Promis
 async function refreshTokenIfNeeded(): Promise<string | null> {
   const refreshToken = getRefreshToken();
   if (!refreshToken) {
-    console.log('No refresh token available');
     return null;
   }
 
   try {
-    console.log('Attempting to refresh token...');
     const newToken = await AuthService.refresh({ refreshToken });
     if (newToken && newToken.accessToken && newToken.accessToken.token) {
       localStorage.setItem(ACCESS_TOKEN_KEY, newToken.accessToken.token);
-      console.log('Token refreshed successfully');
       return newToken.accessToken.token;
     } else {
-      console.log('Invalid refresh response');
       clearTokens();
       return null;
     }
@@ -93,7 +89,6 @@ async function handle401Error(): Promise<string | null> {
 async function getTokenForRequest(options: any): Promise<string> {
   // Не отправляем токен для login и refresh запросов
   if (options.url === '/api/v1/auth/login' || options.url === '/api/v1/auth/refresh') {
-    console.log('Skipping token for auth endpoints:', options.url);
     return '';
   }
 
@@ -101,22 +96,18 @@ async function getTokenForRequest(options: any): Promise<string> {
   let token = getAccessToken();
   
   if (token) {
-    console.log('Using existing access token for:', options.url);
     return token;
   }
   
   // Если токена нет, пытаемся обновить
-  console.log('No access token, attempting to refresh...');
   token = await refreshTokenIfNeeded();
   
   if (token) {
-    console.log('Successfully refreshed token for:', options.url);
     return token;
   }
   
   // Если и после обновления токена нет, возвращаем пустую строку
   // Это приведет к 401 ошибке, которую нужно обработать на уровне компонентов
-  console.log('No token available for:', options.url);
   return '';
 }
 

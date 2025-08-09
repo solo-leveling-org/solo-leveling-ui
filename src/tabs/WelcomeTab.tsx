@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TextType from '../../blocks/TextAnimations/TextType/TextType';
+import TextType from '../blocks/TextAnimations/TextType/TextType';
 
 const WelcomeTab: React.FC = () => {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const WelcomeTab: React.FC = () => {
                 typingSpeed={100}
                 pauseDuration={2000}
                 showCursor={true}
-                cursorCharacter="|"
+                cursorCharacter="_"
                 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 tracking-tight"
               />
             </div>

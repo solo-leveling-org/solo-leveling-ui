@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { TaskTopic } from '../../api';
-import type { GetPlayerTopicsResponse } from '../../api';
-import { api } from '../../services';
+import { TaskTopic } from '../api';
+import type { GetPlayerTopicsResponse } from '../api';
+import { api } from '../services';
 import { useNavigate } from 'react-router-dom';
-import { topicIcons, topicLabels } from '../../topicMeta';
+import { topicIcons, topicLabels } from '../topicMeta';
 
 type TopicsTabProps = {
   isAuthenticated: boolean;
