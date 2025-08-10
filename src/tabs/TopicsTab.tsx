@@ -178,9 +178,6 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
         <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
           {/* Header */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6 shadow-xl">
-              <span className="text-2xl">🎯</span>
-            </div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-4">
               Выбор топиков
             </h2>
