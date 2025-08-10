@@ -96,7 +96,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
 
               {/* Assessment badge */}
               <div className={`inline-flex items-center bg-gradient-to-r ${assessmentColor} text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg`}>
-                Уровень {assessment}
+                Класс {assessment}
               </div>
             </div>
 

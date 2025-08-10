@@ -178,12 +178,14 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
         <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
           {/* Header */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6 shadow-xl">
-              <span className="text-2xl">🎯</span>
-            </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 tracking-tight">
               Выбор топиков
-            </h2>
+            </h1>
+
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto leading-relaxed">
+              Выберите интересующие вас области для получения персональных заданий
+            </p>
+
             <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto"></div>
           </div>
 
@@ -300,7 +302,10 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                 <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
                   <div className="flex items-center">
                     <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mr-3">
-                      <span className="text-white text-sm">📊</span>
+                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/>
+                        <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"/>
+                      </svg>
                     </div>
                     <div>
                       <div className="text-lg font-bold text-gray-800">
@@ -318,7 +323,15 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                             canSave ? 'bg-gradient-to-br from-green-500 to-emerald-600' : 'bg-gray-400'
                         }`}
                     >
-                      <span className="text-white text-sm">{canSave ? '✓' : '⏳'}</span>
+                      {canSave ? (
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                        </svg>
+                      ) : (
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                      )}
                     </div>
                     <div>
                       <div
@@ -358,7 +371,9 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                   </>
               ) : (
                   <>
-                    <span className="mr-2">💾</span>
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                    </svg>
                     Сохранить
                   </>
               )}
