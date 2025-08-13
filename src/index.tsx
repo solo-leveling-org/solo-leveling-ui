@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { SettingsProvider } from './hooks/useSettings';
+import './i18n';
 
 // Инициализируем конфигурацию OpenAPI с функцией getTokenForRequest
 import './api/config';

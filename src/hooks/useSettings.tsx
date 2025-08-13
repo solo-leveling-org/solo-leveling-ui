@@ -1,13 +1,17 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { useTelegram } from '../useTelegram';
 
 export type Language = 'ru' | 'en';
+export type LanguageSource = 'telegram' | 'manual';
 
 interface Settings {
   language: Language;
+  languageSource: LanguageSource;
 }
 
 const defaultSettings: Settings = {
-  language: 'ru'
+  language: 'ru',
+  languageSource: 'telegram',
 };
 
 const STORAGE_KEY = 'solo-leveling-settings';
@@ -18,6 +22,7 @@ type SettingsContextValue = {
   setLanguage: (language: Language) => void;
   updateSettings: (newSettings: Partial<Settings>) => void;
   updateMultipleSettings: (newSettings: Settings) => void;
+  setLanguageSource: (source: LanguageSource) => void;
 };
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined);
@@ -25,6 +30,7 @@ const SettingsContext = createContext<SettingsContextValue | undefined>(undefine
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [isLoaded, setIsLoaded] = useState(false);
+  const { user } = useTelegram();
 
   // Load settings from localStorage on mount
   useEffect(() => {
@@ -48,6 +54,31 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [isLoaded, settings.language]);
 
+  // Derive language from Telegram (or browser) when languageSource is telegram
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (settings.languageSource !== 'telegram') return;
+    const derived = deriveLanguageFromTelegram(user?.language_code);
+    if (derived !== settings.language) {
+      // Only update language, keep source as telegram
+      setSettings(prev => {
+        const updated = { ...prev, language: derived };
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        } catch (error) {
+          console.error('Failed to save settings:', error);
+        }
+        return updated;
+      });
+    }
+  }, [isLoaded, settings.languageSource, user?.language_code]);
+
+  const deriveLanguageFromTelegram = (code?: string): Language => {
+    const raw = (code || (typeof navigator !== 'undefined' ? navigator.language : '')).toLowerCase();
+    if (raw.startsWith('ru')) return 'ru';
+    return 'en';
+  };
+
   const applyLanguage = (language: Language) => {
     document.documentElement.lang = language;
   };
@@ -65,7 +96,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const setLanguage = (language: Language) => {
-    updateSettings({ language });
+    // Manual selection overrides telegram source
+    updateSettings({ language, languageSource: 'manual' });
   };
 
   const updateMultipleSettings = (newSettings: Settings) => {
@@ -79,12 +111,22 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     });
   };
 
+  const setLanguageSource = (source: LanguageSource) => {
+    if (source === 'telegram') {
+      const derived = deriveLanguageFromTelegram(user?.language_code);
+      updateSettings({ languageSource: 'telegram', language: derived });
+    } else {
+      updateSettings({ languageSource: 'manual' });
+    }
+  };
+
   const value = useMemo<SettingsContextValue>(() => ({
     settings,
     isLoaded,
     setLanguage,
     updateSettings,
     updateMultipleSettings,
+    setLanguageSource,
   }), [settings, isLoaded]);
 
   return (
