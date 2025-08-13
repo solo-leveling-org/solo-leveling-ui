@@ -81,7 +81,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000] transition-all duration-300"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000] transition-all duration-300 animate-dialog-backdrop"
         onClick={onClose}
       />
 
@@ -92,7 +92,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
           <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-400/20 to-pink-400/20 rounded-3xl blur-3xl -z-10 transform scale-105"></div>
 
           {/* Main card */}
-          <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 overflow-hidden">
+          <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 overflow-hidden animate-dialog-content">
             {/* Decorative elements */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/30 to-purple-400/30 rounded-full blur-2xl -translate-y-8 translate-x-8"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-400/30 to-orange-400/30 rounded-full blur-xl translate-y-4 -translate-x-4"></div>
@@ -100,7 +100,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
             {/* Content */}
             <div className="relative z-10">
               {/* Header */}
-              <div className="text-center mb-8">
+              <div className="text-center mb-8 animate-dialog-stagger-1">
                 <div className="text-3xl mb-3">⚙️</div>
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2 tracking-tight">
                   Настройки
@@ -109,7 +109,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
               </div>
 
               {/* Theme Setting */}
-              <div className="mb-8">
+              <div className="mb-8 animate-dialog-stagger-2">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center">
                     <div className="text-2xl mr-3">🎨</div>
@@ -172,7 +172,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
               </div>
 
               {/* Language Setting */}
-              <div className="mb-8">
+              <div className="mb-8 animate-dialog-stagger-3">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center">
                     <div className="text-2xl mr-3">🌍</div>
@@ -235,7 +235,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
               </div>
 
               {/* Action Buttons */}
-              <div className="flex space-x-3">
+              <div className="flex space-x-3 animate-dialog-stagger-4">
                 <button
                   onClick={handleCancel}
                   className="flex-1 relative overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 text-gray-600 rounded-2xl px-6 py-3 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-gray-50/30 tracking-wide"
