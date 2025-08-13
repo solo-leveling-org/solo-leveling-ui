@@ -69,6 +69,28 @@ export const useSettings = () => {
     applyLanguage(language);
   };
 
+  const updateMultipleSettings = (newSettings: Settings) => {
+    console.log('useSettings: updateMultipleSettings called with newSettings =', newSettings);
+    setSettings(newSettings);
+    
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
+      console.log('useSettings: Multiple settings saved to localStorage');
+      
+      // Применяем тему, если она изменилась
+      if (newSettings.theme !== settings.theme) {
+        applyTheme(newSettings.theme);
+      }
+      
+      // Применяем язык, если он изменился
+      if (newSettings.language !== settings.language) {
+        applyLanguage(newSettings.language);
+      }
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+    }
+  };
+
   const applyTheme = (theme: Theme) => {
     console.log('useSettings: applyTheme called with theme =', theme);
     // Применение темы к документу
@@ -100,6 +122,7 @@ export const useSettings = () => {
     isLoaded,
     setTheme,
     setLanguage,
-    updateSettings
+    updateSettings,
+    updateMultipleSettings
   };
 };

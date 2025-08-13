@@ -6,8 +6,7 @@ interface SettingsDialogProps {
   onClose: () => void;
   currentTheme: Theme;
   currentLanguage: Language;
-  onThemeChange: (theme: Theme) => void;
-  onLanguageChange: (language: Language) => void;
+  onSettingsChange: (settings: { theme: Theme; language: Language }) => void;
 }
 
 const SettingsDialog: React.FC<SettingsDialogProps> = ({
@@ -15,8 +14,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
   onClose,
   currentTheme,
   currentLanguage,
-  onThemeChange,
-  onLanguageChange
+  onSettingsChange
 }) => {
   const [localTheme, setLocalTheme] = useState<Theme>(currentTheme);
   const [localLanguage, setLocalLanguage] = useState<Language>(currentLanguage);
@@ -67,8 +65,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
     console.log('SettingsDialog: currentTheme =', currentTheme);
     console.log('SettingsDialog: currentLanguage =', currentLanguage);
     
-    onThemeChange(localTheme);
-    onLanguageChange(localLanguage);
+    onSettingsChange({ theme: localTheme, language: localLanguage });
     onClose();
   };
 

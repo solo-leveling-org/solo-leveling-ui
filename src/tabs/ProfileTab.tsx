@@ -12,7 +12,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { settings, setTheme, setLanguage } = useSettings();
+  const { settings, updateMultipleSettings } = useSettings();
 
   // Загружаем данные пользователя только при монтировании компонента и если авторизованы
   useEffect(() => {
@@ -30,14 +30,9 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
     }
   }, [isAuthenticated]);
 
-  const handleThemeChange = (theme: 'light' | 'dark') => {
-    console.log('ProfileTab: handleThemeChange called with theme =', theme);
-    setTheme(theme);
-  };
-
-  const handleLanguageChange = (language: 'ru' | 'en') => {
-    console.log('ProfileTab: handleLanguageChange called with language =', language);
-    setLanguage(language);
+  const handleSettingsChange = (newSettings: { theme: 'light' | 'dark'; language: 'ru' | 'en' }) => {
+    console.log('ProfileTab: handleSettingsChange called with newSettings =', newSettings);
+    updateMultipleSettings(newSettings);
   };
 
   const handleOpenSettings = () => {
@@ -197,8 +192,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
         onClose={() => setIsSettingsOpen(false)}
         currentTheme={settings.theme}
         currentLanguage={settings.language}
-        onThemeChange={handleThemeChange}
-        onLanguageChange={handleLanguageChange}
+        onSettingsChange={handleSettingsChange}
       />
     </>
   );
