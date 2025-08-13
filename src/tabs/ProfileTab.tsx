@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import type { User } from '../api';
 import { api } from '../services';
+import SettingsDialog from '../components/SettingsDialog';
+import CurrentSettings from '../components/CurrentSettings';
+import { useSettings } from '../hooks/useSettings';
 
 type ProfileTabProps = {
   isAuthenticated: boolean;
@@ -9,6 +12,8 @@ type ProfileTabProps = {
 const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { settings, setTheme, setLanguage } = useSettings();
 
   // Загружаем данные пользователя только при монтировании компонента и если авторизованы
   useEffect(() => {
@@ -25,6 +30,14 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
         });
     }
   }, [isAuthenticated]);
+
+  const handleThemeChange = (theme: 'light' | 'dark') => {
+    setTheme(theme);
+  };
+
+  const handleLanguageChange = (language: 'ru' | 'en') => {
+    setLanguage(language);
+  };
 
   if (loading || !user) {
     return <ProfileSkeleton />;
@@ -62,6 +75,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
   const assessmentColor = getAssessmentColor(assessment);
 
   return (
+    <>
       <div className="relative">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-400/20 to-pink-400/20 rounded-3xl blur-3xl -z-10 transform scale-105"></div>
@@ -138,7 +152,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
             </div>
 
             {/* Achievement section */}
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 backdrop-blur-sm rounded-2xl p-4 border border-amber-200/30">
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 backdrop-blur-sm rounded-2xl p-4 border border-amber-200/30 mb-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="text-2xl mr-3">🏆</div>
@@ -154,9 +168,45 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                 </div>
               </div>
             </div>
+
+            {/* Current Settings Display */}
+            <CurrentSettings theme={settings.theme} language={settings.language} />
+
+            {/* Settings button */}
+            <div className="text-center">
+              <button
+                onClick={() => setIsSettingsOpen(true)}
+                className="relative overflow-hidden bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm border border-blue-200/30 text-blue-700 rounded-2xl px-6 py-3 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:from-blue-500/20 hover:to-purple-500/20 group"
+              >
+                <div className="flex items-center justify-center space-x-2">
+                  <span className="text-lg">⚙️</span>
+                  <span className="font-semibold">Настройки</span>
+                  <svg 
+                    className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Settings Dialog */}
+      <SettingsDialog
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        currentTheme={settings.theme}
+        currentLanguage={settings.language}
+        onThemeChange={handleThemeChange}
+        onLanguageChange={handleLanguageChange}
+      />
+    </>
   );
 };
 
@@ -206,7 +256,7 @@ export const ProfileSkeleton: React.FC = () => (
           </div>
 
           {/* Achievement section skeleton */}
-          <div className="bg-gray-200/50 rounded-2xl p-4">
+          <div className="bg-gray-200/50 rounded-2xl p-4 mb-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <div className="w-8 h-8 bg-gray-300 rounded mr-3 animate-pulse"></div>
@@ -217,6 +267,22 @@ export const ProfileSkeleton: React.FC = () => (
               </div>
               <div className="w-8 h-8 bg-gray-300 rounded animate-pulse"></div>
             </div>
+          </div>
+
+          {/* Current Settings skeleton */}
+          <div className="bg-gray-200/50 rounded-2xl p-4 mb-6">
+            <div className="text-center mb-3">
+              <div className="h-4 bg-gray-300 rounded w-32 mx-auto animate-pulse"></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="h-12 bg-gray-300 rounded-xl animate-pulse"></div>
+              <div className="h-12 bg-gray-300 rounded-xl animate-pulse"></div>
+            </div>
+          </div>
+
+          {/* Settings button skeleton */}
+          <div className="text-center">
+            <div className="h-12 bg-gray-200/50 rounded-2xl w-32 mx-auto animate-pulse"></div>
           </div>
         </div>
       </div>
