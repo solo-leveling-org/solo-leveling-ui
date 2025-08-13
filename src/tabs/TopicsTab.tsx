@@ -347,7 +347,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                                 ? t('topics.status.hasChanges')
                                 : t('topics.status.noChanges')}
                       </div>
-                      <div className="text-xs text-gray-600">Статус</div>
+                      <div className="text-xs text-gray-600">{t('topics.status.label')}</div>
                     </div>
                   </div>
                 </div>

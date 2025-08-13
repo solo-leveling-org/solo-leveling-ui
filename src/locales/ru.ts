@@ -94,6 +94,7 @@ export const ru = {
       newProfile: 'Новый профиль',
       hasChanges: 'Есть изменения',
       noChanges: 'Без изменений',
+      label: 'Статус',
     },
     info: {
       welcome: {

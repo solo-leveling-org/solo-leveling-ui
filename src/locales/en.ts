@@ -94,6 +94,7 @@ export const en = {
       newProfile: 'New Profile',
       hasChanges: 'Has Changes',
       noChanges: 'No Changes',
+      label: 'Status',
     },
     info: {
       welcome: {
