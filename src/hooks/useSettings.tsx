@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useTelegram } from '../useTelegram';
 
 export type Language = 'ru' | 'en';
@@ -71,7 +71,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return updated;
       });
     }
-  }, [isLoaded, settings.languageSource, user?.language_code]);
+  }, [isLoaded, settings.languageSource, user?.language_code, settings.language]);
 
   const deriveLanguageFromTelegram = (code?: string): Language => {
     const raw = (code || (typeof navigator !== 'undefined' ? navigator.language : '')).toLowerCase();
@@ -120,14 +120,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  const value = useMemo<SettingsContextValue>(() => ({
+  const value: SettingsContextValue = {
     settings,
     isLoaded,
     setLanguage,
     updateSettings,
     updateMultipleSettings,
     setLanguageSource,
-  }), [settings, isLoaded]);
+  };
 
   return (
     <SettingsContext.Provider value={value}>

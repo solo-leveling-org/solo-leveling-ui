@@ -12,7 +12,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'level' | 'balance' | 'settings'>('level');
-  const { settings, updateMultipleSettings, isLoaded } = useSettings();
+  const { settings, isLoaded, setLanguage, setLanguageSource } = useSettings();
   const { t } = useLocalization();
 
   // Загружаем данные пользователя только при монтировании компонента и если авторизованы
@@ -253,21 +253,65 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
               {/* Settings Tab */}
               {activeTab === 'settings' && (
                 <div className="space-y-6">
-                  {/* Language Setting */}
+                  {/* Language Source Setting */}
                   <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center">
                         <div className="text-2xl mr-3">🌍</div>
                         <div>
-                          <div className="font-bold text-gray-800 text-base">{t('profile.settings.language.title')}</div>
-                          <div className="text-sm text-slate-500">{t('profile.settings.language.description')}</div>
+                          <div className="font-bold text-gray-800 text-base">{t('profile.settings.language.sourceTitle')}</div>
+                          <div className="text-sm text-slate-500">{t('profile.settings.language.sourceDescription')}</div>
                         </div>
                       </div>
                     </div>
-
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-3 mb-6">
                       <button
-                        onClick={() => updateMultipleSettings({ ...settings, language: 'ru' })}
+                        onClick={() => setLanguageSource('telegram')}
+                        className={`relative p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
+                          settings.languageSource === 'telegram'
+                            ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-blue-100/50 shadow-lg'
+                            : 'border-gray-200 bg-white/50 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="text-center">
+                          <div className="text-2xl mb-2">🤖</div>
+                          <div className={`font-semibold text-sm ${
+                            settings.languageSource === 'telegram' ? 'text-blue-700' : 'text-gray-600'
+                          }`}>
+                            {t('profile.settings.language.useTelegram')}
+                          </div>
+                        </div>
+                        {settings.languageSource === 'telegram' && (
+                          <div className="absolute top-2 right-2 w-3 h-3 bg-blue-500 rounded-full"></div>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => setLanguageSource('manual')}
+                        className={`relative p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
+                          settings.languageSource === 'manual'
+                            ? 'border-emerald-500 bg-gradient-to-r from-emerald-50 to-emerald-100/50 shadow-lg'
+                            : 'border-gray-200 bg-white/50 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="text-center">
+                          <div className="text-2xl mb-2">🛠️</div>
+                          <div className={`font-semibold text-sm ${
+                            settings.languageSource === 'manual' ? 'text-emerald-700' : 'text-gray-600'
+                          }`}>
+                            {t('profile.settings.language.chooseManually')}
+                          </div>
+                        </div>
+                        {settings.languageSource === 'manual' && (
+                          <div className="absolute top-2 right-2 w-3 h-3 bg-emerald-500 rounded-full"></div>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Manual language selection (enabled only when manual source) */}
+                    <div className={`grid grid-cols-2 gap-3 ${settings.languageSource !== 'manual' ? 'opacity-50 pointer-events-none' : ''}`}>
+                      <button
+                        onClick={() => setLanguage('ru')}
                         className={`relative p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
                           settings.language === 'ru'
                             ? 'border-green-500 bg-gradient-to-r from-green-50 to-green-100/50 shadow-lg'
@@ -288,7 +332,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                       </button>
 
                       <button
-                        onClick={() => updateMultipleSettings({ ...settings, language: 'en' })}
+                        onClick={() => setLanguage('en')}
                         className={`relative p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
                           settings.language === 'en'
                             ? 'border-green-500 bg-gradient-to-r from-green-50 to-green-100/50 shadow-lg'
