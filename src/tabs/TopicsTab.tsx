@@ -3,7 +3,8 @@ import { TaskTopic } from '../api';
 import type { GetPlayerTopicsResponse } from '../api';
 import { api } from '../services';
 import { useNavigate } from 'react-router-dom';
-import { topicIcons, topicLabels } from '../topicMeta';
+import { topicIcons } from '../topicMeta';
+import { useLocalization } from '../hooks/useLocalization';
 
 type TopicsTabProps = {
   isAuthenticated: boolean;
@@ -16,6 +17,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
   const [firstTime, setFirstTime] = useState(false);
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
+  const { t } = useLocalization();
 
   // Загружаем выбранные темы только при монтировании компонента и если авторизованы
   useEffect(() => {
@@ -179,11 +181,11 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 tracking-tight">
-              Выбор топиков
+              {t('topics.title')}
             </h1>
 
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto leading-relaxed">
-              Выберите интересующие вас области для получения персональных заданий
+              {t('topics.subtitle')}
             </p>
 
             <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto"></div>
@@ -251,7 +253,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                                   : `${colorScheme.text} group-hover:text-gray-800`
                           }`}
                       >
-                        {topicLabels[topic] || topic}
+                        {t(`topics.labels.${topic}`)}
                       </div>
                     </div>
 
@@ -286,12 +288,12 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-blue-800 mb-2 text-lg">
-                    {firstTime ? 'Добро пожаловать!' : 'Настройка предпочтений'}
+                    {firstTime ? t('topics.info.welcome.title') : t('topics.info.preferences.title')}
                   </h3>
                   <p className="text-blue-700/80 text-sm leading-relaxed">
                     {firstTime
-                        ? 'Выберите интересующие вас области для получения персональных заданий. После сохранения система создаст задачи специально для вас!'
-                        : 'Измените свои предпочтения в любое время. Система адаптирует задания под ваши интересы.'
+                        ? t('topics.info.welcome.description')
+                        : t('topics.info.preferences.description')
                     }
                   </p>
                 </div>
@@ -311,7 +313,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                       <div className="text-lg font-bold text-gray-800">
                         {selectedTopics.length} / {allTopics.length}
                       </div>
-                      <div className="text-xs text-gray-600">Выбрано топиков</div>
+                      <div className="text-xs text-gray-600">{t('topics.selected')}</div>
                     </div>
                   </div>
                 </div>
@@ -340,10 +342,10 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                           }`}
                       >
                         {firstTime
-                            ? 'Новый профиль'
+                            ? t('topics.status.newProfile')
                             : hasChanges()
-                                ? 'Есть изменения'
-                                : 'Без изменений'}
+                                ? t('topics.status.hasChanges')
+                                : t('topics.status.noChanges')}
                       </div>
                       <div className="text-xs text-gray-600">Статус</div>
                     </div>
@@ -367,14 +369,14 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
               {saving ? (
                   <>
                     <div className="animate-spin w-5 h-5 border-2 border-white/20 border-t-white rounded-full mr-3"></div>
-                    Сохраняю...
+                    {t('topics.saving')}
                   </>
               ) : (
                   <>
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
                     </svg>
-                    Сохранить
+                    {t('topics.save')}
                   </>
               )}
             </button>
@@ -382,8 +384,8 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
             {!canSave && !saving && (
                 <p className="text-gray-500 text-sm mt-3">
                   {selectedTopics.length === 0
-                      ? 'Выберите хотя бы один топик для продолжения'
-                      : 'Нет изменений для сохранения'}
+                      ? t('topics.selectAtLeastOne')
+                      : t('topics.noChanges')}
                 </p>
             )}
           </div>

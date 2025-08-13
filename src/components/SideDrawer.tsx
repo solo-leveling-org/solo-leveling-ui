@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react';
+import { useLocalization } from '../hooks/useLocalization';
 
 type Tab = {
   label: string;
@@ -13,6 +14,8 @@ type SideDrawerProps = {
 };
 
 const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
+  const { t } = useLocalization();
+  
   // Блокируем скролл при открытом drawer
   useEffect(() => {
     if (open) {
@@ -33,9 +36,9 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
   // Иконки для табов (можно кастомизировать)
   const getTabIcon = (label: string) => {
     const iconMap: Record<string, string> = {
-      'Профиль': '👤',
-      'Задачи': '📋',
-      'Темы': '🎯'
+      [t('navigation.profile')]: '👤',
+      [t('navigation.tasks')]: '📋',
+      [t('navigation.topics')]: '🎯'
     };
     return iconMap[label] || '📌';
   };
@@ -66,7 +69,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
           <div className="relative z-10 pt-16 pb-8 px-6">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                Навигация
+                {t('navigation.title')}
               </h2>
               <button
                   onClick={onClose}
@@ -121,7 +124,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
                       </div>
                       {tab.active && (
                           <div className="text-xs text-blue-500 font-medium mt-1">
-                            Активно
+                            {t('common.active')}
                           </div>
                       )}
                     </div>

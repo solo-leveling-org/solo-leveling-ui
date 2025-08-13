@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services';
 import { useSettings } from '../hooks/useSettings';
+import { useLocalization } from '../hooks/useLocalization';
 import type { User } from '../api';
 
 type ProfileTabProps = {
@@ -12,6 +13,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'level' | 'balance' | 'settings'>('level');
   const { settings, updateMultipleSettings, isLoaded } = useSettings();
+  const { t } = useLocalization();
 
   // Загружаем данные пользователя только при монтировании компонента и если авторизованы
   useEffect(() => {
@@ -98,7 +100,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
 
               {/* Assessment badge */}
               <div className={`inline-flex items-center bg-gradient-to-r ${assessmentColor} text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg`}>
-                Класс {assessment}
+                {t('profile.stats.class')} {assessment}
               </div>
             </div>
 
@@ -112,7 +114,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                     : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
                 }`}
               >
-                Уровень
+                {t('profile.tabs.level')}
               </button>
               <button
                 onClick={() => setActiveTab('balance')}
@@ -122,7 +124,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                     : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
                 }`}
               >
-                Баланс
+                {t('profile.tabs.balance')}
               </button>
               <button
                 onClick={() => setActiveTab('settings')}
@@ -132,7 +134,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                     : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
                 }`}
               >
-                Настройки
+                {t('profile.tabs.settings')}
               </button>
             </div>
 
@@ -144,7 +146,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                   {/* Experience bar */}
                   <div className="mb-6">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-600">Прогресс</span>
+                      <span className="text-sm font-medium text-gray-600">{t('profile.stats.progress')}</span>
                       <span className="text-sm font-bold text-gray-800">{currentExp} / {maxExp} XP</span>
                     </div>
                     <div className="relative w-full bg-slate-200/50 rounded-full h-3 overflow-hidden backdrop-blur-sm">
@@ -162,19 +164,19 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                     <div className="bg-gradient-to-br from-red-50 to-red-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-red-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                       <div className="text-2xl mb-2">💪</div>
                       <div className="text-xl font-bold text-red-600 mb-1">{statValue}</div>
-                      <div className="text-xs text-red-500 font-medium">Сила</div>
+                      <div className="text-xs text-red-500 font-medium">{t('profile.stats.strength')}</div>
                     </div>
 
                     <div className="bg-gradient-to-br from-green-50 to-green-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-green-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                       <div className="text-2xl mb-2">⚡</div>
                       <div className="text-xl font-bold text-green-600 mb-1">{statValue}</div>
-                      <div className="text-xs text-green-500 font-medium">Ловкость</div>
+                      <div className="text-xs text-green-500 font-medium">{t('profile.stats.agility')}</div>
                     </div>
 
                     <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-purple-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                       <div className="text-2xl mb-2">🧠</div>
                       <div className="text-xl font-bold text-purple-600 mb-1">{statValue}</div>
-                      <div className="text-xs text-purple-500 font-medium">Интеллект</div>
+                      <div className="text-xs text-purple-500 font-medium">{t('profile.stats.intelligence')}</div>
                     </div>
                   </div>
                 </div>
@@ -196,7 +198,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
 
                   {/* Recent Transactions */}
                   <div>
-                    <h3 className="text-lg font-bold text-gray-800 mb-4">Последние транзакции</h3>
+                    <h3 className="text-lg font-bold text-gray-800 mb-4">{t('profile.balance.recentTransactions')}</h3>
                     <div className="space-y-3">
                       {/* Mock transactions */}
                       <div className="bg-white/60 backdrop-blur-sm rounded-xl p-3 border border-white/30">
@@ -206,8 +208,8 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                               <span className="text-green-600 text-sm">+</span>
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-gray-800">Выполнение задачи</div>
-                              <div className="text-xs text-gray-500">Сегодня, 14:30</div>
+                              <div className="text-sm font-medium text-gray-800">{t('profile.balance.taskCompletion')}</div>
+                              <div className="text-xs text-gray-500">{t('profile.balance.today')}, 14:30</div>
                             </div>
                           </div>
                           <div className="text-sm font-bold text-green-600">+50 GCO</div>
@@ -221,8 +223,8 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                               <span className="text-red-600 text-sm">-</span>
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-gray-800">Покупка предмета</div>
-                              <div className="text-xs text-gray-500">Вчера, 18:15</div>
+                              <div className="text-sm font-medium text-gray-800">{t('profile.balance.itemPurchase')}</div>
+                              <div className="text-xs text-gray-500">{t('profile.balance.yesterday')}, 18:15</div>
                             </div>
                           </div>
                           <div className="text-sm font-bold text-red-600">-25 GCO</div>
@@ -236,8 +238,8 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                               <span className="text-green-600 text-sm">+</span>
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-gray-800">Бонус за уровень</div>
-                              <div className="text-xs text-gray-500">2 дня назад</div>
+                              <div className="text-sm font-medium text-gray-800">{t('profile.balance.levelBonus')}</div>
+                              <div className="text-xs text-gray-500">2 {t('profile.balance.daysAgo')}</div>
                             </div>
                           </div>
                           <div className="text-sm font-bold text-green-600">+100 GCO</div>
@@ -257,8 +259,8 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                       <div className="flex items-center">
                         <div className="text-2xl mr-3">🌍</div>
                         <div>
-                          <div className="font-bold text-gray-800 text-base">Язык</div>
-                          <div className="text-sm text-slate-500">Выберите язык интерфейса</div>
+                          <div className="font-bold text-gray-800 text-base">{t('profile.settings.language.title')}</div>
+                          <div className="text-sm text-slate-500">{t('profile.settings.language.description')}</div>
                         </div>
                       </div>
                     </div>
@@ -277,7 +279,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                           <div className={`font-semibold text-sm ${
                             settings.language === 'ru' ? 'text-green-700' : 'text-gray-600'
                           }`}>
-                            Русский
+                            {t('profile.settings.language.russian')}
                           </div>
                         </div>
                         {settings.language === 'ru' && (
@@ -298,7 +300,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                           <div className={`font-semibold text-sm ${
                             settings.language === 'en' ? 'text-green-700' : 'text-gray-600'
                           }`}>
-                            English
+                            {t('profile.settings.language.english')}
                           </div>
                         </div>
                         {settings.language === 'en' && (

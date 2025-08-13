@@ -1,8 +1,9 @@
 import React, {useEffect} from 'react';
 import type {Task} from '../api';
-import {topicIcons, topicLabels} from '../topicMeta';
+import {topicIcons} from '../topicMeta';
 import { ReactComponent as CoinsIcon } from '../assets/icons/coins.svg';
 import RarityIndicator from './RarityIndicator';
+import { useLocalization } from '../hooks/useLocalization';
 
 type TaskDialogProps = {
   task: Task;
@@ -10,6 +11,8 @@ type TaskDialogProps = {
 };
 
 const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
+  const { t } = useLocalization();
+  
   // Блокируем скролл фонового контента при открытии диалога
   useEffect(() => {
     // Сохраняем текущую позицию скролла
@@ -170,7 +173,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
                             style={{animationDelay: `${0.6 + index * 0.1}s`}}
                         >
                           <span className="mr-1">{topicIcons[topic] || '❓'}</span>
-                          {topicLabels[topic] || topic}
+                          {t(`topics.labels.${topic}`)}
                         </div>
                     ))}
                   </div>

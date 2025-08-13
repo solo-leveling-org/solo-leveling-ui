@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocalization } from '../hooks/useLocalization';
 
 interface TelegramWidgetProps {
   type: 'no-telegram' | 'auth-error';
@@ -6,6 +7,7 @@ interface TelegramWidgetProps {
 }
 
 export const TelegramWidget: React.FC<TelegramWidgetProps> = ({ type, errorMessage }) => {
+  const { t } = useLocalization();
   const isAuthError = type === 'auth-error';
   
   const backgroundGradient = isAuthError 
@@ -26,10 +28,10 @@ export const TelegramWidget: React.FC<TelegramWidgetProps> = ({ type, errorMessa
     ? "bg-gradient-to-br from-red-500 to-red-600"
     : "bg-gradient-to-br from-blue-500 to-blue-600";
 
-  const title = isAuthError ? "Ошибка авторизации" : "Откройте в Telegram";
+  const title = isAuthError ? t('errors.authError') : t('errors.telegramRequired');
   
   const description = isAuthError 
-    ? errorMessage || "Произошла ошибка при авторизации"
+    ? errorMessage || t('errors.authError')
     : "Это приложение работает только в Telegram Mini App. Нажмите кнопку ниже, чтобы открыть приложение в Telegram.";
 
   const buttonText = isAuthError ? "Попробовать снова" : "Открыть Solo Leveling";

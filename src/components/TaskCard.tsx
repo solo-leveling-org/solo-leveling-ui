@@ -1,8 +1,9 @@
 import React from 'react';
 import type { PlayerTask } from '../api';
 import { PlayerTaskStatus } from '../api';
-import { topicIcons, topicLabels } from '../topicMeta';
+import { topicIcons } from '../topicMeta';
 import RarityIndicator from './RarityIndicator';
+import { useLocalization } from '../hooks/useLocalization';
 
 type TaskCardProps = {
   playerTask: PlayerTask;
@@ -14,6 +15,7 @@ type TaskCardProps = {
 
 const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, onReplace, index = 0 }) => {
   const { task, status } = playerTask;
+  const { t } = useLocalization();
 
   // Определяем цветовые схемы для разных статусов с современным glassmorphism подходом
   const getStatusColorScheme = (status: PlayerTaskStatus) => {
@@ -91,7 +93,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
               <div className="w-12 h-12 border-4 border-slate-200 border-t-slate-400 rounded-full animate-spin"></div>
               <div className="absolute inset-0 w-12 h-12 border-4 border-transparent border-r-slate-300 rounded-full animate-spin-reverse"></div>
             </div>
-            <span className="text-slate-600 font-medium tracking-wide">Создается...</span>
+            <span className="text-slate-600 font-medium tracking-wide">{t('common.loading')}</span>
           </div>
         </div>
       </div>
@@ -153,7 +155,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
               }}
             >
               <span className="mr-1.5 text-sm">{topicIcons[topic] || '❓'}</span>
-              {topicLabels[topic] || topic}
+                                      {t(`topics.labels.${topic}`)}
             </span>
           ))}
           {(task?.topics || []).length > 2 && (

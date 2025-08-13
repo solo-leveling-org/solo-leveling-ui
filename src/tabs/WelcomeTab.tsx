@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TextType from '../blocks/TextAnimations/TextType/TextType';
+import { useLocalization } from '../hooks/useLocalization';
 
 const WelcomeTab: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useLocalization();
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -29,7 +31,7 @@ const WelcomeTab: React.FC = () => {
           <div className="mb-8">
             <div className="relative inline-block">
               <TextType 
-                text={["Solo Leveling"]}
+                text={[t('welcome.title')]}
                 typingSpeed={100}
                 pauseDuration={2000}
                 showCursor={true}
@@ -41,7 +43,7 @@ const WelcomeTab: React.FC = () => {
 
           {/* Subtitle */}
           <p className="text-gray-600 text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
-            Погрузитесь в мир одиночного развития и станьте сильнее с каждым заданием
+            {t('welcome.subtitle')}
           </p>
 
           {/* CTA Button */}
@@ -51,7 +53,7 @@ const WelcomeTab: React.FC = () => {
               className="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 transform"
             >
               <span className="relative z-10 flex items-center gap-3">
-                <span>К задачам</span>
+                <span>{t('welcome.startButton')}</span>
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -66,26 +68,26 @@ const WelcomeTab: React.FC = () => {
 
         {/* Stats section */}
         <div className={`grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12 transition-all duration-1000 delay-300 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          {[
-            { 
-              label: 'Активных игроков', 
-              value: '1,234', 
-              icon: '👥',
-              color: 'from-blue-500 to-cyan-500'
-            },
-            { 
-              label: 'Выполнено задач', 
-              value: '5,678', 
-              icon: '✅',
-              color: 'from-green-500 to-emerald-500'
-            },
-            { 
-              label: 'Уровней пройдено', 
-              value: '890', 
-              icon: '🏆',
-              color: 'from-yellow-500 to-orange-500'
-            }
-          ].map((stat, index) => (
+                      {[
+              { 
+                label: t('welcome.stats.activePlayers'), 
+                value: '1,234', 
+                icon: '👥',
+                color: 'from-blue-500 to-cyan-500'
+              },
+              { 
+                label: t('welcome.stats.completedTasks'), 
+                value: '5,678', 
+                icon: '✅',
+                color: 'from-green-500 to-emerald-500'
+              },
+              { 
+                label: t('welcome.stats.levelsPassed'), 
+                value: '890', 
+                icon: '🏆',
+                color: 'from-yellow-500 to-orange-500'
+              }
+            ].map((stat, index) => (
             <div 
               key={index}
               className="relative p-6 rounded-3xl backdrop-blur-xl border transition-all duration-500 hover:scale-105 hover:shadow-xl"
@@ -111,10 +113,10 @@ const WelcomeTab: React.FC = () => {
         <div className={`max-w-5xl mx-auto transition-all duration-1000 delay-500 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: '⚡', title: 'Быстрый старт', desc: 'Начните играть мгновенно' },
-              { icon: '🎯', title: 'Целевые задания', desc: 'Развивайтесь по плану' },
-              { icon: '📈', title: 'Прогресс', desc: 'Отслеживайте рост' },
-              { icon: '🏅', title: 'Достижения', desc: 'Получайте награды' }
+              { icon: '⚡', title: t('welcome.features.quickStart.title'), desc: t('welcome.features.quickStart.description') },
+              { icon: '🎯', title: t('welcome.features.targetedTasks.title'), desc: t('welcome.features.targetedTasks.description') },
+              { icon: '📈', title: t('welcome.features.progress.title'), desc: t('welcome.features.progress.description') },
+              { icon: '🏅', title: t('welcome.features.achievements.title'), desc: t('welcome.features.achievements.description') }
             ].map((feature, index) => (
               <div 
                 key={index}
