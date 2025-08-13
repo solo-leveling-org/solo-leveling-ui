@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import type { User } from '../api';
 import { api } from '../services';
 import SettingsDialog from '../components/SettingsDialog';
-import CurrentSettings from '../components/CurrentSettings';
 import { useSettings } from '../hooks/useSettings';
 
 type ProfileTabProps = {
@@ -32,11 +31,20 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
   }, [isAuthenticated]);
 
   const handleThemeChange = (theme: 'light' | 'dark') => {
+    console.log('ProfileTab: handleThemeChange called with theme =', theme);
     setTheme(theme);
   };
 
   const handleLanguageChange = (language: 'ru' | 'en') => {
+    console.log('ProfileTab: handleLanguageChange called with language =', language);
     setLanguage(language);
+  };
+
+  const handleOpenSettings = () => {
+    console.log('ProfileTab: Opening settings dialog with:');
+    console.log('  - settings.theme:', settings.theme);
+    console.log('  - settings.language:', settings.language);
+    setIsSettingsOpen(true);
   };
 
   if (loading || !user) {
@@ -169,28 +177,14 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
               </div>
             </div>
 
-            {/* Current Settings Display */}
-            <CurrentSettings theme={settings.theme} language={settings.language} />
-
             {/* Settings button */}
             <div className="text-center">
               <button
-                onClick={() => setIsSettingsOpen(true)}
-                className="relative overflow-hidden bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm border border-blue-200/30 text-blue-700 rounded-2xl px-6 py-3 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:from-blue-500/20 hover:to-purple-500/20 group"
+                onClick={handleOpenSettings}
+                className="inline-flex items-center space-x-2 px-4 py-2 text-sm text-slate-500 hover:text-slate-700 transition-colors duration-200"
               >
-                <div className="flex items-center justify-center space-x-2">
-                  <span className="text-lg">⚙️</span>
-                  <span className="font-semibold">Настройки</span>
-                  <svg 
-                    className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                <span className="text-base">⚙️</span>
+                <span>Настройки</span>
               </button>
             </div>
           </div>
@@ -269,20 +263,9 @@ export const ProfileSkeleton: React.FC = () => (
             </div>
           </div>
 
-          {/* Current Settings skeleton */}
-          <div className="bg-gray-200/50 rounded-2xl p-4 mb-6">
-            <div className="text-center mb-3">
-              <div className="h-4 bg-gray-300 rounded w-32 mx-auto animate-pulse"></div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="h-12 bg-gray-300 rounded-xl animate-pulse"></div>
-              <div className="h-12 bg-gray-300 rounded-xl animate-pulse"></div>
-            </div>
-          </div>
-
           {/* Settings button skeleton */}
           <div className="text-center">
-            <div className="h-12 bg-gray-200/50 rounded-2xl w-32 mx-auto animate-pulse"></div>
+            <div className="h-8 bg-gray-200/50 rounded w-24 mx-auto animate-pulse"></div>
           </div>
         </div>
       </div>

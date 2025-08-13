@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Theme, Language } from '../hooks/useSettings';
 
 interface SettingsDialogProps {
@@ -21,7 +21,52 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
   const [localTheme, setLocalTheme] = useState<Theme>(currentTheme);
   const [localLanguage, setLocalLanguage] = useState<Language>(currentLanguage);
 
+  // Синхронизируем локальные состояния с текущими настройками при их изменении
+  useEffect(() => {
+    console.log('SettingsDialog: currentTheme changed to', currentTheme, ', updating localTheme');
+    setLocalTheme(currentTheme);
+  }, [currentTheme]);
+
+  useEffect(() => {
+    console.log('SettingsDialog: currentLanguage changed to', currentLanguage, ', updating localLanguage');
+    setLocalLanguage(currentLanguage);
+  }, [currentLanguage]);
+
+  // Логируем при открытии диалога
+  useEffect(() => {
+    if (isOpen) {
+      console.log('SettingsDialog: Dialog opened with:');
+      console.log('  - currentTheme:', currentTheme);
+      console.log('  - currentLanguage:', currentLanguage);
+      console.log('  - localTheme:', localTheme);
+      console.log('  - localLanguage:', localLanguage);
+    }
+  }, [isOpen, currentTheme, currentLanguage, localTheme, localLanguage]);
+
+  // Блокируем скролл при открытом диалоге
+  useEffect(() => {
+    if (isOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+
+      return () => {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isOpen]);
+
   const handleSave = () => {
+    console.log('SettingsDialog: Saving settings...');
+    console.log('SettingsDialog: localTheme =', localTheme);
+    console.log('SettingsDialog: localLanguage =', localLanguage);
+    console.log('SettingsDialog: currentTheme =', currentTheme);
+    console.log('SettingsDialog: currentLanguage =', currentLanguage);
+    
     onThemeChange(localTheme);
     onLanguageChange(localLanguage);
     onClose();
@@ -60,10 +105,10 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
               {/* Header */}
               <div className="text-center mb-8">
                 <div className="text-3xl mb-3">⚙️</div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2 tracking-tight">
                   Настройки
                 </h2>
-                <p className="text-slate-500 text-sm">Персонализируйте свое приложение</p>
+                <p className="text-slate-500 text-sm font-medium">Персонализируйте свое приложение</p>
               </div>
 
               {/* Theme Setting */}
@@ -72,15 +117,18 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   <div className="flex items-center">
                     <div className="text-2xl mr-3">🎨</div>
                     <div>
-                      <div className="font-semibold text-gray-800">Тема</div>
-                      <div className="text-sm text-slate-500">Выберите внешний вид</div>
+                      <div className="font-bold text-gray-800 text-base">Тема</div>
+                      <div className="text-sm text-slate-500 font-medium">Выберите внешний вид</div>
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => setLocalTheme('light')}
+                    onClick={() => {
+                      console.log('SettingsDialog: Light theme button clicked');
+                      setLocalTheme('light');
+                    }}
                     className={`relative p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
                       localTheme === 'light'
                         ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-blue-100/50 shadow-lg'
@@ -89,7 +137,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   >
                     <div className="text-center">
                       <div className="text-2xl mb-2">☀️</div>
-                      <div className={`font-medium text-sm ${
+                      <div className={`font-semibold text-sm tracking-wide ${
                         localTheme === 'light' ? 'text-blue-700' : 'text-gray-600'
                       }`}>
                         Светлая
@@ -101,7 +149,10 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   </button>
 
                   <button
-                    onClick={() => setLocalTheme('dark')}
+                    onClick={() => {
+                      console.log('SettingsDialog: Dark theme button clicked');
+                      setLocalTheme('dark');
+                    }}
                     className={`relative p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
                       localTheme === 'dark'
                         ? 'border-purple-500 bg-gradient-to-r from-purple-50 to-purple-100/50 shadow-lg'
@@ -110,7 +161,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   >
                     <div className="text-center">
                       <div className="text-2xl mb-2">🌙</div>
-                      <div className={`font-medium text-sm ${
+                      <div className={`font-semibold text-sm tracking-wide ${
                         localTheme === 'dark' ? 'text-purple-700' : 'text-gray-600'
                       }`}>
                         Темная
@@ -129,15 +180,18 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   <div className="flex items-center">
                     <div className="text-2xl mr-3">🌍</div>
                     <div>
-                      <div className="font-semibold text-gray-800">Язык</div>
-                      <div className="text-sm text-slate-500">Выберите язык интерфейса</div>
+                      <div className="font-bold text-gray-800 text-base">Язык</div>
+                      <div className="text-sm text-slate-500 font-medium">Выберите язык интерфейса</div>
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => setLocalLanguage('ru')}
+                    onClick={() => {
+                      console.log('SettingsDialog: Russian language button clicked');
+                      setLocalLanguage('ru');
+                    }}
                     className={`relative p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
                       localLanguage === 'ru'
                         ? 'border-green-500 bg-gradient-to-r from-green-50 to-green-100/50 shadow-lg'
@@ -146,7 +200,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   >
                     <div className="text-center">
                       <div className="text-2xl mb-2">🇷🇺</div>
-                      <div className={`font-medium text-sm ${
+                      <div className={`font-semibold text-sm tracking-wide ${
                         localLanguage === 'ru' ? 'text-green-700' : 'text-gray-600'
                       }`}>
                         Русский
@@ -158,7 +212,10 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   </button>
 
                   <button
-                    onClick={() => setLocalLanguage('en')}
+                    onClick={() => {
+                      console.log('SettingsDialog: English language button clicked');
+                      setLocalLanguage('en');
+                    }}
                     className={`relative p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
                       localLanguage === 'en'
                         ? 'border-green-500 bg-gradient-to-r from-green-50 to-green-100/50 shadow-lg'
@@ -167,7 +224,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   >
                     <div className="text-center">
                       <div className="text-2xl mb-2">🇺🇸</div>
-                      <div className={`font-medium text-sm ${
+                      <div className={`font-semibold text-sm tracking-wide ${
                         localLanguage === 'en' ? 'text-green-700' : 'text-gray-600'
                       }`}>
                         English
@@ -184,7 +241,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
               <div className="flex space-x-3">
                 <button
                   onClick={handleCancel}
-                  className="flex-1 relative overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 text-gray-600 rounded-2xl px-6 py-3 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-gray-50/30"
+                  className="flex-1 relative overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 text-gray-600 rounded-2xl px-6 py-3 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-gray-50/30 tracking-wide"
                 >
                   <span className="relative z-10">Отмена</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-slate-500/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
@@ -192,7 +249,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
 
                 <button
                   onClick={handleSave}
-                  className="flex-1 relative overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl px-6 py-3 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  className="flex-1 relative overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl px-6 py-3 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 tracking-wide"
                 >
                   <span className="relative z-10">Сохранить</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-700 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
