@@ -3,6 +3,7 @@ import { api } from '../services';
 import { useSettings } from '../hooks/useSettings';
 import { useLocalization } from '../hooks/useLocalization';
 import type { User } from '../api';
+import { TelegramIcon } from '../components/TelegramWidget';
 
 type ProfileTabProps = {
   isAuthenticated: boolean;
@@ -274,7 +275,9 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                         }`}
                       >
                         <div className="text-center">
-                          <div className="text-2xl mb-2">🤖</div>
+                          <div className="flex items-center justify-center mb-2">
+                            <TelegramIcon className="w-6 h-6 text-blue-600" />
+                          </div>
                           <div className={`font-semibold text-sm ${
                             settings.languageSource === 'telegram' ? 'text-blue-700' : 'text-gray-600'
                           }`}>
