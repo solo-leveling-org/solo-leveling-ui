@@ -161,6 +161,11 @@ export const en = {
   dialogs: {
     task: {
       close: 'Close',
+      rewardsTitle: 'Rewards',
+      experience: 'Experience',
+      coins: 'Coins',
+      statsTitle: 'Stats',
+      categoriesTitle: 'Categories',
     },
   },
 
@@ -170,5 +175,13 @@ export const en = {
     authError: 'Authentication Error',
     loadingError: 'Loading Error',
     saveError: 'Save Error',
+  },
+  // Task rarity
+  rarity: {
+    COMMON: 'Common',
+    UNCOMMON: 'Uncommon',
+    RARE: 'Rare',
+    EPIC: 'Epic',
+    LEGENDARY: 'Legendary',
   },
 };

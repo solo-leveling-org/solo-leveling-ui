@@ -161,6 +161,11 @@ export const ru = {
   dialogs: {
     task: {
       close: 'Закрыть',
+      rewardsTitle: 'Награды',
+      experience: 'Опыт',
+      coins: 'Монеты',
+      statsTitle: 'Характеристики',
+      categoriesTitle: 'Категории',
     },
   },
 
@@ -170,5 +175,13 @@ export const ru = {
     authError: 'Ошибка авторизации',
     loadingError: 'Ошибка загрузки',
     saveError: 'Ошибка сохранения',
+  },
+  // Редкости задач
+  rarity: {
+    COMMON: 'Обычная',
+    UNCOMMON: 'Необычная',
+    RARE: 'Редкая',
+    EPIC: 'Эпическая',
+    LEGENDARY: 'Легендарная',
   },
 };
