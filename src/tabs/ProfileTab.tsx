@@ -251,63 +251,6 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
               {/* Settings Tab */}
               {activeTab === 'settings' && (
                 <div className="space-y-6">
-                  {/* Theme Setting */}
-                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center">
-                        <div className="text-2xl mr-3">🎨</div>
-                        <div>
-                          <div className="font-bold text-gray-800 text-base">Тема</div>
-                          <div className="text-sm text-slate-500">Выберите внешний вид</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        onClick={() => updateMultipleSettings({ ...settings, theme: 'light' })}
-                        className={`relative p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
-                          settings.theme === 'light'
-                            ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-blue-100/50 shadow-lg'
-                            : 'border-gray-200 bg-white/50 hover:border-gray-300'
-                        }`}
-                      >
-                        <div className="text-center">
-                          <div className="text-2xl mb-2">☀️</div>
-                          <div className={`font-semibold text-sm ${
-                            settings.theme === 'light' ? 'text-blue-700' : 'text-gray-600'
-                          }`}>
-                            Светлая
-                          </div>
-                        </div>
-                        {settings.theme === 'light' && (
-                          <div className="absolute top-2 right-2 w-3 h-3 bg-blue-500 rounded-full"></div>
-                        )}
-                      </button>
-
-                      <button
-                        onClick={() => updateMultipleSettings({ ...settings, theme: 'dark' })}
-                        className={`relative p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
-                          settings.theme === 'dark'
-                            ? 'border-purple-500 bg-gradient-to-r from-purple-50 to-purple-100/50 shadow-lg'
-                            : 'border-gray-200 bg-white/50 hover:border-gray-300'
-                        }`}
-                      >
-                        <div className="text-center">
-                          <div className="text-2xl mb-2">🌙</div>
-                          <div className={`font-semibold text-sm ${
-                            settings.theme === 'dark' ? 'text-purple-700' : 'text-gray-600'
-                          }`}>
-                            Темная
-                          </div>
-                        </div>
-                        {settings.theme === 'dark' && (
-                          <div className="absolute top-2 right-2 w-3 h-3 bg-purple-500 rounded-full"></div>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
                   {/* Language Setting */}
                   <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
                     <div className="flex items-center justify-between mb-4">

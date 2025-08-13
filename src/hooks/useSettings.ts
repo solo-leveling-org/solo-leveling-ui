@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react';
 
-export type Theme = 'light' | 'dark';
 export type Language = 'ru' | 'en';
 
 interface Settings {
-  theme: Theme;
   language: Language;
 }
 
 const defaultSettings: Settings = {
-  theme: 'light',
   language: 'ru'
 };
 
@@ -46,11 +43,6 @@ export const useSettings = () => {
     }
   };
 
-  const setTheme = (theme: Theme) => {
-    updateSettings({ theme });
-    applyTheme(theme);
-  };
-
   const setLanguage = (language: Language) => {
     updateSettings({ language });
     applyLanguage(language);
@@ -61,12 +53,6 @@ export const useSettings = () => {
     
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
-      
-      // Применяем тему, если она изменилась
-      if (newSettings.theme !== settings.theme) {
-        applyTheme(newSettings.theme);
-      }
-      
       // Применяем язык, если он изменился
       if (newSettings.language !== settings.language) {
         applyLanguage(newSettings.language);
@@ -76,29 +62,13 @@ export const useSettings = () => {
     }
   };
 
-  const applyTheme = (theme: Theme) => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
   const applyLanguage = (language: Language) => {
     // Здесь будет логика смены языка
   };
 
-  // Применяем текущую тему при загрузке
-  useEffect(() => {
-    if (isLoaded) {
-      applyTheme(settings.theme);
-    }
-  }, [isLoaded, settings.theme]);
-
   return {
     settings,
     isLoaded,
-    setTheme,
     setLanguage,
     updateSettings,
     updateMultipleSettings
