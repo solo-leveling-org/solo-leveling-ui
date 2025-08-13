@@ -17,6 +17,7 @@ import TopicsTab from './tabs/TopicsTab';
 import WelcomeTab from './tabs/WelcomeTab';
 import {useTelegram} from './useTelegram';
 import {auth} from './auth';
+import { useLocalization } from './hooks/useLocalization';
 
 function AppRoutes() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -28,6 +29,7 @@ function AppRoutes() {
   const [showNoTelegramError, setShowNoTelegramError] = useState(false);
   const [isTelegramChecked, setIsTelegramChecked] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const { t } = useLocalization();
 
   // Шаг 1: Авторизация через Telegram при загрузке приложения
   useEffect(() => {
@@ -63,7 +65,7 @@ function AppRoutes() {
   // tabList для SideDrawer
   const tabList = [
     {
-      label: 'Главная',
+      label: t('navigation.welcome'),
       active: location.pathname === '/',
       onClick: () => {
         navigate('/');
@@ -71,7 +73,7 @@ function AppRoutes() {
       },
     },
     {
-      label: 'Профиль',
+      label: t('navigation.profile'),
       active: location.pathname === '/profile',
       onClick: () => {
         navigate('/profile');
@@ -79,7 +81,7 @@ function AppRoutes() {
       },
     },
     {
-      label: 'Задачи',
+      label: t('navigation.tasks'),
       active: location.pathname === '/tasks',
       onClick: () => {
         navigate('/tasks');
@@ -87,7 +89,7 @@ function AppRoutes() {
       },
     },
     {
-      label: 'Темы',
+      label: t('navigation.topics'),
       active: location.pathname === '/topics',
       onClick: () => {
         navigate('/topics');

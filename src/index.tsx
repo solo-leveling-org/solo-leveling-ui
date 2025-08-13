@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { SettingsProvider } from './hooks/useSettings';
+import './i18n';
 
 // Инициализируем конфигурацию OpenAPI с функцией getTokenForRequest
 import './api/config';
@@ -12,7 +14,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <SettingsProvider>
+      <App />
+    </SettingsProvider>
   </React.StrictMode>
 );
 

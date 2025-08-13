@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocalization } from '../hooks/useLocalization';
 
 export interface RarityIndicatorProps {
   rarity: string;
@@ -25,21 +26,9 @@ const getRarityColors = (rarity: string): string[] => {
   }
 };
 
-const getRarityLabel = (rarity: string): string => {
-  switch (rarity) {
-    case 'COMMON':
-      return 'Обычная';
-    case 'UNCOMMON':
-      return 'Необычная';
-    case 'RARE':
-      return 'Редкая';
-    case 'EPIC':
-      return 'Эпическая';
-    case 'LEGENDARY':
-      return 'Легендарная';
-    default:
-      return 'Обычная';
-  }
+const getRarityLabel = (rarity: string, t: (k: string) => string): string => {
+  const translated = t(`rarity.${rarity}`);
+  return translated || rarity;
 };
 
 const getSizeClasses = (size: 'sm' | 'md' | 'lg') => {
@@ -71,9 +60,10 @@ const RarityIndicator: React.FC<RarityIndicatorProps> = ({
   showLabel = false,
   className = ''
 }) => {
+  const { t } = useLocalization();
   const colors = getRarityColors(rarity);
   const sizeClasses = getSizeClasses(size);
-  const rarityLabel = getRarityLabel(rarity);
+  const rarityLabel = getRarityLabel(rarity, t);
 
   if (showLabel) {
     return (
