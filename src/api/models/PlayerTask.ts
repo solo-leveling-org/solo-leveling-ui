@@ -7,6 +7,7 @@ import type { Task } from './Task';
 export type PlayerTask = {
     id?: string;
     version?: number;
+    order?: number;
     status?: PlayerTaskStatus;
     task?: Task;
 };

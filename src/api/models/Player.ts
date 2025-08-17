@@ -8,6 +8,9 @@ export type Player = {
     id?: number;
     version?: number;
     maxTasks?: number;
+    agility?: number;
+    strength?: number;
+    intelligence?: number;
     level?: Level;
     balance?: PlayerBalance;
 };
