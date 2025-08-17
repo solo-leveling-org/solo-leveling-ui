@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import type { PlayerTask } from '../api';
+import type { PlayerTask, CompleteTaskResponse } from '../api';
 import TasksGrid from '../components/TasksGrid';
 import TaskDialog from '../components/TaskDialog';
+import TaskCompletionDialog from '../components/TaskCompletionDialog';
 import { taskActions, api } from '../services';
 import { useNavigate } from 'react-router-dom';
 import { useLocalization } from '../hooks/useLocalization';
@@ -14,6 +15,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [tasks, setTasks] = useState<PlayerTask[]>([]);
   const [loading, setLoading] = useState(false);
   const [dialogTask, setDialogTask] = useState<PlayerTask | null>(null);
+  const [completionResponse, setCompletionResponse] = useState<CompleteTaskResponse | null>(null);
   const navigate = useNavigate();
   const { t } = useLocalization();
 
@@ -35,6 +37,20 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
 
   const handleGoToTopics = () => {
     navigate('/topics');
+  };
+
+  const handleCompleteTask = async (task: PlayerTask) => {
+    try {
+      setLoading(true);
+      const response = await taskActions.completeTask(task);
+      setTasks(response.tasks);
+      // Показываем диалог с результатами выполнения задачи
+      setCompletionResponse(response.completionResponse);
+    } catch (error) {
+      console.error('Error completing task:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading && tasks.length === 0) {
@@ -59,7 +75,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
             <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto"></div>
           </div>
 
-          <TasksGrid tasks={[]} loading={true} onTaskClick={() => {}} />
+          <TasksGrid tasks={[]} loading={true} onTaskClick={() => {}} onComplete={handleCompleteTask} />
         </div>
       </div>
     );
@@ -132,11 +148,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           onTaskClick={(playerTask) => {
             if (playerTask.task) setDialogTask(playerTask);
           }}
-          onComplete={async (playerTask) => {
-            if (loading) return;
-            const updated = await taskActions.completeTask(playerTask);
-            setTasks(updated);
-          }}
+          onComplete={handleCompleteTask}
           onReplace={async (playerTask) => {
             if (loading) return;
             const updated = await taskActions.replaceTask(playerTask);
@@ -147,6 +159,13 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
 
       {dialogTask && dialogTask.task && (
         <TaskDialog task={dialogTask.task} onClose={() => setDialogTask(null)} />
+      )}
+
+      {completionResponse && (
+        <TaskCompletionDialog 
+          response={completionResponse} 
+          onClose={() => setCompletionResponse(null)} 
+        />
       )}
     </div>
   );

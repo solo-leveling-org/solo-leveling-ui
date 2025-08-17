@@ -6,6 +6,7 @@ import type {TaskTopic as ApiTaskTopic} from './api/models/TaskTopic';
 import type {GetActiveTasksResponse} from './api';
 import type {GetPlayerTopicsResponse} from './api';
 import type {GetUserResponse} from './api';
+import type {CompleteTaskResponse} from './api';
 
 export const api = {
   getUser: async (): Promise<ApiUser> => {
@@ -65,14 +66,17 @@ export const api = {
 };
 
 export const taskActions = {
-  completeTask: async (playerTask: PlayerTask): Promise<ApiPlayerTask[]> => {
+  completeTask: async (playerTask: PlayerTask): Promise<{ tasks: ApiPlayerTask[], completionResponse: CompleteTaskResponse }> => {
     try {
-      await PlayerService.completeTask({
+      const completionResponse = await PlayerService.completeTask({
         playerTask: playerTask
       });
 
       const updatedResponse: GetActiveTasksResponse = await PlayerService.getActiveTasks();
-      return updatedResponse.tasks;
+      return {
+        tasks: updatedResponse.tasks,
+        completionResponse: completionResponse
+      };
     } catch (error) {
       console.error('Error completing task:', error);
       throw error;
