@@ -26,7 +26,6 @@ export const ru = {
     tasks: 'Задачи',
     topics: 'Темы',
     welcome: 'Главная',
-    telegram: 'Telegram',
   },
 
   // Приветственная страница
@@ -79,6 +78,10 @@ export const ru = {
       complete: 'Завершить',
       replace: 'Заменить',
       skip: 'Пропустить',
+    },
+    confirm: {
+      complete: 'Вы уверены, что хотите завершить эту задачу?',
+      replace: 'Вы уверены, что хотите заменить эту задачу?',
     },
   },
 

@@ -38,8 +38,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
     const iconMap: Record<string, string> = {
       [t('navigation.profile')]: '👤',
       [t('navigation.tasks')]: '📋',
-      [t('navigation.topics')]: '🎯',
-      [t('navigation.telegram')]: '🚀'
+      [t('navigation.topics')]: '🎯'
     };
     return iconMap[label] || '📌';
   };

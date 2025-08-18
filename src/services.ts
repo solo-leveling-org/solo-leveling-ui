@@ -83,7 +83,7 @@ export const taskActions = {
     }
   },
 
-  replaceTask: async (playerTask: PlayerTask): Promise<ApiPlayerTask[]> => {
+  skipTask: async (playerTask: PlayerTask): Promise<ApiPlayerTask[]> => {
     try {
       await PlayerService.skipTask({
         playerTask: playerTask
@@ -92,7 +92,7 @@ export const taskActions = {
       const updatedResponse: GetActiveTasksResponse = await PlayerService.getActiveTasks();
       return updatedResponse.tasks;
     } catch (error) {
-      console.error('Error replacing task:', error);
+      console.error('Error skipping task:', error);
       throw error;
     }
   },

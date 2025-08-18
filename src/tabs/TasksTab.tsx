@@ -6,6 +6,7 @@ import TaskCompletionDialog from '../components/TaskCompletionDialog';
 import { taskActions, api } from '../services';
 import { useNavigate } from 'react-router-dom';
 import { useLocalization } from '../hooks/useLocalization';
+import { useTelegramWebApp } from '../useTelegram';
 
 type TasksTabProps = {
   isAuthenticated: boolean;
@@ -18,6 +19,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [completionResponse, setCompletionResponse] = useState<CompleteTaskResponse | null>(null);
   const navigate = useNavigate();
   const { t } = useLocalization();
+  const { showConfirm } = useTelegramWebApp();
 
   // Загружаем задачи только при монтировании компонента и если авторизованы
   useEffect(() => {
@@ -40,6 +42,17 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   };
 
   const handleCompleteTask = async (task: PlayerTask) => {
+    showConfirm(
+      t('tasks.confirm.complete'),
+      (confirmed: boolean) => {
+        if (confirmed) {
+          completeTask(task);
+        }
+      }
+    );
+  };
+
+  const completeTask = async (task: PlayerTask) => {
     try {
       setLoading(true);
       const response = await taskActions.completeTask(task);
@@ -48,6 +61,18 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
       setCompletionResponse(response.completionResponse);
     } catch (error) {
       console.error('Error completing task:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const skipTask = async (playerTask: PlayerTask) => {
+    try {
+      setLoading(true);
+      const updated = await taskActions.skipTask(playerTask);
+      setTasks(updated);
+    } catch (error) {
+      console.error('Error skipping task:', error);
     } finally {
       setLoading(false);
     }
@@ -151,8 +176,14 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           onComplete={handleCompleteTask}
           onReplace={async (playerTask) => {
             if (loading) return;
-            const updated = await taskActions.replaceTask(playerTask);
-            setTasks(updated);
+            showConfirm(
+              t('tasks.confirm.replace'),
+              (confirmed: boolean) => {
+                if (confirmed) {
+                  skipTask(playerTask);
+                }
+              }
+            );
           }}
         />
       </div>

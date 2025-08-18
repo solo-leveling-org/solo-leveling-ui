@@ -26,7 +26,6 @@ export const en = {
     tasks: 'Tasks',
     topics: 'Topics',
     welcome: 'Home',
-    telegram: 'Telegram',
   },
 
   // Welcome page
@@ -79,6 +78,10 @@ export const en = {
       complete: 'Complete',
       replace: 'Replace',
       skip: 'Skip',
+    },
+    confirm: {
+      complete: 'Are you sure you want to complete this task?',
+      replace: 'Are you sure you want to replace this task?',
     },
   },
 
