@@ -35,7 +35,7 @@ export function useTelegramWebApp() {
     } catch (error) {
       console.error('Error showing alert:', error);
       // Fallback для обычного браузера
-      alert(message);
+      window.alert(message);
       if (callback) callback();
     }
   };
@@ -46,7 +46,7 @@ export function useTelegramWebApp() {
     } catch (error) {
       console.error('Error showing confirm:', error);
       // Fallback для обычного браузера
-      const confirmed = confirm(message);
+      const confirmed = window.confirm(message);
       callback(confirmed);
     }
   };
@@ -66,7 +66,7 @@ export function useTelegramWebApp() {
       console.error('Error showing popup:', error);
       // Fallback для обычного браузера
       const buttonTexts = params.buttons.map(btn => btn.text).join(' | ');
-      const result = prompt(`${params.title}\n\n${params.message}\n\nДоступные кнопки: ${buttonTexts}\nВведите ID кнопки:`);
+      const result = window.prompt(`${params.title}\n\n${params.message}\n\nДоступные кнопки: ${buttonTexts}\nВведите ID кнопки:`);
       if (result) {
         callback(result);
       }
