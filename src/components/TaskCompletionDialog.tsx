@@ -117,18 +117,31 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 {t('taskCompletion.level')}
               </h3>
               <div className="text-right">
-                <div className="text-2xl font-bold text-blue-600">
-                  {playerAfter.level?.level || 1}
+                <div className="text-2xl font-bold text-blue-600 flex items-center justify-end gap-2">
+                  {(() => {
+                    const beforeLvl = playerBefore.level?.level || 1;
+                    const afterLvl = playerAfter.level?.level || 1;
+                    const delta = afterLvl - beforeLvl;
+                    
+                    if (delta > 0) {
+                      // Если уровень повысился, показываем зеленый бейдж с +N
+                      return (
+                        <>
+                          {afterLvl}
+                          <span className="text-sm text-green-700 font-medium bg-green-100 border border-green-200 rounded-full px-2 py-1">
+                            +{delta}
+                          </span>
+                        </>
+                      );
+                    } else {
+                      // Обычный уровень без изменений
+                      return afterLvl;
+                    }
+                  })()}
                 </div>
                 {expChange > 0 && (
                   <div className="text-sm text-green-600 font-medium">
                     +{expChange} XP
-                  </div>
-                )}
-                {/* Показываем изменение уровня если он повысился */}
-                {(playerAfter.level?.level || 1) > (playerBefore.level?.level || 1) && (
-                  <div className="text-sm text-green-600 font-medium">
-                    +{(playerAfter.level?.level || 1) - (playerBefore.level?.level || 1)} {t('profile.tabs.level')}
                   </div>
                 )}
               </div>
@@ -176,16 +189,27 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                             <span className="text-sm font-medium text-gray-700">
                               {t(`topics.labels.${topic}`)}
                             </span>
-                            <span className="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-full flex items-center">
-                              {t('profile.tabs.level')} {level.level || 1}
-                              {/* Изменение уровня топика если повысился */}
+                            <span className="text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
                               {(() => {
                                 const beforeLvl = beforeTopicLevelMap.get(topic)?.level || 0;
                                 const afterLvl = level.level || 0;
                                 const delta = afterLvl - beforeLvl;
-                                return delta > 0 ? (
-                                  <span className="ml-2 text-green-600 bg-green-50 border border-green-200 rounded-full px-1.5 py-0.5">+{delta}</span>
-                                ) : null;
+                                
+                                if (delta > 0) {
+                                  // Если уровень повысился, показываем зеленый бейдж с +N
+                                  return (
+                                    <span className="text-green-700 bg-green-100 border border-green-200">
+                                      {t('profile.tabs.level')} {level.level || 1} +{delta}
+                                    </span>
+                                  );
+                                } else {
+                                  // Обычный синий бейдж без изменений
+                                  return (
+                                    <span className="text-green-700 bg-green-100 border border-green-200">
+                                      {t('profile.tabs.level')} {level.level || 1}
+                                    </span>
+                                  );
+                                }
                               })()}
                             </span>
                           </div>
