@@ -111,45 +111,52 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
           
           {/* Level Progress */}
           <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-blue-200/30 animate-dialog-stagger-2">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-gray-800 flex items-center">
                 <span className="text-2xl mr-3">⭐</span>
                 {t('taskCompletion.level')}
               </h3>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-blue-600 flex items-center justify-end gap-2">
-                  {playerAfter.level?.level || 1}
-                  {/* Изменение уровня пользователя если повысился */}
-                  {(playerAfter.level?.level || 1) > (playerBefore.level?.level || 1) && (
-                    <span className="text-sm text-green-600 bg-green-50 border border-green-200 rounded-full px-1.5 py-0.5">
-                      +{(playerAfter.level?.level || 1) - (playerBefore.level?.level || 1)}
-                    </span>
-                  )}
+              {expChange > 0 && (
+                <div className="text-sm text-green-600 font-medium bg-green-50 border border-green-200 rounded-full px-3 py-1.5">
+                  +{expChange} XP
                 </div>
-                {expChange > 0 && (
-                  <div className="text-sm text-green-600 font-medium">
-                    +{expChange} XP
-                  </div>
-                )}
-              </div>
+              )}
             </div>
             
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">{t('taskCompletion.experience')}</span>
-                <span className="text-sm font-medium text-gray-800">
-                  {playerAfter.level?.currentExperience || 0} / {playerAfter.level?.experienceToNextLevel || 100}
-                </span>
+            <div className="space-y-4">
+              {/* Level Display */}
+              <div className="flex items-center justify-center mb-4">
+                <div className="relative">
+                  <div className="text-4xl font-bold text-blue-600 bg-white/60 backdrop-blur-sm rounded-2xl px-6 py-4 border border-blue-200/30 shadow-lg">
+                    {playerAfter.level?.level || 1}
+                  </div>
+                  {/* Изменение уровня пользователя если повысился */}
+                  {(playerAfter.level?.level || 1) > (playerBefore.level?.level || 1) && (
+                    <div className="absolute -top-2 -right-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-lg border-2 border-white">
+                      +{(playerAfter.level?.level || 1) - (playerBefore.level?.level || 1)}
+                    </div>
+                  )}
+                </div>
               </div>
               
-              <div className="relative w-full bg-gray-200/50 rounded-full h-3 overflow-hidden backdrop-blur-sm">
-                <div
-                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-1000 ease-out shadow-lg"
-                  style={{ 
-                    width: `${Math.min(100, Math.round(((playerAfter.level?.currentExperience || 0) / (playerAfter.level?.experienceToNextLevel || 100)) * 100))}%` 
-                  }}
-                >
-                  <div className="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
+              {/* Experience Progress */}
+              <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-sm font-medium text-gray-700">{t('taskCompletion.experience')}</span>
+                  <span className="text-sm font-bold text-gray-800">
+                    {playerAfter.level?.currentExperience || 0} / {playerAfter.level?.experienceToNextLevel || 100}
+                  </span>
+                </div>
+                
+                <div className="relative w-full bg-gray-200/50 rounded-full h-3 overflow-hidden backdrop-blur-sm">
+                  <div
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-1000 ease-out shadow-lg"
+                    style={{ 
+                      width: `${Math.min(100, Math.round(((playerAfter.level?.currentExperience || 0) / (playerAfter.level?.experienceToNextLevel || 100)) * 100))}%` 
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
+                  </div>
                 </div>
               </div>
               
