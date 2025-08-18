@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import type { CompleteTaskResponse, Task } from '../api';
+import { useLocalization } from '../hooks/useLocalization';
 
 
 type TaskCompletionDialogProps = {
@@ -10,6 +11,7 @@ type TaskCompletionDialogProps = {
 
 const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, completedTask, onClose }) => {
   const { playerBefore, playerAfter } = response;
+  const { t } = useLocalization();
 
   // Блокируем скролл фонового контента при открытии диалога
   useEffect(() => {
@@ -41,12 +43,8 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
   const intelligenceChange = (playerAfter.intelligence || 0) - (playerBefore.intelligence || 0);
   const balanceChange = completedTask?.currencyReward || 0; // Награда из выполненной задачи
   
-  // Мокаем прогресс по топикам (временно)
-  const mockTopicProgress = [
-    { topic: 'PHYSICAL_ACTIVITY', level: 3, currentExp: 45, maxExp: 100 },
-    { topic: 'MENTAL_HEALTH', level: 2, currentExp: 78, maxExp: 100 },
-    { topic: 'EDUCATION', level: 4, currentExp: 12, maxExp: 100 }
-  ];
+  // Получаем прогресс по топикам из реального контракта
+  const topicProgress = playerAfter.taskTopics || [];
 
   return (
     <div
@@ -54,7 +52,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
       onClick={handleClose}
     >
       <div
-        className="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 w-full max-w-2xl max-h-[90vh] overflow-hidden animate-dialog-content"
+        className="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 w-full max-w-2xl max-h-[95vh] overflow-hidden animate-dialog-content"
         onClick={e => e.stopPropagation()}
       >
         {/* Decorative background elements */}
@@ -72,10 +70,10 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
             </div>
             
             <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
-              Задача выполнена!
+              {t('taskCompletion.title')}
             </h2>
             <p className="text-gray-600 text-lg">
-              Поздравляем с успешным завершением!
+              {t('taskCompletion.subtitle')}
             </p>
           </div>
 
@@ -93,14 +91,14 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
         </div>
 
         {/* Content */}
-        <div className="relative z-10 px-6 pb-6 max-h-[calc(90vh-140px)] overflow-y-auto">
+        <div className="relative z-10 px-6 pb-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
           
           {/* Level Progress */}
           <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-blue-200/30 animate-dialog-stagger-2">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-800 flex items-center">
                 <span className="text-2xl mr-3">⭐</span>
-                Уровень
+                {t('taskCompletion.level')}
               </h3>
               <div className="text-right">
                 <div className="text-2xl font-bold text-blue-600">
@@ -116,7 +114,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
             
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Опыт</span>
+                <span className="text-sm text-gray-600">{t('taskCompletion.experience')}</span>
                 <span className="text-sm font-medium text-gray-800">
                   {playerAfter.level?.currentExperience || 0} / {playerAfter.level?.experienceToNextLevel || 100}
                 </span>
@@ -137,103 +135,124 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
               <div className="mt-4 pt-4 border-t border-blue-200/30">
                 <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
                   <span className="text-lg mr-2">🎯</span>
-                  Прогресс по темам
+                  {t('taskCompletion.topicsProgress')}
                 </h4>
-                <div className="space-y-2">
-                  {mockTopicProgress.map((topic) => (
-                    <div key={topic.topic} className="flex items-center justify-between">
-                      <span className="text-xs text-gray-600 w-20 truncate">
-                        {topic.topic === 'PHYSICAL_ACTIVITY' ? 'Физ. активность' :
-                         topic.topic === 'MENTAL_HEALTH' ? 'Ментальное здоровье' :
-                         topic.topic === 'EDUCATION' ? 'Образование' : topic.topic}
-                      </span>
-                      <div className="flex-1 mx-2">
-                        <div className="relative w-full bg-gray-200/30 rounded-full h-2 overflow-hidden">
-                          <div
-                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-400 to-blue-500 rounded-full"
-                            style={{ width: `${(topic.currentExp / topic.maxExp) * 100}%` }}
-                          ></div>
+                                  <div className="space-y-3">
+                    {topicProgress.map((topicData) => {
+                      if (!topicData.taskTopic || !topicData.level) return null;
+                      
+                      const topic = topicData.taskTopic;
+                      const level = topicData.level;
+                      const currentExp = level.currentExperience || 0;
+                      const maxExp = level.experienceToNextLevel || 100;
+                      const progressPercentage = Math.min(100, Math.round((currentExp / maxExp) * 100));
+                      
+                      return (
+                        <div key={topic} className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">
+                              {t(`topics.labels.${topic}`)}
+                            </span>
+                                                          <span className="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-full">
+                                {t('profile.tabs.level')} {level.level || 1}
+                              </span>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-xs text-gray-500">
+                              <span>{t('taskCompletion.experience')}</span>
+                              <span>{currentExp} / {maxExp}</span>
+                            </div>
+                            <div className="relative w-full bg-gray-200/50 rounded-full h-2 overflow-hidden">
+                              <div
+                                className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-400 to-blue-500 rounded-full transition-all duration-500"
+                                style={{ width: `${progressPercentage}%` }}
+                              >
+                                <div className="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <span className="text-xs text-gray-700 font-medium w-12 text-right">
-                        {topic.currentExp}/{topic.maxExp}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                      );
+                    })}
+                  </div>
               </div>
             </div>
           </div>
 
           {/* Stats Changes */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 animate-dialog-stagger-3">
-            {/* Strength */}
-            <div className="bg-gradient-to-br from-red-50/80 to-red-100/80 backdrop-blur-sm rounded-2xl p-4 border border-red-200/30 text-center">
-              <div className="text-2xl mb-2">💪</div>
-              <div className="text-xl font-bold text-red-600 mb-1">
-                {playerAfter.strength || 0}
-              </div>
-              <div className="text-xs text-red-500 font-medium mb-2">Сила</div>
-              {strengthChange !== 0 && (
-                <div className={`text-sm font-bold px-2 py-1 rounded-full ${
-                  strengthChange > 0 
-                    ? 'bg-green-100 text-green-700' 
-                    : 'bg-red-100 text-red-700'
-                }`}>
-                  {strengthChange > 0 ? '+' : ''}{strengthChange}
+          <div className="bg-gradient-to-br from-gray-50/80 to-slate-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-gray-200/30 animate-dialog-stagger-3">
+            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+              <span className="text-2xl mr-3">⚔️</span>
+              {t('taskCompletion.stats')}
+            </h3>
+            <div className="flex flex-col sm:flex-row gap-4">
+              {/* Strength */}
+              <div className="flex-1 text-center">
+                <div className="text-2xl mb-2">💪</div>
+                <div className="text-xl font-bold text-red-600 mb-1">
+                  {playerAfter.strength || 0}
                 </div>
-              )}
-            </div>
+                <div className="text-xs text-red-500 font-medium mb-2">{t('profile.stats.strength')}</div>
+                {strengthChange !== 0 && (
+                  <div className={`text-sm font-bold px-2 py-1 rounded-full ${
+                    strengthChange > 0 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'bg-red-100 text-red-700'
+                  }`}>
+                    {strengthChange > 0 ? '+' : ''}{strengthChange}
+                  </div>
+                )}
+              </div>
 
-            {/* Agility */}
-            <div className="bg-gradient-to-br from-green-50/80 to-green-100/80 backdrop-blur-sm rounded-2xl p-4 border border-green-200/30 text-center">
-              <div className="text-2xl mb-2">⚡</div>
-              <div className="text-xl font-bold text-green-600 mb-1">
-                {playerAfter.agility || 0}
-              </div>
-              <div className="text-xs text-green-500 font-medium mb-2">Ловкость</div>
-              {agilityChange !== 0 && (
-                <div className={`text-sm font-bold px-2 py-1 rounded-full ${
-                  agilityChange > 0 
-                    ? 'bg-green-100 text-green-700' 
-                    : 'bg-red-100 text-red-700'
-                }`}>
-                  {agilityChange > 0 ? '+' : ''}{agilityChange}
+              {/* Agility */}
+              <div className="flex-1 text-center">
+                <div className="text-2xl mb-2">⚡</div>
+                <div className="text-xl font-bold text-green-600 mb-1">
+                  {playerAfter.agility || 0}
                 </div>
-              )}
-            </div>
+                <div className="text-xs text-green-500 font-medium mb-2">{t('profile.stats.agility')}</div>
+                {agilityChange !== 0 && (
+                  <div className={`text-sm font-bold px-2 py-1 rounded-full ${
+                    agilityChange > 0 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'bg-red-100 text-red-700'
+                  }`}>
+                    {agilityChange > 0 ? '+' : ''}{agilityChange}
+                  </div>
+                )}
+              </div>
 
-            {/* Intelligence */}
-            <div className="bg-gradient-to-br from-purple-50/80 to-purple-100/80 backdrop-blur-sm rounded-2xl p-4 border border-purple-200/30 text-center">
-              <div className="text-2xl mb-2">🧠</div>
-              <div className="text-xl font-bold text-purple-600 mb-1">
-                {playerAfter.intelligence || 0}
-              </div>
-              <div className="text-xs text-purple-500 font-medium mb-2">Интеллект</div>
-              {intelligenceChange !== 0 && (
-                <div className={`text-sm font-bold px-2 py-1 rounded-full ${
-                  intelligenceChange > 0 
-                    ? 'bg-green-100 text-green-700' 
-                    : 'bg-red-100 text-red-700'
-                }`}>
-                  {intelligenceChange > 0 ? '+' : ''}{intelligenceChange}
+              {/* Intelligence */}
+              <div className="flex-1 text-center">
+                <div className="text-2xl mb-2">🧠</div>
+                <div className="text-xl font-bold text-purple-600 mb-1">
+                  {playerAfter.intelligence || 0}
                 </div>
-              )}
+                <div className="text-xs text-purple-500 font-medium mb-2">{t('profile.stats.intelligence')}</div>
+                {intelligenceChange !== 0 && (
+                  <div className={`text-sm font-bold px-2 py-1 rounded-full ${
+                    intelligenceChange > 0 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'bg-red-100 text-red-700'
+                  }`}>
+                    {intelligenceChange > 0 ? '+' : ''}{intelligenceChange}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Balance Change */}
-          {balanceChange !== 0 && (
-            <div className="bg-gradient-to-r from-amber-50/80 to-orange-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-amber-200/30 text-center animate-dialog-stagger-4">
-              <div className="text-2xl mb-3">💰</div>
-              <div className="text-3xl font-bold text-amber-700 mb-2">
-                {playerAfter.balance?.balance?.amount || 0} {playerAfter.balance?.balance?.currencyCode || 'GCO'}
-              </div>
-              <div className="text-sm text-amber-600 font-medium">
-                +{balanceChange} за выполнение задачи
-              </div>
+          <div className="bg-gradient-to-r from-amber-50/80 to-orange-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-amber-200/30 text-center animate-dialog-stagger-4">
+            <div className="text-2xl mb-3">💰</div>
+            <div className="text-3xl font-bold text-amber-700 mb-2">
+              {playerAfter.balance?.balance?.amount || 0} {playerAfter.balance?.balance?.currencyCode || 'GCO'}
             </div>
-          )}
+                          <div className="text-sm text-amber-600 font-medium">
+                +{balanceChange} {t('taskCompletion.balanceGained')}
+              </div>
+          </div>
 
 
 
@@ -243,7 +262,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
               onClick={handleClose}
               className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 group"
             >
-              <span className="mr-2">Продолжить</span>
+              <span className="mr-2">{t('taskCompletion.continue')}</span>
               <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>

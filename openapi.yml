@@ -457,6 +457,10 @@ components:
           $ref: '#/components/schemas/Level'
         balance:
           $ref: '#/components/schemas/PlayerBalance'
+        taskTopics:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerTaskTopic'
 
     PlayerTask:
       type: object

@@ -199,4 +199,17 @@ export const en = {
     complete: 'Done',
     replace: 'Replace',
   },
+
+  // Task completion dialog
+  taskCompletion: {
+    title: 'Task Completed!',
+    subtitle: 'Congratulations on successful completion!',
+    level: 'Level',
+    experience: 'Experience',
+    topicsProgress: 'Topics Progress',
+    stats: 'Stats',
+    balance: 'Balance',
+    balanceGained: 'for task completion',
+    continue: 'Continue',
+  },
 };

@@ -199,4 +199,17 @@ export const ru = {
     complete: 'Готово',
     replace: 'Заменить',
   },
+
+  // Диалог завершения задачи
+  taskCompletion: {
+    title: 'Задача выполнена!',
+    subtitle: 'Поздравляем с успешным завершением!',
+    level: 'Уровень',
+    experience: 'Опыт',
+    topicsProgress: 'Прогресс по темам',
+    stats: 'Характеристики',
+    balance: 'Баланс',
+    balanceGained: 'за выполнение задачи',
+    continue: 'Продолжить',
+  },
 };
