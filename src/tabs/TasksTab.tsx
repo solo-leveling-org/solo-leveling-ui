@@ -17,6 +17,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [loading, setLoading] = useState(false);
   const [dialogTask, setDialogTask] = useState<PlayerTask | null>(null);
   const [completionResponse, setCompletionResponse] = useState<CompleteTaskResponse | null>(null);
+  const [completedTask, setCompletedTask] = useState<PlayerTask | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmAction, setConfirmAction] = useState<{
     type: 'complete' | 'replace';
@@ -55,6 +56,8 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
       setLoading(true);
       const response = await taskActions.completeTask(task);
       setTasks(response.tasks);
+      // Сохраняем выполненную задачу для отображения в диалоге
+      setCompletedTask(task);
       // Показываем диалог с результатами выполнения задачи
       setCompletionResponse(response.completionResponse);
     } catch (error) {
@@ -204,8 +207,11 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
       {completionResponse && (
         <TaskCompletionDialog 
           response={completionResponse}
-          completedTask={confirmAction?.task?.task}
-          onClose={() => setCompletionResponse(null)} 
+          completedTask={completedTask?.task}
+          onClose={() => {
+            setCompletionResponse(null);
+            setCompletedTask(null);
+          }} 
         />
       )}
 
