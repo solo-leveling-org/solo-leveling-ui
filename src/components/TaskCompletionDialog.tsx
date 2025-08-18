@@ -43,8 +43,17 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
   const intelligenceChange = (playerAfter.intelligence || 0) - (playerBefore.intelligence || 0);
   const balanceChange = completedTask?.currencyReward || 0; // Награда из выполненной задачи
   
+
+  
   // Получаем прогресс по топикам из реального контракта
   const topicProgress = playerAfter.taskTopics || [];
+
+  // Показываем прогресс только по тем топикам, которые были у выполненной задачи
+  const topicsInTask = new Set(completedTask?.topics || []);
+  const filteredTopicProgress = topicProgress.filter(tp => tp.taskTopic && topicsInTask.has(tp.taskTopic));
+  const perTopicExpGain = (completedTask?.topics && completedTask.topics.length > 0)
+    ? Math.floor((completedTask?.experience || 0) / completedTask.topics.length)
+    : 0;
 
   return (
     <div
@@ -109,6 +118,12 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     +{expChange} XP
                   </div>
                 )}
+                {/* Показываем изменение уровня если он повысился */}
+                {(playerAfter.level?.level || 1) > (playerBefore.level?.level || 1) && (
+                  <div className="text-sm text-green-600 font-medium">
+                    +{(playerAfter.level?.level || 1) - (playerBefore.level?.level || 1)} {t('profile.tabs.level')}
+                  </div>
+                )}
               </div>
             </div>
             
@@ -132,13 +147,14 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
               </div>
               
               {/* Topics Progress */}
-              <div className="mt-4 pt-4 border-t border-blue-200/30">
-                <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                  <span className="text-lg mr-2">🎯</span>
-                  {t('taskCompletion.topicsProgress')}
-                </h4>
-                                  <div className="space-y-3">
-                    {topicProgress.map((topicData) => {
+              {filteredTopicProgress.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-blue-200/30">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                    <span className="text-lg mr-2">🎯</span>
+                    {t('taskCompletion.topicsProgress')}
+                  </h4>
+                  <div className="space-y-3">
+                    {filteredTopicProgress.map((topicData) => {
                       if (!topicData.taskTopic || !topicData.level) return null;
                       
                       const topic = topicData.taskTopic;
@@ -161,7 +177,13 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                           <div className="space-y-2">
                             <div className="flex justify-between text-xs text-gray-500">
                               <span>{t('taskCompletion.experience')}</span>
-                              <span>{currentExp} / {maxExp}</span>
+                              <span className="flex items-center">
+                                {currentExp} / {maxExp}
+                                {/* Изменение опыта топика пропорционально количеству топиков задачи */}
+                                {perTopicExpGain > 0 && (
+                                  <span className="ml-2 text-green-600 font-bold">+{perTopicExpGain}</span>
+                                )}
+                              </span>
                             </div>
                             <div className="relative w-full bg-gray-200/50 rounded-full h-2 overflow-hidden">
                               <div
@@ -176,7 +198,8 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                       );
                     })}
                   </div>
-              </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -186,59 +209,59 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
               <span className="text-2xl mr-3">⚔️</span>
               {t('taskCompletion.stats')}
             </h3>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-row gap-4">
               {/* Strength */}
               <div className="flex-1 text-center">
                 <div className="text-2xl mb-2">💪</div>
-                <div className="text-xl font-bold text-red-600 mb-1">
+                <div className="text-xl font-bold text-red-600 mb-1 flex items-center justify-center">
                   {playerAfter.strength || 0}
+                  {strengthChange !== 0 && (
+                    <span className={`ml-2 text-sm font-bold px-2 py-1 rounded-full ${
+                      strengthChange > 0 
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-red-100 text-red-700'
+                    }`}>
+                      {strengthChange > 0 ? '+' : ''}{strengthChange}
+                    </span>
+                  )}
                 </div>
                 <div className="text-xs text-red-500 font-medium mb-2">{t('profile.stats.strength')}</div>
-                {strengthChange !== 0 && (
-                  <div className={`text-sm font-bold px-2 py-1 rounded-full ${
-                    strengthChange > 0 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-red-100 text-red-700'
-                  }`}>
-                    {strengthChange > 0 ? '+' : ''}{strengthChange}
-                  </div>
-                )}
               </div>
 
               {/* Agility */}
               <div className="flex-1 text-center">
                 <div className="text-2xl mb-2">⚡</div>
-                <div className="text-xl font-bold text-green-600 mb-1">
+                <div className="text-xl font-bold text-green-600 mb-1 flex items-center justify-center">
                   {playerAfter.agility || 0}
+                  {agilityChange !== 0 && (
+                    <span className={`ml-2 text-sm font-bold px-2 py-1 rounded-full ${
+                      agilityChange > 0 
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-red-100 text-red-700'
+                    }`}>
+                      {agilityChange > 0 ? '+' : ''}{agilityChange}
+                    </span>
+                  )}
                 </div>
                 <div className="text-xs text-green-500 font-medium mb-2">{t('profile.stats.agility')}</div>
-                {agilityChange !== 0 && (
-                  <div className={`text-sm font-bold px-2 py-1 rounded-full ${
-                    agilityChange > 0 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-red-100 text-red-700'
-                  }`}>
-                    {agilityChange > 0 ? '+' : ''}{agilityChange}
-                  </div>
-                )}
               </div>
 
               {/* Intelligence */}
               <div className="flex-1 text-center">
                 <div className="text-2xl mb-2">🧠</div>
-                <div className="text-xl font-bold text-purple-600 mb-1">
+                <div className="text-xl font-bold text-purple-600 mb-1 flex items-center justify-center">
                   {playerAfter.intelligence || 0}
+                  {intelligenceChange !== 0 && (
+                    <span className={`ml-2 text-sm font-bold px-2 py-1 rounded-full ${
+                      intelligenceChange > 0 
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-red-100 text-red-700'
+                    }`}>
+                      {intelligenceChange > 0 ? '+' : ''}{intelligenceChange}
+                    </span>
+                  )}
                 </div>
                 <div className="text-xs text-purple-500 font-medium mb-2">{t('profile.stats.intelligence')}</div>
-                {intelligenceChange !== 0 && (
-                  <div className={`text-sm font-bold px-2 py-1 rounded-full ${
-                    intelligenceChange > 0 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-red-100 text-red-700'
-                  }`}>
-                    {intelligenceChange > 0 ? '+' : ''}{intelligenceChange}
-                  </div>
-                )}
               </div>
             </div>
           </div>
