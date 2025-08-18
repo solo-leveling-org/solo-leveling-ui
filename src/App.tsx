@@ -15,6 +15,7 @@ import {
 } from 'react-router-dom';
 import TopicsTab from './tabs/TopicsTab';
 import WelcomeTab from './tabs/WelcomeTab';
+import TelegramFeaturesTab from './tabs/TelegramFeaturesTab';
 import {useTelegram} from './useTelegram';
 import {auth} from './auth';
 import { useLocalization } from './hooks/useLocalization';
@@ -95,6 +96,14 @@ function AppRoutes() {
         navigate('/topics');
         setDrawerOpen(false);
       },
+    },
+    {
+      label: t('navigation.telegram'),
+      active: location.pathname === '/telegram',
+      onClick: () => {
+        navigate('/telegram');
+        setDrawerOpen(false);
+      },
     }
   ];
 
@@ -123,6 +132,7 @@ function AppRoutes() {
                         <Route path="/tasks" element={<TasksTab isAuthenticated={isAuthenticated} />}/>
                         <Route path="/topics" element={<TopicsTab isAuthenticated={isAuthenticated} />}/>
                         <Route path="/profile" element={<ProfileTab isAuthenticated={isAuthenticated} />}/>
+                        <Route path="/telegram" element={<TelegramFeaturesTab isAuthenticated={isAuthenticated} />}/>
                         <Route path="*" element={<Navigate to="/" replace/>}/>
                       </Routes>
                     </main>

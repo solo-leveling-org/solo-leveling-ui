@@ -26,6 +26,7 @@ export const en = {
     tasks: 'Tasks',
     topics: 'Topics',
     welcome: 'Home',
+    telegram: 'Telegram',
   },
 
   // Welcome page

@@ -26,6 +26,7 @@ export const ru = {
     tasks: 'Задачи',
     topics: 'Темы',
     welcome: 'Главная',
+    telegram: 'Telegram',
   },
 
   // Приветственная страница
