@@ -6,7 +6,7 @@ import TaskCompletionDialog from '../components/TaskCompletionDialog';
 import { taskActions, api } from '../services';
 import { useNavigate } from 'react-router-dom';
 import { useLocalization } from '../hooks/useLocalization';
-import { useTelegramWebApp } from '../useTelegram';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 type TasksTabProps = {
   isAuthenticated: boolean;
@@ -17,9 +17,13 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [loading, setLoading] = useState(false);
   const [dialogTask, setDialogTask] = useState<PlayerTask | null>(null);
   const [completionResponse, setCompletionResponse] = useState<CompleteTaskResponse | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{
+    type: 'complete' | 'replace';
+    task: PlayerTask;
+  } | null>(null);
   const navigate = useNavigate();
   const { t } = useLocalization();
-  const { showConfirm } = useTelegramWebApp();
 
   // Загружаем задачи только при монтировании компонента и если авторизованы
   useEffect(() => {
@@ -42,14 +46,8 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   };
 
   const handleCompleteTask = async (task: PlayerTask) => {
-    showConfirm(
-      t('tasks.confirm.complete'),
-      (confirmed: boolean) => {
-        if (confirmed) {
-          completeTask(task);
-        }
-      }
-    );
+    setConfirmAction({ type: 'complete', task });
+    setShowConfirmDialog(true);
   };
 
   const completeTask = async (task: PlayerTask) => {
@@ -76,6 +74,23 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleConfirmAction = () => {
+    if (confirmAction) {
+      if (confirmAction.type === 'complete') {
+        completeTask(confirmAction.task);
+      } else if (confirmAction.type === 'replace') {
+        skipTask(confirmAction.task);
+      }
+      setShowConfirmDialog(false);
+      setConfirmAction(null);
+    }
+  };
+
+  const handleCancelConfirm = () => {
+    setShowConfirmDialog(false);
+    setConfirmAction(null);
   };
 
   if (loading && tasks.length === 0) {
@@ -176,14 +191,8 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           onComplete={handleCompleteTask}
           onReplace={async (playerTask) => {
             if (loading) return;
-            showConfirm(
-              t('tasks.confirm.replace'),
-              (confirmed: boolean) => {
-                if (confirmed) {
-                  skipTask(playerTask);
-                }
-              }
-            );
+            setConfirmAction({ type: 'replace', task: playerTask });
+            setShowConfirmDialog(true);
           }}
         />
       </div>
@@ -194,10 +203,26 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
 
       {completionResponse && (
         <TaskCompletionDialog 
-          response={completionResponse} 
+          response={completionResponse}
+          completedTask={confirmAction?.task?.task}
           onClose={() => setCompletionResponse(null)} 
         />
       )}
+
+      <ConfirmDialog
+        isOpen={showConfirmDialog}
+        message={confirmAction?.type === 'complete' 
+          ? t('tasks.confirm.complete') 
+          : t('tasks.confirm.replace')
+        }
+        onConfirm={handleConfirmAction}
+        onCancel={handleCancelConfirm}
+        confirmText={confirmAction?.type === 'complete' 
+          ? t('tasks.buttons.complete') 
+          : t('tasks.buttons.replace')
+        }
+        cancelText={t('common.cancel')}
+      />
     </div>
   );
 };

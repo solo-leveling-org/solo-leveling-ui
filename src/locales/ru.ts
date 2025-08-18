@@ -7,6 +7,7 @@ export const ru = {
     close: 'Закрыть',
     back: 'Назад',
     next: 'Далее',
+    confirm: 'Подтвердить',
     active: 'Активно',
     completed: 'Завершено',
     inProgress: 'В процессе',
@@ -77,7 +78,6 @@ export const ru = {
     actions: {
       complete: 'Завершить',
       replace: 'Заменить',
-      skip: 'Пропустить',
     },
     buttons: {
       complete: 'Готово',

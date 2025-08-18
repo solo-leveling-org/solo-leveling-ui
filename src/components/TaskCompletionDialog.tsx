@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
-import type { CompleteTaskResponse } from '../api';
+import type { CompleteTaskResponse, Task } from '../api';
 
 
 type TaskCompletionDialogProps = {
   response: CompleteTaskResponse;
+  completedTask?: Task; // Добавляем задачу, которую выполнил пользователь
   onClose: () => void;
 };
 
-const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, onClose }) => {
+const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, completedTask, onClose }) => {
   const { playerBefore, playerAfter } = response;
 
   // Блокируем скролл фонового контента при открытии диалога
@@ -34,12 +35,18 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, o
   }
 
   // Вычисляем изменения
-  const levelChange = (playerAfter.level?.level || 0) - (playerBefore.level?.level || 0);
-  const expChange = (playerAfter.level?.currentExperience || 0) - (playerBefore.level?.currentExperience || 0);
+  const expChange = completedTask?.experience || 0; // Опыт из выполненной задачи
   const strengthChange = (playerAfter.strength || 0) - (playerBefore.strength || 0);
   const agilityChange = (playerAfter.agility || 0) - (playerBefore.agility || 0);
   const intelligenceChange = (playerAfter.intelligence || 0) - (playerBefore.intelligence || 0);
-  const balanceChange = (playerAfter.balance?.balance?.amount || 0) - (playerBefore.balance?.balance?.amount || 0);
+  const balanceChange = completedTask?.currencyReward || 0; // Награда из выполненной задачи
+  
+  // Мокаем прогресс по топикам (временно)
+  const mockTopicProgress = [
+    { topic: 'PHYSICAL_ACTIVITY', level: 3, currentExp: 45, maxExp: 100 },
+    { topic: 'MENTAL_HEALTH', level: 2, currentExp: 78, maxExp: 100 },
+    { topic: 'EDUCATION', level: 4, currentExp: 12, maxExp: 100 }
+  ];
 
   return (
     <div
@@ -99,9 +106,9 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, o
                 <div className="text-2xl font-bold text-blue-600">
                   {playerAfter.level?.level || 1}
                 </div>
-                {levelChange > 0 && (
+                {expChange > 0 && (
                   <div className="text-sm text-green-600 font-medium">
-                    +{levelChange} уровень!
+                    +{expChange} XP
                   </div>
                 )}
               </div>
@@ -111,10 +118,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, o
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Опыт</span>
                 <span className="text-sm font-medium text-gray-800">
-                  {playerBefore.level?.currentExperience || 0} → {playerAfter.level?.currentExperience || 0}
-                  {expChange > 0 && (
-                    <span className="text-green-600 ml-2">+{expChange}</span>
-                  )}
+                  {playerAfter.level?.currentExperience || 0} / {playerAfter.level?.experienceToNextLevel || 100}
                 </span>
               </div>
               
@@ -129,8 +133,34 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, o
                 </div>
               </div>
               
-              <div className="text-xs text-gray-500 text-center">
-                До следующего уровня: {playerAfter.level?.experienceToNextLevel || 100} XP
+              {/* Topics Progress */}
+              <div className="mt-4 pt-4 border-t border-blue-200/30">
+                <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                  <span className="text-lg mr-2">🎯</span>
+                  Прогресс по темам
+                </h4>
+                <div className="space-y-2">
+                  {mockTopicProgress.map((topic) => (
+                    <div key={topic.topic} className="flex items-center justify-between">
+                      <span className="text-xs text-gray-600 w-20 truncate">
+                        {topic.topic === 'PHYSICAL_ACTIVITY' ? 'Физ. активность' :
+                         topic.topic === 'MENTAL_HEALTH' ? 'Ментальное здоровье' :
+                         topic.topic === 'EDUCATION' ? 'Образование' : topic.topic}
+                      </span>
+                      <div className="flex-1 mx-2">
+                        <div className="relative w-full bg-gray-200/30 rounded-full h-2 overflow-hidden">
+                          <div
+                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-400 to-blue-500 rounded-full"
+                            style={{ width: `${(topic.currentExp / topic.maxExp) * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      <span className="text-xs text-gray-700 font-medium w-12 text-right">
+                        {topic.currentExp}/{topic.maxExp}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -197,32 +227,15 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, o
             <div className="bg-gradient-to-r from-amber-50/80 to-orange-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-amber-200/30 text-center animate-dialog-stagger-4">
               <div className="text-2xl mb-3">💰</div>
               <div className="text-3xl font-bold text-amber-700 mb-2">
-                +{balanceChange} {playerAfter.balance?.balance?.currencyCode || 'GCO'}
+                {playerAfter.balance?.balance?.amount || 0} {playerAfter.balance?.balance?.currencyCode || 'GCO'}
               </div>
               <div className="text-sm text-amber-600 font-medium">
-                Награда за выполнение задачи
+                +{balanceChange} за выполнение задачи
               </div>
             </div>
           )}
 
-          {/* Topics Progress - показываем только если есть изменения в уровне */}
-          {levelChange > 0 && (
-            <div className="bg-gradient-to-br from-indigo-50/80 to-blue-50/80 backdrop-blur-sm rounded-2xl p-6 border border-indigo-200/30 animate-dialog-stagger-4">
-              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                <span className="text-2xl mr-3">🎯</span>
-                Новые возможности!
-              </h3>
-              <div className="text-center">
-                <div className="text-2xl mb-2">🎉</div>
-                <p className="text-gray-700 mb-4">
-                  Повышение уровня открывает новые возможности и задачи!
-                </p>
-                <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-500 to-blue-600 text-white rounded-full text-sm font-medium">
-                  Уровень {playerAfter.level?.level || 1} достигнут!
-                </div>
-              </div>
-            </div>
-          )}
+
 
           {/* Continue Button */}
           <div className="text-center mt-8 animate-dialog-stagger-4">

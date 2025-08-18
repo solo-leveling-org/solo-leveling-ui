@@ -7,6 +7,7 @@ export const en = {
     close: 'Close',
     back: 'Back',
     next: 'Next',
+    confirm: 'Confirm',
     active: 'Active',
     completed: 'Completed',
     inProgress: 'In Progress',
@@ -77,7 +78,6 @@ export const en = {
     actions: {
       complete: 'Complete',
       replace: 'Replace',
-      skip: 'Skip',
     },
     buttons: {
       complete: 'Done',
