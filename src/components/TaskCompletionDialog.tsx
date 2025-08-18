@@ -55,6 +55,13 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
     ? Math.floor((completedTask?.experience || 0) / completedTask.topics.length)
     : 0;
 
+  // Карта уровней по темам ДО выполнения задачи для вычисления изменения уровня топика
+  const beforeTopicLevelMap = new Map(
+    (playerBefore.taskTopics || [])
+      .filter(tp => tp.taskTopic)
+      .map(tp => [tp.taskTopic!, tp.level])
+  );
+
   return (
     <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-dialog-backdrop"
@@ -169,9 +176,18 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                             <span className="text-sm font-medium text-gray-700">
                               {t(`topics.labels.${topic}`)}
                             </span>
-                                                          <span className="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-full">
-                                {t('profile.tabs.level')} {level.level || 1}
-                              </span>
+                            <span className="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-full flex items-center">
+                              {t('profile.tabs.level')} {level.level || 1}
+                              {/* Изменение уровня топика если повысился */}
+                              {(() => {
+                                const beforeLvl = beforeTopicLevelMap.get(topic)?.level || 0;
+                                const afterLvl = level.level || 0;
+                                const delta = afterLvl - beforeLvl;
+                                return delta > 0 ? (
+                                  <span className="ml-2 text-green-600 bg-green-50 border border-green-200 rounded-full px-1.5 py-0.5">+{delta}</span>
+                                ) : null;
+                              })()}
+                            </span>
                           </div>
                           
                           <div className="space-y-2">
