@@ -79,6 +79,10 @@ export const ru = {
       replace: 'Заменить',
       skip: 'Пропустить',
     },
+    buttons: {
+      complete: 'Готово',
+      replace: 'Заменить',
+    },
     confirm: {
       complete: 'Вы уверены, что хотите завершить эту задачу?',
       replace: 'Вы уверены, что хотите заменить эту задачу?',
@@ -188,5 +192,11 @@ export const ru = {
     RARE: 'Редкая',
     EPIC: 'Эпическая',
     LEGENDARY: 'Легендарная',
+  },
+
+  // Карточки задач
+  taskCard: {
+    complete: 'Готово',
+    replace: 'Заменить',
   },
 };

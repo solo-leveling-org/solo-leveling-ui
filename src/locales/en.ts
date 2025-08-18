@@ -79,6 +79,10 @@ export const en = {
       replace: 'Replace',
       skip: 'Skip',
     },
+    buttons: {
+      complete: 'Done',
+      replace: 'Replace',
+    },
     confirm: {
       complete: 'Are you sure you want to complete this task?',
       replace: 'Are you sure you want to replace this task?',
@@ -188,5 +192,11 @@ export const en = {
     RARE: 'Rare',
     EPIC: 'Epic',
     LEGENDARY: 'Legendary',
+  },
+
+  // Task cards
+  taskCard: {
+    complete: 'Done',
+    replace: 'Replace',
   },
 };

@@ -194,7 +194,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
                 className="relative overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 text-emerald-600 rounded-full px-4 py-2 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-emerald-50/30"
                 title="Завершить задачу"
               >
-                <span className="relative z-10">Готово</span>
+                <span className="relative z-10">{t('taskCard.complete')}</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-green-500/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
               </button>
               <button
@@ -205,7 +205,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
                 className="relative overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 text-blue-600 rounded-full px-4 py-2 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-blue-50/30"
                 title="Заменить задачу"
               >
-                <span className="relative z-10">Заменить</span>
+                <span className="relative z-10">{t('taskCard.replace')}</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
               </button>
             </div>
