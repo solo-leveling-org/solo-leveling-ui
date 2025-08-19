@@ -183,7 +183,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                             <span className="text-sm font-medium text-gray-700">
                               {t(`topics.labels.${topic}`)}
                             </span>
-                            <span className="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-full flex items-center">
+                            <span className="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-full flex items-center whitespace-nowrap">
                               {t('profile.tabs.level')} {level.level || 1}
                               {/* Изменение уровня топика если повысился */}
                               {(() => {
