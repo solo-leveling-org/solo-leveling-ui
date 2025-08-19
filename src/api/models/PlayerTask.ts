@@ -8,6 +8,7 @@ export type PlayerTask = {
     id?: string;
     version?: number;
     order?: number;
+    closedAt?: string;
     status?: PlayerTaskStatus;
     task?: Task;
 };

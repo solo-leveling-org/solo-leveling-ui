@@ -224,10 +224,10 @@ components:
       required:
         - topics
       properties:
-        topics:
+        playerTaskTopics:
           type: array
           items:
-            $ref: '#/components/schemas/TaskTopic'
+            $ref: '#/components/schemas/PlayerTaskTopic'
 
     CompleteTaskRequest:
       type: object
@@ -405,6 +405,8 @@ components:
         version:
           type: integer
           format: int32
+        isActive:
+          type: boolean
         taskTopic:
           $ref: '#/components/schemas/TaskTopic'
         level:
@@ -474,6 +476,9 @@ components:
         order:
           type: integer
           format: int32
+        closedAt:
+          type: string
+          format: date-time
         status:
           $ref: '#/components/schemas/PlayerTaskStatus'
         task:

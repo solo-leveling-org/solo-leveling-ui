@@ -2,7 +2,8 @@ import {PlayerTask, UserService} from './api';
 import {PlayerService} from './api';
 import type {User as ApiUser} from './api/models/User';
 import type {PlayerTask as ApiPlayerTask} from './api/models/PlayerTask';
-import type {TaskTopic as ApiTaskTopic} from './api/models/TaskTopic';
+
+import type {PlayerTaskTopic} from './api';
 import type {GetActiveTasksResponse} from './api';
 import type {GetPlayerTopicsResponse} from './api';
 import type {GetUserResponse} from './api';
@@ -53,10 +54,10 @@ export const api = {
     }
   },
 
-  saveUserTopics: async (topics: ApiTaskTopic[]): Promise<void> => {
+  saveUserTopics: async (topics: PlayerTaskTopic[]): Promise<void> => {
     try {
       await PlayerService.savePlayerTopics({
-        topics: topics
+        playerTaskTopics: topics
       });
     } catch (error) {
       console.error('Error saving user topics:', error);

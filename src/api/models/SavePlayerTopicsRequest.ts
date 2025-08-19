@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { TaskTopic } from './TaskTopic';
+import type { PlayerTaskTopic } from './PlayerTaskTopic';
 export type SavePlayerTopicsRequest = {
-    topics: Array<TaskTopic>;
+    playerTaskTopics?: Array<PlayerTaskTopic>;
 };
 
