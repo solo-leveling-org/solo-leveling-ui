@@ -232,14 +232,14 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
               <span className="text-2xl mr-3">⚔️</span>
               {t('taskCompletion.stats')}
             </h3>
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex flex-row gap-4">
               {/* Strength */}
               <div className="flex-1 text-center">
                 <div className="text-2xl mb-2">💪</div>
-                <div className="text-lg sm:text-xl font-bold text-red-600 mb-1 flex flex-col sm:flex-row items-center justify-center gap-2">
-                  <span className="break-all">{playerAfter.strength || 0}</span>
+                <div className="text-xl font-bold text-red-600 mb-1 flex items-center justify-center gap-2 min-w-0">
+                  <span className="truncate">{playerAfter.strength || 0}</span>
                   {strengthChange !== 0 && (
-                    <span className={`text-xs font-bold px-2 py-1 rounded-full whitespace-nowrap ${
+                    <span className={`text-sm font-bold px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0 ${
                       strengthChange > 0
                         ? 'bg-green-50 text-green-600 border border-green-200'
                         : 'bg-red-100 text-red-700'
@@ -254,10 +254,10 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
               {/* Agility */}
               <div className="flex-1 text-center">
                 <div className="text-2xl mb-2">⚡</div>
-                <div className="text-lg sm:text-xl font-bold text-green-600 mb-1 flex flex-col sm:flex-row items-center justify-center gap-2">
-                  <span className="break-all">{playerAfter.agility || 0}</span>
+                <div className="text-xl font-bold text-green-600 mb-1 flex items-center justify-center gap-2 min-w-0">
+                  <span className="truncate">{playerAfter.agility || 0}</span>
                   {agilityChange !== 0 && (
-                    <span className={`text-xs font-bold px-2 py-1 rounded-full whitespace-nowrap ${
+                    <span className={`text-sm font-bold px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0 ${
                       agilityChange > 0
                         ? 'bg-green-50 text-green-600 border border-green-200'
                         : 'bg-red-100 text-red-700'
@@ -272,10 +272,10 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
               {/* Intelligence */}
               <div className="flex-1 text-center">
                 <div className="text-2xl mb-2">🧠</div>
-                <div className="text-lg sm:text-xl font-bold text-purple-600 mb-1 flex flex-col sm:flex-row items-center justify-center gap-2">
-                  <span className="break-all">{playerAfter.intelligence || 0}</span>
+                <div className="text-xl font-bold text-purple-600 mb-1 flex items-center justify-center gap-2 min-w-0">
+                  <span className="truncate">{playerAfter.intelligence || 0}</span>
                   {intelligenceChange !== 0 && (
-                    <span className={`text-xs font-bold px-2 py-1 rounded-full whitespace-nowrap ${
+                    <span className={`text-sm font-bold px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0 ${
                       intelligenceChange > 0
                         ? 'bg-green-50 text-green-600 border border-green-200'
                         : 'bg-red-100 text-red-700'
