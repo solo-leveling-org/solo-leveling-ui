@@ -117,7 +117,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 {t('taskCompletion.level')}
               </h3>
               {expChange > 0 && (
-                <div className="text-sm text-green-600 font-medium bg-green-50 border border-green-200 rounded-full px-3 py-1.5">
+                <div className="text-sm text-green-600 font-bold bg-green-50 border border-green-200 rounded-full px-3 py-1.5">
                   +{expChange} XP
                 </div>
               )}
@@ -132,7 +132,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                   </div>
                   {/* Изменение уровня пользователя если повысился */}
                   {(playerAfter.level?.level || 1) > (playerBefore.level?.level || 1) && (
-                    <div className="absolute -top-2 -right-2 bg-green-50 text-green-600 border border-green-200 text-sm font-medium rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
+                    <div className="absolute -top-2 -right-2 bg-green-50 text-green-600 border border-green-200 text-sm font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
                       +{(playerAfter.level?.level || 1) - (playerBefore.level?.level || 1)}
                     </div>
                   )}
@@ -238,10 +238,10 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 <div className="text-2xl mb-2">💪</div>
                 <div className="text-xl font-bold text-red-600 mb-1 flex items-center justify-center">
                   {playerAfter.strength || 0}
-                  {strengthChange !== 0 && (
+                                    {strengthChange !== 0 && (
                     <span className={`ml-2 text-sm font-bold px-2 py-1 rounded-full ${
-                      strengthChange > 0 
-                        ? 'bg-green-100 text-green-700' 
+                      strengthChange > 0
+                        ? 'bg-green-50 text-green-600 border border-green-200'
                         : 'bg-red-100 text-red-700'
                     }`}>
                       {strengthChange > 0 ? '+' : ''}{strengthChange}
@@ -256,10 +256,10 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 <div className="text-2xl mb-2">⚡</div>
                 <div className="text-xl font-bold text-green-600 mb-1 flex items-center justify-center">
                   {playerAfter.agility || 0}
-                  {agilityChange !== 0 && (
+                                    {agilityChange !== 0 && (
                     <span className={`ml-2 text-sm font-bold px-2 py-1 rounded-full ${
-                      agilityChange > 0 
-                        ? 'bg-green-100 text-green-700' 
+                      agilityChange > 0
+                        ? 'bg-green-50 text-green-600 border border-green-200'
                         : 'bg-red-100 text-red-700'
                     }`}>
                       {agilityChange > 0 ? '+' : ''}{agilityChange}
@@ -274,10 +274,10 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 <div className="text-2xl mb-2">🧠</div>
                 <div className="text-xl font-bold text-purple-600 mb-1 flex items-center justify-center">
                   {playerAfter.intelligence || 0}
-                  {intelligenceChange !== 0 && (
+                                    {intelligenceChange !== 0 && (
                     <span className={`ml-2 text-sm font-bold px-2 py-1 rounded-full ${
-                      intelligenceChange > 0 
-                        ? 'bg-green-100 text-green-700' 
+                      intelligenceChange > 0
+                        ? 'bg-green-50 text-green-600 border border-green-200'
                         : 'bg-red-100 text-red-700'
                     }`}>
                       {intelligenceChange > 0 ? '+' : ''}{intelligenceChange}
