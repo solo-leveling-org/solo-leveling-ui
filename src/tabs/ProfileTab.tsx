@@ -42,13 +42,10 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
   const expPercentage = Math.min(100, Math.round((currentExp / maxExp) * 100));
   const assessment = user.player?.level?.assessment || 'F';
 
-  // Определяем характеристики на основе assessment
-  const getStatValue = (assessment: string) => {
-    const statMap: Record<string, number> = {
-      'S': 20, 'A': 18, 'B': 15, 'C': 12, 'D': 8
-    };
-    return statMap[assessment] || 5;
-  };
+  // Получаем характеристики из полей сущности Player
+  const strength = user.player?.strength || 0;
+  const agility = user.player?.agility || 0;
+  const intelligence = user.player?.intelligence || 0;
 
   const getAssessmentColor = (assessment: string) => {
     const colorMap: Record<string, string> = {
@@ -62,7 +59,6 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
     return colorMap[assessment] || colorMap['E'];
   };
 
-  const statValue = getStatValue(assessment);
   const assessmentColor = getAssessmentColor(assessment);
 
   return (
@@ -164,19 +160,19 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                   <div className="grid grid-cols-3 gap-4 mb-6">
                     <div className="bg-gradient-to-br from-red-50 to-red-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-red-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                       <div className="text-2xl mb-2">💪</div>
-                      <div className="text-xl font-bold text-red-600 mb-1">{statValue}</div>
+                      <div className="text-xl font-bold text-red-600 mb-1">{strength}</div>
                       <div className="text-xs text-red-500 font-medium">{t('profile.stats.strength')}</div>
                     </div>
 
                     <div className="bg-gradient-to-br from-green-50 to-green-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-green-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                       <div className="text-2xl mb-2">⚡</div>
-                      <div className="text-xl font-bold text-green-600 mb-1">{statValue}</div>
+                      <div className="text-xl font-bold text-green-600 mb-1">{agility}</div>
                       <div className="text-xs text-green-500 font-medium">{t('profile.stats.agility')}</div>
                     </div>
 
                     <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-purple-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                       <div className="text-2xl mb-2">🧠</div>
-                      <div className="text-xl font-bold text-purple-600 mb-1">{statValue}</div>
+                      <div className="text-xl font-bold text-purple-600 mb-1">{intelligence}</div>
                       <div className="text-xs text-purple-500 font-medium">{t('profile.stats.intelligence')}</div>
                     </div>
                   </div>

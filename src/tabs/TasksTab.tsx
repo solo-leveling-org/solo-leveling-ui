@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import type { PlayerTask } from '../api';
+import type { PlayerTask, CompleteTaskResponse } from '../api';
 import TasksGrid from '../components/TasksGrid';
 import TaskDialog from '../components/TaskDialog';
+import TaskCompletionDialog from '../components/TaskCompletionDialog';
 import { taskActions, api } from '../services';
 import { useNavigate } from 'react-router-dom';
 import { useLocalization } from '../hooks/useLocalization';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 type TasksTabProps = {
   isAuthenticated: boolean;
@@ -14,6 +16,13 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [tasks, setTasks] = useState<PlayerTask[]>([]);
   const [loading, setLoading] = useState(false);
   const [dialogTask, setDialogTask] = useState<PlayerTask | null>(null);
+  const [completionResponse, setCompletionResponse] = useState<CompleteTaskResponse | null>(null);
+  const [completedTask, setCompletedTask] = useState<PlayerTask | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{
+    type: 'complete' | 'replace';
+    task: PlayerTask;
+  } | null>(null);
   const navigate = useNavigate();
   const { t } = useLocalization();
 
@@ -35,6 +44,56 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
 
   const handleGoToTopics = () => {
     navigate('/topics');
+  };
+
+  const handleCompleteTask = async (task: PlayerTask) => {
+    setConfirmAction({ type: 'complete', task });
+    setShowConfirmDialog(true);
+  };
+
+  const completeTask = async (task: PlayerTask) => {
+    try {
+      setLoading(true);
+      const response = await taskActions.completeTask(task);
+      setTasks(response.tasks);
+      // Сохраняем выполненную задачу для отображения в диалоге
+      setCompletedTask(task);
+      // Показываем диалог с результатами выполнения задачи
+      setCompletionResponse(response.completionResponse);
+    } catch (error) {
+      console.error('Error completing task:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const skipTask = async (playerTask: PlayerTask) => {
+    try {
+      setLoading(true);
+      const updated = await taskActions.skipTask(playerTask);
+      setTasks(updated);
+    } catch (error) {
+      console.error('Error skipping task:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleConfirmAction = () => {
+    if (confirmAction) {
+      if (confirmAction.type === 'complete') {
+        completeTask(confirmAction.task);
+      } else if (confirmAction.type === 'replace') {
+        skipTask(confirmAction.task);
+      }
+      setShowConfirmDialog(false);
+      setConfirmAction(null);
+    }
+  };
+
+  const handleCancelConfirm = () => {
+    setShowConfirmDialog(false);
+    setConfirmAction(null);
   };
 
   if (loading && tasks.length === 0) {
@@ -59,7 +118,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
             <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto"></div>
           </div>
 
-          <TasksGrid tasks={[]} loading={true} onTaskClick={() => {}} />
+          <TasksGrid tasks={[]} loading={true} onTaskClick={() => {}} onComplete={handleCompleteTask} />
         </div>
       </div>
     );
@@ -132,15 +191,11 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           onTaskClick={(playerTask) => {
             if (playerTask.task) setDialogTask(playerTask);
           }}
-          onComplete={async (playerTask) => {
-            if (loading) return;
-            const updated = await taskActions.completeTask(playerTask);
-            setTasks(updated);
-          }}
+          onComplete={handleCompleteTask}
           onReplace={async (playerTask) => {
             if (loading) return;
-            const updated = await taskActions.replaceTask(playerTask);
-            setTasks(updated);
+            setConfirmAction({ type: 'replace', task: playerTask });
+            setShowConfirmDialog(true);
           }}
         />
       </div>
@@ -148,6 +203,32 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
       {dialogTask && dialogTask.task && (
         <TaskDialog task={dialogTask.task} onClose={() => setDialogTask(null)} />
       )}
+
+      {completionResponse && (
+        <TaskCompletionDialog 
+          response={completionResponse}
+          completedTask={completedTask?.task}
+          onClose={() => {
+            setCompletionResponse(null);
+            setCompletedTask(null);
+          }} 
+        />
+      )}
+
+      <ConfirmDialog
+        isOpen={showConfirmDialog}
+        message={confirmAction?.type === 'complete' 
+          ? t('tasks.confirm.complete') 
+          : t('tasks.confirm.replace')
+        }
+        onConfirm={handleConfirmAction}
+        onCancel={handleCancelConfirm}
+        confirmText={confirmAction?.type === 'complete' 
+          ? t('tasks.buttons.complete') 
+          : t('tasks.buttons.replace')
+        }
+        cancelText={t('common.cancel')}
+      />
     </div>
   );
 };

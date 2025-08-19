@@ -7,6 +7,7 @@ export const ru = {
     close: 'Закрыть',
     back: 'Назад',
     next: 'Далее',
+    confirm: 'Подтвердить',
     active: 'Активно',
     completed: 'Завершено',
     inProgress: 'В процессе',
@@ -77,7 +78,14 @@ export const ru = {
     actions: {
       complete: 'Завершить',
       replace: 'Заменить',
-      skip: 'Пропустить',
+    },
+    buttons: {
+      complete: 'Готово',
+      replace: 'Заменить',
+    },
+    confirm: {
+      complete: 'Вы уверены, что хотите завершить эту задачу?',
+      replace: 'Вы уверены, что хотите заменить эту задачу?',
     },
   },
 
@@ -184,5 +192,24 @@ export const ru = {
     RARE: 'Редкая',
     EPIC: 'Эпическая',
     LEGENDARY: 'Легендарная',
+  },
+
+  // Карточки задач
+  taskCard: {
+    complete: 'Готово',
+    replace: 'Заменить',
+  },
+
+  // Диалог завершения задачи
+  taskCompletion: {
+    title: 'Задача выполнена!',
+    subtitle: 'Поздравляем с успешным завершением!',
+    level: 'Уровень',
+    experience: 'Опыт',
+    topicsProgress: 'Прогресс по темам',
+    stats: 'Характеристики',
+    balance: 'Баланс',
+    balanceGained: 'за выполнение задачи',
+    continue: 'Продолжить',
   },
 };

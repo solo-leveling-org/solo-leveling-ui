@@ -7,6 +7,7 @@ export const en = {
     close: 'Close',
     back: 'Back',
     next: 'Next',
+    confirm: 'Confirm',
     active: 'Active',
     completed: 'Completed',
     inProgress: 'In Progress',
@@ -77,7 +78,14 @@ export const en = {
     actions: {
       complete: 'Complete',
       replace: 'Replace',
-      skip: 'Skip',
+    },
+    buttons: {
+      complete: 'Done',
+      replace: 'Replace',
+    },
+    confirm: {
+      complete: 'Are you sure you want to complete this task?',
+      replace: 'Are you sure you want to replace this task?',
     },
   },
 
@@ -184,5 +192,24 @@ export const en = {
     RARE: 'Rare',
     EPIC: 'Epic',
     LEGENDARY: 'Legendary',
+  },
+
+  // Task cards
+  taskCard: {
+    complete: 'Done',
+    replace: 'Replace',
+  },
+
+  // Task completion dialog
+  taskCompletion: {
+    title: 'Task Completed!',
+    subtitle: 'Congratulations on successful completion!',
+    level: 'Level',
+    experience: 'Experience',
+    topicsProgress: 'Topics Progress',
+    stats: 'Stats',
+    balance: 'Balance',
+    balanceGained: 'for task completion',
+    continue: 'Continue',
   },
 };

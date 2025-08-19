@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TaskTopic } from '../api';
-import type { GetPlayerTopicsResponse } from '../api';
+import type { GetPlayerTopicsResponse, PlayerTaskTopic } from '../api';
 import { api } from '../services';
 import { useNavigate } from 'react-router-dom';
 import { topicIcons } from '../topicMeta';
@@ -12,24 +12,24 @@ type TopicsTabProps = {
 
 const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
   const [allTopics] = useState<TaskTopic[]>(Object.values(TaskTopic));
-  const [selectedTopics, setSelectedTopics] = useState<TaskTopic[]>([]);
-  const [originalTopics, setOriginalTopics] = useState<TaskTopic[]>([]);
+  const [playerTopics, setPlayerTopics] = useState<PlayerTaskTopic[]>([]);
+  const [originalTopics, setOriginalTopics] = useState<PlayerTaskTopic[]>([]);
   const [firstTime, setFirstTime] = useState(false);
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
   const { t } = useLocalization();
 
-  // Загружаем выбранные темы только при монтировании компонента и если авторизованы
+  // Загружаем топики пользователя только при монтировании компонента и если авторизованы
   useEffect(() => {
     if (isAuthenticated) {
       api.getUserTopics()
         .then((res: GetPlayerTopicsResponse) => {
-          const topics = res.playerTaskTopics
-          .map((pt) => pt.taskTopic!)
-          .filter(Boolean);
-          setSelectedTopics(topics);
-          setOriginalTopics(topics); // Сохраняем исходные темы для сравнения
-          setFirstTime(res.playerTaskTopics.length === 0);
+          setPlayerTopics(res.playerTaskTopics);
+          // Сохраняем только активные топики как исходные для сравнения
+          const activeTopics = res.playerTaskTopics.filter(pt => pt.isActive);
+          setOriginalTopics(activeTopics);
+          // firstTime определяется по пустоте списка активных топиков
+          setFirstTime(activeTopics.length === 0);
         })
         .catch((error: any) => {
           console.error('Error getting player topics:', error);
@@ -37,32 +37,56 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
     }
   }, [isAuthenticated]);
 
-  // Проверяем, изменились ли топики
+  // Проверяем, изменились ли активные топики
   const hasChanges = () => {
-    if (selectedTopics.length !== originalTopics.length) return true;
-    return !selectedTopics.every((topic) => originalTopics.includes(topic));
+    const currentActiveTopics = playerTopics.filter(pt => pt.isActive);
+    if (currentActiveTopics.length !== originalTopics.length) return true;
+    return !currentActiveTopics.every((pt) => 
+      originalTopics.some(opt => opt.taskTopic === pt.taskTopic)
+    );
   };
 
-  const canSave = selectedTopics.length > 0 && (firstTime || hasChanges());
+  const canSave = playerTopics.some(pt => pt.isActive) && (firstTime || hasChanges());
 
   const handleToggle = (topic: TaskTopic) => {
-    setSelectedTopics((prev) =>
-        prev.includes(topic)
-            ? prev.filter((t) => t !== topic)
-            : [...prev, topic]
-    );
+    setPlayerTopics((prev) => {
+      const existingTopic = prev.find(pt => pt.taskTopic === topic);
+      if (existingTopic) {
+        // Если топик уже есть, переключаем его активность
+        return prev.map(pt => 
+          pt.taskTopic === topic 
+            ? { ...pt, isActive: !pt.isActive }
+            : pt
+        );
+      } else {
+        // Если топика нет, добавляем его как активный с базовым уровнем
+        return [...prev, {
+          taskTopic: topic,
+          isActive: true,
+          level: {
+            level: 1,
+            currentExperience: 0,
+            experienceToNextLevel: 100
+          }
+        }];
+      }
+    });
   };
 
   const handleSave = async () => {
     setSaving(true);
-    await api.saveUserTopics(selectedTopics);
-    setOriginalTopics(selectedTopics); // Обновляем исходные темы после сохранения
+    await api.saveUserTopics(playerTopics);
+    setOriginalTopics(playerTopics); // Обновляем исходные топики после сохранения
     if (firstTime) {
       await api.generateTasks();
     }
     setSaving(false);
     if (firstTime) navigate('/tasks');
   };
+
+  // Получаем активные топики для отображения
+  const getActiveTopics = () => playerTopics.filter(pt => pt.isActive).map(pt => pt.taskTopic).filter(Boolean);
+  const getActiveTopicsCount = () => getActiveTopics().length;
 
   // Определяем цветовые схемы для разных топиков
   const getTopicColorScheme = (topic: TaskTopic) => {
@@ -194,7 +218,8 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
           {/* Topics Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
             {allTopics.map((topic, index) => {
-              const isSelected = selectedTopics.includes(topic);
+              const playerTopic = playerTopics.find(pt => pt.taskTopic === topic);
+              const isSelected = playerTopic?.isActive || false;
               const colorScheme = getTopicColorScheme(topic);
               return (
                   <button
@@ -247,7 +272,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
 
                       {/* Label */}
                       <div
-                          className={`text-xs sm:text-sm font-semibold leading-tight transition-colors duration-200 ${
+                          className={`text-xs sm:text-sm font-semibold leading-tight transition-colors duration-200 mb-2 ${
                               isSelected
                                   ? colorScheme.selectedText
                                   : `${colorScheme.text} group-hover:text-gray-800`
@@ -255,6 +280,41 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                       >
                         {t(`topics.labels.${topic}`)}
                       </div>
+
+                      {/* Level and Progress (для всех топиков пользователя) */}
+                      {playerTopic?.level && (
+                        <div className="space-y-2">
+                          {/* Level Badge */}
+                          <div className={`inline-flex items-center px-2 py-1 backdrop-blur-sm rounded-full border ${
+                            isSelected 
+                              ? 'bg-white/60 border-white/30' 
+                              : 'bg-gray-100/60 border-gray-200/30'
+                          }`}>
+                            <span className={`text-xs font-bold ${
+                              isSelected ? 'text-blue-600' : 'text-gray-600'
+                            }`}>
+                              {t('profile.tabs.level')} {playerTopic.level.level || 1}
+                            </span>
+                          </div>
+                          
+                          {/* Experience Progress */}
+                          <div className="space-y-1">
+                            <div className="text-xs text-gray-600">
+                              {playerTopic.level.currentExperience || 0} / {playerTopic.level.experienceToNextLevel || 100}
+                            </div>
+                            <div className="relative w-full bg-gray-200/50 rounded-full h-1.5 overflow-hidden">
+                              <div
+                                className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-500"
+                                style={{ 
+                                  width: `${Math.min(100, Math.round(((playerTopic.level.currentExperience || 0) / (playerTopic.level.experienceToNextLevel || 100)) * 100))}%` 
+                                }}
+                              >
+                                <div className="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Hover glow effect */}
@@ -310,9 +370,9 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                       </svg>
                     </div>
                     <div>
-                      <div className="text-lg font-bold text-gray-800">
-                        {selectedTopics.length} / {allTopics.length}
-                      </div>
+                                        <div className="text-lg font-bold text-gray-800">
+                    {getActiveTopicsCount()} / {allTopics.length}
+                  </div>
                       <div className="text-xs text-gray-600">{t('topics.selected')}</div>
                     </div>
                   </div>
@@ -382,8 +442,8 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
             </button>
 
             {!canSave && !saving && (
-                <p className="text-gray-500 text-sm mt-3">
-                  {selectedTopics.length === 0
+                <p className="text-sm mt-3 text-gray-500">
+                  {getActiveTopicsCount() === 0
                       ? t('topics.selectAtLeastOne')
                       : t('topics.noChanges')}
                 </p>

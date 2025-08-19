@@ -3,12 +3,13 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CompleteTaskRequest } from '../models/CompleteTaskRequest';
+import type { CompleteTaskResponse } from '../models/CompleteTaskResponse';
 import type { GetActiveTasksResponse } from '../models/GetActiveTasksResponse';
 import type { GetPlayerTopicsResponse } from '../models/GetPlayerTopicsResponse';
 import type { SavePlayerTopicsRequest } from '../models/SavePlayerTopicsRequest';
 import type { SkipTaskRequest } from '../models/SkipTaskRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
-import { OpenAPI } from '../config';
+import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class PlayerService {
     /**
@@ -80,12 +81,12 @@ export class PlayerService {
     /**
      * Complete a task
      * @param requestBody
-     * @returns void
+     * @returns CompleteTaskResponse Task completed successfully
      * @throws ApiError
      */
     public static completeTask(
         requestBody: CompleteTaskRequest,
-    ): CancelablePromise<void> {
+    ): CancelablePromise<CompleteTaskResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/v1/player/tasks/complete',

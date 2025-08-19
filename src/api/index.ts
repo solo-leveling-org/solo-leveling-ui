@@ -9,6 +9,7 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export { Assessment } from './models/Assessment';
 export type { CompleteTaskRequest } from './models/CompleteTaskRequest';
+export type { CompleteTaskResponse } from './models/CompleteTaskResponse';
 export type { GetActiveTasksResponse } from './models/GetActiveTasksResponse';
 export type { GetPlayerTopicsResponse } from './models/GetPlayerTopicsResponse';
 export type { GetUserResponse } from './models/GetUserResponse';

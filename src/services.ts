@@ -2,10 +2,12 @@ import {PlayerTask, UserService} from './api';
 import {PlayerService} from './api';
 import type {User as ApiUser} from './api/models/User';
 import type {PlayerTask as ApiPlayerTask} from './api/models/PlayerTask';
-import type {TaskTopic as ApiTaskTopic} from './api/models/TaskTopic';
+
+import type {PlayerTaskTopic} from './api';
 import type {GetActiveTasksResponse} from './api';
 import type {GetPlayerTopicsResponse} from './api';
 import type {GetUserResponse} from './api';
+import type {CompleteTaskResponse} from './api';
 
 export const api = {
   getUser: async (): Promise<ApiUser> => {
@@ -52,10 +54,10 @@ export const api = {
     }
   },
 
-  saveUserTopics: async (topics: ApiTaskTopic[]): Promise<void> => {
+  saveUserTopics: async (topics: PlayerTaskTopic[]): Promise<void> => {
     try {
       await PlayerService.savePlayerTopics({
-        topics: topics
+        playerTaskTopics: topics
       });
     } catch (error) {
       console.error('Error saving user topics:', error);
@@ -65,21 +67,24 @@ export const api = {
 };
 
 export const taskActions = {
-  completeTask: async (playerTask: PlayerTask): Promise<ApiPlayerTask[]> => {
+  completeTask: async (playerTask: PlayerTask): Promise<{ tasks: ApiPlayerTask[], completionResponse: CompleteTaskResponse }> => {
     try {
-      await PlayerService.completeTask({
+      const completionResponse = await PlayerService.completeTask({
         playerTask: playerTask
       });
 
       const updatedResponse: GetActiveTasksResponse = await PlayerService.getActiveTasks();
-      return updatedResponse.tasks;
+      return {
+        tasks: updatedResponse.tasks,
+        completionResponse: completionResponse
+      };
     } catch (error) {
       console.error('Error completing task:', error);
       throw error;
     }
   },
 
-  replaceTask: async (playerTask: PlayerTask): Promise<ApiPlayerTask[]> => {
+  skipTask: async (playerTask: PlayerTask): Promise<ApiPlayerTask[]> => {
     try {
       await PlayerService.skipTask({
         playerTask: playerTask
@@ -88,7 +93,7 @@ export const taskActions = {
       const updatedResponse: GetActiveTasksResponse = await PlayerService.getActiveTasks();
       return updatedResponse.tasks;
     } catch (error) {
-      console.error('Error replacing task:', error);
+      console.error('Error skipping task:', error);
       throw error;
     }
   },
