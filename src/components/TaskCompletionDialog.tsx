@@ -132,7 +132,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                   </div>
                   {/* Изменение уровня пользователя если повысился */}
                   {(playerAfter.level?.level || 1) > (playerBefore.level?.level || 1) && (
-                    <div className="absolute -top-2 -right-2 bg-green-50 text-green-700 border border-green-200 text-sm font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
+                    <div className="absolute -top-2 -right-2 bg-green-50 text-green-600 border border-green-200 text-sm font-medium rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
                       +{(playerAfter.level?.level || 1) - (playerBefore.level?.level || 1)}
                     </div>
                   )}
