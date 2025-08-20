@@ -62,6 +62,11 @@ function AppRoutes() {
     }
   }, [isTelegramChecked, showNoTelegramError, authError]);
 
+  // Автоматический скролл наверх при смене маршрута
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   // tabList для SideDrawer
   const tabList = [
     {
