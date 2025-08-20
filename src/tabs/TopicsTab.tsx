@@ -76,7 +76,8 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
   const handleSave = async () => {
     setSaving(true);
     await api.saveUserTopics(playerTopics);
-    setOriginalTopics(playerTopics); // Обновляем исходные топики после сохранения
+    const activeTopics = playerTopics.filter(pt => pt.isActive);
+    setOriginalTopics(activeTopics); // Обновляем исходные топики после сохранения
     if (firstTime) {
       await api.generateTasks();
     }
