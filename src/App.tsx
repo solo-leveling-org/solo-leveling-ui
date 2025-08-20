@@ -17,7 +17,7 @@ import TopicsTab from './tabs/TopicsTab';
 import WelcomeTab from './tabs/WelcomeTab';
 import {useTelegram} from './useTelegram';
 import {auth} from './auth';
-import { useLocalization } from './hooks/useLocalization';
+import {useLocalization} from './hooks/useLocalization';
 
 function AppRoutes() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -29,7 +29,7 @@ function AppRoutes() {
   const [showNoTelegramError, setShowNoTelegramError] = useState(false);
   const [isTelegramChecked, setIsTelegramChecked] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
-  const { t } = useLocalization();
+  const {t} = useLocalization();
 
   // Шаг 1: Авторизация через Telegram при загрузке приложения
   useEffect(() => {
@@ -64,7 +64,9 @@ function AppRoutes() {
 
   // Автоматический скролл наверх при смене маршрута
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
+      window.scrollTo({top: 0, left: 0, behavior: 'auto'});
+    }
   }, [location.pathname]);
 
   // tabList для SideDrawer
@@ -108,10 +110,10 @@ function AppRoutes() {
         {!isTelegramChecked ? null : (
             <>
               {showNoTelegramError && (
-                  <TelegramWidget type="no-telegram" />
+                  <TelegramWidget type="no-telegram"/>
               )}
               {authError && !showNoTelegramError && (
-                  <TelegramWidget type="auth-error" errorMessage={authError} />
+                  <TelegramWidget type="auth-error" errorMessage={authError}/>
               )}
               {!showNoTelegramError && !authError && (
                   <>
@@ -124,10 +126,13 @@ function AppRoutes() {
                                 onClose={() => setDrawerOpen(false)}/>
                     <main className="tab-content">
                       <Routes>
-                        <Route path="/" element={<WelcomeTab />}/>
-                        <Route path="/tasks" element={<TasksTab isAuthenticated={isAuthenticated} />}/>
-                        <Route path="/topics" element={<TopicsTab isAuthenticated={isAuthenticated} />}/>
-                        <Route path="/profile" element={<ProfileTab isAuthenticated={isAuthenticated} />}/>
+                        <Route path="/" element={<WelcomeTab/>}/>
+                        <Route path="/tasks"
+                               element={<TasksTab isAuthenticated={isAuthenticated}/>}/>
+                        <Route path="/topics"
+                               element={<TopicsTab isAuthenticated={isAuthenticated}/>}/>
+                        <Route path="/profile"
+                               element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="*" element={<Navigate to="/" replace/>}/>
                       </Routes>
                     </main>
