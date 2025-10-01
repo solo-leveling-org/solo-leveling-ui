@@ -18,6 +18,7 @@ import WelcomeTab from './tabs/WelcomeTab';
 import {useTelegram} from './useTelegram';
 import {auth} from './auth';
 import {useLocalization} from './hooks/useLocalization';
+import { useWebSocketNotifications } from './hooks/useWebSocketNotifications';
 
 function AppRoutes() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -61,6 +62,9 @@ function AppRoutes() {
       setIsAuthenticated(hasTokens);
     }
   }, [isTelegramChecked, showNoTelegramError, authError]);
+
+  // Подключение к WebSocket после успешной авторизации
+  useWebSocketNotifications(isAuthenticated);
 
   // Автоматический скролл наверх при смене маршрута
   useEffect(() => {
