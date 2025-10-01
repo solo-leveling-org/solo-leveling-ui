@@ -18,8 +18,6 @@ export function useWebSocketNotifications(enabled: boolean) {
       return;
     }
 
-    // Derive ws(s) URL from REST base
-    // Example: https://api.example.com -> wss://api.example.com
     const base = OpenAPI.BASE || '';
     const url = new URL(base);
     const isSecure = url.protocol === 'https:';
@@ -37,7 +35,7 @@ export function useWebSocketNotifications(enabled: boolean) {
       },
       onConnect: () => {
         // Subscribe to user notifications
-        client.subscribe('/user/queue/notifications', (message: IMessage) => {
+        client.subscribe('/queue/user-notifications', (message: IMessage) => {
           try {
             const body: Message = JSON.parse(message.body);
             // For now, just log to verify delivery in DevTools
