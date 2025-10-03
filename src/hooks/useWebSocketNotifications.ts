@@ -62,5 +62,5 @@ export function useWebSocketNotifications(enabled: boolean) {
       }
       clientRef.current = null;
     };
-  }, [enabled]);
+  }, [enabled, notify]);
 }
