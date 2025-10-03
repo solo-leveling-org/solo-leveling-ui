@@ -598,30 +598,33 @@ components:
       type: object
       properties:
         payload:
-          $ref: '#/components/schemas/UserNotification'
+          $ref: '#/components/schemas/Notification'
         timestamp:
           type: string
           format: date-time
       required:
-        - type
         - payload
         - timestamp
 
-    UserNotification:
+    Notification:
       type: object
       properties:
-        userId:
-          type: integer
-          format: int64
         message:
           type: string
-        notificationType:
+        type:
           $ref: '#/components/schemas/NotificationType'
+        source:
+          $ref: '#/components/schemas/NotificationSource'
+
       required:
-        - userId
         - message
-        - notificationType
+        - type
+        - source
 
     NotificationType:
       type: string
       enum: [ info, warning, error ]
+
+    NotificationSource:
+      type: string
+      enum: [ tasks ]

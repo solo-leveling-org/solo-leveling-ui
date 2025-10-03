@@ -2,10 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { NotificationSource } from './NotificationSource';
 import type { NotificationType } from './NotificationType';
-export type UserNotification = {
-    userId: number;
+export type Notification = {
     message: string;
-    notificationType: NotificationType;
+    type: NotificationType;
+    source: NotificationSource;
 };
 

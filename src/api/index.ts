@@ -20,6 +20,8 @@ export type { LoginRequest } from './models/LoginRequest';
 export type { LoginResponse } from './models/LoginResponse';
 export type { Message } from './models/Message';
 export type { Money } from './models/Money';
+export type { Notification } from './models/Notification';
+export { NotificationSource } from './models/NotificationSource';
 export { NotificationType } from './models/NotificationType';
 export type { Player } from './models/Player';
 export type { PlayerBalance } from './models/PlayerBalance';
@@ -37,7 +39,6 @@ export type { TgAuthData } from './models/TgAuthData';
 export type { TgUserData } from './models/TgUserData';
 export type { TgWebAppData } from './models/TgWebAppData';
 export type { User } from './models/User';
-export type { UserNotification } from './models/UserNotification';
 export { UserRole } from './models/UserRole';
 
 export { AuthService } from './services/AuthService';
