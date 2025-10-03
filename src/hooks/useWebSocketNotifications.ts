@@ -1,10 +1,19 @@
-import { useEffect, useRef } from 'react';
-import { Client, IMessage } from '@stomp/stompjs';
-import { OpenAPI } from '../api';
-import { auth } from '../auth';
-import type { Message } from '../api';
+import {useEffect, useRef} from 'react';
+import {Client, IMessage} from '@stomp/stompjs';
+import {OpenAPI} from '../api';
+import {auth} from '../auth';
+import type {Message} from '../api';
 
-// Simple hook that connects to WS after auth and subscribes to notifications
+function getUserIdFromToken(token: string): string {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.sub; // "7584716618" из вашего примера
+  } catch (e) {
+    console.warn('Failed to decode token, using default user');
+    return 'default-user';
+  }
+}
+
 export function useWebSocketNotifications(enabled: boolean) {
   const clientRef = useRef<Client | null>(null);
 
@@ -18,6 +27,7 @@ export function useWebSocketNotifications(enabled: boolean) {
       return;
     }
 
+    const userId = getUserIdFromToken(token);
     const base = OpenAPI.BASE || '';
     const url = new URL(base);
     const isSecure = url.protocol === 'https:';
@@ -34,8 +44,8 @@ export function useWebSocketNotifications(enabled: boolean) {
         // console.debug('[WS]', str);
       },
       onConnect: () => {
-        // Subscribe to user notifications
-        client.subscribe('/queue/user-notifications', (message: IMessage) => {
+        // Subscribe to user-specific notifications using the correct path
+        client.subscribe(`/user/${userId}/queue/notifications`, (message: IMessage) => {
           try {
             const body: Message = JSON.parse(message.body);
             // For now, just log to verify delivery in DevTools
@@ -75,5 +85,3 @@ export function useWebSocketNotifications(enabled: boolean) {
     };
   }, [enabled]);
 }
-
-
