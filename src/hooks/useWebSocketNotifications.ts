@@ -1,13 +1,12 @@
 import {useEffect, useRef} from 'react';
 import {Client, IMessage} from '@stomp/stompjs';
 import {OpenAPI} from '../api';
-import { useNotifications } from '../components/ui/Notifications';
 import {auth} from '../auth';
 import type {Message} from '../api';
+import { showNotification } from '../components/ui/Notifications';
 
 export function useWebSocketNotifications(enabled: boolean) {
   const clientRef = useRef<Client | null>(null);
-  const { notify } = useNotifications();
 
   useEffect(() => {
     if (!enabled) {
@@ -34,7 +33,9 @@ export function useWebSocketNotifications(enabled: boolean) {
         client.subscribe(`/user/queue/notifications`, (message: IMessage) => {
           try {
             const body: Message = JSON.parse(message.body);
-            notify(body.payload.message, body.payload.type);
+            if (body?.payload?.message && body?.payload?.type) {
+              showNotification(body.payload.message, body.payload.type);
+            }
           } catch (e) {
             console.error('[WS][Notification] Failed to parse message', e);
           }
@@ -62,5 +63,5 @@ export function useWebSocketNotifications(enabled: boolean) {
       }
       clientRef.current = null;
     };
-  }, [enabled, notify]);
+  }, [enabled]);
 }
