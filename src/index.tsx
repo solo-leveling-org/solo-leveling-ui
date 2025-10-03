@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import { NotificationsProvider } from './components/ui/Notifications';
 import reportWebVitals from './reportWebVitals';
 import { SettingsProvider } from './hooks/useSettings';
 import './i18n';
@@ -15,7 +16,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <SettingsProvider>
-      <App />
+      <NotificationsProvider>
+        <App />
+      </NotificationsProvider>
     </SettingsProvider>
   </React.StrictMode>
 );
