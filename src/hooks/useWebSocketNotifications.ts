@@ -7,7 +7,7 @@ import type {Message} from '../api';
 function getUserIdFromToken(token: string): string {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.sub; // "7584716618" из вашего примера
+    return payload.sub;
   } catch (e) {
     console.warn('Failed to decode token, using default user');
     return 'default-user';
@@ -39,34 +39,23 @@ export function useWebSocketNotifications(enabled: boolean) {
       reconnectDelay: 5000,
       heartbeatIncoming: 10000,
       heartbeatOutgoing: 10000,
-      debug: (str: string) => {
-        // Uncomment if you want verbose logs
-        // console.debug('[WS]', str);
-      },
       onConnect: () => {
-        // Subscribe to user-specific notifications using the correct path
         client.subscribe(`/user/${userId}/queue/notifications`, (message: IMessage) => {
           try {
             const body: Message = JSON.parse(message.body);
-            // For now, just log to verify delivery in DevTools
-            // eslint-disable-next-line no-console
             console.log('[WS][Notification]', body);
           } catch (e) {
-            // eslint-disable-next-line no-console
             console.warn('[WS][Notification] Failed to parse message', e, message.body);
           }
         });
       },
       onStompError: (frame: any) => {
-        // eslint-disable-next-line no-console
         console.error('[WS][STOMP ERROR]', frame.headers['message'], frame.body);
       },
       onWebSocketError: (event: Event) => {
-        // eslint-disable-next-line no-console
         console.error('[WS][SOCKET ERROR]', event);
       },
       onWebSocketClose: (event: CloseEvent) => {
-        // eslint-disable-next-line no-console
         console.warn('[WS][CLOSED]', event.code, event.reason);
       },
     });
@@ -78,7 +67,6 @@ export function useWebSocketNotifications(enabled: boolean) {
       try {
         client.deactivate();
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.warn('[WS] error during deactivate', e);
       }
       clientRef.current = null;
