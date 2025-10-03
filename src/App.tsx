@@ -18,7 +18,7 @@ import WelcomeTab from './tabs/WelcomeTab';
 import {useTelegram} from './useTelegram';
 import {auth} from './auth';
 import {useLocalization} from './hooks/useLocalization';
-import { useWebSocketNotifications } from './hooks/useWebSocketNotifications';
+import {useWebSocketNotifications} from './hooks/useWebSocketNotifications';
 
 function AppRoutes() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -58,13 +58,11 @@ function AppRoutes() {
   // Шаг 2: Проверяем, есть ли уже сохраненные токены в localStorage
   useEffect(() => {
     if (isTelegramChecked && !showNoTelegramError && !authError) {
-      const hasTokens = auth.isAuthenticated();
-      setIsAuthenticated(hasTokens);
+      setIsAuthenticated(auth.isAuthenticated());
+      // Подключение к WebSocket после успешной авторизации
+      useWebSocketNotifications(isAuthenticated);
     }
   }, [isTelegramChecked, showNoTelegramError, authError]);
-
-  // Подключение к WebSocket после успешной авторизации
-  useWebSocketNotifications(isAuthenticated);
 
   // Автоматический скролл наверх при смене маршрута
   useEffect(() => {
