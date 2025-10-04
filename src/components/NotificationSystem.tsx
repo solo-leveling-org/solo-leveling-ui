@@ -129,7 +129,7 @@ const NotificationItem: React.FC<{
         ${getNotificationStyles()}
         ${isVisible && !isRemoving ? 'translate-x-0 opacity-100 scale-100' : 'translate-x-full opacity-0 scale-95'}
         ${isRemoving ? 'translate-x-full opacity-0 scale-95' : ''}
-        max-w-sm w-full
+        max-w-sm w-full sm:max-w-sm
       `}
       style={{
         transform: isVisible && !isRemoving ? 'translateX(0)' : 'translateX(100%)',
@@ -180,7 +180,7 @@ export const NotificationContainer: React.FC = () => {
   const { notifications, removeNotification } = useNotifications();
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-3 pointer-events-none">
+    <div className="fixed top-4 right-4 left-4 sm:left-auto z-50 space-y-3 pointer-events-none">
       {notifications.map((notification) => (
         <div key={notification.id} className="pointer-events-auto">
           <NotificationItem
