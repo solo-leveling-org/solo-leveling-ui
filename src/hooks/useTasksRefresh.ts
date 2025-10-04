@@ -1,6 +1,5 @@
 import { useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useWebSocketNotifications } from './useWebSocketNotifications';
 import { api } from '../services';
 import type { PlayerTask } from '../api';
 
@@ -24,8 +23,6 @@ export const useTasksRefresh = ({ isAuthenticated, onTasksUpdate }: UseTasksRefr
     }
   }, [isAuthenticated, isTasksTabActive, onTasksUpdate]);
 
-  // Подключаемся к WebSocket уведомлениям
-  useWebSocketNotifications(isAuthenticated);
 
   // Слушаем уведомления через глобальное событие
   useEffect(() => {
