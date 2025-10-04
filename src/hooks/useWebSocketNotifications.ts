@@ -40,6 +40,14 @@ export function useWebSocketNotifications(enabled: boolean) {
               type: body.payload.type,
               duration: 3000,
             });
+
+            // Отправляем кастомное событие для уведомлений с source = 'tasks'
+            if (body.payload.source === 'tasks') {
+              const event = new CustomEvent('tasks-notification', {
+                detail: { source: body.payload.source }
+              });
+              window.dispatchEvent(event);
+            }
           } catch (e) {
             console.warn('[WS][Notification] Failed to parse message', e, message.body);
           }

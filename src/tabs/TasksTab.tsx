@@ -6,6 +6,7 @@ import TaskCompletionDialog from '../components/TaskCompletionDialog';
 import { taskActions, api } from '../services';
 import { useNavigate } from 'react-router-dom';
 import { useLocalization } from '../hooks/useLocalization';
+import { useTasksRefresh } from '../hooks/useTasksRefresh';
 import ConfirmDialog from '../components/ConfirmDialog';
 
 type TasksTabProps = {
@@ -25,6 +26,17 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   } | null>(null);
   const navigate = useNavigate();
   const { t } = useLocalization();
+
+  // Функция для обновления списка задач
+  const handleTasksUpdate = (newTasks: PlayerTask[]) => {
+    setTasks(newTasks);
+  };
+
+  // Используем хук для автоматического обновления задач при уведомлениях
+  useTasksRefresh({
+    isAuthenticated,
+    onTasksUpdate: handleTasksUpdate,
+  });
 
   // Загружаем задачи только при монтировании компонента и если авторизованы
   useEffect(() => {
@@ -184,6 +196,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
 
             <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto"></div>
         </div>
+
 
         <TasksGrid
           tasks={tasks}
