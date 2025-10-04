@@ -32,6 +32,13 @@ const NotificationItem: React.FC<{
   const [isVisible, setIsVisible] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
 
+  const handleRemove = useCallback(() => {
+    setIsRemoving(true);
+    setTimeout(() => {
+      onRemove(notification.id);
+    }, 300); // Время для анимации исчезновения
+  }, [notification.id, onRemove]);
+
   useEffect(() => {
     // Анимация появления
     const timer = setTimeout(() => setIsVisible(true), 10);
@@ -45,14 +52,7 @@ const NotificationItem: React.FC<{
       }, notification.duration);
       return () => clearTimeout(timer);
     }
-  }, [notification.duration]);
-
-  const handleRemove = useCallback(() => {
-    setIsRemoving(true);
-    setTimeout(() => {
-      onRemove(notification.id);
-    }, 300); // Время для анимации исчезновения
-  }, [notification.id, onRemove]);
+  }, [notification.duration, handleRemove]);
 
   const getNotificationStyles = () => {
     const baseStyles = "relative overflow-hidden rounded-2xl shadow-lg backdrop-blur-sm border transition-all duration-300 ease-out transform";
@@ -177,7 +177,7 @@ const NotificationItem: React.FC<{
 
 // Контейнер для уведомлений
 export const NotificationContainer: React.FC = () => {
-  const { notifications } = useNotifications();
+  const { notifications, removeNotification } = useNotifications();
 
   return (
     <div className="fixed top-4 right-4 z-50 space-y-3 pointer-events-none">
@@ -185,10 +185,7 @@ export const NotificationContainer: React.FC = () => {
         <div key={notification.id} className="pointer-events-auto">
           <NotificationItem
             notification={notification}
-            onRemove={(id) => {
-              const { removeNotification } = useNotifications();
-              removeNotification(id);
-            }}
+            onRemove={removeNotification}
           />
         </div>
       ))}
