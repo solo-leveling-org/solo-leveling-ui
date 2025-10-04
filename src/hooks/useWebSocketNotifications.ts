@@ -1,9 +1,9 @@
-import {useEffect, useRef} from 'react';
-import {Client, IMessage} from '@stomp/stompjs';
-import {OpenAPI} from '../api';
-import {auth} from '../auth';
-import type {Message} from '../api';
-import { showNotification } from '../components/ui/Notifications';
+import { useEffect, useRef } from 'react';
+import { Client, IMessage } from '@stomp/stompjs';
+import { OpenAPI } from '../api';
+import { auth } from '../auth';
+import type { Message } from '../api';
+import { showNotification } from '../utils/notifications'; // 👈 импорт
 
 export function useWebSocketNotifications(enabled: boolean) {
   const clientRef = useRef<Client | null>(null);
@@ -33,11 +33,13 @@ export function useWebSocketNotifications(enabled: boolean) {
         client.subscribe(`/user/queue/notifications`, (message: IMessage) => {
           try {
             const body: Message = JSON.parse(message.body);
-            if (body?.payload?.message && body?.payload?.type) {
-              showNotification(body.payload.message, body.payload.type);
-            }
+
+            showNotification({
+              message: body.payload.message,
+              type: body.payload.type,
+            });
           } catch (e) {
-            console.error('[WS][Notification] Failed to parse message', e);
+            console.warn('[WS][Notification] Failed to parse message', e, message.body);
           }
         });
       },

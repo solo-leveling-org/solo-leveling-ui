@@ -19,7 +19,8 @@ import {useTelegram} from './useTelegram';
 import {auth} from './auth';
 import {useLocalization} from './hooks/useLocalization';
 import { useWebSocketNotifications } from './hooks/useWebSocketNotifications';
-import { NotificationsHost } from './components/ui/Notifications';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function AppRoutes() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -140,7 +141,7 @@ function AppRoutes() {
                                element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="*" element={<Navigate to="/" replace/>}/>
                       </Routes>
-                      <NotificationsHost/>
+                      <ToastContainer />
                     </main>
                   </>
               )}
