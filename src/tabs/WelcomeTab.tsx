@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TextType from '../blocks/TextAnimations/TextType/TextType';
 import { useLocalization } from '../hooks/useLocalization';
-import NotificationDemo from '../components/NotificationDemo';
 
 const WelcomeTab: React.FC = () => {
   const navigate = useNavigate();
@@ -132,11 +131,6 @@ const WelcomeTab: React.FC = () => {
                 <div className="text-gray-600 text-sm">{feature.desc}</div>
               </div>
             ))}
-          </div>
-          
-          {/* Notification Demo */}
-          <div className="flex justify-center">
-            <NotificationDemo />
           </div>
         </div>
       </div>
