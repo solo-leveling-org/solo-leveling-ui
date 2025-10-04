@@ -3,10 +3,11 @@ import { Client, IMessage } from '@stomp/stompjs';
 import { OpenAPI } from '../api';
 import { auth } from '../auth';
 import type { Message } from '../api';
-import { showNotification } from '../utils/notifications'; // 👈 импорт
+import { useNotification } from '../components/NotificationSystem';
 
 export function useWebSocketNotifications(enabled: boolean) {
   const clientRef = useRef<Client | null>(null);
+  const { show } = useNotification();
 
   useEffect(() => {
     if (!enabled) {
@@ -34,9 +35,10 @@ export function useWebSocketNotifications(enabled: boolean) {
           try {
             const body: Message = JSON.parse(message.body);
 
-            showNotification({
+            show({
               message: body.payload.message,
               type: body.payload.type,
+              duration: 3000,
             });
           } catch (e) {
             console.warn('[WS][Notification] Failed to parse message', e, message.body);
