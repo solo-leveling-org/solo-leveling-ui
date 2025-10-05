@@ -111,7 +111,7 @@ const WelcomeTab: React.FC = () => {
 
         {/* Features section */}
         <div className={`max-w-5xl mx-auto transition-all duration-1000 delay-500 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[
               { icon: '⚡', title: t('welcome.features.quickStart.title'), desc: t('welcome.features.quickStart.description') },
               { icon: '🎯', title: t('welcome.features.targetedTasks.title'), desc: t('welcome.features.targetedTasks.description') },

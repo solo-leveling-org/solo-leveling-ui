@@ -593,3 +593,38 @@ components:
       required:
         - tg_web_app_data
         - init_data
+
+    Message:
+      type: object
+      properties:
+        payload:
+          $ref: '#/components/schemas/Notification'
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - payload
+        - timestamp
+
+    Notification:
+      type: object
+      properties:
+        message:
+          type: string
+        type:
+          $ref: '#/components/schemas/NotificationType'
+        source:
+          $ref: '#/components/schemas/NotificationSource'
+
+      required:
+        - message
+        - type
+        - source
+
+    NotificationType:
+      type: string
+      enum: [ info, warning, error ]
+
+    NotificationSource:
+      type: string
+      enum: [ tasks ]
