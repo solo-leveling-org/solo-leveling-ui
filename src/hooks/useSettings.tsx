@@ -16,6 +16,20 @@ const defaultSettings: Settings = {
 
 const STORAGE_KEY = 'solo-leveling-settings';
 
+// Утилитарная функция для получения языка из localStorage
+export const getLanguageFromStorage = (): Language => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return parsed.language || defaultSettings.language;
+    }
+  } catch (error) {
+    console.error('Failed to get language from storage:', error);
+  }
+  return defaultSettings.language;
+};
+
 type SettingsContextValue = {
   settings: Settings;
   isLoaded: boolean;
