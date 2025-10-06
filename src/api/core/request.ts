@@ -13,6 +13,7 @@ import { CancelablePromise } from './CancelablePromise';
 import type { OnCancel } from './CancelablePromise';
 import type { OpenAPIConfig } from './OpenAPI';
 import { auth } from '../../auth';
+import { getLanguageFromStorage } from '../../hooks/useSettings';
 
 export const isDefined = <T>(value: T | null | undefined): value is Exclude<T, null | undefined> => {
   return value !== undefined && value !== null;
@@ -157,6 +158,7 @@ export const getHeaders = async (config: OpenAPIConfig, options: ApiRequestOptio
 
   const headers = Object.entries({
     Accept: 'application/json',
+    'Accept-Language': getLanguageFromStorage(),
     ...additionalHeaders,
     ...options.headers,
     ...formHeaders,
