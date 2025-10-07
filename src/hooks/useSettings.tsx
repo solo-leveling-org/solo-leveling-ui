@@ -2,17 +2,16 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { UserService } from '../api';
 import { useTelegram } from '../useTelegram';
 
-export type Language = 'ru' | 'en';
-export type LanguageSource = 'telegram' | 'manual';
+import { type Language } from '../locales';
 
 interface Settings {
   language: Language;
-  languageSource: LanguageSource;
+  isManual: boolean;
 }
 
 const defaultSettings: Settings = {
   language: 'ru',
-  languageSource: 'telegram',
+  isManual: false,
 };
 
 const STORAGE_KEY = 'solo-leveling-settings';
@@ -38,7 +37,7 @@ type SettingsContextValue = {
   setLanguage: (language: Language) => void;
   updateSettings: (newSettings: Partial<Settings>) => void;
   updateMultipleSettings: (newSettings: Settings) => void;
-  setLanguageSource: (source: LanguageSource) => void;
+  setIsManual: (isManual: boolean) => void;
   setLocaleLoaded: (loaded: boolean) => void;
 };
 
@@ -72,13 +71,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [isLoaded, settings.language]);
 
-  // Derive language from Telegram (or browser) when languageSource is telegram
+  // Derive language from Telegram (or browser) when not manual
   useEffect(() => {
     if (!isLoaded) return;
-    if (settings.languageSource !== 'telegram') return;
+    if (settings.isManual) return;
     const derived = deriveLanguageFromTelegram(user?.language_code);
     if (derived !== settings.language) {
-      // Only update language, keep source as telegram
+      // Only update language, keep isManual as false
       setSettings(prev => {
         const updated = { ...prev, language: derived };
         try {
@@ -89,7 +88,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return updated;
       });
     }
-  }, [isLoaded, settings.languageSource, user?.language_code, settings.language]);
+  }, [isLoaded, settings.isManual, user?.language_code, settings.language]);
 
   const deriveLanguageFromTelegram = (code?: string): Language => {
     const raw = (code || (typeof navigator !== 'undefined' ? navigator.language : '')).toLowerCase();
@@ -114,8 +113,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const setLanguage = (language: Language) => {
-    // Manual selection overrides telegram source
-    updateSettings({ language, languageSource: 'manual' });
+    // Manual selection sets isManual to true
+    updateSettings({ language, isManual: true });
     // Persist user locale to backend (manual update)
     try {
       // Fire-and-forget; UI state remains responsive
@@ -136,12 +135,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     });
   };
 
-  const setLanguageSource = (source: LanguageSource) => {
-    if (source === 'telegram') {
+  const setIsManual = (isManual: boolean) => {
+    if (!isManual) {
       const derived = deriveLanguageFromTelegram(user?.language_code);
-      updateSettings({ languageSource: 'telegram', language: derived });
+      updateSettings({ isManual: false, language: derived });
     } else {
-      updateSettings({ languageSource: 'manual' });
+      updateSettings({ isManual: true });
     }
   };
 
@@ -152,7 +151,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setLanguage,
     updateSettings,
     updateMultipleSettings,
-    setLanguageSource,
+    setIsManual,
     setLocaleLoaded,
   };
 

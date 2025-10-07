@@ -4,4 +4,5 @@
 /* eslint-disable */
 export enum NotificationSource {
     TASKS = 'tasks',
+    LOCALE = 'locale',
 }

@@ -3,6 +3,8 @@ import { Client, IMessage } from '@stomp/stompjs';
 import { OpenAPI } from '../api';
 import type { Message, LoginResponse } from '../api';
 import { useNotification } from '../components/NotificationSystem';
+import { useSettings } from './useSettings';
+import { fetchAndUpdateUserLocale } from '../utils/localeUtils';
 
 interface UseWebSocketNotificationsProps {
   enabled: boolean;
@@ -12,6 +14,7 @@ interface UseWebSocketNotificationsProps {
 export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocketNotificationsProps) {
   const clientRef = useRef<Client | null>(null);
   const { show } = useNotification();
+  const { updateSettings } = useSettings();
 
   useEffect(() => {
     if (!enabled) {
@@ -39,6 +42,16 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
       }
     }
 
+    // Функция для обработки обновления локализации
+    const handleLocaleUpdate = async () => {
+      try {
+        await fetchAndUpdateUserLocale(updateSettings);
+        console.log('[WS][Locale] Updated locale from server via WebSocket notification');
+      } catch (error) {
+        console.error('[WS][Locale] Failed to update locale:', error);
+      }
+    };
+
     function connectWebSocket(token: string) {
       if (!token) {
         return;
@@ -60,19 +73,34 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
           client.subscribe(`/user/queue/notifications`, (message: IMessage) => {
             try {
               const body: Message = JSON.parse(message.body);
+              const notification = body.payload;
 
-              show({
-                message: body.payload.message,
-                type: body.payload.type,
-                duration: 3000,
-              });
-
-              // Отправляем кастомное событие для уведомлений с source = 'tasks'
-              if (body.payload.source === 'tasks') {
-                const event = new CustomEvent('tasks-notification', {
-                  detail: { source: body.payload.source }
+              // Если visible = true, показываем уведомление пользователю
+              if (notification.visible && notification.message) {
+                show({
+                  message: notification.message,
+                  type: notification.type,
+                  duration: 3000,
                 });
-                window.dispatchEvent(event);
+              }
+
+              // Обрабатываем действия в зависимости от source
+              switch (notification.source) {
+                case 'tasks':
+                  // Отправляем кастомное событие для уведомлений с source = 'tasks'
+                  const event = new CustomEvent('tasks-notification', {
+                    detail: { source: notification.source }
+                  });
+                  window.dispatchEvent(event);
+                  break;
+
+                case 'locale':
+                  // Получаем текущую локализацию пользователя и обновляем UI
+                  handleLocaleUpdate();
+                  break;
+
+                default:
+                  console.log('[WS][Notification] Unknown source:', notification.source);
               }
             } catch (e) {
               console.warn('[WS][Notification] Failed to parse message', e, message.body);
@@ -104,5 +132,5 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
       }
       clientRef.current = null;
     };
-  }, [enabled, authPromise, show]);
+  }, [enabled, authPromise, show, updateSettings]);
 }

@@ -13,7 +13,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'level' | 'balance' | 'settings'>('level');
-  const { settings, isLoaded, setLanguage, setLanguageSource } = useSettings();
+  const { settings, isLoaded, setLanguage, setIsManual } = useSettings();
   const { t } = useLocalization();
 
   // Загружаем данные пользователя только при монтировании компонента и если авторизованы
@@ -263,9 +263,9 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                     </div>
                     <div className="grid grid-cols-2 gap-3 mb-6">
                       <button
-                        onClick={() => setLanguageSource('telegram')}
+                        onClick={() => setIsManual(false)}
                         className={`relative p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
-                          settings.languageSource === 'telegram'
+                          !settings.isManual
                             ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-blue-100/50 shadow-lg'
                             : 'border-gray-200 bg-white/50 hover:border-gray-300'
                         }`}
@@ -275,20 +275,20 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                             <TelegramIcon className="w-6 h-6 text-blue-600" />
                           </div>
                           <div className={`font-semibold text-sm ${
-                            settings.languageSource === 'telegram' ? 'text-blue-700' : 'text-gray-600'
+                            !settings.isManual ? 'text-blue-700' : 'text-gray-600'
                           }`}>
                             {t('profile.settings.language.useTelegram')}
                           </div>
                         </div>
-                        {settings.languageSource === 'telegram' && (
+                        {!settings.isManual && (
                           <div className="absolute top-2 right-2 w-3 h-3 bg-blue-500 rounded-full"></div>
                         )}
                       </button>
 
                       <button
-                        onClick={() => setLanguageSource('manual')}
+                        onClick={() => setIsManual(true)}
                         className={`relative p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
-                          settings.languageSource === 'manual'
+                          settings.isManual
                             ? 'border-emerald-500 bg-gradient-to-r from-emerald-50 to-emerald-100/50 shadow-lg'
                             : 'border-gray-200 bg-white/50 hover:border-gray-300'
                         }`}
@@ -296,19 +296,19 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                         <div className="text-center">
                           <div className="text-2xl mb-2">🛠️</div>
                           <div className={`font-semibold text-sm ${
-                            settings.languageSource === 'manual' ? 'text-emerald-700' : 'text-gray-600'
+                            settings.isManual ? 'text-emerald-700' : 'text-gray-600'
                           }`}>
                             {t('profile.settings.language.chooseManually')}
                           </div>
                         </div>
-                        {settings.languageSource === 'manual' && (
+                        {settings.isManual && (
                           <div className="absolute top-2 right-2 w-3 h-3 bg-emerald-500 rounded-full"></div>
                         )}
                       </button>
                     </div>
 
                     {/* Manual language selection (enabled only when manual source) */}
-                    <div className={`grid grid-cols-2 gap-3 ${settings.languageSource !== 'manual' ? 'opacity-50 pointer-events-none' : ''}`}>
+                    <div className={`grid grid-cols-2 gap-3 ${!settings.isManual ? 'opacity-50 pointer-events-none' : ''}`}>
                       <button
                         onClick={() => setLanguage('ru')}
                         className={`relative p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${

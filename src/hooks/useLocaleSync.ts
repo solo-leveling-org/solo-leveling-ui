@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { UserService } from '../api';
 import { useSettings } from './useSettings';
+import { fetchAndUpdateUserLocale } from '../utils/localeUtils';
 
 export const useLocaleSync = (isAuthenticated: boolean) => {
   const [localeFetched, setLocaleFetched] = useState(false);
@@ -13,16 +13,9 @@ export const useLocaleSync = (isAuthenticated: boolean) => {
     let isCancelled = false;
     (async () => {
       try {
-        const res = await UserService.getUserLocale();
         if (isCancelled) return;
-        const backendLanguage = res.locale === 'ru' ? 'ru' : 'en';
-        // Если бэкенд помечает ручной выбор - фиксируем источник как manual, иначе telegram
-        updateSettings({
-          language: backendLanguage,
-          languageSource: res.isManual ? 'manual' : 'telegram'
-        });
+        await fetchAndUpdateUserLocale(updateSettings, setLocaleLoaded);
         setLocaleFetched(true);
-        setLocaleLoaded(true); // Разрешаем показ контента после загрузки локализации
       } catch (e) {
         // Не блокируем UI, просто логируем
         console.error('Failed to fetch user locale from backend:', e);
