@@ -1,7 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { locales } from './locales';
-import { Language } from './hooks/useSettings';
+import { locales, type Language } from './locales';
 
 // Build flat resource object per namespace
 const resources: Record<string, { translation: any }> = {
