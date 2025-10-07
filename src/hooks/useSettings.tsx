@@ -34,10 +34,12 @@ export const getLanguageFromStorage = (): Language => {
 type SettingsContextValue = {
   settings: Settings;
   isLoaded: boolean;
+  localeLoaded: boolean;
   setLanguage: (language: Language) => void;
   updateSettings: (newSettings: Partial<Settings>) => void;
   updateMultipleSettings: (newSettings: Settings) => void;
   setLanguageSource: (source: LanguageSource) => void;
+  setLocaleLoaded: (loaded: boolean) => void;
 };
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined);
@@ -45,6 +47,7 @@ const SettingsContext = createContext<SettingsContextValue | undefined>(undefine
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [localeLoaded, setLocaleLoaded] = useState(false);
   const { user } = useTelegram();
 
   // Load settings from localStorage on mount
@@ -145,10 +148,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const value: SettingsContextValue = {
     settings,
     isLoaded,
+    localeLoaded,
     setLanguage,
     updateSettings,
     updateMultipleSettings,
     setLanguageSource,
+    setLocaleLoaded,
   };
 
   return (

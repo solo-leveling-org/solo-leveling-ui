@@ -15,88 +15,36 @@ import {
 } from 'react-router-dom';
 import TopicsTab from './tabs/TopicsTab';
 import WelcomeTab from './tabs/WelcomeTab';
-import {useTelegram} from './useTelegram';
-import {auth} from './auth';
 import {useLocalization} from './hooks/useLocalization';
-import { UserService } from './api';
 import { useSettings } from './hooks/useSettings';
+import { useAuth } from './hooks/useAuth';
+import { useLocaleSync } from './hooks/useLocaleSync';
+import WelcomeTabSkeleton from './components/WelcomeTabSkeleton';
 import { useWebSocketNotifications } from './hooks/useWebSocketNotifications';
 import { NotificationProvider } from './components/NotificationSystem';
 
 function AppRoutes() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  // Состояние авторизации - true только после успешного логина
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const {initData, tgWebAppData} = useTelegram();
-  const [showNoTelegramError, setShowNoTelegramError] = useState(false);
-  const [isTelegramChecked, setIsTelegramChecked] = useState(false);
-  const [authError, setAuthError] = useState<string | null>(null);
-  const [localeFetched, setLocaleFetched] = useState(false);
-  const {t} = useLocalization();
-  const { updateSettings } = useSettings();
-
-  // Шаг 1: Авторизация через Telegram при загрузке приложения
-  useEffect(() => {
-    if (initData !== undefined && tgWebAppData !== undefined) {
-      if (initData && tgWebAppData) {
-        auth.loginWithTelegram(initData, tgWebAppData)
-        .then(() => {
-          setAuthError(null);
-          setIsAuthenticated(true); // Устанавливаем флаг авторизации
-        })
-        .catch((e) => {
-          setAuthError(e.message || 'Ошибка авторизации');
-          setIsAuthenticated(false);
-          setLocaleFetched(false);
-        });
-        setShowNoTelegramError(false);
-      } else {
-        setShowNoTelegramError(true);
-        setAuthError(null);
-        setIsAuthenticated(false);
-        setLocaleFetched(false);
-      }
-      setIsTelegramChecked(true);
-    }
-  }, [initData, tgWebAppData]);
-
-  // Шаг 2: Проверяем, есть ли уже сохраненные токены в localStorage
-  useEffect(() => {
-    if (isTelegramChecked && !showNoTelegramError && !authError) {
-      const hasTokens = auth.isAuthenticated();
-      setIsAuthenticated(hasTokens);
-    }
-  }, [isTelegramChecked, showNoTelegramError, authError]);
+  
+  // Используем новые хуки для разделения логики
+  const { isAuthenticated, showNoTelegramError, isTelegramChecked, authError } = useAuth();
+  const { localeLoaded, setLocaleLoaded } = useSettings();
+  const { t } = useLocalization();
+  
+  // Синхронизация локализации
+  useLocaleSync(isAuthenticated);
 
   // Подключение к WebSocket после успешной авторизации
   useWebSocketNotifications(isAuthenticated);
 
-  // После успешной авторизации загружаем локаль пользователя с бэкенда (только один раз)
+  // Устанавливаем localeLoaded для случаев без авторизации
   useEffect(() => {
-    if (!isAuthenticated || localeFetched) return;
-    
-    let isCancelled = false;
-    (async () => {
-      try {
-        const res = await UserService.getUserLocale();
-        if (isCancelled) return;
-        const backendLanguage = res.locale === 'ru' ? 'ru' : 'en';
-        // Если бэкенд помечает ручной выбор - фиксируем источник как manual, иначе telegram
-        updateSettings({
-          language: backendLanguage,
-          languageSource: res.isManual ? 'manual' : 'telegram'
-        });
-        setLocaleFetched(true);
-      } catch (e) {
-        // Не блокируем UI, просто логируем
-        console.error('Failed to fetch user locale from backend:', e);
-        setLocaleFetched(true); // Помечаем как выполненное даже при ошибке
-      }
-    })();
-    return () => { isCancelled = true; };
-  }, [isAuthenticated, localeFetched, updateSettings]);
+    if (isTelegramChecked && (!isAuthenticated || showNoTelegramError || authError)) {
+      setLocaleLoaded(true);
+    }
+  }, [isTelegramChecked, isAuthenticated, showNoTelegramError, authError, setLocaleLoaded]);
 
   // Автоматический скролл наверх при смене маршрута
   useEffect(() => {
@@ -105,41 +53,28 @@ function AppRoutes() {
     }
   }, [location.pathname]);
 
-  // tabList для SideDrawer
-  const tabList = [
-    {
-      label: t('navigation.welcome'),
-      active: location.pathname === '/',
-      onClick: () => {
-        navigate('/');
-        setDrawerOpen(false);
-      },
-    },
-    {
-      label: t('navigation.profile'),
-      active: location.pathname === '/profile',
-      onClick: () => {
-        navigate('/profile');
-        setDrawerOpen(false);
-      },
-    },
-    {
-      label: t('navigation.tasks'),
-      active: location.pathname === '/tasks',
-      onClick: () => {
-        navigate('/tasks');
-        setDrawerOpen(false);
-      },
-    },
-    {
-      label: t('navigation.topics'),
-      active: location.pathname === '/topics',
-      onClick: () => {
-        navigate('/topics');
-        setDrawerOpen(false);
-      },
-    }
+  // Конфигурация табов
+  const tabsConfig = [
+    { path: '/', key: 'welcome' },
+    { path: '/profile', key: 'profile' },
+    { path: '/tasks', key: 'tasks' },
+    { path: '/topics', key: 'topics' },
   ];
+
+  // Генерируем tabList для SideDrawer
+  const tabList = tabsConfig.map(tab => ({
+    label: t(`navigation.${tab.key}`),
+    active: location.pathname === tab.path,
+    onClick: () => {
+      navigate(tab.path);
+      setDrawerOpen(false);
+    },
+  }));
+
+  // Показываем skeleton до загрузки локализации
+  if (!localeLoaded) {
+    return <WelcomeTabSkeleton />;
+  }
 
   return (
       <div className="App">
