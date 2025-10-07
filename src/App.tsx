@@ -33,6 +33,7 @@ function AppRoutes() {
   const [showNoTelegramError, setShowNoTelegramError] = useState(false);
   const [isTelegramChecked, setIsTelegramChecked] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [localeFetched, setLocaleFetched] = useState(false);
   const {t} = useLocalization();
   const { updateSettings } = useSettings();
 
@@ -48,12 +49,14 @@ function AppRoutes() {
         .catch((e) => {
           setAuthError(e.message || 'Ошибка авторизации');
           setIsAuthenticated(false);
+          setLocaleFetched(false);
         });
         setShowNoTelegramError(false);
       } else {
         setShowNoTelegramError(true);
         setAuthError(null);
         setIsAuthenticated(false);
+        setLocaleFetched(false);
       }
       setIsTelegramChecked(true);
     }
@@ -70,9 +73,10 @@ function AppRoutes() {
   // Подключение к WebSocket после успешной авторизации
   useWebSocketNotifications(isAuthenticated);
 
-  // После успешной авторизации загружаем локаль пользователя с бэкенда
+  // После успешной авторизации загружаем локаль пользователя с бэкенда (только один раз)
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || localeFetched) return;
+    
     let isCancelled = false;
     (async () => {
       try {
@@ -84,13 +88,15 @@ function AppRoutes() {
           language: backendLanguage,
           languageSource: res.isManual ? 'manual' : 'telegram'
         });
+        setLocaleFetched(true);
       } catch (e) {
         // Не блокируем UI, просто логируем
         console.error('Failed to fetch user locale from backend:', e);
+        setLocaleFetched(true); // Помечаем как выполненное даже при ошибке
       }
     })();
     return () => { isCancelled = true; };
-  }, [isAuthenticated, updateSettings]);
+  }, [isAuthenticated, localeFetched, updateSettings]);
 
   // Автоматический скролл наверх при смене маршрута
   useEffect(() => {
