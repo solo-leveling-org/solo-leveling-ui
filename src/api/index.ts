@@ -38,7 +38,9 @@ export { TaskTopic } from './models/TaskTopic';
 export type { TgAuthData } from './models/TgAuthData';
 export type { TgUserData } from './models/TgUserData';
 export type { TgWebAppData } from './models/TgWebAppData';
+export type { UpdateUserLocaleRequest } from './models/UpdateUserLocaleRequest';
 export type { User } from './models/User';
+export type { UserLocaleResponse } from './models/UserLocaleResponse';
 export { UserRole } from './models/UserRole';
 
 export { AuthService } from './services/AuthService';

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { UserService } from '../api';
 import { useTelegram } from '../useTelegram';
 
 export type Language = 'ru' | 'en';
@@ -112,6 +113,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const setLanguage = (language: Language) => {
     // Manual selection overrides telegram source
     updateSettings({ language, languageSource: 'manual' });
+    // Persist user locale to backend (manual update)
+    try {
+      // Fire-and-forget; UI state remains responsive
+      void UserService.updateUserLocale({ locale: language });
+    } catch (error) {
+      console.error('Failed to update user locale on backend:', error);
+    }
   };
 
   const updateMultipleSettings = (newSettings: Settings) => {

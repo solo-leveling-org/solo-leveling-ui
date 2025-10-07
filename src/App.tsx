@@ -18,6 +18,8 @@ import WelcomeTab from './tabs/WelcomeTab';
 import {useTelegram} from './useTelegram';
 import {auth} from './auth';
 import {useLocalization} from './hooks/useLocalization';
+import { UserService } from './api';
+import { useSettings } from './hooks/useSettings';
 import { useWebSocketNotifications } from './hooks/useWebSocketNotifications';
 import { NotificationProvider } from './components/NotificationSystem';
 
@@ -32,6 +34,7 @@ function AppRoutes() {
   const [isTelegramChecked, setIsTelegramChecked] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const {t} = useLocalization();
+  const { updateSettings } = useSettings();
 
   // Шаг 1: Авторизация через Telegram при загрузке приложения
   useEffect(() => {
@@ -66,6 +69,28 @@ function AppRoutes() {
 
   // Подключение к WebSocket после успешной авторизации
   useWebSocketNotifications(isAuthenticated);
+
+  // После успешной авторизации загружаем локаль пользователя с бэкенда
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    let isCancelled = false;
+    (async () => {
+      try {
+        const res = await UserService.getUserLocale();
+        if (isCancelled) return;
+        const backendLanguage = res.locale === 'ru' ? 'ru' : 'en';
+        // Если бэкенд помечает ручной выбор - фиксируем источник как manual, иначе telegram
+        updateSettings({
+          language: backendLanguage,
+          languageSource: res.isManual ? 'manual' : 'telegram'
+        });
+      } catch (e) {
+        // Не блокируем UI, просто логируем
+        console.error('Failed to fetch user locale from backend:', e);
+      }
+    })();
+    return () => { isCancelled = true; };
+  }, [isAuthenticated, updateSettings]);
 
   // Автоматический скролл наверх при смене маршрута
   useEffect(() => {
