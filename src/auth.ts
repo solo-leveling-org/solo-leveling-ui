@@ -26,7 +26,7 @@ function clearTokens() {
   localStorage.removeItem(REFRESH_TOKEN_KEY);
 }
 
-async function loginWithTelegram(initData: string, tg_web_app_data: any): Promise<void> {
+async function loginWithTelegram(initData: string, tg_web_app_data: any): Promise<LoginResponse> {
   const authData: TgAuthData = {
     init_data: initData,
     tg_web_app_data,
@@ -35,10 +35,12 @@ async function loginWithTelegram(initData: string, tg_web_app_data: any): Promis
   try {
     const jwt = await AuthService.login(authData);
     if (!jwt || !jwt.accessToken || !jwt.refreshToken || !jwt.accessToken.token || !jwt.refreshToken.token) {
-      clearTokens();
+      throw new Error('Invalid authentication response');
     }
     saveTokens(jwt);
+    return jwt;
   } catch (e: any) {
+    clearTokens();
     throw e;
   }
 }
@@ -50,7 +52,7 @@ async function refreshTokenIfNeeded(): Promise<string | null> {
   }
 
   try {
-    const newToken = await AuthService.refresh({ refreshToken });
+    const newToken = await AuthService.refresh({refreshToken});
     if (newToken && newToken.accessToken && newToken.accessToken.token) {
       localStorage.setItem(ACCESS_TOKEN_KEY, newToken.accessToken.token);
       return newToken.accessToken.token;
@@ -94,18 +96,18 @@ async function getTokenForRequest(options: any): Promise<string> {
 
   // Для всех остальных запросов проверяем наличие токена
   let token = getAccessToken();
-  
+
   if (token) {
     return token;
   }
-  
+
   // Если токена нет, пытаемся обновить
   token = await refreshTokenIfNeeded();
-  
+
   if (token) {
     return token;
   }
-  
+
   // Если и после обновления токена нет, возвращаем пустую строку
   // Это приведет к 401 ошибке, которую нужно обработать на уровне компонентов
   return '';

@@ -16,28 +16,34 @@ import {
 import TopicsTab from './tabs/TopicsTab';
 import WelcomeTab from './tabs/WelcomeTab';
 import {useLocalization} from './hooks/useLocalization';
-import { useSettings } from './hooks/useSettings';
-import { useAuth } from './hooks/useAuth';
-import { useLocaleSync } from './hooks/useLocaleSync';
+import {useSettings} from './hooks/useSettings';
+import {useAuth} from './hooks/useAuth';
+import {useLocaleSync} from './hooks/useLocaleSync';
 import WelcomeTabSkeleton from './components/WelcomeTabSkeleton';
-import { useWebSocketNotifications } from './hooks/useWebSocketNotifications';
-import { NotificationProvider } from './components/NotificationSystem';
+import {useWebSocketNotifications} from './hooks/useWebSocketNotifications';
+import {NotificationProvider} from './components/NotificationSystem';
 
 function AppRoutes() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Используем новые хуки для разделения логики
-  const { isAuthenticated, showNoTelegramError, isTelegramChecked, authError } = useAuth();
-  const { localeLoaded, setLocaleLoaded } = useSettings();
-  const { t } = useLocalization();
-  
+  const {
+    isAuthenticated,
+    showNoTelegramError,
+    isTelegramChecked,
+    authError,
+    authPromise
+  } = useAuth();
+  const {localeLoaded, setLocaleLoaded} = useSettings();
+  const {t} = useLocalization();
+
   // Синхронизация локализации
   useLocaleSync(isAuthenticated);
 
   // Подключение к WebSocket после успешной авторизации
-  useWebSocketNotifications(isAuthenticated);
+  useWebSocketNotifications({enabled: isAuthenticated, authPromise});
 
   // Устанавливаем localeLoaded для случаев без авторизации
   useEffect(() => {
@@ -55,10 +61,10 @@ function AppRoutes() {
 
   // Конфигурация табов
   const tabsConfig = [
-    { path: '/', key: 'welcome' },
-    { path: '/profile', key: 'profile' },
-    { path: '/tasks', key: 'tasks' },
-    { path: '/topics', key: 'topics' },
+    {path: '/', key: 'welcome'},
+    {path: '/profile', key: 'profile'},
+    {path: '/tasks', key: 'tasks'},
+    {path: '/topics', key: 'topics'},
   ];
 
   // Генерируем tabList для SideDrawer
@@ -73,7 +79,7 @@ function AppRoutes() {
 
   // Показываем skeleton до загрузки локализации
   if (!localeLoaded) {
-    return <WelcomeTabSkeleton />;
+    return <WelcomeTabSkeleton/>;
   }
 
   return (

@@ -1,28 +1,33 @@
-import { useState, useEffect } from 'react';
-import { useTelegram } from '../useTelegram';
-import { auth } from '../auth';
+import {useState, useEffect, useRef} from 'react';
+import {useTelegram} from '../useTelegram';
+import {auth} from '../auth';
+import type {LoginResponse} from '../api';
 
 export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showNoTelegramError, setShowNoTelegramError] = useState(false);
   const [isTelegramChecked, setIsTelegramChecked] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
-  
-  const { initData, tgWebAppData } = useTelegram();
+  const authPromiseRef = useRef<Promise<LoginResponse> | null>(null);
+
+  const {initData, tgWebAppData} = useTelegram();
 
   // Шаг 1: Авторизация через Telegram при загрузке приложения
   useEffect(() => {
     if (initData !== undefined && tgWebAppData !== undefined) {
       if (initData && tgWebAppData) {
-        auth.loginWithTelegram(initData, tgWebAppData)
-          .then(() => {
-            setAuthError(null);
-            setIsAuthenticated(true);
-          })
-          .catch((e) => {
-            setAuthError(e.message || 'Ошибка авторизации');
-            setIsAuthenticated(false);
-          });
+        const authPromise = auth.loginWithTelegram(initData, tgWebAppData);
+        authPromiseRef.current = authPromise;
+
+        authPromise
+        .then(() => {
+          setAuthError(null);
+          setIsAuthenticated(true);
+        })
+        .catch((e) => {
+          setAuthError(e.message || 'Ошибка авторизации');
+          setIsAuthenticated(false);
+        });
         setShowNoTelegramError(false);
       } else {
         setShowNoTelegramError(true);
@@ -46,5 +51,6 @@ export const useAuth = () => {
     showNoTelegramError,
     isTelegramChecked,
     authError,
+    authPromise: authPromiseRef.current,
   };
 };
