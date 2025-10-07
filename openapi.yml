@@ -1,8 +1,7 @@
 openapi: 3.0.3
 info:
-  title: Telegram Auth API
+  title: Solo leveling gateway openapi
   version: 1.0.0
-  description: API for authentication via Telegram WebApp and JWT tokens
 
 paths:
   # =============== AUTHENTICATION ===============
@@ -91,6 +90,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetUserResponse'
+
+  /api/v1/user/locale:
+    get:
+      tags:
+        - user
+      summary: Get current user's locale (from JWT)
+      operationId: getUserLocale
+      responses:
+        '200':
+          description: Current user locale
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLocaleResponse'
+    put:
+      tags:
+        - user
+      summary: Manual update current user's locale (from JWT)
+      operationId: updateUserLocale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserLocaleRequest'
+      responses:
+        '200':
+          description: Current user locale
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLocaleResponse'
 
   # =============== PLAYER ===============
   /api/v1/player/{playerId}/topics:
@@ -219,6 +250,14 @@ components:
           description: The refresh token to use for generating a new access token
       description: Request body for refreshing the access token
 
+    UpdateUserLocaleRequest:
+      type: object
+      required:
+        - locale
+      properties:
+        locale:
+          type: string
+
     SavePlayerTopicsRequest:
       type: object
       required:
@@ -274,6 +313,17 @@ components:
       properties:
         user:
           $ref: '#/components/schemas/User'
+
+    UserLocaleResponse:
+      type: object
+      required:
+        - locale
+        - isManual
+      properties:
+        locale:
+          type: string
+        isManual:
+          type: boolean
 
     GetPlayerTopicsResponse:
       type: object
@@ -615,11 +665,12 @@ components:
           $ref: '#/components/schemas/NotificationType'
         source:
           $ref: '#/components/schemas/NotificationSource'
-
+        visible:
+          type: boolean
       required:
-        - message
         - type
         - source
+        - visible
 
     NotificationType:
       type: string
@@ -627,4 +678,4 @@ components:
 
     NotificationSource:
       type: string
-      enum: [ tasks ]
+      enum: [ tasks, locale ]

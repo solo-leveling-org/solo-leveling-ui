@@ -5,8 +5,9 @@
 import type { NotificationSource } from './NotificationSource';
 import type { NotificationType } from './NotificationType';
 export type Notification = {
-    message: string;
+    message?: string;
     type: NotificationType;
     source: NotificationSource;
+    visible: boolean;
 };
 

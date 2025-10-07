@@ -15,57 +15,42 @@ import {
 } from 'react-router-dom';
 import TopicsTab from './tabs/TopicsTab';
 import WelcomeTab from './tabs/WelcomeTab';
-import {useTelegram} from './useTelegram';
-import {auth} from './auth';
 import {useLocalization} from './hooks/useLocalization';
-import { useWebSocketNotifications } from './hooks/useWebSocketNotifications';
-import { NotificationProvider } from './components/NotificationSystem';
+import {useSettings} from './hooks/useSettings';
+import {useAuth} from './hooks/useAuth';
+import {useLocaleSync} from './hooks/useLocaleSync';
+import WelcomeTabSkeleton from './components/WelcomeTabSkeleton';
+import {useWebSocketNotifications} from './hooks/useWebSocketNotifications';
+import {NotificationProvider} from './components/NotificationSystem';
 
 function AppRoutes() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  // Состояние авторизации - true только после успешного логина
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const {initData, tgWebAppData} = useTelegram();
-  const [showNoTelegramError, setShowNoTelegramError] = useState(false);
-  const [isTelegramChecked, setIsTelegramChecked] = useState(false);
-  const [authError, setAuthError] = useState<string | null>(null);
+
+  // Используем новые хуки для разделения логики
+  const {
+    isAuthenticated,
+    showNoTelegramError,
+    isTelegramChecked,
+    authError,
+    authPromise
+  } = useAuth();
+  const {localeLoaded, setLocaleLoaded} = useSettings();
   const {t} = useLocalization();
 
-  // Шаг 1: Авторизация через Telegram при загрузке приложения
-  useEffect(() => {
-    if (initData !== undefined && tgWebAppData !== undefined) {
-      if (initData && tgWebAppData) {
-        auth.loginWithTelegram(initData, tgWebAppData)
-        .then(() => {
-          setAuthError(null);
-          setIsAuthenticated(true); // Устанавливаем флаг авторизации
-        })
-        .catch((e) => {
-          setAuthError(e.message || 'Ошибка авторизации');
-          setIsAuthenticated(false);
-        });
-        setShowNoTelegramError(false);
-      } else {
-        setShowNoTelegramError(true);
-        setAuthError(null);
-        setIsAuthenticated(false);
-      }
-      setIsTelegramChecked(true);
-    }
-  }, [initData, tgWebAppData]);
-
-  // Шаг 2: Проверяем, есть ли уже сохраненные токены в localStorage
-  useEffect(() => {
-    if (isTelegramChecked && !showNoTelegramError && !authError) {
-      const hasTokens = auth.isAuthenticated();
-      setIsAuthenticated(hasTokens);
-    }
-  }, [isTelegramChecked, showNoTelegramError, authError]);
+  // Синхронизация локализации
+  useLocaleSync(isAuthenticated);
 
   // Подключение к WebSocket после успешной авторизации
-  useWebSocketNotifications(isAuthenticated);
+  useWebSocketNotifications({enabled: isAuthenticated, authPromise});
+
+  // Устанавливаем localeLoaded для случаев без авторизации
+  useEffect(() => {
+    if (isTelegramChecked && (!isAuthenticated || showNoTelegramError || authError)) {
+      setLocaleLoaded(true);
+    }
+  }, [isTelegramChecked, isAuthenticated, showNoTelegramError, authError, setLocaleLoaded]);
 
   // Автоматический скролл наверх при смене маршрута
   useEffect(() => {
@@ -74,41 +59,28 @@ function AppRoutes() {
     }
   }, [location.pathname]);
 
-  // tabList для SideDrawer
-  const tabList = [
-    {
-      label: t('navigation.welcome'),
-      active: location.pathname === '/',
-      onClick: () => {
-        navigate('/');
-        setDrawerOpen(false);
-      },
-    },
-    {
-      label: t('navigation.profile'),
-      active: location.pathname === '/profile',
-      onClick: () => {
-        navigate('/profile');
-        setDrawerOpen(false);
-      },
-    },
-    {
-      label: t('navigation.tasks'),
-      active: location.pathname === '/tasks',
-      onClick: () => {
-        navigate('/tasks');
-        setDrawerOpen(false);
-      },
-    },
-    {
-      label: t('navigation.topics'),
-      active: location.pathname === '/topics',
-      onClick: () => {
-        navigate('/topics');
-        setDrawerOpen(false);
-      },
-    }
+  // Конфигурация табов
+  const tabsConfig = [
+    {path: '/', key: 'welcome'},
+    {path: '/profile', key: 'profile'},
+    {path: '/tasks', key: 'tasks'},
+    {path: '/topics', key: 'topics'},
   ];
+
+  // Генерируем tabList для SideDrawer
+  const tabList = tabsConfig.map(tab => ({
+    label: t(`navigation.${tab.key}`),
+    active: location.pathname === tab.path,
+    onClick: () => {
+      navigate(tab.path);
+      setDrawerOpen(false);
+    },
+  }));
+
+  // Показываем skeleton до загрузки локализации
+  if (!localeLoaded) {
+    return <WelcomeTabSkeleton/>;
+  }
 
   return (
       <div className="App">

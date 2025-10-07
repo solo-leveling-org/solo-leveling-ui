@@ -2,7 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export enum NotificationSource {
-    TASKS = 'tasks',
-    LOCALE = 'locale',
-}
+export type UserLocaleResponse = {
+    locale: string;
+    isManual: boolean;
+};
+
