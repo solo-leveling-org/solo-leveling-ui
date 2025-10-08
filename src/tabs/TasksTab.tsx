@@ -67,11 +67,10 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     try {
       setLoading(true);
       const response = await taskActions.completeTask(task);
-      setTasks(response.tasks);
       // Сохраняем выполненную задачу для отображения в диалоге
       setCompletedTask(task);
       // Показываем диалог с результатами выполнения задачи
-      setCompletionResponse(response.completionResponse);
+      setCompletionResponse(response);
     } catch (error) {
       console.error('Error completing task:', error);
     } finally {
@@ -82,8 +81,8 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const skipTask = async (playerTask: PlayerTask) => {
     try {
       setLoading(true);
-      const updated = await taskActions.skipTask(playerTask);
-      setTasks(updated);
+      await taskActions.skipTask(playerTask);
+      // WebSocket уведомления автоматически обновят список задач
     } catch (error) {
       console.error('Error skipping task:', error);
     } finally {
