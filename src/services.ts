@@ -1,13 +1,13 @@
-import {PlayerTask, UserService} from './api';
-import {PlayerService} from './api';
+import type {
+  CompleteTaskResponse,
+  GetActiveTasksResponse,
+  GetPlayerTopicsResponse,
+  GetUserResponse,
+  PlayerTaskTopic
+} from './api';
+import {PlayerService, PlayerTask, UserService} from './api';
 import type {User as ApiUser} from './api/models/User';
 import type {PlayerTask as ApiPlayerTask} from './api/models/PlayerTask';
-
-import type {PlayerTaskTopic} from './api';
-import type {GetActiveTasksResponse} from './api';
-import type {GetPlayerTopicsResponse} from './api';
-import type {GetUserResponse} from './api';
-import type {CompleteTaskResponse} from './api';
 
 export const api = {
   getUser: async (): Promise<ApiUser> => {
@@ -67,31 +67,25 @@ export const api = {
 };
 
 export const taskActions = {
-  completeTask: async (playerTask: PlayerTask): Promise<{ tasks: ApiPlayerTask[], completionResponse: CompleteTaskResponse }> => {
+  completeTask: async (playerTask: PlayerTask): Promise<CompleteTaskResponse> => {
     try {
-      const completionResponse = await PlayerService.completeTask({
+      // WebSocket уведомления автоматически обновят список задач
+      return await PlayerService.completeTask({
         playerTask: playerTask
       });
-
-      const updatedResponse: GetActiveTasksResponse = await PlayerService.getActiveTasks();
-      return {
-        tasks: updatedResponse.tasks,
-        completionResponse: completionResponse
-      };
     } catch (error) {
       console.error('Error completing task:', error);
       throw error;
     }
   },
 
-  skipTask: async (playerTask: PlayerTask): Promise<ApiPlayerTask[]> => {
+  skipTask: async (playerTask: PlayerTask): Promise<void> => {
     try {
       await PlayerService.skipTask({
         playerTask: playerTask
       });
 
-      const updatedResponse: GetActiveTasksResponse = await PlayerService.getActiveTasks();
-      return updatedResponse.tasks;
+      // WebSocket уведомления автоматически обновят список задач
     } catch (error) {
       console.error('Error skipping task:', error);
       throw error;
