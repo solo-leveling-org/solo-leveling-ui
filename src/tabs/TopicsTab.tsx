@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TaskTopic } from '../api';
+import { TaskTopic, Assessment } from '../api';
 import type { GetPlayerTopicsResponse, PlayerTaskTopic } from '../api';
 import { api } from '../services';
 import { useNavigate } from 'react-router-dom';
@@ -61,12 +61,18 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
       } else {
         // Если топика нет, добавляем его как активный с базовым уровнем
         return [...prev, {
+          id: `temp-${topic}-${Date.now()}`, // Временный ID для новых топиков
+          version: 1,
           taskTopic: topic,
           isActive: true,
           level: {
+            id: `temp-level-${topic}-${Date.now()}`,
+            version: 1,
             level: 1,
+            totalExperience: 0,
             currentExperience: 0,
-            experienceToNextLevel: 100
+            experienceToNextLevel: 100,
+            assessment: Assessment.E
           }
         }];
       }
