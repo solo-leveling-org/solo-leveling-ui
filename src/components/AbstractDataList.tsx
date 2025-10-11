@@ -6,6 +6,7 @@ import type {
   LocalizedField,
   ResponseQueryOptions
 } from '../api';
+import { OrderMode } from '../api';
 
 // Абстрактные типы для работы с данными
 export interface DataItem {
@@ -97,7 +98,7 @@ export function AbstractDataList<T extends DataItem>({
     setCurrentPage(1);
   };
 
-  const handleSortChange = (field: string, mode: 'ASC' | 'DESC') => {
+  const handleSortChange = (field: string, mode: OrderMode) => {
     setSorts(prev => {
       const newSorts = prev.filter(s => s.field !== field);
       if (mode) {
@@ -190,7 +191,7 @@ export function AbstractDataList<T extends DataItem>({
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     onChange={(e) => {
                       const [field, mode] = e.target.value.split('_');
-                      handleSortChange(field, mode as 'ASC' | 'DESC');
+                      handleSortChange(field, mode as OrderMode);
                     }}
                   >
                     <option value="">{t('common.noSort')}</option>
