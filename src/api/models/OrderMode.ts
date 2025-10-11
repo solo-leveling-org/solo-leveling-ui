@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Player } from './Player';
-export type CompleteTaskResponse = {
-    playerBefore: Player;
-    playerAfter: Player;
-};
-
+export enum OrderMode {
+    ASC = 'ASC',
+    DESC = 'DESC',
+}

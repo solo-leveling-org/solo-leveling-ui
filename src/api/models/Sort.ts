@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Player } from './Player';
-export type CompleteTaskResponse = {
-    playerBefore: Player;
-    playerAfter: Player;
+import type { OrderMode } from './OrderMode';
+export type Sort = {
+    field: string;
+    mode: OrderMode;
 };
 

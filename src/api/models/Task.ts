@@ -5,8 +5,8 @@
 import type { TaskRarity } from './TaskRarity';
 import type { TaskTopic } from './TaskTopic';
 export type Task = {
-    id?: string;
-    version?: number;
+    id: string;
+    version: number;
     title?: string;
     description?: string;
     experience?: number;

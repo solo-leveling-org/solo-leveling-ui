@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Player } from './Player';
-export type CompleteTaskResponse = {
-    playerBefore: Player;
-    playerAfter: Player;
+export type DateFilter = {
+    field: string;
+    from: string;
+    to: string;
 };
 

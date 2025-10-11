@@ -4,8 +4,8 @@
 /* eslint-disable */
 import type { Money } from './Money';
 export type PlayerBalance = {
-    id?: string;
-    version?: number;
-    balance?: Money;
+    id: string;
+    version: number;
+    balance: Money;
 };
 

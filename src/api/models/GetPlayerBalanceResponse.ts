@@ -2,9 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Player } from './Player';
-export type CompleteTaskResponse = {
-    playerBefore: Player;
-    playerAfter: Player;
+import type { PlayerBalance } from './PlayerBalance';
+export type GetPlayerBalanceResponse = {
+    balance: PlayerBalance;
 };
 

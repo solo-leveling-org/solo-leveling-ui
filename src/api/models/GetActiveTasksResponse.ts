@@ -5,6 +5,6 @@
 import type { PlayerTask } from './PlayerTask';
 export type GetActiveTasksResponse = {
     tasks: Array<PlayerTask>;
-    firstTime?: boolean;
+    firstTime: boolean;
 };
 

@@ -18,12 +18,21 @@ export const ru = {
     success: 'Успешно',
     warning: 'Предупреждение',
     info: 'Информация',
+    retry: 'Повторить',
+    filters: 'Фильтры',
+    clearFilters: 'Очистить фильтры',
+    sortBy: 'Сортировать по',
+    noSort: 'Без сортировки',
+    dateRange: 'Диапазон дат',
+    loadingData: 'Ошибка загрузки данных',
+    noData: 'Данные отсутствуют',
   },
 
   // Навигация
   navigation: {
     title: 'Навигация',
     profile: 'Профиль',
+    balance: 'Баланс',
     tasks: 'Задачи',
     topics: 'Темы',
     welcome: 'Главная',
@@ -152,6 +161,7 @@ export const ru = {
       daysAgo: 'дня назад',
     },
     settings: {
+      title: 'Настройки',
       language: {
         title: 'Язык',
         description: 'Выберите язык интерфейса',
@@ -162,6 +172,22 @@ export const ru = {
         chooseManually: 'Вручную',
         sourceDescription: 'Язык из Telegram или вручную.',
         manualDisabledHint: 'Ручной выбор недоступен, включен режим Telegram',
+      },
+    },
+  },
+
+  // Баланс
+  balance: {
+    title: 'Баланс',
+    subtitle: 'Ваш текущий баланс и история транзакций',
+    transactions: {
+      title: 'История транзакций',
+      empty: 'Пока нет транзакций',
+      causes: {
+        TASK_COMPLETION: 'Выполнение задачи',
+        LEVEL_UP: 'Бонус за повышение уровня',
+        DAILY_CHECK_IN: 'Ежедневная отметка',
+        ITEM_PURCHASE: 'Покупка предмета',
       },
     },
   },

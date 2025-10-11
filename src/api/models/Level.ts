@@ -4,12 +4,12 @@
 /* eslint-disable */
 import type { Assessment } from './Assessment';
 export type Level = {
-    id?: string;
-    version?: number;
-    level?: number;
-    totalExperience?: number;
-    currentExperience?: number;
-    experienceToNextLevel?: number;
-    assessment?: Assessment;
+    id: string;
+    version: number;
+    level: number;
+    totalExperience: number;
+    currentExperience: number;
+    experienceToNextLevel: number;
+    assessment: Assessment;
 };
 
