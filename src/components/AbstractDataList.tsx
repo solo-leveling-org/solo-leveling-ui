@@ -62,7 +62,9 @@ export function AbstractDataList<T extends DataItem>({
     setError(null);
 
     try {
-      const result = await loadData(page, pageSize, filters, sorts);
+      // Отправляем на backend страницу с 0, но отображаем с 1
+      const backendPage = page - 1;
+      const result = await loadData(backendPage, pageSize, filters, sorts);
       
       setData(result.data);
       setTotalPages(result.options.totalPageCount || 1);
