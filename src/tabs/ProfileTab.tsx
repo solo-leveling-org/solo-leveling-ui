@@ -64,12 +64,23 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
 
   return (
     <>
-      <div className="relative">
+      {/* Settings Button - Top Right Corner */}
+      <div className="fixed top-6 right-6 z-50">
+        <button
+          onClick={() => setShowSettings(true)}
+          className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg"
+          title={t('profile.settings.title')}
+        >
+          <Icon type="settings" size={20} className="text-gray-600" />
+        </button>
+      </div>
+
+      <div className="relative max-w-md mx-auto">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-400/20 to-pink-400/20 rounded-3xl blur-3xl -z-10 transform scale-105"></div>
 
         {/* Main card */}
-        <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 max-w-md mx-auto mt-8 overflow-hidden">
+        <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/30 to-purple-400/30 rounded-full blur-2xl -translate-y-8 translate-x-8"></div>
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-400/30 to-orange-400/30 rounded-full blur-xl translate-y-4 -translate-x-4"></div>
@@ -102,16 +113,6 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
               </div>
             </div>
 
-            {/* Settings Button - Top Right */}
-            <div className="absolute top-6 right-6">
-              <button
-                onClick={() => setShowSettings(true)}
-                className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 hover:scale-110 active:scale-95"
-                title={t('profile.settings.title')}
-              >
-                <Icon type="settings" size={20} className="text-gray-600" />
-              </button>
-            </div>
 
             {/* Stats Content */}
             <div className="space-y-6">
@@ -172,12 +173,12 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
 };
 
 export const ProfileSkeleton: React.FC = () => (
-  <div className="relative">
+  <div className="relative max-w-md mx-auto">
     {/* Background gradient */}
     <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-400/20 to-pink-400/20 rounded-3xl blur-3xl -z-10 transform scale-105"></div>
 
     {/* Main card */}
-    <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 max-w-md mx-auto mt-8 overflow-hidden">
+    <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/30 to-purple-400/30 rounded-full blur-2xl -translate-y-8 translate-x-8 animate-pulse"></div>
       <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-400/30 to-orange-400/30 rounded-full blur-xl translate-y-4 -translate-x-4 animate-pulse"></div>

@@ -22,6 +22,7 @@ import { ReactComponent as AwardIcon } from '../assets/icons/award.svg';
 import { ReactComponent as DumbbellIcon } from '../assets/icons/dumbbell.svg';
 import { ReactComponent as ZapIcon } from '../assets/icons/zap.svg';
 import { ReactComponent as SparklesIcon } from '../assets/icons/sparkles.svg';
+import { ReactComponent as GlobeIcon } from '../assets/icons/globe.svg';
 
 export type IconType = 
   | 'brain' 
@@ -47,7 +48,8 @@ export type IconType =
   | 'dumbbell'
   | 'zap'
   | 'sparkles'
-  | 'clock';
+  | 'clock'
+  | 'globe';
 
 interface IconProps {
   type: IconType;
@@ -110,6 +112,8 @@ const Icon: React.FC<IconProps> = ({ type, className = '', size = 24 }) => {
       return <SparklesIcon {...iconProps} />;
     case 'clock':
       return <CalendarIcon {...iconProps} />;
+    case 'globe':
+      return <GlobeIcon {...iconProps} />;
     default:
       return <div className={className} style={{ width: size, height: size }}>❓</div>;
   }

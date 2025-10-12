@@ -75,7 +75,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
           <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30 mb-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <div className="text-2xl mr-3">🌍</div>
+                <Icon type="globe" size={24} className="mr-3 text-gray-600" />
                 <div>
                   <div className="font-bold text-gray-800 text-base">{t('profile.settings.language.sourceTitle')}</div>
                   <div className="text-sm text-slate-500">{t('profile.settings.language.sourceDescription')}</div>
@@ -115,7 +115,9 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
                 }`}
               >
                 <div className="text-center">
-                  <Icon type="wrench" size={32} className="mb-2" />
+                  <div className="flex justify-center items-center mb-2">
+                    <Icon type="wrench" size={24} className="text-gray-500" />
+                  </div>
                   <div className={`font-semibold text-sm ${
                     settings.isManual ? 'text-emerald-700' : 'text-gray-600'
                   }`}>
