@@ -30,6 +30,32 @@ export const ru = {
     hideFilters: 'Скрыть фильтры',
     from: 'С',
     to: 'По',
+    selectDateRange: 'Выберите диапазон дат',
+    apply: 'Применить',
+    clear: 'Очистить',
+    months: {
+      january: 'Январь',
+      february: 'Февраль',
+      march: 'Март',
+      april: 'Апрель',
+      may: 'Май',
+      june: 'Июнь',
+      july: 'Июль',
+      august: 'Август',
+      september: 'Сентябрь',
+      october: 'Октябрь',
+      november: 'Ноябрь',
+      december: 'Декабрь'
+    },
+    days: {
+      monday: 'Понедельник',
+      tuesday: 'Вторник',
+      wednesday: 'Среда',
+      thursday: 'Четверг',
+      friday: 'Пятница',
+      saturday: 'Суббота',
+      sunday: 'Воскресенье'
+    },
   },
 
   // Навигация

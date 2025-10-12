@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocalization } from '../hooks/useLocalization';
+import DateRangePicker from './DateRangePicker';
 import type { 
   Filter,
   Sort,
@@ -107,27 +108,33 @@ export function AbstractDataList<T extends DataItem>({
     setCurrentPage(page);
   };
 
-  const handleDateFilterChange = (field: 'from' | 'to', value: string) => {
-    setDateFilters(prev => {
-      const newFilters = {...prev, [field]: value};
+  const handleDateRangeChange = (from: string, to: string) => {
+    setDateFilters({ from, to });
+    
+    // Отправляем запрос только если обе даты заполнены
+    if (from && to) {
+      // Преобразуем даты в ISO формат с временем
+      const fromDate = new Date(from + 'T00:00:00.000000');
+      const toDate = new Date(to + 'T23:59:59.999999');
       
-      // Отправляем запрос только если обе даты заполнены
-      if (newFilters.from && newFilters.to) {
-        const dateFilter: DateFilter = {
-          field: 'createdAt', // Хардкод как указано в требованиях
-          from: newFilters.from,
-          to: newFilters.to
-        };
-        
-        setFilters(prevFilters => ({
-          ...prevFilters,
-          dateFilters: [dateFilter]
-        }));
-        setCurrentPage(1);
-      }
+      const dateFilter: DateFilter = {
+        field: 'createdAt', // Хардкод как указано в требованиях
+        from: fromDate.toISOString(),
+        to: toDate.toISOString()
+      };
       
-      return newFilters;
-    });
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        dateFilters: [dateFilter]
+      }));
+      setCurrentPage(1);
+    } else {
+      // Очищаем фильтр дат если не выбраны обе даты
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        dateFilters: []
+      }));
+    }
   };
 
   const handleStringFilterChange = (field: string, values: string[]) => {
@@ -234,30 +241,12 @@ export function AbstractDataList<T extends DataItem>({
                     <span className="text-xl mr-2">📅</span>
                     {t('common.dateRange')}
                   </h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('common.from')}
-                      </label>
-                      <input
-                        type="date"
-                        value={dateFilters.from}
-                        onChange={(e) => handleDateFilterChange('from', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('common.to')}
-                      </label>
-                      <input
-                        type="date"
-                        value={dateFilters.to}
-                        onChange={(e) => handleDateFilterChange('to', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                      />
-                    </div>
-                  </div>
+                  <DateRangePicker
+                    from={dateFilters.from}
+                    to={dateFilters.to}
+                    onChange={handleDateRangeChange}
+                    className="w-full"
+                  />
                 </div>
 
                 {/* String Filters */}
