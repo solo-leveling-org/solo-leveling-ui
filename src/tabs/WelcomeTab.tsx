@@ -114,10 +114,10 @@ const WelcomeTab: React.FC = () => {
         <div className={`max-w-5xl mx-auto transition-all duration-1000 delay-500 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[
-              { icon: '⚡', title: t('welcome.features.quickStart.title'), desc: t('welcome.features.quickStart.description') },
+              { icon: <Icon type="cloud-lightning" size={24} />, title: t('welcome.features.quickStart.title'), desc: t('welcome.features.quickStart.description') },
               { icon: <Icon type="target" size={24} />, title: t('welcome.features.targetedTasks.title'), desc: t('welcome.features.targetedTasks.description') },
-              { icon: '📈', title: t('welcome.features.progress.title'), desc: t('welcome.features.progress.description') },
-              { icon: '🏅', title: t('welcome.features.achievements.title'), desc: t('welcome.features.achievements.description') }
+              { icon: <Icon type="trending-up" size={24} />, title: t('welcome.features.progress.title'), desc: t('welcome.features.progress.description') },
+              { icon: <Icon type="award" size={24} />, title: t('welcome.features.achievements.title'), desc: t('welcome.features.achievements.description') }
             ].map((feature, index) => (
               <div 
                 key={index}
@@ -127,7 +127,7 @@ const WelcomeTab: React.FC = () => {
                   border: '1px solid rgba(255, 255, 255, 0.18)',
                 }}
               >
-                <div className="text-3xl mb-3">{feature.icon}</div>
+                <div className="flex justify-center items-center mb-3">{feature.icon}</div>
                 <div className="text-gray-800 font-semibold mb-2">{feature.title}</div>
                 <div className="text-gray-600 text-sm">{feature.desc}</div>
               </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocalization } from '../hooks/useLocalization';
 import DateRangePicker from './DateRangePicker';
+import Icon from './Icon';
 import type { 
   Filter,
   Sort,
@@ -212,7 +213,7 @@ export function AbstractDataList<T extends DataItem>({
             onClick={() => setShowFiltersPanel(!showFiltersPanel)}
             className="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
           >
-            <span className="mr-2">🔍</span>
+            <Icon type="search" size={16} className="mr-2" />
             {showFiltersPanel ? t('common.hideFilters') : t('common.showFilters')}
           </button>
         </div>

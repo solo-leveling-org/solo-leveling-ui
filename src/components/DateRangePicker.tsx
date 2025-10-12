@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocalization } from '../hooks/useLocalization';
+import Icon from './Icon';
 
 interface DateRangePickerProps {
   from: string;
@@ -132,7 +133,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
         className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/80 transition-all duration-300 hover:scale-105 text-left flex items-center justify-between"
       >
         <span className="text-gray-700 font-medium">{getDisplayText()}</span>
-        <div className="text-2xl">📅</div>
+        <Icon type="calendar" size={32} />
       </button>
 
       {/* Calendar Dropdown */}

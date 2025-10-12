@@ -73,16 +73,16 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
     if (type === 'IN') {
       switch (cause) {
         case 'TASK_COMPLETION':
-          return <Icon type="check" size={16} />;
+          return <Icon type="plus" size={16} />;
         case 'LEVEL_UP':
           return <Icon type="star" size={16} />;
         case 'DAILY_CHECK_IN':
           return <Icon type="calendar" size={16} />;
         default:
-          return <Icon type="coins" size={16} />;
+          return <Icon type="plus" size={16} />;
       }
     } else {
-      return '🛒';
+      return <Icon type="minus" size={16} />;
     }
   };
 
