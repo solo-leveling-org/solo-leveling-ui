@@ -780,10 +780,10 @@ components:
           type: string
         from:
           type: string
-          format: date-time
+          format: date
         to:
           type: string
-          format: date-time
+          format: date
       required:
         - field
         - from
