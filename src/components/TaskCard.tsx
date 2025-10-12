@@ -1,7 +1,7 @@
 import React from 'react';
 import type { PlayerTask } from '../api';
 import { PlayerTaskStatus } from '../api';
-import { topicIcons } from '../topicMeta';
+import TopicIcon from './TopicIcons';
 import RarityIndicator from './RarityIndicator';
 import { useLocalization } from '../hooks/useLocalization';
 
@@ -154,7 +154,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
                 color: '#374151',
               }}
             >
-              <span className="mr-1.5 text-sm">{topicIcons[topic] || '❓'}</span>
+              <TopicIcon topic={topic} size={16} className="mr-1.5 text-sm" />
                                       {t(`topics.labels.${topic}`)}
             </span>
           ))}

@@ -3,7 +3,7 @@ import { TaskTopic, Assessment } from '../api';
 import type { GetPlayerTopicsResponse, PlayerTaskTopic } from '../api';
 import { api } from '../services';
 import { useNavigate } from 'react-router-dom';
-import { topicIcons } from '../topicMeta';
+import TopicIcon from '../components/TopicIcons';
 import { useLocalization } from '../hooks/useLocalization';
 
 type TopicsTabProps = {
@@ -277,11 +277,15 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                     <div className="relative z-10 text-center">
                       {/* Icon */}
                       <div
-                          className={`text-3xl sm:text-4xl mb-3 sm:mb-4 transition-transform duration-200 ${
+                          className={`mb-3 sm:mb-4 transition-transform duration-200 ${
                               isSelected ? 'scale-110' : 'group-hover:scale-110'
                           }`}
                       >
-                        {topicIcons[topic] || '❓'}
+                        <TopicIcon 
+                          topic={topic}
+                          size={48}
+                          className="text-3xl sm:text-4xl"
+                        />
                       </div>
 
                       {/* Label */}

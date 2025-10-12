@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import type {Task} from '../api';
-import {topicIcons} from '../topicMeta';
+import TopicIcon from './TopicIcons';
 import { ReactComponent as CoinsIcon } from '../assets/icons/coins.svg';
 import RarityIndicator from './RarityIndicator';
 import { useLocalization } from '../hooks/useLocalization';
@@ -172,7 +172,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
                             className="inline-flex items-center bg-gradient-to-r from-blue-50/80 to-indigo-50/80 backdrop-blur-sm text-blue-700 px-3 py-2 rounded-full text-xs font-medium border border-blue-200/30 hover:shadow-md transition-all duration-200 hover:scale-105 animate-dialog-stagger-4"
                             style={{animationDelay: `${0.6 + index * 0.1}s`}}
                         >
-                          <span className="mr-1">{topicIcons[topic] || '❓'}</span>
+                          <TopicIcon topic={topic} size={16} className="mr-1" />
                           {t(`topics.labels.${topic}`)}
                         </div>
                     ))}
