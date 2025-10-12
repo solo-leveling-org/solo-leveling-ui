@@ -25,25 +25,25 @@ const TopicIcon: React.FC<TopicIconProps> = ({ topic, className = '', size = 24 
 
   switch (topic) {
     case TaskTopic.PHYSICAL_ACTIVITY:
-      return <ActivityIcon {...iconProps} />;
+      return <ActivityIcon {...iconProps} className={`${className} text-red-500`} />;
     case TaskTopic.MENTAL_HEALTH:
-      return <BrainIcon {...iconProps} />;
+      return <BrainIcon {...iconProps} className={`${className} text-purple-500`} />;
     case TaskTopic.EDUCATION:
-      return <BookIcon {...iconProps} />;
+      return <BookIcon {...iconProps} className={`${className} text-blue-500`} />;
     case TaskTopic.CREATIVITY:
-      return <PaintbrushIcon {...iconProps} />;
+      return <PaintbrushIcon {...iconProps} className={`${className} text-pink-500`} />;
     case TaskTopic.SOCIAL_SKILLS:
-      return <MessageCircleIcon {...iconProps} />;
+      return <MessageCircleIcon {...iconProps} className={`${className} text-green-500`} />;
     case TaskTopic.HEALTHY_EATING:
-      return <SaladIcon {...iconProps} />;
+      return <SaladIcon {...iconProps} className={`${className} text-lime-500`} />;
     case TaskTopic.PRODUCTIVITY:
-      return <ClockIcon {...iconProps} />;
+      return <ClockIcon {...iconProps} className={`${className} text-orange-500`} />;
     case TaskTopic.EXPERIMENTS:
-      return <FlaskRoundIcon {...iconProps} />;
+      return <FlaskRoundIcon {...iconProps} className={`${className} text-cyan-500`} />;
     case TaskTopic.ECOLOGY:
-      return <LeafIcon {...iconProps} />;
+      return <LeafIcon {...iconProps} className={`${className} text-emerald-500`} />;
     case TaskTopic.TEAMWORK:
-      return <HandshakeIcon {...iconProps} />;
+      return <HandshakeIcon {...iconProps} className={`${className} text-indigo-500`} />;
     default:
       return <div className={className} style={{ width: size, height: size }}>❓</div>;
   }

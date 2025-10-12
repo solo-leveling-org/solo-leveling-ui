@@ -19,6 +19,9 @@ import { ReactComponent as TrophyIcon } from '../assets/icons/trophy.svg';
 import { ReactComponent as CloudLightningIcon } from '../assets/icons/cloud-lightning.svg';
 import { ReactComponent as TrendingUpIcon } from '../assets/icons/trending-up.svg';
 import { ReactComponent as AwardIcon } from '../assets/icons/award.svg';
+import { ReactComponent as DumbbellIcon } from '../assets/icons/dumbbell.svg';
+import { ReactComponent as ZapIcon } from '../assets/icons/zap.svg';
+import { ReactComponent as SparklesIcon } from '../assets/icons/sparkles.svg';
 
 export type IconType = 
   | 'brain' 
@@ -40,7 +43,11 @@ export type IconType =
   | 'trophy'
   | 'cloud-lightning'
   | 'trending-up'
-  | 'award';
+  | 'award'
+  | 'dumbbell'
+  | 'zap'
+  | 'sparkles'
+  | 'clock';
 
 interface IconProps {
   type: IconType;
@@ -95,6 +102,14 @@ const Icon: React.FC<IconProps> = ({ type, className = '', size = 24 }) => {
       return <TrendingUpIcon {...iconProps} />;
     case 'award':
       return <AwardIcon {...iconProps} />;
+    case 'dumbbell':
+      return <DumbbellIcon {...iconProps} />;
+    case 'zap':
+      return <ZapIcon {...iconProps} />;
+    case 'sparkles':
+      return <SparklesIcon {...iconProps} />;
+    case 'clock':
+      return <CalendarIcon {...iconProps} />;
     default:
       return <div className={className} style={{ width: size, height: size }}>❓</div>;
   }
