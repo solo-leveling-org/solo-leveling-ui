@@ -210,15 +210,12 @@ export const en = {
   balance: {
     title: 'Balance',
     subtitle: 'Your current balance and transaction history',
-    transactions: {
-      title: 'Transaction History',
-      empty: 'No transactions yet',
-      causes: {
-        TASK_COMPLETION: 'Task Completion',
-        LEVEL_UP: 'Level Up Bonus',
-        DAILY_CHECK_IN: 'Daily Check-in',
-        ITEM_PURCHASE: 'Item Purchase',
-      },
+    transactions: 'Transaction History',
+    causes: {
+      TASK_COMPLETION: 'Task Completion',
+      LEVEL_UP: 'Level Up Bonus',
+      DAILY_CHECK_IN: 'Daily Check-in',
+      ITEM_PURCHASE: 'Item Purchase',
     },
   },
 

@@ -113,14 +113,11 @@ export function AbstractDataList<T extends DataItem>({
     
     // Отправляем запрос только если обе даты заполнены
     if (from && to) {
-      // Преобразуем даты в ISO формат с временем
-      const fromDate = new Date(from + 'T00:00:00.000000');
-      const toDate = new Date(to + 'T23:59:59.999999');
-      
+      // Преобразуем даты в формат YYYY-MM-DD без времени
       const dateFilter: DateFilter = {
         field: 'createdAt', // Хардкод как указано в требованиях
-        from: fromDate.toISOString(),
-        to: toDate.toISOString()
+        from: from, // Отправляем дату как есть в формате YYYY-MM-DD
+        to: to      // Отправляем дату как есть в формате YYYY-MM-DD
       };
       
       setFilters(prevFilters => ({
@@ -310,7 +307,7 @@ export function AbstractDataList<T extends DataItem>({
         {loading ? (
           renderSkeleton ? renderSkeleton() : (
             <div className="space-y-3">
-              {[...Array(3)].map((_, i) => (
+              {[...Array(pageSize)].map((_, i) => (
                 <div key={i} className="bg-gray-100 rounded-lg p-4 animate-pulse">
                   <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
                   <div className="h-3 bg-gray-300 rounded w-1/2"></div>

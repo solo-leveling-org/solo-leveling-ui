@@ -210,15 +210,12 @@ export const ru = {
   balance: {
     title: 'Баланс',
     subtitle: 'Ваш текущий баланс и история транзакций',
-    transactions: {
-      title: 'История транзакций',
-      empty: 'Пока нет транзакций',
-      causes: {
-        TASK_COMPLETION: 'Выполнение задачи',
-        LEVEL_UP: 'Бонус за повышение уровня',
-        DAILY_CHECK_IN: 'Ежедневная отметка',
-        ITEM_PURCHASE: 'Покупка предмета',
-      },
+    transactions: 'История транзакций',
+    causes: {
+      TASK_COMPLETION: 'Выполнение задачи',
+      LEVEL_UP: 'Бонус за повышение уровня',
+      DAILY_CHECK_IN: 'Ежедневная отметка',
+      ITEM_PURCHASE: 'Покупка предмета',
     },
   },
 

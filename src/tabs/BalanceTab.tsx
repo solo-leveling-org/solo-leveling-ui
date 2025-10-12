@@ -116,7 +116,7 @@ export const BalanceSkeleton: React.FC = () => (
     <div>
       <div className="h-6 bg-gray-300 rounded w-32 mb-4 animate-pulse"></div>
       <div className="space-y-3">
-        {[...Array(3)].map((_, i) => (
+        {[...Array(5)].map((_, i) => (
           <div key={i} className="bg-gray-100 rounded-lg p-4 animate-pulse">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
