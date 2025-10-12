@@ -72,14 +72,46 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
         <p className="text-gray-600">{t('balance.subtitle')}</p>
       </div>
 
-      {/* Current Balance */}
-      <div className="bg-amber-50 rounded-lg p-6 border border-amber-200 text-center">
-        <Icon type="coins" size={32} className="mb-3" />
-        <div className="text-4xl font-bold text-amber-700 mb-2">
-          {balance.balance.balance.amount}
-        </div>
-        <div className="text-lg text-amber-600 font-medium">
-          {balance.balance.balance.currencyCode}
+      {/* Current Balance - Mobile Banking Style */}
+      <div className="relative overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl"></div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-white/10 rounded-2xl"></div>
+        
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16 rounded-full"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div>
+        
+        {/* Content */}
+        <div className="relative p-6 text-white">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <p className="text-blue-100 text-sm font-medium mb-1">Общий баланс</p>
+              <p className="text-blue-200 text-xs">Solo Leveling Coin</p>
+            </div>
+            <Icon type="coins" size={24} className="text-yellow-300" />
+          </div>
+          
+          {/* Balance amount */}
+          <div className="mb-4">
+            <div className="text-4xl font-bold text-white mb-1">
+              {balance.balance.balance.amount}
+            </div>
+            <div className="text-blue-200 text-sm font-medium">
+              {balance.balance.balance.currencyCode}
+            </div>
+          </div>
+          
+          {/* Quick actions */}
+          <div className="flex space-x-3">
+            <button className="flex-1 bg-white/20 backdrop-blur-sm rounded-xl py-3 px-4 text-white text-sm font-medium hover:bg-white/30 transition-all duration-200">
+              Пополнить
+            </button>
+            <button className="flex-1 bg-white/20 backdrop-blur-sm rounded-xl py-3 px-4 text-white text-sm font-medium hover:bg-white/30 transition-all duration-200">
+              Перевести
+            </button>
+          </div>
         </div>
       </div>
 

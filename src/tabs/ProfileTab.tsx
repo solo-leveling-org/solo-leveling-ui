@@ -102,14 +102,14 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
               </div>
             </div>
 
-            {/* Settings Button */}
-            <div className="flex justify-center mb-6">
+            {/* Settings Button - Top Right */}
+            <div className="absolute top-6 right-6">
               <button
                 onClick={() => setShowSettings(true)}
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
+                className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 hover:scale-110 active:scale-95"
+                title={t('profile.settings.title')}
               >
-                <Icon type="settings" size={20} className="mr-2" />
-                {t('profile.settings.title')}
+                <Icon type="settings" size={20} className="text-gray-600" />
               </button>
             </div>
 
@@ -134,19 +134,25 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
               {/* Stats grid */}
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="bg-gradient-to-br from-red-50 to-red-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-red-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <div className="text-2xl mb-2">💪</div>
+                  <div className="flex justify-center items-center mb-2">
+                    <Icon type="dumbbell" size={32} className="text-red-500" />
+                  </div>
                   <div className="text-xl font-bold text-red-600 mb-1">{strength}</div>
                   <div className="text-xs text-red-500 font-medium">{t('profile.stats.strength')}</div>
                 </div>
 
                 <div className="bg-gradient-to-br from-green-50 to-green-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-green-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <div className="text-2xl mb-2">⚡</div>
+                  <div className="flex justify-center items-center mb-2">
+                    <Icon type="zap" size={32} className="text-green-500" />
+                  </div>
                   <div className="text-xl font-bold text-green-600 mb-1">{agility}</div>
                   <div className="text-xs text-green-500 font-medium">{t('profile.stats.agility')}</div>
                 </div>
 
                 <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-purple-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <Icon type="brain" size={32} className="mb-2" />
+                  <div className="flex justify-center items-center mb-2">
+                    <Icon type="brain" size={32} className="text-purple-500" />
+                  </div>
                   <div className="text-xl font-bold text-purple-600 mb-1">{intelligence}</div>
                   <div className="text-xs text-purple-500 font-medium">{t('profile.stats.intelligence')}</div>
                 </div>
