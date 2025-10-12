@@ -95,34 +95,34 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
   };
 
   // Рендер элемента транзакции
-  const renderTransaction = (transaction: TransactionItem, index: number, getLocalizedValue: (field: string, value: string) => string) => (
-    <div
-      key={transaction.id}
-      className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/30 hover:shadow-lg transition-all duration-300"
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className={`w-8 h-8 ${getTransactionBgColor(transaction.type)} rounded-full flex items-center justify-center`}>
-            <span className="text-sm">{getTransactionIcon(transaction.type, transaction.cause)}</span>
-          </div>
-          <div>
-            <div className="text-sm font-medium text-gray-800">
-              {getLocalizedValue('cause', transaction.cause)}
-            </div>
-            <div className="text-xs text-gray-500">
-              {formatDate(transaction.createdAt)}
-            </div>
-          </div>
+const renderTransaction = (transaction: TransactionItem, index: number, getLocalizedValue: (field: string, value: string) => string) => (
+  <div
+    key={transaction.id}
+    className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow duration-200"
+  >
+    <div className="flex items-center justify-between">
+      <div className="flex items-center space-x-3">
+        <div className={`w-8 h-8 ${getTransactionBgColor(transaction.type)} rounded-full flex items-center justify-center`}>
+          <span className="text-sm">{getTransactionIcon(transaction.type, transaction.cause)}</span>
         </div>
-        <div className={`text-sm font-bold ${getTransactionColor(transaction.type)}`}>
-          <div className="flex items-center space-x-2">
-            <span>{transaction.type === 'IN' ? '+' : '-'}{transaction.amount.amount} {transaction.amount.currencyCode}</span>
-            <span className="text-xs opacity-75">({getLocalizedValue('type', transaction.type)})</span>
+        <div>
+          <div className="text-sm font-medium text-gray-800">
+            {getLocalizedValue('cause', transaction.cause)}
+          </div>
+          <div className="text-xs text-gray-500">
+            {formatDate(transaction.createdAt)}
           </div>
         </div>
       </div>
+      <div className={`text-sm font-bold ${getTransactionColor(transaction.type)}`}>
+        <div className="flex items-center space-x-2">
+          <span>{transaction.type === 'IN' ? '+' : '-'}{transaction.amount.amount} {transaction.amount.currencyCode}</span>
+          <span className="text-xs opacity-75">({getLocalizedValue('type', transaction.type)})</span>
+        </div>
+      </div>
     </div>
-  );
+  </div>
+);
 
   // Рендер скелетона
   const renderSkeleton = () => (

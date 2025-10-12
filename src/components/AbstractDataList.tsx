@@ -206,169 +206,169 @@ export function AbstractDataList<T extends DataItem>({
   }
 
   return (
-    <div className={`relative ${className}`}>
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-400/10 via-purple-400/10 to-pink-400/10 rounded-3xl blur-3xl -z-10 transform scale-105"></div>
+    <div className={`${className}`}>
+      {/* Filters Toggle Button */}
+      {showFilters && (
+        <div className="mb-4">
+          <button
+            onClick={() => setShowFiltersPanel(!showFiltersPanel)}
+            className="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+          >
+            <span className="mr-2">🔍</span>
+            {showFiltersPanel ? t('common.hideFilters') : t('common.showFilters')}
+          </button>
+        </div>
+      )}
 
-      {/* Main container */}
-      <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6 overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-2xl -translate-y-8 translate-x-8"></div>
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-400/20 to-orange-400/20 rounded-full blur-xl translate-y-4 -translate-x-4"></div>
+      {/* Filters Panel */}
+      {showFilters && showFiltersPanel && (
+        <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+          <div className="space-y-4">
+            {/* Date Range Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('common.dateRange')}
+              </label>
+              <DateRangePicker
+                from={dateFilters.from}
+                to={dateFilters.to}
+                onChange={handleDateRangeChange}
+                className="w-full"
+              />
+            </div>
 
-        <div className="relative z-10">
-          {/* Header with filters toggle */}
-          {showFilters && (
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-800">{t('common.filters')}</h3>
+            {/* String Filters */}
+            {availableFilters.map((filter) => (
+              <div key={filter.field}>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {filter.field}
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {filter.items.map((item) => (
+                    <label key={item.item} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={stringFilters[filter.field]?.includes(item.item) || false}
+                        onChange={(e) => {
+                          const currentValues = stringFilters[filter.field] || [];
+                          const newValues = e.target.checked
+                            ? [...currentValues, item.item]
+                            : currentValues.filter(v => v !== item.item);
+                          handleStringFilterChange(filter.field, newValues);
+                        }}
+                        className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">{item.localization}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {/* Sort Options */}
+            {availableSorts.length > 0 && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('common.sortBy')}
+                </label>
+                <div className="space-y-2">
+                  {availableSorts.map((sort) => (
+                    <div key={sort} className="flex items-center space-x-3">
+                      <span className="text-sm text-gray-600 min-w-[80px]">
+                        {sort}:
+                      </span>
+                      <select
+                        value={sorts.find(s => s.field === sort)?.mode || ''}
+                        onChange={(e) => handleSortChange(sort, e.target.value as OrderMode)}
+                        className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      >
+                        <option value="">{t('common.noSort')}</option>
+                        <option value="ASC">↑ {t('common.ascending')}</option>
+                        <option value="DESC">↓ {t('common.descending')}</option>
+                      </select>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Clear Filters Button */}
+            <div className="flex justify-end">
               <button
-                onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
+                onClick={clearFilters}
+                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors"
               >
-                <span className="mr-2">🔍</span>
-                {showFiltersPanel ? t('common.hideFilters') : t('common.showFilters')}
+                {t('common.clearFilters')}
               </button>
             </div>
-          )}
-
-          {/* Filters Panel */}
-          {showFilters && showFiltersPanel && (
-            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30 mb-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Date Range Filter */}
-                <div className="space-y-4">
-                  <h4 className="text-lg font-semibold text-gray-800 flex items-center">
-                    <span className="text-xl mr-2">📅</span>
-                    {t('common.dateRange')}
-                  </h4>
-                  <DateRangePicker
-                    from={dateFilters.from}
-                    to={dateFilters.to}
-                    onChange={handleDateRangeChange}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* String Filters */}
-                {availableFilters.map((filter) => (
-                  <div key={filter.field} className="space-y-4">
-                    <h4 className="text-lg font-semibold text-gray-800 flex items-center">
-                      <span className="text-xl mr-2">🏷️</span>
-                      {filter.field}
-                    </h4>
-                    <div className="space-y-2">
-                      {filter.items.map((item) => (
-                        <label key={item.item} className="flex items-center space-x-3 p-3 bg-white/40 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/60 transition-all duration-200 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={stringFilters[filter.field]?.includes(item.item) || false}
-                            onChange={(e) => {
-                              const currentValues = stringFilters[filter.field] || [];
-                              const newValues = e.target.checked
-                                ? [...currentValues, item.item]
-                                : currentValues.filter(v => v !== item.item);
-                              handleStringFilterChange(filter.field, newValues);
-                            }}
-                            className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                          />
-                          <span className="text-sm font-medium text-gray-700">{item.localization}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-
-                {/* Sort Options */}
-                <div className="space-y-4">
-                  <h4 className="text-lg font-semibold text-gray-800 flex items-center">
-                    <span className="text-xl mr-2">🔄</span>
-                    {t('common.sortBy')}
-                  </h4>
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    onChange={(e) => {
-                      const [field, mode] = e.target.value.split('_');
-                      handleSortChange(field, mode as OrderMode);
-                    }}
-                  >
-                    <option value="">{t('common.noSort')}</option>
-                    {availableSorts.map(sort => (
-                      <React.Fragment key={sort}>
-                        <option value={`${sort}_ASC`}>{sort} ↑</option>
-                        <option value={`${sort}_DESC`}>{sort} ↓</option>
-                      </React.Fragment>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Clear Filters Button */}
-              <div className="flex justify-end mt-6">
-                <button
-                  onClick={clearFilters}
-                  className="px-6 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
-                >
-                  {t('common.clearFilters')}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Data List */}
-          <div className="space-y-4">
-            {data.length === 0 ? (
-              renderEmpty ? renderEmpty() : (
-                <div className="text-center py-12">
-                  <div className="text-6xl mb-4">📝</div>
-                  <div className="text-gray-500 text-lg">{t('common.noData')}</div>
-                </div>
-              )
-            ) : (
-              data.map((item, index) => renderItem(item, index, getLocalizedValue))
-            )}
           </div>
+        </div>
+      )}
 
-          {/* Pagination */}
-          {showPagination && totalPages > 1 && (
-            <div className="flex justify-center items-center space-x-2 mt-8">
+      {/* Data Display */}
+      <div>
+        {loading ? (
+          renderSkeleton ? renderSkeleton() : (
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="bg-gray-100 rounded-lg p-4 animate-pulse">
+                  <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                </div>
+              ))}
+            </div>
+          )
+        ) : error ? (
+          <div className="text-center py-8 text-red-500">{error}</div>
+        ) : data.length === 0 ? (
+          renderEmpty ? renderEmpty() : (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-2">📝</div>
+              <div className="text-gray-500">{t('common.noData')}</div>
+            </div>
+          )
+        ) : (
+          <div className="space-y-3">
+            {data.map((item, index) => renderItem(item, index, getLocalizedValue))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {showPagination && totalPages > 1 && (
+          <div className="mt-6 flex justify-center">
+            <div className="flex items-center space-x-1">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1 || loading}
-                className="px-4 py-2 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105"
+                disabled={currentPage === 1}
+                className="px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
               >
                 ←
               </button>
               
-              <div className="flex space-x-2">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const page = i + 1;
-                  return (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      disabled={loading}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 hover:scale-105 ${
-                        currentPage === page
-                          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                          : 'bg-white/60 backdrop-blur-sm border border-white/30 hover:bg-white/80'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  );
-                })}
-              </div>
-
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`px-3 py-2 rounded-lg transition-colors text-sm ${
+                    currentPage === page
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-100 hover:bg-gray-200'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+              
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages || loading}
-                className="px-4 py-2 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105"
+                disabled={currentPage === totalPages}
+                className="px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
               >
                 →
               </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

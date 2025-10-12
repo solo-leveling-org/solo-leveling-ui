@@ -149,7 +149,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           />
           
           {/* Calendar */}
-          <div className="absolute top-full left-0 mt-2 z-50 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-6 min-w-[320px]">
+          <div className="absolute top-full left-0 mt-2 z-50 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-4 w-full max-w-[calc(100vw-2rem)] sm:min-w-[320px] sm:w-auto">
             {/* Decorative elements */}
             <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-xl -translate-y-4 translate-x-4"></div>
             <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-pink-400/20 to-orange-400/20 rounded-full blur-lg translate-y-2 -translate-x-2"></div>
@@ -186,19 +186,19 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
               </div>
 
               {/* Day Headers */}
-              <div className="grid grid-cols-7 gap-1 mb-2">
+              <div className="grid grid-cols-7 gap-0.5 mb-2">
                 {dayNames.map((day) => (
-                  <div key={day} className="text-center text-xs font-semibold text-gray-500 py-2">
+                  <div key={day} className="text-center text-xs font-semibold text-gray-500 py-1">
                     {day.slice(0, 3)}
                   </div>
                 ))}
               </div>
 
               {/* Calendar Grid */}
-              <div className="grid grid-cols-7 gap-1 mb-4">
+              <div className="grid grid-cols-7 gap-0.5 mb-4">
                 {days.map((day, index) => {
                   if (!day) {
-                    return <div key={index} className="h-10"></div>;
+                    return <div key={index} className="h-8 sm:h-10"></div>;
                   }
 
                   const dateStr = formatDate(day);
@@ -215,10 +215,10 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
                       onMouseLeave={() => setHoverDate(null)}
                       disabled={isDisabled}
                       className={`
-                        h-10 w-10 rounded-xl text-sm font-medium transition-all duration-200
+                        h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200
                         ${isDisabled 
                           ? 'text-gray-300 cursor-not-allowed' 
-                          : 'hover:scale-110 cursor-pointer'
+                          : 'hover:scale-105 sm:hover:scale-110 cursor-pointer'
                         }
                         ${isSelected 
                           ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg' 
