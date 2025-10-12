@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TextType from '../blocks/TextAnimations/TextType/TextType';
 import { useLocalization } from '../hooks/useLocalization';
+import Icon from '../components/Icon';
 
 const WelcomeTab: React.FC = () => {
   const navigate = useNavigate();
@@ -78,7 +79,7 @@ const WelcomeTab: React.FC = () => {
               { 
                 label: t('welcome.stats.completedTasks'), 
                 value: '5,678', 
-                icon: '✅',
+                icon: <Icon type="check" size={24} />,
                 color: 'from-green-500 to-emerald-500'
               },
               { 
@@ -114,7 +115,7 @@ const WelcomeTab: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[
               { icon: '⚡', title: t('welcome.features.quickStart.title'), desc: t('welcome.features.quickStart.description') },
-              { icon: '🎯', title: t('welcome.features.targetedTasks.title'), desc: t('welcome.features.targetedTasks.description') },
+              { icon: <Icon type="target" size={24} />, title: t('welcome.features.targetedTasks.title'), desc: t('welcome.features.targetedTasks.description') },
               { icon: '📈', title: t('welcome.features.progress.title'), desc: t('welcome.features.progress.description') },
               { icon: '🏅', title: t('welcome.features.achievements.title'), desc: t('welcome.features.achievements.description') }
             ].map((feature, index) => (

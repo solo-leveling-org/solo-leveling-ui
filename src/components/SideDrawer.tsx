@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
 import { useLocalization } from '../hooks/useLocalization';
+import Icon from './Icon';
 
 type Tab = {
   label: string;
@@ -35,10 +36,10 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
 
   // Иконки для табов (можно кастомизировать)
   const getTabIcon = (label: string) => {
-    const iconMap: Record<string, string> = {
+    const iconMap: Record<string, string | React.ReactElement> = {
       [t('navigation.profile')]: '👤',
       [t('navigation.tasks')]: '📋',
-      [t('navigation.topics')]: '🎯'
+      [t('navigation.topics')]: <Icon type="target" size={20} />
     };
     return iconMap[label] || '📌';
   };

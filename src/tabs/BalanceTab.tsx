@@ -3,6 +3,7 @@ import { api } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
 import type { GetPlayerBalanceResponse, PlayerBalanceTransaction } from '../api';
 import TransactionsList from '../components/TransactionsList';
+import Icon from '../components/Icon';
 
 type BalanceTabProps = {
   isAuthenticated: boolean;
@@ -73,7 +74,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
 
       {/* Current Balance */}
       <div className="bg-amber-50 rounded-lg p-6 border border-amber-200 text-center">
-        <div className="text-2xl mb-3">💰</div>
+        <Icon type="coins" size={32} className="mb-3" />
         <div className="text-4xl font-bold text-amber-700 mb-2">
           {balance.balance.balance.amount}
         </div>

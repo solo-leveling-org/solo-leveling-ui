@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import type {Task} from '../api';
 import TopicIcon from './TopicIcons';
-import { ReactComponent as CoinsIcon } from '../assets/icons/coins.svg';
+import Icon from './Icon';
 import RarityIndicator from './RarityIndicator';
 import { useLocalization } from '../hooks/useLocalization';
 
@@ -116,7 +116,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
                 </div>
                 <div
                     className="bg-gradient-to-br from-green-50/80 to-emerald-50/80 backdrop-blur-sm rounded-xl p-3 border border-green-200/30 text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <CoinsIcon className="w-6 h-6 mx-auto mb-2" />
+                  <Icon type="coins" size={24} className="mx-auto mb-2" />
                   <div className="text-lg font-bold text-green-600">{task.currencyReward || 0}</div>
                   <div className="text-xs text-green-500 font-medium">{t('dialogs.task.coins')}</div>
                 </div>
@@ -149,7 +149,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
 
                 <div
                     className="bg-gradient-to-br from-purple-50/80 to-purple-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-purple-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <div className="text-2xl mb-1">🧠</div>
+                  <Icon type="brain" size={32} className="mb-1" />
                   <div className="text-lg font-bold text-purple-600">{task.intelligence || 0}</div>
                   <div className="text-xs text-purple-500 font-medium">{t('profile.stats.intelligence')}</div>
                 </div>

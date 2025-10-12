@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { useLocalization } from '../hooks/useLocalization';
 import { TelegramIcon } from './TelegramWidget';
+import Icon from './Icon';
 
 type SettingsDialogProps = {
   isOpen: boolean;
@@ -52,7 +53,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
         <div className="relative z-10 p-6 pb-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center">
-              <div className="text-2xl mr-3">⚙️</div>
+              <Icon type="settings" size={32} className="mr-3" />
               <h2 className="text-xl font-bold text-gray-800">{t('profile.settings.title')}</h2>
             </div>
             <button
@@ -114,7 +115,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-2xl mb-2">🛠️</div>
+                  <Icon type="wrench" size={32} className="mb-2" />
                   <div className={`font-semibold text-sm ${
                     settings.isManual ? 'text-emerald-700' : 'text-gray-600'
                   }`}>

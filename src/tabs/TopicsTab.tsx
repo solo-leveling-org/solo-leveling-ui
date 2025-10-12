@@ -277,7 +277,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                     <div className="relative z-10 text-center">
                       {/* Icon */}
                       <div
-                          className={`mb-3 sm:mb-4 transition-transform duration-200 ${
+                          className={`mb-3 sm:mb-4 transition-transform duration-200 flex justify-center items-center ${
                               isSelected ? 'scale-110' : 'group-hover:scale-110'
                           }`}
                       >

@@ -2,6 +2,7 @@ import React from 'react';
 import { api } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
 import AbstractDataList, { DataItem } from './AbstractDataList';
+import Icon from './Icon';
 import type { 
   PlayerBalanceTransaction, 
   SearchPlayerBalanceTransactionsRequest,
@@ -72,13 +73,13 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
     if (type === 'IN') {
       switch (cause) {
         case 'TASK_COMPLETION':
-          return '✅';
+          return <Icon type="check" size={16} />;
         case 'LEVEL_UP':
-          return '🎉';
+          return <Icon type="star" size={16} />;
         case 'DAILY_CHECK_IN':
-          return '📅';
+          return <Icon type="calendar" size={16} />;
         default:
-          return '💰';
+          return <Icon type="coins" size={16} />;
       }
     } else {
       return '🛒';

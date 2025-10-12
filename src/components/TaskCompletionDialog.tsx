@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import type { CompleteTaskResponse, Task } from '../api';
 import { useLocalization } from '../hooks/useLocalization';
+import Icon from './Icon';
 
 
 type TaskCompletionDialogProps = {
@@ -113,7 +114,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
           <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-blue-200/30 animate-dialog-stagger-2">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-gray-800 flex items-center">
-                <span className="text-2xl mr-3">⭐</span>
+                <Icon type="star" size={32} className="mr-3" />
                 {t('taskCompletion.level')}
               </h3>
               {expChange > 0 && (
@@ -164,7 +165,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
               {filteredTopicProgress.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-blue-200/30">
                   <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                    <span className="text-lg mr-2">🎯</span>
+                    <Icon type="target" size={20} className="mr-2" />
                     {t('taskCompletion.topicsProgress')}
                   </h4>
                   <div className="space-y-3">
@@ -229,7 +230,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
           {/* Stats Changes */}
           <div className="bg-gradient-to-br from-gray-50/80 to-slate-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-gray-200/30 animate-dialog-stagger-3">
             <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-              <span className="text-2xl mr-3">⚔️</span>
+              <Icon type="sword" size={32} className="mr-3" />
               {t('taskCompletion.stats')}
             </h3>
                         <div className="flex flex-row gap-4">
@@ -271,7 +272,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
 
               {/* Intelligence */}
               <div className="flex-1 text-center">
-                <div className="text-2xl mb-2">🧠</div>
+                <Icon type="brain" size={32} className="mb-2" />
                 <div className="text-xl font-bold text-purple-600 mb-1 flex items-center justify-center gap-2 min-w-0">
                   <span className="truncate">{playerAfter.intelligence || 0}</span>
                   {intelligenceChange !== 0 && (
@@ -291,7 +292,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
 
           {/* Balance Change */}
           <div className="bg-gradient-to-r from-amber-50/80 to-orange-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-amber-200/30 text-center animate-dialog-stagger-4">
-            <div className="text-2xl mb-3">💰</div>
+            <Icon type="coins" size={32} className="mb-3" />
             <div className="text-3xl font-bold text-amber-700 mb-2">
               {playerAfter.balance?.balance?.amount || 0} {playerAfter.balance?.balance?.currencyCode || 'GCO'}
             </div>

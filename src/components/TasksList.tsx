@@ -2,6 +2,7 @@ import React from 'react';
 import { api } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
 import AbstractDataList, { DataItem } from './AbstractDataList';
+import Icon from './Icon';
 import type { 
   PlayerTask,
   Filter,
@@ -87,11 +88,11 @@ const TasksList: React.FC<TasksListProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="flex items-center text-sm text-gray-600">
-            <span className="mr-1">⭐</span>
+            <Icon type="star" size={16} className="mr-1" />
             <span>{task.experience} XP</span>
           </div>
           <div className="flex items-center text-sm text-gray-600">
-            <span className="mr-1">💰</span>
+            <Icon type="coins" size={16} className="mr-1" />
             <span>{task.currencyReward} GCO</span>
           </div>
         </div>

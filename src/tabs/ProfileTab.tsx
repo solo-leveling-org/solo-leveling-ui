@@ -4,6 +4,7 @@ import { useSettings } from '../hooks/useSettings';
 import { useLocalization } from '../hooks/useLocalization';
 import type { User } from '../api';
 import SettingsDialog from '../components/SettingsDialog';
+import Icon from '../components/Icon';
 
 type ProfileTabProps = {
   isAuthenticated: boolean;
@@ -107,7 +108,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                 onClick={() => setShowSettings(true)}
                 className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
               >
-                <span className="mr-2">⚙️</span>
+                <Icon type="settings" size={20} className="mr-2" />
                 {t('profile.settings.title')}
               </button>
             </div>
@@ -145,7 +146,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                 </div>
 
                 <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-purple-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <div className="text-2xl mb-2">🧠</div>
+                  <Icon type="brain" size={32} className="mb-2" />
                   <div className="text-xl font-bold text-purple-600 mb-1">{intelligence}</div>
                   <div className="text-xs text-purple-500 font-medium">{t('profile.stats.intelligence')}</div>
                 </div>
