@@ -211,6 +211,7 @@ export const en = {
     title: 'Balance',
     subtitle: 'Your current balance and transaction history',
     transactions: 'Transaction History',
+    empty: 'No transactions yet',
     causes: {
       TASK_COMPLETION: 'Task Completion',
       LEVEL_UP: 'Level Up Bonus',
