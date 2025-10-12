@@ -3,15 +3,21 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { TgUserData } from './TgUserData';
+import type { TgWebAppChat } from './TgWebAppChat';
 export type TgWebAppData = {
-    auth_date: string;
+    query_id?: string;
+    user: TgUserData;
+    receiver?: TgUserData;
+    chat?: TgWebAppChat;
     chat_type?: string;
     chat_instance?: string;
+    start_param?: string;
+    can_send_after?: number;
+    auth_date: string;
     /**
      * Signature hash of the data
      */
     hash: string;
     signature?: string;
-    user: TgUserData;
 };
 

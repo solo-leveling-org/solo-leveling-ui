@@ -95,7 +95,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
   };
 
   // Рендер элемента транзакции
-const renderTransaction = (transaction: TransactionItem, index: number, getLocalizedValue: (field: string, value: string) => string) => (
+const renderTransaction = (transaction: TransactionItem, index: number, getLocalizedValue: (field: string, value: number) => string) => (
   <div
     key={transaction.id}
     className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow duration-200"
@@ -107,7 +107,7 @@ const renderTransaction = (transaction: TransactionItem, index: number, getLocal
         </div>
         <div>
           <div className="text-sm font-medium text-gray-800">
-            {getLocalizedValue('cause', transaction.cause)}
+            {getLocalizedValue('cause', parseInt(transaction.cause))}
           </div>
           <div className="text-xs text-gray-500">
             {formatDate(transaction.createdAt)}
@@ -117,7 +117,7 @@ const renderTransaction = (transaction: TransactionItem, index: number, getLocal
       <div className={`text-sm font-bold ${getTransactionColor(transaction.type)}`}>
         <div className="flex items-center space-x-2">
           <span>{transaction.type === 'IN' ? '+' : '-'}{transaction.amount.amount} {transaction.amount.currencyCode}</span>
-          <span className="text-xs opacity-75">({getLocalizedValue('type', transaction.type)})</span>
+          <span className="text-xs opacity-75">({getLocalizedValue('type', parseInt(transaction.type))})</span>
         </div>
       </div>
     </div>

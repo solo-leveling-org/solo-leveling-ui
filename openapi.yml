@@ -711,16 +711,16 @@ components:
     LocalizedItem:
       type: object
       properties:
-        item:
-          type: string
-          description: Enum item identifier
-          example: "PHYSICAL_ACTIVITY"
+        ordinal:
+          type: integer
+          description: Enum ordinal
+          example: 0
         localization:
           type: string
           description: Localized display name
           example: "Physical Activity"
       required:
-        - item
+        - ordinal
         - localization
 
     RequestQueryOptions:
@@ -768,10 +768,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DateFilter'
-        stringFilters:
+        enumFilters:
           type: array
           items:
-            $ref: '#/components/schemas/StringFilter'
+            $ref: '#/components/schemas/EnumFilter'
 
     DateFilter:
       type: object
@@ -789,7 +789,7 @@ components:
         - from
         - to
 
-    StringFilter:
+    EnumFilter:
       type: object
       properties:
         field:
@@ -797,7 +797,7 @@ components:
         values:
           type: array
           items:
-            type: string
+            type: integer
       required:
         - field
         - values
@@ -891,20 +891,30 @@ components:
     TgWebAppData:
       type: object
       properties:
-        auth_date:
+        query_id:
           type: string
-          format: date-time
+        user:
+          $ref: '#/components/schemas/TgUserData'
+        receiver:
+          $ref: '#/components/schemas/TgUserData'
+        chat:
+          $ref: '#/components/schemas/TgWebAppChat'
         chat_type:
           type: string
         chat_instance:
           type: string
+        start_param:
+          type: string
+        can_send_after:
+          type: integer
+        auth_date:
+          type: string
+          format: date-time
         hash:
           type: string
           description: Signature hash of the data
         signature:
           type: string
-        user:
-          $ref: '#/components/schemas/TgUserData'
       required:
         - auth_date
         - hash
@@ -921,6 +931,20 @@ components:
       required:
         - tg_web_app_data
         - init_data
+
+    TgWebAppChat:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        title:
+          type: string
+        username:
+          type: string
+        photo_url:
+          type: string
 
     Message:
       type: object

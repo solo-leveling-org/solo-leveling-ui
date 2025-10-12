@@ -69,7 +69,7 @@ const TasksList: React.FC<TasksListProps> = ({
   };
 
   // Рендер элемента задачи
-  const renderTask = (task: TaskItem, index: number, getLocalizedValue: (field: string, value: string) => string) => (
+  const renderTask = (task: TaskItem, index: number, getLocalizedValue: (field: string, value: number) => string) => (
     <div
       key={task.id}
       className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/30 hover:shadow-lg transition-all duration-300"

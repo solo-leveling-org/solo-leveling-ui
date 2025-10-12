@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { DateFilter } from './DateFilter';
-import type { StringFilter } from './StringFilter';
+import type { EnumFilter } from './EnumFilter';
 export type Filter = {
     dateFilters?: Array<DateFilter>;
-    stringFilters?: Array<StringFilter>;
+    enumFilters?: Array<EnumFilter>;
 };
 

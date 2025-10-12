@@ -5,9 +5,7 @@ import type {
   Filter,
   Sort,
   LocalizedField,
-  ResponseQueryOptions,
-  DateFilter,
-  StringFilter
+  ResponseQueryOptions
 } from '../api';
 import { OrderMode } from '../api';
 
@@ -27,7 +25,7 @@ export interface DataListProps<T extends DataItem> {
     options: ResponseQueryOptions;
   }>;
   // Методы для рендеринга
-  renderItem: (item: T, index: number, getLocalizedValue: (field: string, value: string) => string) => React.ReactNode;
+  renderItem: (item: T, index: number, getLocalizedValue: (field: string, value: number) => string) => React.ReactNode;
   renderEmpty?: () => React.ReactNode;
   renderSkeleton?: () => React.ReactNode;
   // Опциональные настройки
@@ -56,21 +54,21 @@ export function AbstractDataList<T extends DataItem>({
   const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [availableSorts, setAvailableSorts] = useState<string[]>([]);
   const [showFiltersPanel, setShowFiltersPanel] = useState(false);
-  const [filters, setFilters] = useState<Filter>({});
+  // Удалено - теперь используем отдельные состояния для фильтров
   const [sorts, setSorts] = useState<Sort[]>([]);
   const { t } = useLocalization();
 
   // Состояния для фильтров
   const [dateFilters, setDateFilters] = useState<{from: string, to: string}>({from: '', to: ''});
-  const [stringFilters, setStringFilters] = useState<{[field: string]: string[]}>({});
+  const [enumFilters, setEnumFilters] = useState<{[field: string]: number[]}>({});
 
   // Функция для получения локализованного значения enum поля
-  const getLocalizedValue = (field: string, value: string): string => {
+  const getLocalizedValue = (field: string, value: number): string => {
     const filter = availableFilters.find(f => f.field === field);
-    if (!filter) return value;
-    
-    const item = filter.items.find(i => i.item === value);
-    return item ? item.localization : value;
+    if (!filter) return value.toString();
+
+    const item = filter.items.find(i => i.ordinal === value);
+    return item ? item.localization : value.toString();
   };
 
   const loadDataCallback = useCallback(async (page: number = 1) => {
@@ -78,9 +76,33 @@ export function AbstractDataList<T extends DataItem>({
     setError(null);
 
     try {
+      const currentFilters: Filter = {
+        dateFilters: [],
+        enumFilters: [],
+      };
+
+      // Date filters
+      if (dateFilters.from && dateFilters.to) {
+        currentFilters.dateFilters?.push({
+          field: 'createdAt', // Хардкод как указано в требованиях
+          from: dateFilters.from,
+          to: dateFilters.to,
+        });
+      }
+
+      // Enum filters
+      Object.entries(enumFilters).forEach(([field, values]) => {
+        if (values.length > 0) {
+          currentFilters.enumFilters?.push({
+            field: field,
+            values: values,
+          });
+        }
+      });
+
       // Отправляем на backend страницу с 0, но отображаем с 1
       const backendPage = page - 1;
-      const result = await loadData(backendPage, pageSize, filters, sorts);
+      const result = await loadData(backendPage, pageSize, currentFilters, sorts);
       
       setData(result.data);
       setTotalPages(result.options.totalPageCount || 1);
@@ -96,7 +118,7 @@ export function AbstractDataList<T extends DataItem>({
     } finally {
       setLoading(false);
     }
-  }, [loadData, pageSize, filters, sorts, onDataLoad, t]);
+  }, [loadData, pageSize, dateFilters, enumFilters, sorts, onDataLoad, t]);
 
   useEffect(() => {
     if (autoLoad) {
@@ -114,39 +136,18 @@ export function AbstractDataList<T extends DataItem>({
     // Отправляем запрос только если обе даты заполнены
     if (from && to) {
       // Преобразуем даты в формат YYYY-MM-DD без времени
-      const dateFilter: DateFilter = {
-        field: 'createdAt', // Хардкод как указано в требованиях
-        from: from, // Отправляем дату как есть в формате YYYY-MM-DD
-        to: to      // Отправляем дату как есть в формате YYYY-MM-DD
-      };
-      
-      setFilters(prevFilters => ({
-        ...prevFilters,
-        dateFilters: [dateFilter]
-      }));
+      // Фильтры дат теперь обрабатываются в loadDataCallback
       setCurrentPage(1);
     } else {
-      // Очищаем фильтр дат если не выбраны обе даты
-      setFilters(prevFilters => ({
-        ...prevFilters,
-        dateFilters: []
-      }));
+      // Фильтры дат теперь обрабатываются в loadDataCallback
     }
   };
 
-  const handleStringFilterChange = (field: string, values: string[]) => {
-    setStringFilters(prev => {
+  const handleEnumFilterChange = (field: string, values: number[]) => {
+    setEnumFilters(prev => {
       const newFilters = {...prev, [field]: values};
       
-      // Обновляем фильтры
-      const stringFiltersArray: StringFilter[] = Object.entries(newFilters)
-        .filter(([_, values]) => values.length > 0)
-        .map(([field, values]) => ({ field, values }));
-      
-      setFilters(prevFilters => ({
-        ...prevFilters,
-        stringFilters: stringFiltersArray
-      }));
+      // Фильтры enum теперь обрабатываются в loadDataCallback
       setCurrentPage(1);
       
       return newFilters;
@@ -165,10 +166,9 @@ export function AbstractDataList<T extends DataItem>({
   };
 
   const clearFilters = () => {
-    setFilters({});
     setSorts([]);
     setDateFilters({from: '', to: ''});
-    setStringFilters({});
+    setEnumFilters({});
     setCurrentPage(1);
   };
 
@@ -234,7 +234,7 @@ export function AbstractDataList<T extends DataItem>({
               />
             </div>
 
-            {/* String Filters */}
+            {/* Enum Filters */}
             {availableFilters.map((filter) => (
               <div key={filter.field}>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -242,16 +242,16 @@ export function AbstractDataList<T extends DataItem>({
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {filter.items.map((item) => (
-                    <label key={item.item} className="flex items-center space-x-2 cursor-pointer">
+                    <label key={item.ordinal} className="flex items-center space-x-2 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={stringFilters[filter.field]?.includes(item.item) || false}
+                        checked={enumFilters[filter.field]?.includes(item.ordinal) || false}
                         onChange={(e) => {
-                          const currentValues = stringFilters[filter.field] || [];
+                          const currentValues = enumFilters[filter.field] || [];
                           const newValues = e.target.checked
-                            ? [...currentValues, item.item]
-                            : currentValues.filter(v => v !== item.item);
-                          handleStringFilterChange(filter.field, newValues);
+                            ? [...currentValues, item.ordinal]
+                            : currentValues.filter(v => v !== item.ordinal);
+                          handleEnumFilterChange(filter.field, newValues);
                         }}
                         className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
                       />

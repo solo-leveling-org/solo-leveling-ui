@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type StringFilter = {
+export type EnumFilter = {
     field: string;
-    values: Array<string>;
+    values: Array<number>;
 };
 
