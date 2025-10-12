@@ -64,16 +64,8 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
     return dateStr === selectedFrom || dateStr === selectedTo;
   };
 
-  const isDateDisabled = (date: Date) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return date < today;
-  };
-
   const handleDateClick = (date: Date) => {
     const dateStr = formatDate(date);
-    
-    if (isDateDisabled(date)) return;
 
     if (!selectedFrom || (selectedFrom && selectedTo)) {
       // Начинаем новый выбор
@@ -204,7 +196,6 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
                   const dateStr = formatDate(day);
                   const isSelected = isDateSelected(day);
                   const isInRange = isDateInRange(day);
-                  const isDisabled = isDateDisabled(day);
                   const isHovered = hoverDate === dateStr;
 
                   return (
@@ -213,13 +204,8 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
                       onClick={() => handleDateClick(day)}
                       onMouseEnter={() => setHoverDate(dateStr)}
                       onMouseLeave={() => setHoverDate(null)}
-                      disabled={isDisabled}
                       className={`
-                        h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200
-                        ${isDisabled 
-                          ? 'text-gray-300 cursor-not-allowed' 
-                          : 'hover:scale-105 sm:hover:scale-110 cursor-pointer'
-                        }
+                        h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-105 sm:hover:scale-110 cursor-pointer
                         ${isSelected 
                           ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg' 
                           : isInRange 
