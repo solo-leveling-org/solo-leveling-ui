@@ -26,6 +26,10 @@ export const en = {
     dateRange: 'Date Range',
     loadingData: 'Error loading data',
     noData: 'No data available',
+    showFilters: 'Show Filters',
+    hideFilters: 'Hide Filters',
+    from: 'From',
+    to: 'To',
   },
 
   // Navigation

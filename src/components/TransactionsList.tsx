@@ -96,7 +96,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
   };
 
   // Рендер элемента транзакции
-  const renderTransaction = (transaction: TransactionItem, index: number) => (
+  const renderTransaction = (transaction: TransactionItem, index: number, getLocalizedValue: (field: string, value: string) => string) => (
     <div
       key={transaction.id}
       className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/30 hover:shadow-lg transition-all duration-300"
@@ -108,7 +108,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
           </div>
           <div>
             <div className="text-sm font-medium text-gray-800">
-              {t(`balance.transactions.causes.${transaction.cause}`)}
+              {getLocalizedValue('cause', transaction.cause)}
             </div>
             <div className="text-xs text-gray-500">
               {formatDate(transaction.createdAt)}
@@ -116,7 +116,10 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
           </div>
         </div>
         <div className={`text-sm font-bold ${getTransactionColor(transaction.type)}`}>
-          {transaction.type === 'IN' ? '+' : '-'}{transaction.amount.amount} {transaction.amount.currencyCode}
+          <div className="flex items-center space-x-2">
+            <span>{transaction.type === 'IN' ? '+' : '-'}{transaction.amount.amount} {transaction.amount.currencyCode}</span>
+            <span className="text-xs opacity-75">({getLocalizedValue('type', transaction.type)})</span>
+          </div>
         </div>
       </div>
     </div>
@@ -151,24 +154,22 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
   );
 
   return (
-    <div className={className}>
-      <AbstractDataList<TransactionItem>
-        loadData={loadTransactions}
-        renderItem={renderTransaction}
-        renderSkeleton={renderSkeleton}
-        renderEmpty={renderEmpty}
-        onDataLoad={(transactions) => {
-          if (onTransactionsLoad) {
-            onTransactionsLoad(transactions as PlayerBalanceTransaction[]);
-          }
-        }}
-        className="mt-6"
-        pageSize={10}
-        showFilters={true}
-        showPagination={true}
-        autoLoad={true}
-      />
-    </div>
+    <AbstractDataList<TransactionItem>
+      loadData={loadTransactions}
+      renderItem={renderTransaction}
+      renderSkeleton={renderSkeleton}
+      renderEmpty={renderEmpty}
+      onDataLoad={(transactions) => {
+        if (onTransactionsLoad) {
+          onTransactionsLoad(transactions as PlayerBalanceTransaction[]);
+        }
+      }}
+      className={className}
+      pageSize={5}
+      showFilters={true}
+      showPagination={true}
+      autoLoad={true}
+    />
   );
 };
 

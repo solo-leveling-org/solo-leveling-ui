@@ -26,6 +26,10 @@ export const ru = {
     dateRange: 'Диапазон дат',
     loadingData: 'Ошибка загрузки данных',
     noData: 'Данные отсутствуют',
+    showFilters: 'Показать фильтры',
+    hideFilters: 'Скрыть фильтры',
+    from: 'С',
+    to: 'По',
   },
 
   // Навигация

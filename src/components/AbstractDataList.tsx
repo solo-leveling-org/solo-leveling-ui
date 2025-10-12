@@ -4,7 +4,9 @@ import type {
   Filter,
   Sort,
   LocalizedField,
-  ResponseQueryOptions
+  ResponseQueryOptions,
+  DateFilter,
+  StringFilter
 } from '../api';
 import { OrderMode } from '../api';
 
@@ -24,7 +26,7 @@ export interface DataListProps<T extends DataItem> {
     options: ResponseQueryOptions;
   }>;
   // Методы для рендеринга
-  renderItem: (item: T, index: number) => React.ReactNode;
+  renderItem: (item: T, index: number, getLocalizedValue: (field: string, value: string) => string) => React.ReactNode;
   renderEmpty?: () => React.ReactNode;
   renderSkeleton?: () => React.ReactNode;
   // Опциональные настройки
@@ -36,7 +38,7 @@ export interface DataListProps<T extends DataItem> {
 export function AbstractDataList<T extends DataItem>({
   onDataLoad,
   className = '',
-  pageSize = 10,
+  pageSize = 5, // Изменено с 10 на 5
   loadData,
   renderItem,
   renderEmpty,
@@ -56,6 +58,19 @@ export function AbstractDataList<T extends DataItem>({
   const [filters, setFilters] = useState<Filter>({});
   const [sorts, setSorts] = useState<Sort[]>([]);
   const { t } = useLocalization();
+
+  // Состояния для фильтров
+  const [dateFilters, setDateFilters] = useState<{from: string, to: string}>({from: '', to: ''});
+  const [stringFilters, setStringFilters] = useState<{[field: string]: string[]}>({});
+
+  // Функция для получения локализованного значения enum поля
+  const getLocalizedValue = (field: string, value: string): string => {
+    const filter = availableFilters.find(f => f.field === field);
+    if (!filter) return value;
+    
+    const item = filter.items.find(i => i.item === value);
+    return item ? item.localization : value;
+  };
 
   const loadDataCallback = useCallback(async (page: number = 1) => {
     setLoading(true);
@@ -92,12 +107,46 @@ export function AbstractDataList<T extends DataItem>({
     setCurrentPage(page);
   };
 
-  const handleFilterChange = (filterType: string, value: any) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterType]: value
-    }));
-    setCurrentPage(1);
+  const handleDateFilterChange = (field: 'from' | 'to', value: string) => {
+    setDateFilters(prev => {
+      const newFilters = {...prev, [field]: value};
+      
+      // Отправляем запрос только если обе даты заполнены
+      if (newFilters.from && newFilters.to) {
+        const dateFilter: DateFilter = {
+          field: 'createdAt', // Хардкод как указано в требованиях
+          from: newFilters.from,
+          to: newFilters.to
+        };
+        
+        setFilters(prevFilters => ({
+          ...prevFilters,
+          dateFilters: [dateFilter]
+        }));
+        setCurrentPage(1);
+      }
+      
+      return newFilters;
+    });
+  };
+
+  const handleStringFilterChange = (field: string, values: string[]) => {
+    setStringFilters(prev => {
+      const newFilters = {...prev, [field]: values};
+      
+      // Обновляем фильтры
+      const stringFiltersArray: StringFilter[] = Object.entries(newFilters)
+        .filter(([_, values]) => values.length > 0)
+        .map(([field, values]) => ({ field, values }));
+      
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        stringFilters: stringFiltersArray
+      }));
+      setCurrentPage(1);
+      
+      return newFilters;
+    });
   };
 
   const handleSortChange = (field: string, mode: OrderMode) => {
@@ -114,6 +163,8 @@ export function AbstractDataList<T extends DataItem>({
   const clearFilters = () => {
     setFilters({});
     setSorts([]);
+    setDateFilters({from: '', to: ''});
+    setStringFilters({});
     setCurrentPage(1);
   };
 
@@ -148,49 +199,104 @@ export function AbstractDataList<T extends DataItem>({
   }
 
   return (
-    <div className={className}>
-      {/* Filters and Controls */}
-      {showFilters && (
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-              className="flex items-center px-3 py-2 bg-white/60 backdrop-blur-sm rounded-lg border border-white/30 hover:bg-white/80 transition-colors"
-            >
-              <span className="text-sm mr-2">🔍</span>
-              <span className="text-sm font-medium">{t('common.filters')}</span>
-            </button>
-          </div>
+    <div className={`relative ${className}`}>
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-400/10 via-purple-400/10 to-pink-400/10 rounded-3xl blur-3xl -z-10 transform scale-105"></div>
 
-          {showFiltersPanel && (
-            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white/30 mb-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Date filters */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+      {/* Main container */}
+      <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6 overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-2xl -translate-y-8 translate-x-8"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-400/20 to-orange-400/20 rounded-full blur-xl translate-y-4 -translate-x-4"></div>
+
+        <div className="relative z-10">
+          {/* Header with filters toggle */}
+          {showFilters && (
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-800">{t('common.filters')}</h3>
+              <button
+                onClick={() => setShowFiltersPanel(!showFiltersPanel)}
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
+              >
+                <span className="mr-2">🔍</span>
+                {showFiltersPanel ? t('common.hideFilters') : t('common.showFilters')}
+              </button>
+            </div>
+          )}
+
+          {/* Filters Panel */}
+          {showFilters && showFiltersPanel && (
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30 mb-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Date Range Filter */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-gray-800 flex items-center">
+                    <span className="text-xl mr-2">📅</span>
                     {t('common.dateRange')}
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="date"
-                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
-                    />
-                    <input
-                      type="date"
-                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      onChange={(e) => handleFilterChange('dateTo', e.target.value)}
-                    />
+                  </h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {t('common.from')}
+                      </label>
+                      <input
+                        type="date"
+                        value={dateFilters.from}
+                        onChange={(e) => handleDateFilterChange('from', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {t('common.to')}
+                      </label>
+                      <input
+                        type="date"
+                        value={dateFilters.to}
+                        onChange={(e) => handleDateFilterChange('to', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                {/* Sort options */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                {/* String Filters */}
+                {availableFilters.map((filter) => (
+                  <div key={filter.field} className="space-y-4">
+                    <h4 className="text-lg font-semibold text-gray-800 flex items-center">
+                      <span className="text-xl mr-2">🏷️</span>
+                      {filter.field}
+                    </h4>
+                    <div className="space-y-2">
+                      {filter.items.map((item) => (
+                        <label key={item.item} className="flex items-center space-x-3 p-3 bg-white/40 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/60 transition-all duration-200 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={stringFilters[filter.field]?.includes(item.item) || false}
+                            onChange={(e) => {
+                              const currentValues = stringFilters[filter.field] || [];
+                              const newValues = e.target.checked
+                                ? [...currentValues, item.item]
+                                : currentValues.filter(v => v !== item.item);
+                              handleStringFilterChange(filter.field, newValues);
+                            }}
+                            className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                          />
+                          <span className="text-sm font-medium text-gray-700">{item.localization}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Sort Options */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-gray-800 flex items-center">
+                    <span className="text-xl mr-2">🔄</span>
                     {t('common.sortBy')}
-                  </label>
+                  </h4>
                   <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     onChange={(e) => {
                       const [field, mode] = e.target.value.split('_');
                       handleSortChange(field, mode as OrderMode);
@@ -207,73 +313,74 @@ export function AbstractDataList<T extends DataItem>({
                 </div>
               </div>
 
-              <div className="flex justify-end mt-4">
+              {/* Clear Filters Button */}
+              <div className="flex justify-end mt-6">
                 <button
                   onClick={clearFilters}
-                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                  className="px-6 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
                 >
                   {t('common.clearFilters')}
                 </button>
               </div>
             </div>
           )}
-        </div>
-      )}
 
-      {/* Data List */}
-      <div className="space-y-3">
-        {data.length === 0 ? (
-          renderEmpty ? renderEmpty() : (
-            <div className="text-center py-8">
-              <div className="text-gray-500 mb-2">📝</div>
-              <div className="text-gray-500">{t('common.noData')}</div>
-            </div>
-          )
-        ) : (
-          data.map((item, index) => renderItem(item, index))
-        )}
-      </div>
-
-      {/* Pagination */}
-      {showPagination && totalPages > 1 && (
-        <div className="flex justify-center items-center space-x-2 mt-6">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1 || loading}
-            className="px-3 py-2 bg-white/60 backdrop-blur-sm rounded-lg border border-white/30 hover:bg-white/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            ←
-          </button>
-          
-          <div className="flex space-x-1">
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              const page = i + 1;
-              return (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  disabled={loading}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    currentPage === page
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-white/60 backdrop-blur-sm border border-white/30 hover:bg-white/80'
-                  }`}
-                >
-                  {page}
-                </button>
-              );
-            })}
+          {/* Data List */}
+          <div className="space-y-4">
+            {data.length === 0 ? (
+              renderEmpty ? renderEmpty() : (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">📝</div>
+                  <div className="text-gray-500 text-lg">{t('common.noData')}</div>
+                </div>
+              )
+            ) : (
+              data.map((item, index) => renderItem(item, index, getLocalizedValue))
+            )}
           </div>
 
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages || loading}
-            className="px-3 py-2 bg-white/60 backdrop-blur-sm rounded-lg border border-white/30 hover:bg-white/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            →
-          </button>
+          {/* Pagination */}
+          {showPagination && totalPages > 1 && (
+            <div className="flex justify-center items-center space-x-2 mt-8">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1 || loading}
+                className="px-4 py-2 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105"
+              >
+                ←
+              </button>
+              
+              <div className="flex space-x-2">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  const page = i + 1;
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      disabled={loading}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                        currentPage === page
+                          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                          : 'bg-white/60 backdrop-blur-sm border border-white/30 hover:bg-white/80'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages || loading}
+                className="px-4 py-2 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105"
+              >
+                →
+              </button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
