@@ -85,7 +85,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
       {/* Transactions */}
       <div>
         <h3 className="text-lg font-semibold text-gray-800 mb-4">
-          {t('balance.transactions')}
+          {t('balance.transactions.title')}
         </h3>
         <TransactionsList
           onTransactionsLoad={(transactions: PlayerBalanceTransaction[]) => {

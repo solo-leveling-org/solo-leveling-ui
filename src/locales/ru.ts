@@ -23,6 +23,8 @@ export const ru = {
     clearFilters: 'Очистить фильтры',
     sortBy: 'Сортировать по',
     noSort: 'Без сортировки',
+    ascending: 'По возрастанию',
+    descending: 'По убыванию',
     dateRange: 'Диапазон дат',
     loadingData: 'Ошибка загрузки данных',
     noData: 'Данные отсутствуют',
@@ -210,7 +212,10 @@ export const ru = {
   balance: {
     title: 'Баланс',
     subtitle: 'Ваш текущий баланс и история транзакций',
-    transactions: 'История транзакций',
+    transactions: {
+      title: 'История транзакций',
+      empty: 'Транзакции не найдены'
+    },
     empty: 'Пока нет транзакций',
     causes: {
       TASK_COMPLETION: 'Выполнение задачи',

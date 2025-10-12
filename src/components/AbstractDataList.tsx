@@ -104,6 +104,7 @@ export function AbstractDataList<T extends DataItem>({
       const backendPage = page - 1;
       const result = await loadData(backendPage, pageSize, currentFilters, sorts);
       
+      // Плавно обновляем данные без резких перемещений
       setData(result.data);
       setTotalPages(result.options.totalPageCount || 1);
       setAvailableFilters(result.options.filters || []);
@@ -219,7 +220,7 @@ export function AbstractDataList<T extends DataItem>({
 
       {/* Filters Panel */}
       {showFilters && showFiltersPanel && (
-        <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+        <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200 transition-all duration-300 ease-in-out">
           <div className="space-y-4">
             {/* Date Range Filter */}
             <div>
@@ -280,8 +281,8 @@ export function AbstractDataList<T extends DataItem>({
                         className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                       >
                         <option value="">{t('common.noSort')}</option>
-                        <option value="ASC">↑ {t('common.ascending')}</option>
-                        <option value="DESC">↓ {t('common.descending')}</option>
+                        <option value="ASC">{t('common.ascending')}</option>
+                        <option value="DESC">{t('common.descending')}</option>
                       </select>
                     </div>
                   ))}
@@ -303,7 +304,7 @@ export function AbstractDataList<T extends DataItem>({
       )}
 
       {/* Data Display */}
-      <div>
+      <div className="transition-all duration-300 ease-in-out">
         {loading ? (
           renderSkeleton ? renderSkeleton() : (
             <div className="space-y-3">
@@ -316,28 +317,28 @@ export function AbstractDataList<T extends DataItem>({
             </div>
           )
         ) : error ? (
-          <div className="text-center py-8 text-red-500">{error}</div>
+          <div className="text-center py-8 text-red-500 transition-opacity duration-300">{error}</div>
         ) : data.length === 0 ? (
           renderEmpty ? renderEmpty() : (
-            <div className="text-center py-8">
+            <div className="text-center py-8 transition-opacity duration-300">
               <div className="text-4xl mb-2">📝</div>
               <div className="text-gray-500">{t('common.noData')}</div>
             </div>
           )
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 transition-all duration-300 ease-in-out">
             {data.map((item, index) => renderItem(item, index, getLocalizedValue))}
           </div>
         )}
 
         {/* Pagination */}
         {showPagination && totalPages > 1 && (
-          <div className="mt-6 flex justify-center">
+          <div className="mt-6 flex justify-center transition-all duration-300 ease-in-out">
             <div className="flex items-center space-x-1">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                className="px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-sm"
               >
                 ←
               </button>
@@ -346,10 +347,10 @@ export function AbstractDataList<T extends DataItem>({
                 <button
                   key={page}
                   onClick={() => handlePageChange(page)}
-                  className={`px-3 py-2 rounded-lg transition-colors text-sm ${
+                  className={`px-3 py-2 rounded-lg transition-all duration-200 text-sm ${
                     currentPage === page
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-100 hover:bg-gray-200'
+                      ? 'bg-blue-500 text-white scale-105'
+                      : 'bg-gray-100 hover:bg-gray-200 hover:scale-105'
                   }`}
                 >
                   {page}
@@ -359,7 +360,7 @@ export function AbstractDataList<T extends DataItem>({
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                className="px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-sm"
               >
                 →
               </button>

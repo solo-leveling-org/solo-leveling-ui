@@ -23,6 +23,8 @@ export const en = {
     clearFilters: 'Clear Filters',
     sortBy: 'Sort by',
     noSort: 'No sorting',
+    ascending: 'Ascending',
+    descending: 'Descending',
     dateRange: 'Date Range',
     loadingData: 'Error loading data',
     noData: 'No data available',
@@ -210,7 +212,10 @@ export const en = {
   balance: {
     title: 'Balance',
     subtitle: 'Your current balance and transaction history',
-    transactions: 'Transaction History',
+    transactions: {
+      title: 'Transaction History',
+      empty: 'No transactions found'
+    },
     empty: 'No transactions yet',
     causes: {
       TASK_COMPLETION: 'Task Completion',

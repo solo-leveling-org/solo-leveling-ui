@@ -98,7 +98,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
 const renderTransaction = (transaction: TransactionItem, index: number, getLocalizedValue: (field: string, value: string) => string) => (
   <div
     key={transaction.id}
-    className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow duration-200"
+    className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
   >
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-3">
