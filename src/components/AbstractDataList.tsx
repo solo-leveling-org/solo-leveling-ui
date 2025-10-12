@@ -60,7 +60,7 @@ export function AbstractDataList<T extends DataItem>({
 
   // Состояния для фильтров
   const [dateFilters, setDateFilters] = useState<{from: string, to: string}>({from: '', to: ''});
-  const [enumFilters, setEnumFilters] = useState<{[field: string]: number[]}>({});
+  const [enumFilters, setEnumFilters] = useState<{[field: string]: string[]}>({});
 
   // Функция для получения локализованного значения enum поля
   const getLocalizedValue = (field: string, value: string): string => {
@@ -95,7 +95,7 @@ export function AbstractDataList<T extends DataItem>({
         if (values.length > 0) {
           currentFilters.enumFilters?.push({
             field: field,
-            values: values,
+            values: values, // Теперь отправляем строки (name)
           });
         }
       });
@@ -143,7 +143,7 @@ export function AbstractDataList<T extends DataItem>({
     }
   };
 
-  const handleEnumFilterChange = (field: string, values: number[]) => {
+  const handleEnumFilterChange = (field: string, values: string[]) => {
     setEnumFilters(prev => {
       const newFilters = {...prev, [field]: values};
       
@@ -242,15 +242,15 @@ export function AbstractDataList<T extends DataItem>({
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {filter.items.map((item) => (
-                    <label key={item.ordinal} className="flex items-center space-x-2 cursor-pointer">
+                    <label key={item.name} className="flex items-center space-x-2 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={enumFilters[filter.field]?.includes(item.ordinal) || false}
+                        checked={enumFilters[filter.field]?.includes(item.name) || false}
                         onChange={(e) => {
                           const currentValues = enumFilters[filter.field] || [];
                           const newValues = e.target.checked
-                            ? [...currentValues, item.ordinal]
-                            : currentValues.filter(v => v !== item.ordinal);
+                            ? [...currentValues, item.name]
+                            : currentValues.filter(v => v !== item.name);
                           handleEnumFilterChange(filter.field, newValues);
                         }}
                         className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"

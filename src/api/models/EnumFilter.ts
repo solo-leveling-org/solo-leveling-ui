@@ -4,6 +4,6 @@
 /* eslint-disable */
 export type EnumFilter = {
     field: string;
-    values: Array<number>;
+    values: Array<string>;
 };
 

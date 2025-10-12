@@ -8,10 +8,6 @@ export type LocalizedItem = {
      */
     name: string;
     /**
-     * Enum ordinal
-     */
-    ordinal: number;
-    /**
      * Localized display name
      */
     localization: string;

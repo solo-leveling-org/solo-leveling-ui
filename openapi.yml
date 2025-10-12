@@ -715,10 +715,6 @@ components:
           type: string
           description: Enum name
           example: "PHYSICAL_ACTIVITY"
-        ordinal:
-          type: integer
-          description: Enum ordinal
-          example: 0
         localization:
           type: string
           description: Localized display name
@@ -802,7 +798,7 @@ components:
         values:
           type: array
           items:
-            type: integer
+            type: string
       required:
         - field
         - values
