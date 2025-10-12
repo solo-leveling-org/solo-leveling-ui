@@ -77,18 +77,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
         </div>
 
         {/* Profile content */}
-        <div className="relative max-w-md mx-auto">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-400/20 to-pink-400/20 rounded-3xl blur-3xl -z-10 transform scale-105"></div>
-
-          {/* Main card */}
-          <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 overflow-hidden">
-            {/* Decorative elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/30 to-purple-400/30 rounded-full blur-2xl -translate-y-8 translate-x-8"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-400/30 to-orange-400/30 rounded-full blur-xl translate-y-4 -translate-x-4"></div>
-
-            {/* Profile content */}
-            <div className="relative z-10">
+        <div className="max-w-md mx-auto">
               {/* Avatar section */}
               <div className="text-center mb-6">
                 <div className="relative inline-block mb-4">
@@ -160,8 +149,6 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -182,18 +169,7 @@ export const ProfileSkeleton: React.FC = () => (
     </div>
 
     {/* Profile content skeleton */}
-    <div className="relative max-w-md mx-auto">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-400/20 to-pink-400/20 rounded-3xl blur-3xl -z-10 transform scale-105"></div>
-
-      {/* Main card */}
-      <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/30 to-purple-400/30 rounded-full blur-2xl -translate-y-8 translate-x-8 animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-400/30 to-orange-400/30 rounded-full blur-xl translate-y-4 -translate-x-4 animate-pulse"></div>
-
-        {/* Profile content skeleton */}
-        <div className="relative z-10">
+    <div className="max-w-md mx-auto">
           {/* Avatar section skeleton */}
           <div className="text-center mb-6">
             <div className="relative inline-block mb-4">
@@ -228,8 +204,6 @@ export const ProfileSkeleton: React.FC = () => (
               ))}
             </div>
           </div>
-        </div>
-      </div>
     </div>
   </div>
 );
