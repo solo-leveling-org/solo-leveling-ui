@@ -4,6 +4,10 @@
 /* eslint-disable */
 export type LocalizedItem = {
     /**
+     * Enum name
+     */
+    name: string;
+    /**
      * Enum ordinal
      */
     ordinal: number;

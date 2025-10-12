@@ -25,7 +25,7 @@ export interface DataListProps<T extends DataItem> {
     options: ResponseQueryOptions;
   }>;
   // Методы для рендеринга
-  renderItem: (item: T, index: number, getLocalizedValue: (field: string, value: number) => string) => React.ReactNode;
+  renderItem: (item: T, index: number, getLocalizedValue: (field: string, value: string) => string) => React.ReactNode;
   renderEmpty?: () => React.ReactNode;
   renderSkeleton?: () => React.ReactNode;
   // Опциональные настройки
@@ -63,12 +63,12 @@ export function AbstractDataList<T extends DataItem>({
   const [enumFilters, setEnumFilters] = useState<{[field: string]: number[]}>({});
 
   // Функция для получения локализованного значения enum поля
-  const getLocalizedValue = (field: string, value: number): string => {
+  const getLocalizedValue = (field: string, value: string): string => {
     const filter = availableFilters.find(f => f.field === field);
-    if (!filter) return value.toString();
+    if (!filter) return value;
 
-    const item = filter.items.find(i => i.ordinal === value);
-    return item ? item.localization : value.toString();
+    const item = filter.items.find(i => i.name === value);
+    return item ? item.localization : value;
   };
 
   const loadDataCallback = useCallback(async (page: number = 1) => {
