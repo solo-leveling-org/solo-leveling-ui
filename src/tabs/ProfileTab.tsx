@@ -64,9 +64,9 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
 
   return (
     <>
-      <div className="space-y-6">
+      <div className="space-y-3">
         {/* Settings Button - Top Right */}
-        <div className="flex justify-end">
+        <div className="flex justify-end -mt-3">
           <button
             onClick={() => setShowSettings(true)}
             className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg"
@@ -162,9 +162,9 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
 };
 
 export const ProfileSkeleton: React.FC = () => (
-  <div className="space-y-6">
+  <div className="space-y-3">
     {/* Settings Button skeleton */}
-    <div className="flex justify-end">
+    <div className="flex justify-end -mt-3">
       <div className="w-10 h-10 bg-gray-300 rounded-full animate-pulse"></div>
     </div>
 

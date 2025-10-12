@@ -73,7 +73,7 @@ const WelcomeTab: React.FC = () => {
               { 
                 label: t('welcome.stats.activePlayers'), 
                 value: '1,234', 
-                icon: '👥',
+                icon: <Icon type="users" size={24} />,
                 color: 'from-blue-500 to-cyan-500'
               },
               { 
@@ -85,7 +85,7 @@ const WelcomeTab: React.FC = () => {
               { 
                 label: t('welcome.stats.levelsPassed'), 
                 value: '890', 
-                icon: '🏆',
+                icon: <Icon type="trophy" size={24} />,
                 color: 'from-yellow-500 to-orange-500'
               }
             ].map((stat, index) => (
@@ -102,7 +102,7 @@ const WelcomeTab: React.FC = () => {
               <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${stat.color} opacity-0 hover:opacity-10 transition-opacity duration-500 blur-xl`}></div>
               
               <div className="relative z-10 text-center">
-                <div className="text-4xl mb-4">{stat.icon}</div>
+                <div className="flex justify-center items-center mb-4">{stat.icon}</div>
                 <div className="text-2xl font-bold text-gray-800 mb-2">{stat.value}</div>
                 <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
               </div>
