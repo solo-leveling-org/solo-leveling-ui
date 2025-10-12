@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
 import type { GetPlayerBalanceResponse, PlayerBalanceTransaction } from '../api';
@@ -14,14 +14,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
   const [error, setError] = useState<string | null>(null);
   const { t } = useLocalization();
 
-  // Загружаем баланс при монтировании компонента
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadBalance();
-    }
-  }, [isAuthenticated]);
-
-  const loadBalance = async () => {
+  const loadBalance = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -34,7 +27,14 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
+
+  // Загружаем баланс при монтировании компонента
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadBalance();
+    }
+  }, [isAuthenticated, loadBalance]);
 
   if (loading && !balance) {
     return <BalanceSkeleton />;

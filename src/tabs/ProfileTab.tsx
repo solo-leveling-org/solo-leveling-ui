@@ -13,7 +13,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const { settings, isLoaded } = useSettings();
+  const { isLoaded } = useSettings();
   const { t } = useLocalization();
 
   // Загружаем данные пользователя только при монтировании компонента и если авторизованы

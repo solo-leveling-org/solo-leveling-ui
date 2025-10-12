@@ -6,8 +6,7 @@ import type {
   PlayerBalanceTransaction, 
   SearchPlayerBalanceTransactionsRequest,
   Filter,
-  Sort,
-  ResponseQueryOptions
+  Sort
 } from '../api';
 
 // Расширяем базовый тип для транзакций
