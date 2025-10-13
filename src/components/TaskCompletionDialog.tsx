@@ -111,59 +111,57 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
         {/* Content */}
         <div className="relative z-10 px-6 pb-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
           
-          {/* Level Progress */}
-          <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-blue-200/30 animate-dialog-stagger-2">
-            <div className="flex items-center justify-between mb-6">
+          {/* Level Progress - Compact Design */}
+          <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm rounded-2xl p-4 mb-6 border border-blue-200/30 animate-dialog-stagger-2">
+            <div className="flex items-center justify-between mb-3">
               <h3 className="text-lg font-bold text-gray-800 flex items-center">
-                <Icon type="star" size={32} className="mr-3 text-yellow-500" />
+                <Icon type="star" size={24} className="mr-2 text-yellow-500" />
                 {t('taskCompletion.level')}
               </h3>
-              {expChange > 0 && (
-                <div className="text-sm text-green-600 font-bold bg-green-50 border border-green-200 rounded-full px-3 py-1.5">
-                  +{expChange} XP
+              {/* Level Display - Compact */}
+              <div className="flex items-center">
+                <div className="text-2xl font-bold text-blue-600 bg-white/60 backdrop-blur-sm rounded-lg px-3 py-1 border border-blue-200/30 shadow-sm">
+                  {playerAfter.level?.level || 1}
                 </div>
-              )}
+                {/* Изменение уровня пользователя если повысился */}
+                {(playerAfter.level?.level || 1) > (playerBefore.level?.level || 1) && (
+                  <div className="ml-2 bg-green-50 text-green-600 border border-green-200 text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
+                    +{(playerAfter.level?.level || 1) - (playerBefore.level?.level || 1)}
+                  </div>
+                )}
+              </div>
             </div>
             
-            <div className="space-y-4">
-              {/* Level Display */}
-              <div className="flex items-center justify-center mb-4">
-                <div className="relative">
-                  <div className="text-4xl font-bold text-blue-600 bg-white/60 backdrop-blur-sm rounded-2xl px-6 py-4 border border-blue-200/30 shadow-lg">
-                    {playerAfter.level?.level || 1}
-                  </div>
-                  {/* Изменение уровня пользователя если повысился */}
-                  {(playerAfter.level?.level || 1) > (playerBefore.level?.level || 1) && (
-                    <div className="absolute -top-2 -right-2 bg-green-50 text-green-600 border border-green-200 text-sm font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
-                      +{(playerAfter.level?.level || 1) - (playerBefore.level?.level || 1)}
-                    </div>
+            {/* Experience Progress - Integrated XP */}
+            <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-700">{t('taskCompletion.experience')}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-gray-800">
+                    {playerAfter.level?.currentExperience || 0} / {playerAfter.level?.experienceToNextLevel || 100}
+                  </span>
+                  {expChange > 0 && (
+                    <span className="text-xs text-green-600 font-bold bg-green-50 border border-green-200 rounded-full px-2 py-0.5">
+                      +{expChange}
+                    </span>
                   )}
                 </div>
               </div>
               
-              {/* Experience Progress */}
-              <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-sm font-medium text-gray-700">{t('taskCompletion.experience')}</span>
-                  <span className="text-sm font-bold text-gray-800">
-                    {playerAfter.level?.currentExperience || 0} / {playerAfter.level?.experienceToNextLevel || 100}
-                  </span>
-                </div>
-                
-                <div className="relative w-full bg-gray-200/50 rounded-full h-3 overflow-hidden backdrop-blur-sm">
-                  <div
-                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-1000 ease-out shadow-lg"
-                    style={{ 
-                      width: `${Math.min(100, Math.round(((playerAfter.level?.currentExperience || 0) / (playerAfter.level?.experienceToNextLevel || 100)) * 100))}%` 
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
-                  </div>
+              <div className="relative w-full bg-gray-200/50 rounded-full h-2 overflow-hidden backdrop-blur-sm">
+                <div
+                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-1000 ease-out shadow-sm"
+                  style={{ 
+                    width: `${Math.min(100, Math.round(((playerAfter.level?.currentExperience || 0) / (playerAfter.level?.experienceToNextLevel || 100)) * 100))}%` 
+                  }}
+                >
+                  <div className="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
                 </div>
               </div>
+            </div>
               
-              {/* Topics Progress */}
-              {filteredTopicProgress.length > 0 && (
+            {/* Topics Progress */}
+            {filteredTopicProgress.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-blue-200/30">
                   <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
                     <Icon type="target" size={20} className="mr-2 text-orange-500" />
@@ -228,7 +226,6 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                   </div>
                 </div>
               )}
-            </div>
           </div>
 
           {/* Stats Changes */}
@@ -245,8 +242,8 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                   <div className="absolute -top-1 -right-1 z-10">
                     <span className={`text-xs font-bold px-2 py-1 rounded-full shadow-lg ${
                       strengthChange > 0
-                        ? 'bg-green-500 text-white'
-                        : 'bg-red-500 text-white'
+                        ? 'bg-green-50 text-green-600 border border-green-200'
+                        : 'bg-red-100 text-red-700 border border-red-200'
                     }`}>
                       {strengthChange > 0 ? '+' : ''}{strengthChange}
                     </span>
@@ -268,8 +265,8 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                   <div className="absolute -top-1 -right-1 z-10">
                     <span className={`text-xs font-bold px-2 py-1 rounded-full shadow-lg ${
                       agilityChange > 0
-                        ? 'bg-green-500 text-white'
-                        : 'bg-red-500 text-white'
+                        ? 'bg-green-50 text-green-600 border border-green-200'
+                        : 'bg-red-100 text-red-700 border border-red-200'
                     }`}>
                       {agilityChange > 0 ? '+' : ''}{agilityChange}
                     </span>
@@ -291,8 +288,8 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                   <div className="absolute -top-1 -right-1 z-10">
                     <span className={`text-xs font-bold px-2 py-1 rounded-full shadow-lg ${
                       intelligenceChange > 0
-                        ? 'bg-green-500 text-white'
-                        : 'bg-red-500 text-white'
+                        ? 'bg-green-50 text-green-600 border border-green-200'
+                        : 'bg-red-100 text-red-700 border border-red-200'
                     }`}>
                       {intelligenceChange > 0 ? '+' : ''}{intelligenceChange}
                     </span>
