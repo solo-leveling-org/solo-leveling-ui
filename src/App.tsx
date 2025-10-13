@@ -3,6 +3,7 @@ import './App.css';
 import SideDrawer from './components/SideDrawer';
 import TasksTab from './tabs/TasksTab';
 import ProfileTab from './tabs/ProfileTab';
+import BalanceTab from './tabs/BalanceTab';
 import TopBar from './components/TopBar';
 import {TelegramWidget} from './components/TelegramWidget';
 import {
@@ -63,6 +64,7 @@ function AppRoutes() {
   const tabsConfig = [
     {path: '/', key: 'welcome'},
     {path: '/profile', key: 'profile'},
+    {path: '/balance', key: 'balance'},
     {path: '/tasks', key: 'tasks'},
     {path: '/topics', key: 'topics'},
   ];
@@ -110,6 +112,8 @@ function AppRoutes() {
                                element={<TopicsTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="/profile"
                                element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
+                        <Route path="/balance"
+                               element={<BalanceTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="*" element={<Navigate to="/" replace/>}/>
                       </Routes>
                     </main>

@@ -234,6 +234,58 @@ paths:
         '204':
           description: Task skipped successfully
 
+  /api/v1/player/balance:
+    get:
+      tags:
+        - player
+      summary: Get player balance
+      operationId: getPlayerBalance
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPlayerBalanceResponse'
+
+  /api/v1/player/balance/transaction/search:
+    post:
+      tags:
+        - player
+      summary: Search player balance transactions
+      operationId: searchPlayerBalanceTransactions
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+            minimum: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+            minimum: 1
+            maximum: 100
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchPlayerBalanceTransactionsRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchPlayerBalanceTransactionsResponse'
+
 components:
   schemas:
     # --- REQUESTS ---
@@ -283,6 +335,12 @@ components:
       properties:
         playerTask:
           $ref: '#/components/schemas/PlayerTask'
+
+    SearchPlayerBalanceTransactionsRequest:
+      type: object
+      properties:
+        options:
+          $ref: '#/components/schemas/RequestQueryOptions'
 
     # --- RESPONSES ---
     LoginResponse:
@@ -339,6 +397,7 @@ components:
       type: object
       required:
         - tasks
+        - firstTime
       properties:
         tasks:
           type: array
@@ -354,6 +413,30 @@ components:
           $ref: '#/components/schemas/Player'
         playerAfter:
           $ref: '#/components/schemas/Player'
+      required:
+        - playerBefore
+        - playerAfter
+
+    GetPlayerBalanceResponse:
+      type: object
+      properties:
+        balance:
+          $ref: '#/components/schemas/PlayerBalance'
+      required:
+        - balance
+
+    SearchPlayerBalanceTransactionsResponse:
+      type: object
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerBalanceTransaction'
+        options:
+          $ref: '#/components/schemas/ResponseQueryOptions'
+      required:
+        - transactions
+        - options
 
     # --- Enums ---
     UserRole:
@@ -385,6 +468,32 @@ components:
     PlayerTaskStatus:
       type: string
       enum: [ PREPARING, IN_PROGRESS, PENDING_COMPLETION, COMPLETED, SKIPPED ]
+
+    PlayerBalanceTransactionType:
+      type: string
+      enum:
+        - IN
+        - OUT
+
+    PlayerBalanceTransactionCause:
+      type: string
+      enum:
+        - TASK_COMPLETION
+        - LEVEL_UP
+        - DAILY_CHECK_IN
+        - ITEM_PURCHASE
+
+    OrderMode:
+      type: string
+      enum:
+        - ASC
+        - DESC
+
+    JwtTokenType:
+      type: string
+      enum:
+        - ACCESS
+        - REFRESH
 
     # --- Domain Objects ---
     Task:
@@ -421,6 +530,9 @@ components:
         intelligence:
           type: integer
           format: int32
+      required:
+        - id
+        - version
 
     Level:
       type: object
@@ -445,6 +557,14 @@ components:
           format: int32
         assessment:
           $ref: '#/components/schemas/Assessment'
+      required:
+        - id
+        - version
+        - level
+        - totalExperience
+        - currentExperience
+        - experienceToNextLevel
+        - assessment
 
     PlayerTaskTopic:
       type: object
@@ -461,6 +581,12 @@ components:
           $ref: '#/components/schemas/TaskTopic'
         level:
           $ref: '#/components/schemas/Level'
+      required:
+        - id
+        - version
+        - isActive
+        - taskTopic
+        - level
 
     Money:
       type: object
@@ -471,6 +597,9 @@ components:
         amount:
           type: number
           format: decimal
+      required:
+        - currencyCode
+        - amount
 
     PlayerBalance:
       type: object
@@ -483,6 +612,10 @@ components:
           format: int32
         balance:
           $ref: '#/components/schemas/Money'
+      required:
+        - id
+        - version
+        - balance
 
     Player:
       type: object
@@ -534,6 +667,153 @@ components:
         task:
           $ref: '#/components/schemas/Task'
 
+    PlayerBalanceTransaction:
+      type: object
+      properties:
+        id:
+          type: string
+        version:
+          type: integer
+          format: int32
+        amount:
+          $ref: '#/components/schemas/Money'
+        type:
+          $ref: '#/components/schemas/PlayerBalanceTransactionType'
+        cause:
+          $ref: '#/components/schemas/PlayerBalanceTransactionCause'
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - version
+        - amount
+        - type
+        - cause
+        - createdAt
+
+    LocalizedField:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Field identifier
+          example: "taskTopics"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedItem'
+          description: List of localized items for this field
+      required:
+        - field
+        - items
+
+    LocalizedItem:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Enum name
+          example: "PHYSICAL_ACTIVITY"
+        localization:
+          type: string
+          description: Localized display name
+          example: "Physical Activity"
+      required:
+        - name
+        - ordinal
+        - localization
+
+    RequestQueryOptions:
+      type: object
+      properties:
+        filter:
+          $ref: '#/components/schemas/Filter'
+        sorts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sort'
+
+    ResponseQueryOptions:
+      type: object
+      properties:
+        totalRowCount:
+          type: integer
+          format: int64
+          description: Total number of rows/items
+          example: 10
+        totalPageCount:
+          type: integer
+          format: int64
+          description: Total number of pages
+          example: 5
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedField'
+          description: Available filters with localization
+        sorts:
+          type: array
+          items:
+            type: string
+          description: Available sort fields
+          example: [ "createdAt", "updatedAt", "name" ]
+      required:
+        - total_page_count
+        - total_row_count
+
+    Filter:
+      type: object
+      properties:
+        dateFilters:
+          type: array
+          items:
+            $ref: '#/components/schemas/DateFilter'
+        enumFilters:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnumFilter'
+
+    DateFilter:
+      type: object
+      properties:
+        field:
+          type: string
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+      required:
+        - field
+        - from
+        - to
+
+    EnumFilter:
+      type: object
+      properties:
+        field:
+          type: string
+        values:
+          type: array
+          items:
+            type: string
+      required:
+        - field
+        - values
+
+    Sort:
+      type: object
+      properties:
+        field:
+          type: string
+        mode:
+          $ref: '#/components/schemas/OrderMode'
+      required:
+        - field
+        - mode
+
     User:
       type: object
       properties:
@@ -559,12 +839,11 @@ components:
             $ref: '#/components/schemas/UserRole'
         player:
           $ref: '#/components/schemas/Player'
-
-    JwtTokenType:
-      type: string
-      enum:
-        - ACCESS
-        - REFRESH
+      required:
+        - id
+        - version
+        - roles
+        - player
 
     JwtToken:
       type: object
@@ -613,20 +892,30 @@ components:
     TgWebAppData:
       type: object
       properties:
-        auth_date:
+        query_id:
           type: string
-          format: date-time
+        user:
+          $ref: '#/components/schemas/TgUserData'
+        receiver:
+          $ref: '#/components/schemas/TgUserData'
+        chat:
+          $ref: '#/components/schemas/TgWebAppChat'
         chat_type:
           type: string
         chat_instance:
           type: string
+        start_param:
+          type: string
+        can_send_after:
+          type: integer
+        auth_date:
+          type: string
+          format: date-time
         hash:
           type: string
           description: Signature hash of the data
         signature:
           type: string
-        user:
-          $ref: '#/components/schemas/TgUserData'
       required:
         - auth_date
         - hash
@@ -643,6 +932,20 @@ components:
       required:
         - tg_web_app_data
         - init_data
+
+    TgWebAppChat:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        title:
+          type: string
+        username:
+          type: string
+        photo_url:
+          type: string
 
     Message:
       type: object

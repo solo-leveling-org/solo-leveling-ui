@@ -18,12 +18,57 @@ export const en = {
     success: 'Success',
     warning: 'Warning',
     info: 'Information',
+    retry: 'Retry',
+    filters: 'Filters',
+    clearFilters: 'Clear Filters',
+    sortBy: 'Sort by',
+    noSort: 'No sorting',
+    ascending: 'Ascending',
+    descending: 'Descending',
+    dateRange: 'Date Range',
+    loadingData: 'Error loading data',
+    noData: 'No data available',
+    showFilters: 'Show Filters',
+    hideFilters: 'Hide Filters',
+    from: 'From',
+    to: 'To',
+    selectDateRange: 'Select Date Range',
+    apply: 'Apply',
+    clear: 'Clear',
+    sortFields: {
+      createdAt: 'Creation Date',
+      amount: 'Amount'
+    },
+    months: {
+      january: 'January',
+      february: 'February',
+      march: 'March',
+      april: 'April',
+      may: 'May',
+      june: 'June',
+      july: 'July',
+      august: 'August',
+      september: 'September',
+      october: 'October',
+      november: 'November',
+      december: 'December'
+    },
+    days: {
+      monday: 'Monday',
+      tuesday: 'Tuesday',
+      wednesday: 'Wednesday',
+      thursday: 'Thursday',
+      friday: 'Friday',
+      saturday: 'Saturday',
+      sunday: 'Sunday'
+    },
   },
 
   // Navigation
   navigation: {
     title: 'Navigation',
     profile: 'Profile',
+    balance: 'Balance',
     tasks: 'Tasks',
     topics: 'Topics',
     welcome: 'Home',
@@ -152,6 +197,7 @@ export const en = {
       daysAgo: 'days ago',
     },
     settings: {
+      title: 'Settings',
       language: {
         title: 'Language',
         description: 'Choose interface language',
@@ -163,6 +209,27 @@ export const en = {
         sourceDescription: 'Use Telegram or manual.',
         manualDisabledHint: 'Manual selection disabled while Telegram mode is on',
       },
+    },
+  },
+
+  // Balance
+  balance: {
+    title: 'Balance',
+    subtitle: 'Your current balance and transaction history',
+    totalBalance: 'Total Balance',
+    currencyName: 'Solo Leveling Coin',
+    topUp: 'Top Up',
+    transfer: 'Transfer',
+    transactions: {
+      title: 'Transaction History',
+      empty: 'No transactions found'
+    },
+    empty: 'No transactions yet',
+    causes: {
+      TASK_COMPLETION: 'Task Completion',
+      LEVEL_UP: 'Level Up Bonus',
+      DAILY_CHECK_IN: 'Daily Check-in',
+      ITEM_PURCHASE: 'Item Purchase',
     },
   },
 

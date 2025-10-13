@@ -18,12 +18,57 @@ export const ru = {
     success: 'Успешно',
     warning: 'Предупреждение',
     info: 'Информация',
+    retry: 'Повторить',
+    filters: 'Фильтры',
+    clearFilters: 'Очистить фильтры',
+    sortBy: 'Сортировать по',
+    noSort: 'Без сортировки',
+    ascending: 'По возрастанию',
+    descending: 'По убыванию',
+    dateRange: 'Диапазон дат',
+    loadingData: 'Ошибка загрузки данных',
+    noData: 'Данные отсутствуют',
+    showFilters: 'Показать фильтры',
+    hideFilters: 'Скрыть фильтры',
+    from: 'С',
+    to: 'По',
+    selectDateRange: 'Выберите диапазон дат',
+    apply: 'Применить',
+    clear: 'Очистить',
+    sortFields: {
+      createdAt: 'Дата создания',
+      amount: 'Сумма'
+    },
+    months: {
+      january: 'Январь',
+      february: 'Февраль',
+      march: 'Март',
+      april: 'Апрель',
+      may: 'Май',
+      june: 'Июнь',
+      july: 'Июль',
+      august: 'Август',
+      september: 'Сентябрь',
+      october: 'Октябрь',
+      november: 'Ноябрь',
+      december: 'Декабрь'
+    },
+    days: {
+      monday: 'Понедельник',
+      tuesday: 'Вторник',
+      wednesday: 'Среда',
+      thursday: 'Четверг',
+      friday: 'Пятница',
+      saturday: 'Суббота',
+      sunday: 'Воскресенье'
+    },
   },
 
   // Навигация
   navigation: {
     title: 'Навигация',
     profile: 'Профиль',
+    balance: 'Баланс',
     tasks: 'Задачи',
     topics: 'Темы',
     welcome: 'Главная',
@@ -152,6 +197,7 @@ export const ru = {
       daysAgo: 'дня назад',
     },
     settings: {
+      title: 'Настройки',
       language: {
         title: 'Язык',
         description: 'Выберите язык интерфейса',
@@ -163,6 +209,27 @@ export const ru = {
         sourceDescription: 'Язык из Telegram или вручную.',
         manualDisabledHint: 'Ручной выбор недоступен, включен режим Telegram',
       },
+    },
+  },
+
+  // Баланс
+  balance: {
+    title: 'Баланс',
+    subtitle: 'Ваш текущий баланс и история транзакций',
+    totalBalance: 'Общий баланс',
+    currencyName: 'Solo Leveling Coin',
+    topUp: 'Пополнить',
+    transfer: 'Перевести',
+    transactions: {
+      title: 'История транзакций',
+      empty: 'Транзакции не найдены'
+    },
+    empty: 'Пока нет транзакций',
+    causes: {
+      TASK_COMPLETION: 'Выполнение задачи',
+      LEVEL_UP: 'Бонус за повышение уровня',
+      DAILY_CHECK_IN: 'Ежедневная отметка',
+      ITEM_PURCHASE: 'Покупка предмета',
     },
   },
 

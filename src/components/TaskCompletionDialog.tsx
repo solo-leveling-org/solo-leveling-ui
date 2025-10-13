@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import type { CompleteTaskResponse, Task } from '../api';
 import { useLocalization } from '../hooks/useLocalization';
+import Icon from './Icon';
+import TopicIcon from './TopicIcons';
 
 
 type TaskCompletionDialogProps = {
@@ -109,62 +111,60 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
         {/* Content */}
         <div className="relative z-10 px-6 pb-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
           
-          {/* Level Progress */}
-          <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-blue-200/30 animate-dialog-stagger-2">
-            <div className="flex items-center justify-between mb-6">
+          {/* Level Progress - Compact Design */}
+          <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm rounded-2xl p-4 mb-6 border border-blue-200/30 animate-dialog-stagger-2">
+            <div className="flex items-center justify-between mb-3">
               <h3 className="text-lg font-bold text-gray-800 flex items-center">
-                <span className="text-2xl mr-3">⭐</span>
+                <Icon type="star" size={24} className="mr-2 text-yellow-500" />
                 {t('taskCompletion.level')}
               </h3>
-              {expChange > 0 && (
-                <div className="text-sm text-green-600 font-bold bg-green-50 border border-green-200 rounded-full px-3 py-1.5">
-                  +{expChange} XP
+              {/* Level Display - Compact */}
+              <div className="flex items-center">
+                <div className="text-2xl font-bold text-blue-600 bg-white/60 backdrop-blur-sm rounded-lg px-3 py-1 border border-blue-200/30 shadow-sm">
+                  {playerAfter.level?.level || 1}
                 </div>
-              )}
+                {/* Изменение уровня пользователя если повысился */}
+                {(playerAfter.level?.level || 1) > (playerBefore.level?.level || 1) && (
+                  <div className="ml-2 bg-green-50 text-green-600 border border-green-200 text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
+                    +{(playerAfter.level?.level || 1) - (playerBefore.level?.level || 1)}
+                  </div>
+                )}
+              </div>
             </div>
             
-            <div className="space-y-4">
-              {/* Level Display */}
-              <div className="flex items-center justify-center mb-4">
-                <div className="relative">
-                  <div className="text-4xl font-bold text-blue-600 bg-white/60 backdrop-blur-sm rounded-2xl px-6 py-4 border border-blue-200/30 shadow-lg">
-                    {playerAfter.level?.level || 1}
-                  </div>
-                  {/* Изменение уровня пользователя если повысился */}
-                  {(playerAfter.level?.level || 1) > (playerBefore.level?.level || 1) && (
-                    <div className="absolute -top-2 -right-2 bg-green-50 text-green-600 border border-green-200 text-sm font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
-                      +{(playerAfter.level?.level || 1) - (playerBefore.level?.level || 1)}
-                    </div>
+            {/* Experience Progress - Integrated XP */}
+            <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-700">{t('taskCompletion.experience')}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-gray-800">
+                    {playerAfter.level?.currentExperience || 0} / {playerAfter.level?.experienceToNextLevel || 100}
+                  </span>
+                  {expChange > 0 && (
+                    <span className="text-xs text-green-600 font-bold bg-green-50 border border-green-200 rounded-full px-2 py-0.5">
+                      +{expChange}
+                    </span>
                   )}
                 </div>
               </div>
               
-              {/* Experience Progress */}
-              <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-sm font-medium text-gray-700">{t('taskCompletion.experience')}</span>
-                  <span className="text-sm font-bold text-gray-800">
-                    {playerAfter.level?.currentExperience || 0} / {playerAfter.level?.experienceToNextLevel || 100}
-                  </span>
-                </div>
-                
-                <div className="relative w-full bg-gray-200/50 rounded-full h-3 overflow-hidden backdrop-blur-sm">
-                  <div
-                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-1000 ease-out shadow-lg"
-                    style={{ 
-                      width: `${Math.min(100, Math.round(((playerAfter.level?.currentExperience || 0) / (playerAfter.level?.experienceToNextLevel || 100)) * 100))}%` 
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
-                  </div>
+              <div className="relative w-full bg-gray-200/50 rounded-full h-2 overflow-hidden backdrop-blur-sm">
+                <div
+                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-1000 ease-out shadow-sm"
+                  style={{ 
+                    width: `${Math.min(100, Math.round(((playerAfter.level?.currentExperience || 0) / (playerAfter.level?.experienceToNextLevel || 100)) * 100))}%` 
+                  }}
+                >
+                  <div className="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
                 </div>
               </div>
+            </div>
               
-              {/* Topics Progress */}
-              {filteredTopicProgress.length > 0 && (
+            {/* Topics Progress */}
+            {filteredTopicProgress.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-blue-200/30">
                   <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                    <span className="text-lg mr-2">🎯</span>
+                    <Icon type="target" size={20} className="mr-2 text-orange-500" />
                     {t('taskCompletion.topicsProgress')}
                   </h4>
                   <div className="space-y-3">
@@ -180,9 +180,12 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                       return (
                         <div key={topic} className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-white/20">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-700">
-                              {t(`topics.labels.${topic}`)}
-                            </span>
+                            <div className="flex items-center">
+                              <TopicIcon topic={topic} size={16} className="mr-2" />
+                              <span className="text-sm font-medium text-gray-700">
+                                {t(`topics.labels.${topic}`)}
+                              </span>
+                            </div>
                             <span className="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-full flex items-center whitespace-nowrap">
                               {t('profile.tabs.level')} {level.level || 1}
                               {/* Изменение уровня топика если повысился */}
@@ -223,97 +226,123 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                   </div>
                 </div>
               )}
-            </div>
           </div>
 
           {/* Stats Changes */}
           <div className="bg-gradient-to-br from-gray-50/80 to-slate-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-gray-200/30 animate-dialog-stagger-3">
-            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-              <span className="text-2xl mr-3">⚔️</span>
+            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center justify-center">
+              <Icon type="trending-up" size={32} className="mr-3 text-blue-600" />
               {t('taskCompletion.stats')}
             </h3>
-                        <div className="flex flex-row gap-4">
+            <div className="grid grid-cols-3 gap-3">
               {/* Strength */}
-              <div className="flex-1 text-center">
-                <div className="text-2xl mb-2">💪</div>
-                <div className="text-xl font-bold text-red-600 mb-1 flex items-center justify-center gap-2 min-w-0">
-                  <span className="truncate">{playerAfter.strength || 0}</span>
-                  {strengthChange !== 0 && (
-                    <span className={`text-sm font-bold px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0 ${
+              <div className="relative bg-gradient-to-br from-red-50/80 to-red-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-red-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                {/* Badge overlay */}
+                {strengthChange !== 0 && (
+                  <div className="absolute -top-1 -right-1 z-10">
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full shadow-lg ${
                       strengthChange > 0
                         ? 'bg-green-50 text-green-600 border border-green-200'
-                        : 'bg-red-100 text-red-700'
+                        : 'bg-red-100 text-red-700 border border-red-200'
                     }`}>
                       {strengthChange > 0 ? '+' : ''}{strengthChange}
                     </span>
-                  )}
+                  </div>
+                )}
+                <div className="flex justify-center items-center mb-1">
+                  <Icon type="dumbbell" size={24} className="text-red-500" />
                 </div>
-                <div className="text-xs text-red-500 font-medium mb-2">{t('profile.stats.strength')}</div>
+                <div className="text-lg font-bold text-red-600 mb-1">
+                  {playerAfter.strength || 0}
+                </div>
+                <div className="text-xs text-red-500 font-medium">{t('profile.stats.strength')}</div>
               </div>
 
               {/* Agility */}
-              <div className="flex-1 text-center">
-                <div className="text-2xl mb-2">⚡</div>
-                <div className="text-xl font-bold text-green-600 mb-1 flex items-center justify-center gap-2 min-w-0">
-                  <span className="truncate">{playerAfter.agility || 0}</span>
-                  {agilityChange !== 0 && (
-                    <span className={`text-sm font-bold px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0 ${
+              <div className="relative bg-gradient-to-br from-green-50/80 to-green-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-green-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                {/* Badge overlay */}
+                {agilityChange !== 0 && (
+                  <div className="absolute -top-1 -right-1 z-10">
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full shadow-lg ${
                       agilityChange > 0
                         ? 'bg-green-50 text-green-600 border border-green-200'
-                        : 'bg-red-100 text-red-700'
+                        : 'bg-red-100 text-red-700 border border-red-200'
                     }`}>
                       {agilityChange > 0 ? '+' : ''}{agilityChange}
                     </span>
-                  )}
+                  </div>
+                )}
+                <div className="flex justify-center items-center mb-1">
+                  <Icon type="zap" size={24} className="text-green-500" />
                 </div>
-                <div className="text-xs text-green-500 font-medium mb-2">{t('profile.stats.agility')}</div>
+                <div className="text-lg font-bold text-green-600 mb-1">
+                  {playerAfter.agility || 0}
+                </div>
+                <div className="text-xs text-green-500 font-medium">{t('profile.stats.agility')}</div>
               </div>
 
               {/* Intelligence */}
-              <div className="flex-1 text-center">
-                <div className="text-2xl mb-2">🧠</div>
-                <div className="text-xl font-bold text-purple-600 mb-1 flex items-center justify-center gap-2 min-w-0">
-                  <span className="truncate">{playerAfter.intelligence || 0}</span>
-                  {intelligenceChange !== 0 && (
-                    <span className={`text-sm font-bold px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0 ${
+              <div className="relative bg-gradient-to-br from-purple-50/80 to-purple-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-purple-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                {/* Badge overlay */}
+                {intelligenceChange !== 0 && (
+                  <div className="absolute -top-1 -right-1 z-10">
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full shadow-lg ${
                       intelligenceChange > 0
                         ? 'bg-green-50 text-green-600 border border-green-200'
-                        : 'bg-red-100 text-red-700'
+                        : 'bg-red-100 text-red-700 border border-red-200'
                     }`}>
                       {intelligenceChange > 0 ? '+' : ''}{intelligenceChange}
                     </span>
-                  )}
+                  </div>
+                )}
+                <div className="flex justify-center items-center mb-1">
+                  <Icon type="brain" size={24} className="text-purple-500" />
                 </div>
-                <div className="text-xs text-purple-500 font-medium mb-2">{t('profile.stats.intelligence')}</div>
+                <div className="text-lg font-bold text-purple-600 mb-1">
+                  {playerAfter.intelligence || 0}
+                </div>
+                <div className="text-xs text-purple-500 font-medium">{t('profile.stats.intelligence')}</div>
               </div>
             </div>
           </div>
 
-          {/* Balance Change */}
-          <div className="bg-gradient-to-r from-amber-50/80 to-orange-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-amber-200/30 text-center animate-dialog-stagger-4">
-            <div className="text-2xl mb-3">💰</div>
-            <div className="text-3xl font-bold text-amber-700 mb-2">
-              {playerAfter.balance?.balance?.amount || 0} {playerAfter.balance?.balance?.currencyCode || 'GCO'}
-            </div>
-                          <div className="text-sm text-amber-600 font-medium">
+          {/* Balance Change - Mobile Banking Style */}
+          <div className="relative overflow-hidden rounded-2xl mb-6 animate-dialog-stagger-4">
+            {/* Background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-white/10 rounded-2xl"></div>
+            
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-12 translate-x-12"></div>
+            <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/5 rounded-full translate-y-8 -translate-x-8"></div>
+            
+            {/* Content */}
+            <div className="relative p-6 text-white text-center">
+              {/* Header */}
+              <div className="flex justify-center items-center mb-4">
+                <Icon type="coins" size={24} className="text-yellow-300 mr-2" />
+                <span className="text-blue-100 text-sm font-medium">{t('balance.totalBalance')}</span>
+              </div>
+              
+              {/* Balance amount */}
+              <div className="mb-3">
+                <div className="text-2xl font-bold text-white mb-1">
+                  {playerAfter.balance?.balance?.amount || 0}
+                </div>
+                <div className="text-blue-200 text-sm font-medium">
+                  {playerAfter.balance?.balance?.currencyCode || 'SLCN'}
+                </div>
+              </div>
+              
+              {/* Reward info */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl py-2 px-4 text-white text-sm font-medium">
                 +{balanceChange} {t('taskCompletion.balanceGained')}
               </div>
+            </div>
           </div>
 
 
 
-          {/* Continue Button */}
-          <div className="text-center mt-8 animate-dialog-stagger-4">
-            <button
-              onClick={handleClose}
-              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 group"
-            >
-              <span className="mr-2">{t('taskCompletion.continue')}</span>
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </button>
-          </div>
         </div>
       </div>
     </div>

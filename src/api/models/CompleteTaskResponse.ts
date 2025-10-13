@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { Player } from './Player';
 export type CompleteTaskResponse = {
-    playerBefore?: Player;
-    playerAfter?: Player;
+    playerBefore: Player;
+    playerAfter: Player;
 };
 

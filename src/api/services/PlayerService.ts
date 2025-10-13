@@ -5,8 +5,11 @@
 import type { CompleteTaskRequest } from '../models/CompleteTaskRequest';
 import type { CompleteTaskResponse } from '../models/CompleteTaskResponse';
 import type { GetActiveTasksResponse } from '../models/GetActiveTasksResponse';
+import type { GetPlayerBalanceResponse } from '../models/GetPlayerBalanceResponse';
 import type { GetPlayerTopicsResponse } from '../models/GetPlayerTopicsResponse';
 import type { SavePlayerTopicsRequest } from '../models/SavePlayerTopicsRequest';
+import type { SearchPlayerBalanceTransactionsRequest } from '../models/SearchPlayerBalanceTransactionsRequest';
+import type { SearchPlayerBalanceTransactionsResponse } from '../models/SearchPlayerBalanceTransactionsResponse';
 import type { SkipTaskRequest } from '../models/SkipTaskRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -106,6 +109,41 @@ export class PlayerService {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/v1/player/tasks/skip',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
+     * Get player balance
+     * @returns GetPlayerBalanceResponse Successful response
+     * @throws ApiError
+     */
+    public static getPlayerBalance(): CancelablePromise<GetPlayerBalanceResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/player/balance',
+        });
+    }
+    /**
+     * Search player balance transactions
+     * @param requestBody
+     * @param page
+     * @param pageSize
+     * @returns SearchPlayerBalanceTransactionsResponse Successful response
+     * @throws ApiError
+     */
+    public static searchPlayerBalanceTransactions(
+        requestBody: SearchPlayerBalanceTransactionsRequest,
+        page?: number,
+        pageSize: number = 20,
+    ): CancelablePromise<SearchPlayerBalanceTransactionsResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/player/balance/transaction/search',
+            query: {
+                'page': page,
+                'pageSize': pageSize,
+            },
             body: requestBody,
             mediaType: 'application/json',
         });

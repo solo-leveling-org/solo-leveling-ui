@@ -3,7 +3,10 @@ import type {
   GetActiveTasksResponse,
   GetPlayerTopicsResponse,
   GetUserResponse,
-  PlayerTaskTopic
+  PlayerTaskTopic,
+  GetPlayerBalanceResponse,
+  SearchPlayerBalanceTransactionsRequest,
+  SearchPlayerBalanceTransactionsResponse
 } from './api';
 import {PlayerService, PlayerTask, UserService} from './api';
 import type {User as ApiUser} from './api/models/User';
@@ -61,6 +64,28 @@ export const api = {
       });
     } catch (error) {
       console.error('Error saving user topics:', error);
+      throw error;
+    }
+  },
+
+  getPlayerBalance: async (): Promise<GetPlayerBalanceResponse> => {
+    try {
+      return await PlayerService.getPlayerBalance();
+    } catch (error) {
+      console.error('Error getting player balance:', error);
+      throw error;
+    }
+  },
+
+  searchPlayerBalanceTransactions: async (
+    request: SearchPlayerBalanceTransactionsRequest,
+    page?: number,
+    pageSize: number = 20
+  ): Promise<SearchPlayerBalanceTransactionsResponse> => {
+    try {
+      return await PlayerService.searchPlayerBalanceTransactions(request, page, pageSize);
+    } catch (error) {
+      console.error('Error searching player balance transactions:', error);
       throw error;
     }
   },

@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type Money = {
-    currencyCode?: string;
-    amount?: number;
+    currencyCode: string;
+    amount: number;
 };
 

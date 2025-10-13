@@ -5,10 +5,10 @@
 import type { Level } from './Level';
 import type { TaskTopic } from './TaskTopic';
 export type PlayerTaskTopic = {
-    id?: string;
-    version?: number;
-    isActive?: boolean;
-    taskTopic?: TaskTopic;
-    level?: Level;
+    id: string;
+    version: number;
+    isActive: boolean;
+    taskTopic: TaskTopic;
+    level: Level;
 };
 
