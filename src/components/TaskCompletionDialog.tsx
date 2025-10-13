@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import type { CompleteTaskResponse, Task } from '../api';
 import { useLocalization } from '../hooks/useLocalization';
 import Icon from './Icon';
+import TopicIcon from './TopicIcons';
 
 
 type TaskCompletionDialogProps = {
@@ -114,7 +115,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
           <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-blue-200/30 animate-dialog-stagger-2">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-gray-800 flex items-center">
-                <Icon type="star" size={32} className="mr-3" />
+                <Icon type="star" size={32} className="mr-3 text-yellow-500" />
                 {t('taskCompletion.level')}
               </h3>
               {expChange > 0 && (
@@ -165,7 +166,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
               {filteredTopicProgress.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-blue-200/30">
                   <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                    <Icon type="target" size={20} className="mr-2" />
+                    <Icon type="target" size={20} className="mr-2 text-orange-500" />
                     {t('taskCompletion.topicsProgress')}
                   </h4>
                   <div className="space-y-3">
@@ -181,9 +182,12 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                       return (
                         <div key={topic} className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-white/20">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-700">
-                              {t(`topics.labels.${topic}`)}
-                            </span>
+                            <div className="flex items-center">
+                              <TopicIcon topic={topic} size={16} className="mr-2" />
+                              <span className="text-sm font-medium text-gray-700">
+                                {t(`topics.labels.${topic}`)}
+                              </span>
+                            </div>
                             <span className="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-full flex items-center whitespace-nowrap">
                               {t('profile.tabs.level')} {level.level || 1}
                               {/* Изменение уровня топика если повысился */}
@@ -229,20 +233,20 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
 
           {/* Stats Changes */}
           <div className="bg-gradient-to-br from-gray-50/80 to-slate-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-gray-200/30 animate-dialog-stagger-3">
-            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-              <Icon type="sword" size={32} className="mr-3" />
+            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center justify-center">
+              <Icon type="trending-up" size={32} className="mr-3 text-blue-600" />
               {t('taskCompletion.stats')}
             </h3>
-                        <div className="flex flex-row gap-4">
+            <div className="grid grid-cols-3 gap-3">
               {/* Strength */}
-              <div className="flex-1 text-center">
-                <div className="flex justify-center items-center mb-2">
-                  <Icon type="dumbbell" size={32} className="text-red-500" />
+              <div className="bg-gradient-to-br from-red-50/80 to-red-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-red-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <div className="flex justify-center items-center mb-1">
+                  <Icon type="dumbbell" size={24} className="text-red-500" />
                 </div>
-                <div className="text-xl font-bold text-red-600 mb-1 flex items-center justify-center gap-2 min-w-0">
+                <div className="text-lg font-bold text-red-600 mb-1 flex items-center justify-center gap-1">
                   <span className="truncate">{playerAfter.strength || 0}</span>
                   {strengthChange !== 0 && (
-                    <span className={`text-sm font-bold px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0 ${
+                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0 ${
                       strengthChange > 0
                         ? 'bg-green-50 text-green-600 border border-green-200'
                         : 'bg-red-100 text-red-700'
@@ -251,18 +255,18 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-red-500 font-medium mb-2">{t('profile.stats.strength')}</div>
+                <div className="text-xs text-red-500 font-medium">{t('profile.stats.strength')}</div>
               </div>
 
               {/* Agility */}
-              <div className="flex-1 text-center">
-                <div className="flex justify-center items-center mb-2">
-                  <Icon type="zap" size={32} className="text-green-500" />
+              <div className="bg-gradient-to-br from-green-50/80 to-green-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-green-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <div className="flex justify-center items-center mb-1">
+                  <Icon type="zap" size={24} className="text-green-500" />
                 </div>
-                <div className="text-xl font-bold text-green-600 mb-1 flex items-center justify-center gap-2 min-w-0">
+                <div className="text-lg font-bold text-green-600 mb-1 flex items-center justify-center gap-1">
                   <span className="truncate">{playerAfter.agility || 0}</span>
                   {agilityChange !== 0 && (
-                    <span className={`text-sm font-bold px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0 ${
+                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0 ${
                       agilityChange > 0
                         ? 'bg-green-50 text-green-600 border border-green-200'
                         : 'bg-red-100 text-red-700'
@@ -271,18 +275,18 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-green-500 font-medium mb-2">{t('profile.stats.agility')}</div>
+                <div className="text-xs text-green-500 font-medium">{t('profile.stats.agility')}</div>
               </div>
 
               {/* Intelligence */}
-              <div className="flex-1 text-center">
-                <div className="flex justify-center items-center mb-2">
-                  <Icon type="brain" size={32} className="text-purple-500" />
+              <div className="bg-gradient-to-br from-purple-50/80 to-purple-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-purple-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <div className="flex justify-center items-center mb-1">
+                  <Icon type="brain" size={24} className="text-purple-500" />
                 </div>
-                <div className="text-xl font-bold text-purple-600 mb-1 flex items-center justify-center gap-2 min-w-0">
+                <div className="text-lg font-bold text-purple-600 mb-1 flex items-center justify-center gap-1">
                   <span className="truncate">{playerAfter.intelligence || 0}</span>
                   {intelligenceChange !== 0 && (
-                    <span className={`text-sm font-bold px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0 ${
+                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0 ${
                       intelligenceChange > 0
                         ? 'bg-green-50 text-green-600 border border-green-200'
                         : 'bg-red-100 text-red-700'
@@ -291,7 +295,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-purple-500 font-medium mb-2">{t('profile.stats.intelligence')}</div>
+                <div className="text-xs text-purple-500 font-medium">{t('profile.stats.intelligence')}</div>
               </div>
             </div>
           </div>
