@@ -236,7 +236,9 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                         <div className="flex flex-row gap-4">
               {/* Strength */}
               <div className="flex-1 text-center">
-                <div className="text-2xl mb-2">💪</div>
+                <div className="flex justify-center items-center mb-2">
+                  <Icon type="dumbbell" size={32} className="text-red-500" />
+                </div>
                 <div className="text-xl font-bold text-red-600 mb-1 flex items-center justify-center gap-2 min-w-0">
                   <span className="truncate">{playerAfter.strength || 0}</span>
                   {strengthChange !== 0 && (
@@ -254,7 +256,9 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
 
               {/* Agility */}
               <div className="flex-1 text-center">
-                <div className="text-2xl mb-2">⚡</div>
+                <div className="flex justify-center items-center mb-2">
+                  <Icon type="zap" size={32} className="text-green-500" />
+                </div>
                 <div className="text-xl font-bold text-green-600 mb-1 flex items-center justify-center gap-2 min-w-0">
                   <span className="truncate">{playerAfter.agility || 0}</span>
                   {agilityChange !== 0 && (
@@ -272,7 +276,9 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
 
               {/* Intelligence */}
               <div className="flex-1 text-center">
-                <Icon type="brain" size={32} className="mb-2" />
+                <div className="flex justify-center items-center mb-2">
+                  <Icon type="brain" size={32} className="text-purple-500" />
+                </div>
                 <div className="text-xl font-bold text-purple-600 mb-1 flex items-center justify-center gap-2 min-w-0">
                   <span className="truncate">{playerAfter.intelligence || 0}</span>
                   {intelligenceChange !== 0 && (
@@ -290,31 +296,43 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
             </div>
           </div>
 
-          {/* Balance Change */}
-          <div className="bg-gradient-to-r from-amber-50/80 to-orange-50/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-amber-200/30 text-center animate-dialog-stagger-4">
-            <Icon type="coins" size={32} className="mb-3" />
-            <div className="text-3xl font-bold text-amber-700 mb-2">
-              {playerAfter.balance?.balance?.amount || 0} {playerAfter.balance?.balance?.currencyCode || 'GCO'}
-            </div>
-                          <div className="text-sm text-amber-600 font-medium">
+          {/* Balance Change - Mobile Banking Style */}
+          <div className="relative overflow-hidden rounded-2xl mb-6 animate-dialog-stagger-4">
+            {/* Background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-white/10 rounded-2xl"></div>
+            
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-12 translate-x-12"></div>
+            <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/5 rounded-full translate-y-8 -translate-x-8"></div>
+            
+            {/* Content */}
+            <div className="relative p-6 text-white text-center">
+              {/* Header */}
+              <div className="flex justify-center items-center mb-4">
+                <Icon type="coins" size={24} className="text-yellow-300 mr-2" />
+                <span className="text-blue-100 text-sm font-medium">{t('balance.totalBalance')}</span>
+              </div>
+              
+              {/* Balance amount */}
+              <div className="mb-3">
+                <div className="text-2xl font-bold text-white mb-1">
+                  {playerAfter.balance?.balance?.amount || 0}
+                </div>
+                <div className="text-blue-200 text-sm font-medium">
+                  {playerAfter.balance?.balance?.currencyCode || 'SLCN'}
+                </div>
+              </div>
+              
+              {/* Reward info */}
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl py-2 px-4 text-white text-sm font-medium">
                 +{balanceChange} {t('taskCompletion.balanceGained')}
               </div>
+            </div>
           </div>
 
 
 
-          {/* Continue Button */}
-          <div className="text-center mt-8 animate-dialog-stagger-4">
-            <button
-              onClick={handleClose}
-              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 group"
-            >
-              <span className="mr-2">{t('taskCompletion.continue')}</span>
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </button>
-          </div>
         </div>
       </div>
     </div>
