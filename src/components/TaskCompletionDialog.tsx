@@ -239,61 +239,70 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
             </h3>
             <div className="grid grid-cols-3 gap-3">
               {/* Strength */}
-              <div className="bg-gradient-to-br from-red-50/80 to-red-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-red-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <div className="flex justify-center items-center mb-1">
-                  <Icon type="dumbbell" size={24} className="text-red-500" />
-                </div>
-                <div className="text-lg font-bold text-red-600 mb-1 flex items-center justify-center gap-1">
-                  <span className="truncate">{playerAfter.strength || 0}</span>
-                  {strengthChange !== 0 && (
-                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0 ${
+              <div className="relative bg-gradient-to-br from-red-50/80 to-red-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-red-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                {/* Badge overlay */}
+                {strengthChange !== 0 && (
+                  <div className="absolute -top-1 -right-1 z-10">
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full shadow-lg ${
                       strengthChange > 0
-                        ? 'bg-green-50 text-green-600 border border-green-200'
-                        : 'bg-red-100 text-red-700'
+                        ? 'bg-green-500 text-white'
+                        : 'bg-red-500 text-white'
                     }`}>
                       {strengthChange > 0 ? '+' : ''}{strengthChange}
                     </span>
-                  )}
+                  </div>
+                )}
+                <div className="flex justify-center items-center mb-1">
+                  <Icon type="dumbbell" size={24} className="text-red-500" />
+                </div>
+                <div className="text-lg font-bold text-red-600 mb-1">
+                  {playerAfter.strength || 0}
                 </div>
                 <div className="text-xs text-red-500 font-medium">{t('profile.stats.strength')}</div>
               </div>
 
               {/* Agility */}
-              <div className="bg-gradient-to-br from-green-50/80 to-green-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-green-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <div className="flex justify-center items-center mb-1">
-                  <Icon type="zap" size={24} className="text-green-500" />
-                </div>
-                <div className="text-lg font-bold text-green-600 mb-1 flex items-center justify-center gap-1">
-                  <span className="truncate">{playerAfter.agility || 0}</span>
-                  {agilityChange !== 0 && (
-                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0 ${
+              <div className="relative bg-gradient-to-br from-green-50/80 to-green-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-green-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                {/* Badge overlay */}
+                {agilityChange !== 0 && (
+                  <div className="absolute -top-1 -right-1 z-10">
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full shadow-lg ${
                       agilityChange > 0
-                        ? 'bg-green-50 text-green-600 border border-green-200'
-                        : 'bg-red-100 text-red-700'
+                        ? 'bg-green-500 text-white'
+                        : 'bg-red-500 text-white'
                     }`}>
                       {agilityChange > 0 ? '+' : ''}{agilityChange}
                     </span>
-                  )}
+                  </div>
+                )}
+                <div className="flex justify-center items-center mb-1">
+                  <Icon type="zap" size={24} className="text-green-500" />
+                </div>
+                <div className="text-lg font-bold text-green-600 mb-1">
+                  {playerAfter.agility || 0}
                 </div>
                 <div className="text-xs text-green-500 font-medium">{t('profile.stats.agility')}</div>
               </div>
 
               {/* Intelligence */}
-              <div className="bg-gradient-to-br from-purple-50/80 to-purple-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-purple-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <div className="flex justify-center items-center mb-1">
-                  <Icon type="brain" size={24} className="text-purple-500" />
-                </div>
-                <div className="text-lg font-bold text-purple-600 mb-1 flex items-center justify-center gap-1">
-                  <span className="truncate">{playerAfter.intelligence || 0}</span>
-                  {intelligenceChange !== 0 && (
-                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0 ${
+              <div className="relative bg-gradient-to-br from-purple-50/80 to-purple-100/80 backdrop-blur-sm rounded-xl p-3 text-center border border-purple-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                {/* Badge overlay */}
+                {intelligenceChange !== 0 && (
+                  <div className="absolute -top-1 -right-1 z-10">
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full shadow-lg ${
                       intelligenceChange > 0
-                        ? 'bg-green-50 text-green-600 border border-green-200'
-                        : 'bg-red-100 text-red-700'
+                        ? 'bg-green-500 text-white'
+                        : 'bg-red-500 text-white'
                     }`}>
                       {intelligenceChange > 0 ? '+' : ''}{intelligenceChange}
                     </span>
-                  )}
+                  </div>
+                )}
+                <div className="flex justify-center items-center mb-1">
+                  <Icon type="brain" size={24} className="text-purple-500" />
+                </div>
+                <div className="text-lg font-bold text-purple-600 mb-1">
+                  {playerAfter.intelligence || 0}
                 </div>
                 <div className="text-xs text-purple-500 font-medium">{t('profile.stats.intelligence')}</div>
               </div>
