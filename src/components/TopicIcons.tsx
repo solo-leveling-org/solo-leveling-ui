@@ -33,7 +33,7 @@ const TopicIcon: React.FC<TopicIconProps> = ({ topic, className = '', size = 24 
     case TaskTopic.CREATIVITY:
       return <PaintbrushIcon {...iconProps} className={`${className} text-pink-500`} />;
     case TaskTopic.SOCIAL_SKILLS:
-      return <MessageCircleIcon {...iconProps} className={`${className} text-green-500`} />;
+      return <MessageCircleIcon {...iconProps} className={`${className} text-yellow-500`} />;
     case TaskTopic.HEALTHY_EATING:
       return <SaladIcon {...iconProps} className={`${className} text-lime-500`} />;
     case TaskTopic.PRODUCTIVITY:

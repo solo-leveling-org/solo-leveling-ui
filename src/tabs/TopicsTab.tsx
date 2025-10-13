@@ -81,7 +81,17 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
 
   const handleSave = async () => {
     setSaving(true);
-    await api.saveUserTopics(playerTopics);
+    
+    // Отправляем только измененные топики
+    const changedTopics = playerTopics.filter(pt => {
+      const originalTopic = originalTopics.find(opt => opt.taskTopic === pt.taskTopic);
+      return !originalTopic || originalTopic.isActive !== pt.isActive;
+    });
+    
+    if (changedTopics.length > 0) {
+      await api.saveUserTopics(changedTopics);
+    }
+    
     if (firstTime) {
       await api.generateTasks();
     }
@@ -376,96 +386,56 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                   </p>
                 </div>
               </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mr-3">
-                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/>
-                        <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"/>
-                      </svg>
-                    </div>
-                    <div>
-                                        <div className="text-lg font-bold text-gray-800">
-                    {getActiveTopicsCount()} / {allTopics.length}
-                  </div>
-                      <div className="text-xs text-gray-600">{t('topics.selected')}</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
-                  <div className="flex items-center">
-                    <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${
-                            canSave ? 'bg-gradient-to-br from-green-500 to-emerald-600' : 'bg-gray-400'
-                        }`}
-                    >
-                      {canSave ? (
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                        </svg>
-                      ) : (
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                      )}
-                    </div>
-                    <div>
-                      <div
-                          className={`text-lg font-bold ${
-                              canSave ? 'text-green-700' : 'text-gray-600'
-                          }`}
-                      >
-                        {firstTime
-                            ? t('topics.status.newProfile')
-                            : hasChanges()
-                                ? t('topics.status.hasChanges')
-                                : t('topics.status.noChanges')}
-                      </div>
-                      <div className="text-xs text-gray-600">{t('topics.status.label')}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
-          {/* Save button */}
-          <div className="text-center">
-            <button
+          {/* Compact Save Section */}
+          <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
+            <div className="flex items-center justify-between">
+              {/* Status Info */}
+              <div className="flex items-center">
+                <div className={`w-3 h-3 rounded-full mr-3 ${
+                  canSave ? 'bg-green-500' : 'bg-gray-400'
+                }`}></div>
+                <div>
+                  <div className="text-sm font-medium text-gray-800">
+                    {getActiveTopicsCount()} / {allTopics.length} {t('topics.selected')}
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    {firstTime
+                      ? t('topics.status.newProfile')
+                      : hasChanges()
+                        ? t('topics.status.hasChanges')
+                        : t('topics.status.noChanges')}
+                  </div>
+                </div>
+              </div>
+
+              {/* Save Button */}
+              <button
                 onClick={handleSave}
                 disabled={saving || !canSave}
-                className={`inline-flex items-center px-8 py-4 rounded-2xl font-semibold text-white transition-all duration-300 ${
-                    saving || !canSave
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:shadow-xl hover:scale-105 active:scale-95 shadow-lg'
+                className={`inline-flex items-center px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${
+                  saving || !canSave
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:shadow-lg hover:scale-105 active:scale-95 shadow-md'
                 }`}
-            >
-              {saving ? (
+              >
+                {saving ? (
                   <>
-                    <div className="animate-spin w-5 h-5 border-2 border-white/20 border-t-white rounded-full mr-3"></div>
+                    <div className="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full mr-2"></div>
                     {t('topics.saving')}
                   </>
-              ) : (
+                ) : (
                   <>
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
                     </svg>
                     {t('topics.save')}
                   </>
-              )}
-            </button>
-
-            {!canSave && !saving && (
-                <p className="text-sm mt-3 text-gray-500">
-                  {getActiveTopicsCount() === 0
-                      ? t('topics.selectAtLeastOne')
-                      : t('topics.noChanges')}
-                </p>
-            )}
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
