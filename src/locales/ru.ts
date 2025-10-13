@@ -35,6 +35,10 @@ export const ru = {
     selectDateRange: 'Выберите диапазон дат',
     apply: 'Применить',
     clear: 'Очистить',
+    sortFields: {
+      createdAt: 'Дата создания',
+      amount: 'Сумма'
+    },
     months: {
       january: 'Январь',
       february: 'Февраль',
@@ -212,6 +216,10 @@ export const ru = {
   balance: {
     title: 'Баланс',
     subtitle: 'Ваш текущий баланс и история транзакций',
+    totalBalance: 'Общий баланс',
+    currencyName: 'Solo Leveling Coin',
+    topUp: 'Пополнить',
+    transfer: 'Перевести',
     transactions: {
       title: 'История транзакций',
       empty: 'Транзакции не найдены'

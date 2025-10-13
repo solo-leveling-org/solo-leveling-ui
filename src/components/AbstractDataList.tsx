@@ -56,7 +56,7 @@ export function AbstractDataList<T extends DataItem>({
   const [availableSorts, setAvailableSorts] = useState<string[]>([]);
   const [showFiltersPanel, setShowFiltersPanel] = useState(false);
   // Удалено - теперь используем отдельные состояния для фильтров
-  const [sorts, setSorts] = useState<Sort[]>([]);
+  const [sorts, setSorts] = useState<Sort[]>([{ field: 'createdAt', mode: OrderMode.DESC }]);
   const { t } = useLocalization();
 
   // Состояния для фильтров
@@ -127,6 +127,14 @@ export function AbstractDataList<T extends DataItem>({
       loadDataCallback(currentPage);
     }
   }, [currentPage, loadDataCallback, autoLoad]);
+
+  // Восстанавливаем сортировку по умолчанию при монтировании компонента
+  useEffect(() => {
+    if (sorts.length === 0) {
+      setSorts([{ field: 'createdAt', mode: OrderMode.DESC }]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -274,7 +282,7 @@ export function AbstractDataList<T extends DataItem>({
                   {availableSorts.map((sort) => (
                     <div key={sort} className="flex items-center space-x-3">
                       <span className="text-sm text-gray-600 min-w-[80px]">
-                        {sort}:
+                        {t(`common.sortFields.${sort}`)}:
                       </span>
                       <select
                         value={sorts.find(s => s.field === sort)?.mode || ''}

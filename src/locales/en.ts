@@ -35,6 +35,10 @@ export const en = {
     selectDateRange: 'Select Date Range',
     apply: 'Apply',
     clear: 'Clear',
+    sortFields: {
+      createdAt: 'Creation Date',
+      amount: 'Amount'
+    },
     months: {
       january: 'January',
       february: 'February',
@@ -212,6 +216,10 @@ export const en = {
   balance: {
     title: 'Balance',
     subtitle: 'Your current balance and transaction history',
+    totalBalance: 'Total Balance',
+    currencyName: 'Solo Leveling Coin',
+    topUp: 'Top Up',
+    transfer: 'Transfer',
     transactions: {
       title: 'Transaction History',
       empty: 'No transactions found'

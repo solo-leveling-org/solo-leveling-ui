@@ -87,8 +87,8 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <div>
-              <p className="text-blue-100 text-sm font-medium mb-1">Общий баланс</p>
-              <p className="text-blue-200 text-xs">Solo Leveling Coin</p>
+              <p className="text-blue-100 text-sm font-medium mb-1">{t('balance.totalBalance')}</p>
+              <p className="text-blue-200 text-xs">{t('balance.currencyName')}</p>
             </div>
             <Icon type="coins" size={24} className="text-yellow-300" />
           </div>
@@ -106,10 +106,10 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
           {/* Quick actions */}
           <div className="flex space-x-3">
             <button className="flex-1 bg-white/20 backdrop-blur-sm rounded-xl py-3 px-4 text-white text-sm font-medium hover:bg-white/30 transition-all duration-200">
-              Пополнить
+              {t('balance.topUp')}
             </button>
             <button className="flex-1 bg-white/20 backdrop-blur-sm rounded-xl py-3 px-4 text-white text-sm font-medium hover:bg-white/30 transition-all duration-200">
-              Перевести
+              {t('balance.transfer')}
             </button>
           </div>
         </div>
