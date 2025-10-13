@@ -73,19 +73,19 @@ const WelcomeTab: React.FC = () => {
               { 
                 label: t('welcome.stats.activePlayers'), 
                 value: '1,234', 
-                icon: <Icon type="users" size={24} />,
+                icon: <Icon type="users" size={24} className="text-blue-500" />,
                 color: 'from-blue-500 to-cyan-500'
               },
               { 
                 label: t('welcome.stats.completedTasks'), 
                 value: '5,678', 
-                icon: <Icon type="check" size={24} />,
+                icon: <Icon type="check" size={24} className="text-green-500" />,
                 color: 'from-green-500 to-emerald-500'
               },
               { 
                 label: t('welcome.stats.levelsPassed'), 
                 value: '890', 
-                icon: <Icon type="trophy" size={24} />,
+                icon: <Icon type="trophy" size={24} className="text-yellow-500" />,
                 color: 'from-yellow-500 to-orange-500'
               }
             ].map((stat, index) => (
@@ -114,10 +114,10 @@ const WelcomeTab: React.FC = () => {
         <div className={`max-w-5xl mx-auto transition-all duration-1000 delay-500 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[
-              { icon: <Icon type="cloud-lightning" size={24} />, title: t('welcome.features.quickStart.title'), desc: t('welcome.features.quickStart.description') },
-              { icon: <Icon type="target" size={24} />, title: t('welcome.features.targetedTasks.title'), desc: t('welcome.features.targetedTasks.description') },
-              { icon: <Icon type="trending-up" size={24} />, title: t('welcome.features.progress.title'), desc: t('welcome.features.progress.description') },
-              { icon: <Icon type="award" size={24} />, title: t('welcome.features.achievements.title'), desc: t('welcome.features.achievements.description') }
+              { icon: <Icon type="cloud-lightning" size={24} className="text-purple-500" />, title: t('welcome.features.quickStart.title'), desc: t('welcome.features.quickStart.description') },
+              { icon: <Icon type="target" size={24} className="text-orange-500" />, title: t('welcome.features.targetedTasks.title'), desc: t('welcome.features.targetedTasks.description') },
+              { icon: <Icon type="trending-up" size={24} className="text-green-500" />, title: t('welcome.features.progress.title'), desc: t('welcome.features.progress.description') },
+              { icon: <Icon type="award" size={24} className="text-yellow-500" />, title: t('welcome.features.achievements.title'), desc: t('welcome.features.achievements.description') }
             ].map((feature, index) => (
               <div 
                 key={index}

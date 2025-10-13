@@ -37,13 +37,13 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
   // Иконки для табов (можно кастомизировать)
   const getTabIcon = (label: string) => {
     const iconMap: Record<string, string | React.ReactElement> = {
-      [t('navigation.welcome')]: <Icon type="home" size={20} />,
-      [t('navigation.profile')]: <Icon type="user" size={20} />,
-      [t('navigation.balance')]: <Icon type="coins" size={20} />,
-      [t('navigation.tasks')]: <Icon type="clipboard" size={20} />,
-      [t('navigation.topics')]: <Icon type="target" size={20} />
+      [t('navigation.welcome')]: <Icon type="home" size={20} className="text-blue-500" />,
+      [t('navigation.profile')]: <Icon type="user" size={20} className="text-purple-500" />,
+      [t('navigation.balance')]: <Icon type="coins" size={20} className="text-yellow-500" />,
+      [t('navigation.tasks')]: <Icon type="clipboard" size={20} className="text-green-500" />,
+      [t('navigation.topics')]: <Icon type="target" size={20} className="text-orange-500" />
     };
-    return iconMap[label] || <Icon type="home" size={20} />;
+    return iconMap[label] || <Icon type="home" size={20} className="text-blue-500" />;
   };
 
   return (
