@@ -3,6 +3,9 @@ import {useTelegram} from '../useTelegram';
 import {auth} from '../auth';
 import type {LoginResponse} from '../api';
 
+// Глобальный кэш для предотвращения множественных авторизаций
+let globalAuthPromise: Promise<LoginResponse> | null = null;
+
 export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showNoTelegramError, setShowNoTelegramError] = useState(false);
@@ -16,17 +19,27 @@ export const useAuth = () => {
   useEffect(() => {
     if (initData !== undefined && tgWebAppData !== undefined) {
       if (initData && tgWebAppData) {
-        const authPromise = auth.loginWithTelegram(initData, tgWebAppData);
-        authPromiseRef.current = authPromise;
+        // Используем глобальный кэш для предотвращения множественных авторизаций
+        if (!globalAuthPromise) {
+          console.log('[Auth] Starting new authentication...');
+          globalAuthPromise = auth.loginWithTelegram(initData, tgWebAppData);
+        } else {
+          console.log('[Auth] Using cached authentication promise...');
+        }
+        
+        authPromiseRef.current = globalAuthPromise;
 
-        authPromise
+        globalAuthPromise
         .then(() => {
           setAuthError(null);
           setIsAuthenticated(true);
+          console.log('[Auth] Authentication successful');
         })
         .catch((e) => {
           setAuthError(e.message || 'Ошибка авторизации');
           setIsAuthenticated(false);
+          globalAuthPromise = null; // Сбрасываем кэш при ошибке
+          console.error('[Auth] Authentication failed:', e);
         });
         setShowNoTelegramError(false);
       } else {

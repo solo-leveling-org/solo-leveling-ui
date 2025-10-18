@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
 import type { GetPlayerBalanceResponse, PlayerBalanceTransaction } from '../api';
-import TransactionsList from '../components/TransactionsList';
+import BankingTransactionsList from '../components/BankingTransactionsList';
 import Icon from '../components/Icon';
 
 type BalanceTabProps = {
@@ -72,15 +72,22 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
         <p className="text-gray-600">{t('balance.subtitle')}</p>
       </div>
 
-      {/* Current Balance - Mobile Banking Style */}
-      <div className="relative overflow-hidden">
+      {/* Current Balance - Mobile Banking Style with Glimmer */}
+      <div className="relative overflow-hidden group">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl"></div>
         <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-white/10 rounded-2xl"></div>
         
+        {/* Glimmer effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+        
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16 rounded-full"></div>
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div>
+        
+        {/* Additional shimmer elements */}
+        <div className="absolute top-4 right-4 w-16 h-16 bg-white/5 rounded-full animate-pulse"></div>
+        <div className="absolute bottom-4 left-4 w-12 h-12 bg-white/5 rounded-full animate-pulse delay-300"></div>
         
         {/* Content */}
         <div className="relative p-6 text-white">
@@ -120,7 +127,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
         <h3 className="text-lg font-semibold text-gray-800 mb-4">
           {t('balance.transactions.title')}
         </h3>
-        <TransactionsList
+        <BankingTransactionsList
           onTransactionsLoad={(transactions: PlayerBalanceTransaction[]) => {
             console.log('Transactions loaded:', transactions.length);
           }}

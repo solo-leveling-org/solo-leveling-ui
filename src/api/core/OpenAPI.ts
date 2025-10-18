@@ -19,8 +19,10 @@ export type OpenAPIConfig = {
     ENCODE_PATH?: ((path: string) => string) | undefined;
 };
 
+import { apiBaseUrl } from '../../config/environment';
+
 export const OpenAPI: OpenAPIConfig = {
-    BASE: 'https://gateway.solo-leveling.online',
+    BASE: apiBaseUrl,
     VERSION: '1.0.0',
     WITH_CREDENTIALS: false,
     CREDENTIALS: 'include',

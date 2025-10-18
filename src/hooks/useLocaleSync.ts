@@ -10,20 +10,26 @@ export const useLocaleSync = (isAuthenticated: boolean) => {
   useEffect(() => {
     if (!isAuthenticated || localeFetched) return;
     
-    let isCancelled = false;
-    (async () => {
-      try {
-        if (isCancelled) return;
-        await fetchAndUpdateUserLocale(updateSettings, setLocaleLoaded);
-        setLocaleFetched(true);
-      } catch (e) {
-        // Не блокируем UI, просто логируем
-        console.error('Failed to fetch user locale from backend:', e);
-        setLocaleFetched(true); // Помечаем как выполненное даже при ошибке
-        setLocaleLoaded(true); // Разрешаем показ контента даже при ошибке
-      }
-    })();
-    return () => { isCancelled = true; };
+    // Добавляем небольшую задержку, чтобы избежать конфликта с авторизацией
+    const timeoutId = setTimeout(() => {
+      let isCancelled = false;
+      (async () => {
+        try {
+          if (isCancelled) return;
+          console.log('[Locale] Fetching user locale from backend...');
+          await fetchAndUpdateUserLocale(updateSettings, setLocaleLoaded);
+          setLocaleFetched(true);
+        } catch (e) {
+          // Не блокируем UI, просто логируем
+          console.error('Failed to fetch user locale from backend:', e);
+          setLocaleFetched(true); // Помечаем как выполненное даже при ошибке
+          setLocaleLoaded(true); // Разрешаем показ контента даже при ошибке
+        }
+      })();
+      return () => { isCancelled = true; };
+    }, 100); // 100ms задержка
+
+    return () => { clearTimeout(timeoutId); };
   }, [isAuthenticated, localeFetched, updateSettings, setLocaleLoaded]);
 
   // Сбрасываем флаг при изменении авторизации

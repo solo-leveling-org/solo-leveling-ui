@@ -18,6 +18,21 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
 
   useEffect(() => {
     if (!enabled) {
+      // Отключаем WebSocket если не авторизован
+      if (clientRef.current) {
+        try {
+          clientRef.current.deactivate();
+        } catch (e) {
+          console.warn('[WS] error during deactivate', e);
+        }
+        clientRef.current = null;
+      }
+      return;
+    }
+
+    // Проверяем, что WebSocket еще не подключен
+    if (clientRef.current && clientRef.current.connected) {
+      console.log('[WS] Already connected, skipping');
       return;
     }
 
@@ -26,7 +41,7 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
       authPromise
         .then((response) => {
           const token = response?.accessToken?.token;
-          if (token) {
+          if (token && !clientRef.current?.connected) {
             connectWebSocket(token);
           }
         })
@@ -37,7 +52,7 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
       // Если промиса нет, но enabled = true, значит пользователь уже авторизован
       // Получаем токен из localStorage
       const token = localStorage.getItem('accessToken');
-      if (token) {
+      if (token && !clientRef.current?.connected) {
         connectWebSocket(token);
       }
     }
@@ -54,6 +69,12 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
 
     function connectWebSocket(token: string) {
       if (!token) {
+        return;
+      }
+
+      // Проверяем, что WebSocket еще не подключен
+      if (clientRef.current && clientRef.current.connected) {
+        console.log('[WS] Already connected, skipping connection');
         return;
       }
 

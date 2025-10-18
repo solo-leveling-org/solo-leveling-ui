@@ -39,6 +39,8 @@ export const en = {
       createdAt: 'Creation Date',
       amount: 'Amount'
     },
+    today: 'Today',
+    yesterday: 'Yesterday',
     months: {
       january: 'January',
       february: 'February',

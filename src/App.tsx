@@ -23,6 +23,7 @@ import {useLocaleSync} from './hooks/useLocaleSync';
 import WelcomeTabSkeleton from './components/WelcomeTabSkeleton';
 import {useWebSocketNotifications} from './hooks/useWebSocketNotifications';
 import {NotificationProvider} from './components/NotificationSystem';
+import {EnvironmentIndicator} from './components/EnvironmentIndicator';
 
 function AppRoutes() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -117,6 +118,7 @@ function AppRoutes() {
                         <Route path="*" element={<Navigate to="/" replace/>}/>
                       </Routes>
                     </main>
+                    <EnvironmentIndicator />
                   </>
               )}
             </>

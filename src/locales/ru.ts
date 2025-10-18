@@ -39,6 +39,8 @@ export const ru = {
       createdAt: 'Дата создания',
       amount: 'Сумма'
     },
+    today: 'Сегодня',
+    yesterday: 'Вчера',
     months: {
       january: 'Январь',
       february: 'Февраль',

@@ -216,24 +216,30 @@ export function AbstractDataList<T extends DataItem>({
     <div className={`${className}`}>
       {/* Filters Toggle Button */}
       {showFilters && (
-        <div className="mb-4">
+        <div className="mb-6">
           <button
             onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-            className="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+            className="inline-flex items-center px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm font-medium"
           >
             <Icon type="search" size={16} className="mr-2" />
             {showFiltersPanel ? t('common.hideFilters') : t('common.showFilters')}
+            <Icon 
+              type={showFiltersPanel ? "minus" : "plus"} 
+              size={14} 
+              className="ml-2 transition-transform duration-200" 
+            />
           </button>
         </div>
       )}
 
       {/* Filters Panel */}
       {showFilters && showFiltersPanel && (
-        <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200 transition-all duration-300 ease-in-out">
-          <div className="space-y-4">
+        <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 mb-6 border border-gray-200 shadow-lg transition-all duration-300 ease-in-out">
+          <div className="space-y-6">
             {/* Date Range Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+              <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                <Icon type="calendar" size={16} className="mr-2 text-blue-500" />
                 {t('common.dateRange')}
               </label>
               <DateRangePicker
@@ -246,13 +252,14 @@ export function AbstractDataList<T extends DataItem>({
 
             {/* Enum Filters */}
             {availableFilters.map((filter) => (
-              <div key={filter.field}>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div key={filter.field} className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                  <Icon type="search" size={16} className="mr-2 text-purple-500" />
                   {filter.field}
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {filter.items.map((item) => (
-                    <label key={item.name} className="flex items-center space-x-2 cursor-pointer">
+                    <label key={item.name} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
                       <input
                         type="checkbox"
                         checked={enumFilters[filter.field]?.includes(item.name) || false}
@@ -263,9 +270,9 @@ export function AbstractDataList<T extends DataItem>({
                             : currentValues.filter(v => v !== item.name);
                           handleEnumFilterChange(filter.field, newValues);
                         }}
-                        className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                       />
-                      <span className="text-sm text-gray-700">{item.localization}</span>
+                      <span className="text-sm font-medium text-gray-700">{item.localization}</span>
                     </label>
                   ))}
                 </div>
@@ -274,20 +281,21 @@ export function AbstractDataList<T extends DataItem>({
 
             {/* Sort Options */}
             {availableSorts.length > 0 && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                  <Icon type="trending-up" size={16} className="mr-2 text-green-500" />
                   {t('common.sortBy')}
                 </label>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {availableSorts.map((sort) => (
-                    <div key={sort} className="flex items-center space-x-3">
-                      <span className="text-sm text-gray-600 min-w-[80px]">
+                    <div key={sort} className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-gray-50">
+                      <span className="text-sm font-medium text-gray-700 min-w-[100px]">
                         {t(`common.sortFields.${sort}`)}:
                       </span>
                       <select
                         value={sorts.find(s => s.field === sort)?.mode || ''}
                         onChange={(e) => handleSortChange(sort, e.target.value as OrderMode)}
-                        className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white hover:border-blue-400 transition-colors"
                       >
                         <option value="">{t('common.noSort')}</option>
                         <option value="ASC">{t('common.ascending')}</option>
@@ -300,11 +308,12 @@ export function AbstractDataList<T extends DataItem>({
             )}
 
             {/* Clear Filters Button */}
-            <div className="flex justify-end">
+            <div className="flex justify-end pt-4 border-t border-gray-200">
               <button
                 onClick={clearFilters}
-                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-200 flex items-center"
               >
+                <Icon type="minus" size={14} className="mr-2" />
                 {t('common.clearFilters')}
               </button>
             </div>
