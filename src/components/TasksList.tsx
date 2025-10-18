@@ -49,6 +49,8 @@ const TasksList: React.FC<TasksListProps> = ({
       options: {
         totalRowCount: response.tasks.length,
         totalPageCount: 1,
+        currentPage: 0,
+        hasMore: false,
         filters: [],
         sorts: []
       } as ResponseQueryOptions

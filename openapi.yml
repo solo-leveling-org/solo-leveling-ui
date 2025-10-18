@@ -721,7 +721,6 @@ components:
           example: "Physical Activity"
       required:
         - name
-        - ordinal
         - localization
 
     RequestQueryOptions:
@@ -747,6 +746,15 @@ components:
           format: int64
           description: Total number of pages
           example: 5
+        currentPage:
+          type: integer
+          format: int32
+          description: Current page
+          example: 0
+        hasMore:
+          type: boolean
+          description: Has more pages flag
+          example: true
         filters:
           type: array
           items:
@@ -759,8 +767,10 @@ components:
           description: Available sort fields
           example: [ "createdAt", "updatedAt", "name" ]
       required:
-        - total_page_count
-        - total_row_count
+        - totalRowCount
+        - totalPageCount
+        - currentPage
+        - hasMore
 
     Filter:
       type: object

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocalization } from '../hooks/useLocalization';
 import { api } from '../services';
 import Icon from './Icon';
@@ -28,12 +28,20 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   const [transactions, setTransactions] = useState<TransactionItem[]>([]);
   const [groups, setGroups] = useState<TransactionGroup[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
   const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [, setAvailableSorts] = useState<string[]>([]);
   const [dateFilters] = useState({ from: '', to: '' });
   const [enumFilters] = useState<{[field: string]: string[]}>({});
   const [sorts] = useState<{field: string, mode: OrderMode}[]>([]);
+  
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const currentPageRef = useRef(0);
+  const hasMoreRef = useRef(true);
+  const isLoadingRef = useRef(false);
   
   const { t } = useLocalization();
 
@@ -115,10 +123,21 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   }, [formatDateForGroup]);
 
   // Загрузка транзакций
-  const loadTransactions = useCallback(async () => {
-    if (loading) return;
+  const loadTransactions = useCallback(async (page: number = 0, reset: boolean = false) => {
+    if (isLoadingRef.current) return;
     
-    setLoading(true);
+    // Дополнительная защита: не загружаем если данных больше нет
+    if (!reset && !hasMoreRef.current) return;
+    
+    isLoadingRef.current = true;
+    
+    if (reset) {
+      setLoading(true);
+      currentPageRef.current = 0;
+    } else {
+      setLoadingMore(true);
+    }
+    
     setError(null);
 
     try {
@@ -140,10 +159,36 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
         }
       };
 
-      const response: SearchPlayerBalanceTransactionsResponse = await api.searchPlayerBalanceTransactions(request);
+      const response: SearchPlayerBalanceTransactionsResponse = await api.searchPlayerBalanceTransactions(
+        request,
+        page,
+        20 // pageSize
+      );
       
       const newTransactions = response.transactions || [];
-      setTransactions(newTransactions);
+      const hasMoreData = response.options?.hasMore || false;
+      
+      console.log('Loading transactions:', {
+        page,
+        newTransactionsCount: newTransactions.length,
+        hasMore: hasMoreData,
+        currentPage: response.options?.currentPage,
+        totalPages: response.options?.totalPageCount,
+        responseOptions: response.options
+      });
+      
+      if (reset) {
+        setTransactions(newTransactions);
+        setHasMore(hasMoreData);
+        currentPageRef.current = 0;
+      } else {
+        setTransactions(prev => [...prev, ...newTransactions]);
+        setHasMore(hasMoreData);
+        currentPageRef.current = page;
+      }
+      
+      // Обновляем ref сразу после установки состояния
+      hasMoreRef.current = hasMoreData;
       
       // Обновляем фильтры и сортировки
       if (response.options) {
@@ -158,13 +203,68 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       setError(t('common.error.loadingData'));
     } finally {
       setLoading(false);
+      setLoadingMore(false);
+      isLoadingRef.current = false;
     }
-  }, [dateFilters, enumFilters, sorts, t, onTransactionsLoad, loading]);
+  }, [dateFilters, enumFilters, sorts, t, onTransactionsLoad]);
 
+
+  // Настройка Intersection Observer для бесконечного скролла
+  useEffect(() => {
+    console.log('Setting up Intersection Observer:', {
+      hasMore,
+      hasMoreRef: hasMoreRef.current,
+      loadingMore
+    });
+    
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    // Не создаем observer если данных больше нет
+    if (!hasMoreRef.current) {
+      console.log('Not creating observer - no more data');
+      return;
+    }
+
+    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+      console.log('Intersection Observer callback:', {
+        isIntersecting: entries[0].isIntersecting,
+        hasMoreRef: hasMoreRef.current,
+        loadingMore,
+        isLoading: isLoadingRef.current,
+        currentPage: currentPageRef.current
+      });
+      
+      if (entries[0].isIntersecting && hasMoreRef.current && !loadingMore && !isLoadingRef.current) {
+        const nextPage = currentPageRef.current + 1;
+        console.log('Intersection Observer triggered:', {
+          currentPage: currentPageRef.current,
+          nextPage,
+          hasMore: hasMoreRef.current,
+          loadingMore,
+          isLoading: isLoadingRef.current
+        });
+        loadTransactions(nextPage);
+      }
+    };
+
+    observerRef.current = new IntersectionObserver(handleIntersection, { threshold: 0.1 });
+
+    if (loadMoreRef.current) {
+      observerRef.current.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [hasMore, loadingMore, loadTransactions]);
 
   // Загрузка при монтировании
   useEffect(() => {
-    loadTransactions();
+    loadTransactions(0, true);
   }, [loadTransactions]);
 
   // Обновление групп при изменении транзакций
@@ -318,6 +418,15 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
         </div>
       ))}
 
+      {/* Индикатор загрузки */}
+      {loadingMore && (
+        <div className="flex justify-center py-4">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+        </div>
+      )}
+
+      {/* Элемент для отслеживания скролла - только если есть еще данные */}
+      {hasMore && <div ref={loadMoreRef} className="h-1" />}
     </div>
   );
 };
