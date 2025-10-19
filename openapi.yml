@@ -698,7 +698,11 @@ components:
         field:
           type: string
           description: Field identifier
-          example: "taskTopics"
+          example: "transactionType"
+        localization:
+          type: string
+          description: Localized display name
+          example: "Transaction type"
         items:
           type: array
           items:
@@ -706,6 +710,7 @@ components:
           description: List of localized items for this field
       required:
         - field
+        - localization
         - items
 
     LocalizedItem:

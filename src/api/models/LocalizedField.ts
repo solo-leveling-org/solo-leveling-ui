@@ -9,6 +9,10 @@ export type LocalizedField = {
      */
     field: string;
     /**
+     * Localized display name
+     */
+    localization: string;
+    /**
      * List of localized items for this field
      */
     items: Array<LocalizedItem>;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useLocalization } from '../hooks/useLocalization';
 import { api } from '../services';
 import Icon from './Icon';
@@ -14,6 +14,9 @@ type TransactionItem = PlayerBalanceTransaction;
 
 interface BankingTransactionsListProps {
   onTransactionsLoad?: (transactions: PlayerBalanceTransaction[]) => void;
+  dateFilters?: { from: string; to: string };
+  enumFilters?: {[field: string]: string[]};
+  onFiltersUpdate?: (filters: LocalizedField[]) => void;
 }
 
 interface TransactionGroup {
@@ -23,7 +26,10 @@ interface TransactionGroup {
 }
 
 const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({ 
-  onTransactionsLoad 
+  onTransactionsLoad,
+  dateFilters: propDateFilters,
+  enumFilters: propEnumFilters,
+  onFiltersUpdate
 }) => {
   const [transactions, setTransactions] = useState<TransactionItem[]>([]);
   const [groups, setGroups] = useState<TransactionGroup[]>([]);
@@ -33,9 +39,11 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   const [hasMore, setHasMore] = useState(true);
   const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [, setAvailableSorts] = useState<string[]>([]);
-  const [dateFilters] = useState({ from: '', to: '' });
-  const [enumFilters] = useState<{[field: string]: string[]}>({});
-  const [sorts] = useState<{field: string, mode: OrderMode}[]>([]);
+  
+  // Используем переданные фильтры или значения по умолчанию
+  const dateFilters = useMemo(() => propDateFilters || { from: '', to: '' }, [propDateFilters]);
+  const enumFilters = useMemo(() => propEnumFilters || {}, [propEnumFilters]);
+  const sorts: {field: string, mode: OrderMode}[] = useMemo(() => [], []);
   
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -168,14 +176,6 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       const newTransactions = response.transactions || [];
       const hasMoreData = response.options?.hasMore || false;
       
-      console.log('Loading transactions:', {
-        page,
-        newTransactionsCount: newTransactions.length,
-        hasMore: hasMoreData,
-        currentPage: response.options?.currentPage,
-        totalPages: response.options?.totalPageCount,
-        responseOptions: response.options
-      });
       
       if (reset) {
         setTransactions(newTransactions);
@@ -211,40 +211,18 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
 
   // Настройка Intersection Observer для бесконечного скролла
   useEffect(() => {
-    console.log('Setting up Intersection Observer:', {
-      hasMore,
-      hasMoreRef: hasMoreRef.current,
-      loadingMore
-    });
-    
     if (observerRef.current) {
       observerRef.current.disconnect();
     }
 
     // Не создаем observer если данных больше нет
     if (!hasMoreRef.current) {
-      console.log('Not creating observer - no more data');
       return;
     }
 
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-      console.log('Intersection Observer callback:', {
-        isIntersecting: entries[0].isIntersecting,
-        hasMoreRef: hasMoreRef.current,
-        loadingMore,
-        isLoading: isLoadingRef.current,
-        currentPage: currentPageRef.current
-      });
-      
       if (entries[0].isIntersecting && hasMoreRef.current && !loadingMore && !isLoadingRef.current) {
         const nextPage = currentPageRef.current + 1;
-        console.log('Intersection Observer triggered:', {
-          currentPage: currentPageRef.current,
-          nextPage,
-          hasMore: hasMoreRef.current,
-          loadingMore,
-          isLoading: isLoadingRef.current
-        });
         loadTransactions(nextPage);
       }
     };
@@ -260,17 +238,31 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
         observerRef.current.disconnect();
       }
     };
-  }, [hasMore, loadingMore, loadTransactions]);
+  }, [hasMore, loadingMore]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Загрузка при монтировании
   useEffect(() => {
     loadTransactions(0, true);
-  }, [loadTransactions]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Перезагрузка при изменении фильтров
+  useEffect(() => {
+    if (dateFilters || enumFilters) {
+      loadTransactions(0, true);
+    }
+  }, [dateFilters, enumFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Обновление групп при изменении транзакций
   useEffect(() => {
     setGroups(groupTransactionsByDate(transactions));
   }, [transactions, groupTransactionsByDate]);
+
+  // Обновление доступных фильтров
+  useEffect(() => {
+    if (availableFilters.length > 0) {
+      onFiltersUpdate?.(availableFilters);
+    }
+  }, [availableFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Получение иконки для транзакции
   const getTransactionIcon = (type: string, cause: string) => {

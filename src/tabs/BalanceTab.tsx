@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
-import type { GetPlayerBalanceResponse, PlayerBalanceTransaction } from '../api';
+import type { GetPlayerBalanceResponse, PlayerBalanceTransaction, LocalizedField } from '../api';
 import BankingTransactionsList from '../components/BankingTransactionsList';
 import Icon from '../components/Icon';
+import DateRangePicker from '../components/DateRangePicker';
 
 type BalanceTabProps = {
   isAuthenticated: boolean;
@@ -13,6 +14,10 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
   const [balance, setBalance] = useState<GetPlayerBalanceResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [dateFilters, setDateFilters] = useState({ from: '', to: '' });
+  const [enumFilters, setEnumFilters] = useState<{[field: string]: string[]}>({});
+  const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const { t } = useLocalization();
 
   const loadBalance = useCallback(async () => {
@@ -29,6 +34,27 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
       setLoading(false);
     }
   }, [t]);
+
+  // Обработчики фильтров
+  const handleDateFilterChange = useCallback((from: string, to: string) => {
+    setDateFilters({ from, to });
+  }, []);
+
+  const handleEnumFilterChange = useCallback((field: string, values: string[]) => {
+    setEnumFilters(prev => ({
+      ...prev,
+      [field]: values
+    }));
+  }, []);
+
+  const handleClearFilters = useCallback(() => {
+    setDateFilters({ from: '', to: '' });
+    setEnumFilters({});
+  }, []);
+
+  const handleFiltersUpdate = useCallback((filters: LocalizedField[]) => {
+    setAvailableFilters(filters);
+  }, []);
 
   // Загружаем баланс при монтировании компонента
   useEffect(() => {
@@ -124,10 +150,86 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
 
       {/* Transactions */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
-          {t('balance.transactions.title')}
-        </h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-800">
+            {t('balance.transactions.title')}
+          </h3>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center space-x-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/80 transition-all duration-300 hover:scale-105"
+          >
+            <Icon type="settings" size={20} />
+            <span className="text-sm font-medium text-gray-700">
+              {showFilters ? t('common.hideFilters') : t('common.showFilters')}
+            </span>
+          </button>
+        </div>
+
+        {/* Filters Panel */}
+        {showFilters && (
+          <div className="mb-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/30 p-4 space-y-4">
+            {/* Date Range Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('common.dateRange')}
+              </label>
+              <DateRangePicker
+                from={dateFilters.from}
+                to={dateFilters.to}
+                onChange={handleDateFilterChange}
+                className="w-full"
+              />
+            </div>
+
+            {/* Enum Filters */}
+            {availableFilters.map((filter) => (
+              <div key={filter.field}>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {filter.localization}
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {filter.items.map((item) => {
+                    const isSelected = enumFilters[filter.field]?.includes(item.name) || false;
+                    return (
+                      <button
+                        key={item.name}
+                        onClick={() => {
+                          const currentValues = enumFilters[filter.field] || [];
+                          const newValues = isSelected
+                            ? currentValues.filter(v => v !== item.name)
+                            : [...currentValues, item.name];
+                          handleEnumFilterChange(filter.field, newValues);
+                        }}
+                        className={`px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 ${
+                          isSelected
+                            ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                            : 'bg-white/60 text-gray-700 hover:bg-white/80'
+                        }`}
+                      >
+                        {item.localization}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+
+            {/* Clear Filters Button */}
+            <div className="flex justify-end">
+              <button
+                onClick={handleClearFilters}
+                className="px-4 py-2 bg-gray-100/60 text-gray-700 rounded-xl font-medium hover:bg-gray-200/60 transition-colors"
+              >
+                {t('common.clearFilters')}
+              </button>
+            </div>
+          </div>
+        )}
+
         <BankingTransactionsList
+          dateFilters={dateFilters}
+          enumFilters={enumFilters}
+          onFiltersUpdate={handleFiltersUpdate}
           onTransactionsLoad={(transactions: PlayerBalanceTransaction[]) => {
             console.log('Transactions loaded:', transactions.length);
           }}
