@@ -15,7 +15,8 @@ type TasksTabProps = {
 
 const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [tasks, setTasks] = useState<PlayerTask[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [firstTime, setFirstTime] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [dialogTask, setDialogTask] = useState<PlayerTask | null>(null);
   const [completionResponse, setCompletionResponse] = useState<CompleteTaskResponse | null>(null);
   const [completedTask, setCompletedTask] = useState<PlayerTask | null>(null);
@@ -30,6 +31,10 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   // Функция для обновления списка задач
   const handleTasksUpdate = (newTasks: PlayerTask[]) => {
     setTasks(newTasks);
+    // Если задачи появились, значит firstTime стал false
+    if (newTasks.length > 0) {
+      setFirstTime(false);
+    }
   };
 
   // Используем хук для автоматического обновления задач при уведомлениях
@@ -41,16 +46,19 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   // Загружаем задачи только при монтировании компонента и если авторизованы
   useEffect(() => {
     if (isAuthenticated) {
-      setLoading(true);
       api.getPlayerTasks()
         .then((res) => {
           setTasks(res.tasks);
+          setFirstTime(res.firstTime);
           setLoading(false);
         })
         .catch((error) => {
           console.error('Error getting tasks:', error);
           setLoading(false);
         });
+    } else {
+      // Если не авторизованы, не показываем loading
+      setLoading(false);
     }
   }, [isAuthenticated]);
 
@@ -107,7 +115,8 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     setConfirmAction(null);
   };
 
-  if (loading && tasks.length === 0) {
+  // Показываем skeleton во время загрузки
+  if (loading) {
     return (
       <div className="relative min-h-screen">
         {/* Enhanced background with multiple layers */}
@@ -118,15 +127,17 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
 
         <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
           <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 tracking-tight">
-              {t('tasks.title')}
-            </h1>
+            {/* Skeleton для заголовка */}
+            <div className="h-10 md:h-12 bg-gray-300 rounded-lg w-64 mx-auto mb-3 animate-pulse"></div>
 
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto leading-relaxed">
-              {t('tasks.subtitle')}
-            </p>
+            {/* Skeleton для подзаголовка */}
+            <div className="space-y-2 mb-6 max-w-2xl mx-auto">
+              <div className="h-5 bg-gray-300 rounded-lg w-full animate-pulse"></div>
+              <div className="h-5 bg-gray-300 rounded-lg w-4/5 mx-auto animate-pulse"></div>
+            </div>
 
-            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto"></div>
+            {/* Skeleton для разделителя */}
+            <div className="w-24 h-1 bg-gray-300 rounded-full mx-auto animate-pulse"></div>
           </div>
 
           <TasksGrid tasks={[]} loading={true} onTaskClick={() => {}} onComplete={handleCompleteTask} />
@@ -135,16 +146,16 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     );
   }
 
-  if (!tasks.length) {
+  if (firstTime) {
     return (
-      <div className="relative min-h-screen flex items-center justify-center">
+      <div className="relative">
         {/* Background decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 left-0 w-48 h-48 bg-gradient-to-tr from-pink-400/10 to-orange-400/10 rounded-full blur-2xl"></div>
 
-        <div className="relative z-10 max-w-md mx-auto px-6 text-center">
+        <div className="relative z-10 max-w-md mx-auto px-6 py-16 text-center">
           {/* Icon */}
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-8 shadow-xl">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6 shadow-xl">
             <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
             </svg>
