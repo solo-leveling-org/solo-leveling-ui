@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import BottomSheet from './BottomSheet';
+import React, { useState } from 'react';
+import BaseFilter from './BaseFilter';
+import { useLocalization } from '../hooks/useLocalization';
 
 interface FilterOption {
   name: string;
@@ -22,21 +23,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   className = ''
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Закрытие при клике вне компонента
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const { t } = useLocalization();
 
   const handleOptionClick = (optionName: string) => {
     const isSelected = selectedValues.includes(optionName);
@@ -54,53 +41,56 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
       const option = options.find(opt => opt.name === selectedValues[0]);
       return option?.localization || selectedValues[0];
     }
-    return `${selectedValues.length} выбрано`;
+    return `${selectedValues.length} ${t('balance.filters.selected')}`;
+  };
+
+  const hasValue = selectedValues.length > 0;
+
+  const handleClear = () => {
+    onSelectionChange([]);
+  };
+
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
   };
 
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
-      {/* Кнопка фильтра - современный дизайн */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 select-none shadow-sm"
-      >
-        <span className="text-sm font-medium text-gray-800 truncate select-none mr-3" data-text="true">
-          {getDisplayText()}
-        </span>
-        <svg className={`w-4 h-4 text-gray-500 transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      {/* Всплывающее окно */}
-      <BottomSheet
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        title={label}
-      >
-        <div className="space-y-0">
-          {options.map((option, index) => {
-            const isSelected = selectedValues.includes(option.name);
-            return (
-              <button
-                key={option.name}
-                onClick={() => handleOptionClick(option.name)}
-                className={`w-full flex items-center justify-between px-4 py-4 text-left hover:bg-gray-50 transition-colors duration-150 border-b border-gray-100 last:border-b-0 select-none ${
-                  isSelected ? 'bg-blue-50' : ''
-                }`}
-              >
-                <span className="text-base font-medium text-gray-700 select-text" data-text="true">
-                  {option.localization}
-                </span>
-                {isSelected && (
-                  <span className="text-blue-600 text-lg select-none">✓</span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </BottomSheet>
-    </div>
+    <BaseFilter
+      label={label}
+      displayText={getDisplayText()}
+      isOpen={isOpen}
+      onToggle={handleToggle}
+      onClose={handleClose}
+      className={className}
+      hasValue={hasValue}
+      onClear={handleClear}
+    >
+      <div className="space-y-0">
+        {options.map((option, index) => {
+          const isSelected = selectedValues.includes(option.name);
+          return (
+            <button
+              key={option.name}
+              onClick={() => handleOptionClick(option.name)}
+              className={`w-full flex items-center justify-between px-4 py-4 text-left hover:bg-gray-50 transition-colors duration-150 border-b border-gray-100 last:border-b-0 select-none ${
+                isSelected ? 'bg-blue-50' : ''
+              }`}
+            >
+              <span className="text-base font-medium text-gray-700 select-text" data-text="true">
+                {option.localization}
+              </span>
+              {isSelected && (
+                <span className="text-blue-600 text-lg select-none">✓</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </BaseFilter>
   );
 };
 

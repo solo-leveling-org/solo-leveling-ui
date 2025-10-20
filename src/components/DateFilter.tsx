@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import BottomSheet from './BottomSheet';
+import BaseFilter from './BaseFilter';
 import DateRangePicker from './DateRangePicker';
 import { useLocalization } from '../hooks/useLocalization';
 
@@ -28,6 +28,12 @@ const DateFilter: React.FC<DateFilterProps> = ({
     return t('balance.filters.period');
   };
 
+  const hasValue = !!(from && to);
+
+  const handleClear = () => {
+    onChange('', '');
+  };
+
   const handleDateChange = (newFrom: string, newTo: string) => {
     onChange(newFrom, newTo);
     if (newFrom && newTo) {
@@ -35,37 +41,34 @@ const DateFilter: React.FC<DateFilterProps> = ({
     }
   };
 
-  return (
-    <div className={`relative ${className}`}>
-      {/* Кнопка фильтра дат - современный дизайн */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 select-none shadow-sm"
-      >
-        <span className="text-sm font-medium text-gray-800 truncate select-none mr-3" data-text="true">
-          {getDisplayText()}
-        </span>
-        <svg className="w-4 h-4 text-gray-500 transition-transform duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
 
-      {/* Всплывающее окно с DateRangePicker */}
-      <BottomSheet
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        title={t('balance.filters.selectPeriod')}
-      >
-        <div className="space-y-4">
-          <DateRangePicker
-            from={from}
-            to={to}
-            onChange={handleDateChange}
-            className="w-full"
-          />
-        </div>
-      </BottomSheet>
-    </div>
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
+  return (
+    <BaseFilter
+      label={t('balance.filters.selectPeriod')}
+      displayText={getDisplayText()}
+      isOpen={isOpen}
+      onToggle={handleToggle}
+      onClose={handleClose}
+      className={className}
+      hasValue={hasValue}
+      onClear={handleClear}
+    >
+      <div className="space-y-4">
+        <DateRangePicker
+          from={from}
+          to={to}
+          onChange={handleDateChange}
+          className="w-full"
+        />
+      </div>
+    </BaseFilter>
   );
 };
 
