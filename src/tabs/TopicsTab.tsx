@@ -347,91 +347,95 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
             })}
           </div>
 
-        {/* Info section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-blue-50/90 to-indigo-50/90 backdrop-blur-xl rounded-3xl p-6 mb-8 border border-blue-200/30 shadow-lg">
-            {/* Decorative background */}
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-2xl -translate-y-4 translate-x-4"></div>
+        {/* Info section - Fixed width and centered */}
+        <div className="flex justify-center">
+          <div className="relative overflow-hidden bg-gradient-to-br from-blue-50/90 to-indigo-50/90 backdrop-blur-xl rounded-3xl p-6 mb-8 border border-blue-200/30 shadow-lg max-w-2xl w-full">
+              {/* Decorative background */}
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-2xl -translate-y-4 translate-x-4"></div>
 
-            <div className="relative z-10">
-              <div className="flex items-start mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mr-4 flex-shrink-0 shadow-lg">
-                  <svg
-                      className="w-5 h-5 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                  >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-blue-800 mb-2 text-lg">
-                    {firstTime ? t('topics.info.welcome.title') : t('topics.info.preferences.title')}
-                  </h3>
-                  <p className="text-blue-700/80 text-sm leading-relaxed">
-                    {firstTime
-                        ? t('topics.info.welcome.description')
-                        : t('topics.info.preferences.description')
-                    }
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        {/* Compact Save Section */}
-        <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
-            <div className="flex items-center justify-between">
-              {/* Status Info */}
-              <div className="flex items-center">
-                <div className={`w-3 h-3 rounded-full mr-3 ${
-                  canSave ? 'bg-green-500' : 'bg-gray-400'
-                }`}></div>
-                <div>
-                  <div className="text-sm font-medium text-gray-800">
-                    {getActiveTopicsCount()} / {allTopics.length} {t('topics.selected')}
-                  </div>
-                  <div className="text-xs text-gray-600">
-                    {firstTime
-                      ? t('topics.status.newProfile')
-                      : hasChanges()
-                        ? t('topics.status.hasChanges')
-                        : t('topics.status.noChanges')}
-                  </div>
-                </div>
-              </div>
-
-              {/* Save Button */}
-              <button
-                onClick={handleSave}
-                disabled={saving || !canSave}
-                className={`inline-flex items-center px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${
-                  saving || !canSave
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:shadow-lg hover:scale-105 active:scale-95 shadow-md'
-                }`}
-              >
-                {saving ? (
-                  <>
-                    <div className="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full mr-2"></div>
-                    {t('topics.saving')}
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+              <div className="relative z-10">
+                <div className="flex items-start mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mr-4 flex-shrink-0 shadow-lg">
+                    <svg
+                        className="w-5 h-5 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                      <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
-                    {t('topics.save')}
-                  </>
-                )}
-              </button>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-blue-800 mb-2 text-lg">
+                      {firstTime ? t('topics.info.welcome.title') : t('topics.info.preferences.title')}
+                    </h3>
+                    <p className="text-blue-700/80 text-sm leading-relaxed">
+                      {firstTime
+                          ? t('topics.info.welcome.description')
+                          : t('topics.info.preferences.description')
+                      }
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+        </div>
+
+        {/* Compact Save Section - Fixed width and centered */}
+        <div className="flex justify-center">
+          <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/30 max-w-2xl w-full">
+              <div className="flex items-center justify-between">
+                {/* Status Info */}
+                <div className="flex items-center">
+                  <div className={`w-3 h-3 rounded-full mr-3 ${
+                    canSave ? 'bg-green-500' : 'bg-gray-400'
+                  }`}></div>
+                  <div>
+                    <div className="text-sm font-medium text-gray-800">
+                      {getActiveTopicsCount()} / {allTopics.length} {t('topics.selected')}
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      {firstTime
+                        ? t('topics.status.newProfile')
+                        : hasChanges()
+                          ? t('topics.status.hasChanges')
+                          : t('topics.status.noChanges')}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Save Button */}
+                <button
+                  onClick={handleSave}
+                  disabled={saving || !canSave}
+                  className={`inline-flex items-center px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${
+                    saving || !canSave
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:shadow-lg hover:scale-105 active:scale-95 shadow-md'
+                  }`}
+                >
+                  {saving ? (
+                    <>
+                      <div className="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full mr-2"></div>
+                      {t('topics.saving')}
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                      </svg>
+                      {t('topics.save')}
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+        </div>
       </div>
   );
 };
