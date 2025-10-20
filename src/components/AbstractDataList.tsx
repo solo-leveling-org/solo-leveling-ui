@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocalization } from '../hooks/useLocalization';
-import DateRangePicker from './DateRangePicker';
+import DateFilter from './DateFilter';
 import Icon from './Icon';
 import type { 
   Filter,
@@ -242,7 +242,7 @@ export function AbstractDataList<T extends DataItem>({
                 <Icon type="calendar" size={16} className="mr-2 text-blue-500" />
                 {t('common.dateRange')}
               </label>
-              <DateRangePicker
+              <DateFilter
                 from={dateFilters.from}
                 to={dateFilters.to}
                 onChange={handleDateRangeChange}
