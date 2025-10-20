@@ -161,8 +161,8 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
 
             {/* Фильтры - горизонтальная строка */}
             <div className="mb-6">
-              {/* Горизонтальная прокручиваемая строка фильтров */}
-              <div className="flex space-x-3 overflow-x-auto pb-2 scrollbar-hide">
+              {/* Горизонтальная прокручиваемая строка фильтров с видимым скроллбаром на десктопе */}
+              <div className="flex space-x-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
                 {/* Date Range Filter */}
                 <div className="flex-shrink-0">
                   <DateFilter
@@ -186,13 +186,15 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
                   </div>
                 ))}
 
-                {/* Clear Filters Button */}
+                {/* Clear Filters Button - Modern design matching other filters */}
                 <div className="flex-shrink-0">
                   <button
                     onClick={handleClearFilters}
-                    className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-all duration-200 whitespace-nowrap"
+                    className="w-full flex items-center justify-center px-4 py-3 bg-white border border-red-200 rounded-xl hover:border-red-300 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 whitespace-nowrap shadow-sm"
                   >
-                    Сбросить
+                    <span className="text-sm font-medium text-red-600">
+                      {t('balance.filters.reset')}
+                    </span>
                   </button>
                 </div>
               </div>

@@ -59,17 +59,17 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
-      {/* Кнопка фильтра */}
+      {/* Кнопка фильтра - современный дизайн */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 select-none"
+        className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 select-none shadow-sm"
       >
-        <span className="text-sm font-medium text-gray-700 truncate select-none" data-text="true">
+        <span className="text-sm font-medium text-gray-800 truncate select-none mr-3" data-text="true">
           {getDisplayText()}
         </span>
-        <span className={`text-gray-500 transition-transform duration-200 text-xs select-none ${isOpen ? 'rotate-180' : ''}`}>
-          ▼
-        </span>
+        <svg className={`w-4 h-4 text-gray-500 transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+        </svg>
       </button>
 
       {/* Всплывающее окно */}

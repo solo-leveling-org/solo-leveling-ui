@@ -291,6 +291,29 @@ code {
   display: none; /* Chrome, Safari, Opera */
 }
 
+/* Утилитарные классы для тонкого скроллбара */
+.scrollbar-thin {
+  scrollbar-width: thin; /* Firefox */
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px; /* Chrome, Safari, Opera */
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f5f9; /* track color */
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* thumb color */
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* thumb hover color */
+}
+
 /* Белый фон сверху только для мобильных устройств */
 .mobile-version {
   background-color: white;

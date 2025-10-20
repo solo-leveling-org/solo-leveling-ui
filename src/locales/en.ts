@@ -233,6 +233,11 @@ export const en = {
       DAILY_CHECK_IN: 'Daily Check-in',
       ITEM_PURCHASE: 'Item Purchase',
     },
+    filters: {
+      period: 'Period',
+      reset: 'Reset',
+      selectPeriod: 'Select Period',
+    },
   },
 
   // Dialogs and modals

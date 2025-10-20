@@ -233,6 +233,11 @@ export const ru = {
       DAILY_CHECK_IN: 'Ежедневная отметка',
       ITEM_PURCHASE: 'Покупка предмета',
     },
+    filters: {
+      period: 'Период',
+      reset: 'Сбросить',
+      selectPeriod: 'Выберите период',
+    },
   },
 
   // Диалоги и модальные окна
