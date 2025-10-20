@@ -28,7 +28,7 @@ const TasksGrid: React.FC<TasksGridProps> = ({ tasks, loading, onTaskClick, onCo
 
   if (loading && visibleTasks.length === 0) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
           <TaskCardSkeleton key={i} />
         ))}
@@ -37,7 +37,7 @@ const TasksGrid: React.FC<TasksGridProps> = ({ tasks, loading, onTaskClick, onCo
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
       {visibleTasks.map((playerTask, index) => (
         <TaskCard
           key={playerTask.id}

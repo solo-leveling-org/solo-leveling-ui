@@ -99,26 +99,27 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
 const renderTransaction = (transaction: TransactionItem, index: number, getLocalizedValue: (field: string, value: string) => string) => (
   <div
     key={transaction.id}
-    className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
+    className="group bg-gradient-to-r from-white to-gray-50 rounded-xl p-5 border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-[1.01] hover:-translate-y-1"
   >
     <div className="flex items-center justify-between">
-      <div className="flex items-center space-x-3">
-        <div className={`w-8 h-8 ${getTransactionBgColor(transaction.type)} rounded-full flex items-center justify-center`}>
-          <span className="text-sm">{getTransactionIcon(transaction.type, transaction.cause)}</span>
+      <div className="flex items-center space-x-4">
+        <div className={`w-12 h-12 ${getTransactionBgColor(transaction.type)} rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow duration-300`}>
+          <span className="text-lg">{getTransactionIcon(transaction.type, transaction.cause)}</span>
         </div>
-        <div>
-          <div className="text-sm font-medium text-gray-800">
+        <div className="flex-1">
+          <div className="text-base font-semibold text-gray-800 group-hover:text-blue-700 transition-colors duration-200">
             {getLocalizedValue('cause', transaction.cause)}
           </div>
-          <div className="text-xs text-gray-500">
+          <div className="text-sm text-gray-500 mt-1">
             {formatDate(transaction.createdAt)}
           </div>
         </div>
       </div>
-      <div className={`text-sm font-bold ${getTransactionColor(transaction.type)}`}>
-        <div className="flex items-center space-x-2">
-          <span>{transaction.type === 'IN' ? '+' : '-'}{transaction.amount.amount} {transaction.amount.currencyCode}</span>
-          <span className="text-xs opacity-75">({getLocalizedValue('type', transaction.type)})</span>
+      <div className={`text-lg font-bold ${getTransactionColor(transaction.type)} group-hover:scale-105 transition-transform duration-200`}>
+        <div className="flex items-center space-x-1">
+          <span className="text-2xl">{transaction.type === 'IN' ? '+' : '-'}</span>
+          <span>{transaction.amount.amount}</span>
+          <span className="text-sm font-medium text-gray-600 ml-1">{transaction.amount.currencyCode}</span>
         </div>
       </div>
     </div>
@@ -127,29 +128,34 @@ const renderTransaction = (transaction: TransactionItem, index: number, getLocal
 
   // Рендер скелетона
   const renderSkeleton = () => (
-    <>
+    <div className="space-y-4">
       {[...Array(5)].map((_, i) => (
-        <div key={i} className="bg-gray-100 rounded-lg p-4 animate-pulse">
+        <div key={i} className="bg-gradient-to-r from-gray-100 to-gray-50 rounded-xl p-5 border border-gray-200 animate-pulse">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-              <div>
-                <div className="h-4 bg-gray-300 rounded w-24 mb-2"></div>
-                <div className="h-3 bg-gray-300 rounded w-16"></div>
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gray-300 rounded-xl"></div>
+              <div className="flex-1">
+                <div className="h-5 bg-gray-300 rounded w-32 mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-20"></div>
               </div>
             </div>
-            <div className="h-4 bg-gray-300 rounded w-16"></div>
+            <div className="h-6 bg-gray-300 rounded w-20"></div>
           </div>
         </div>
       ))}
-    </>
+    </div>
   );
 
   // Рендер пустого состояния
   const renderEmpty = () => (
-    <div className="text-center py-8">
-      <div className="text-gray-500 mb-2">📝</div>
-      <div className="text-gray-500">{t('balance.transactions.empty')}</div>
+    <div className="text-center py-12">
+      <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 max-w-md mx-auto">
+        <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Icon type="coins" size={32} className="text-blue-500" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('balance.transactions.empty')}</h3>
+        <p className="text-gray-500 text-sm">Complete tasks to earn rewards!</p>
+      </div>
     </div>
   );
 

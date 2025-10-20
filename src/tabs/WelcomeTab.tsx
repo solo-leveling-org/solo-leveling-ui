@@ -18,16 +18,9 @@ const WelcomeTab: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
-      {/* Background decorative elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/8 to-purple-400/8 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-20 left-0 w-80 h-80 bg-gradient-to-tr from-pink-400/8 to-orange-400/8 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-cyan-400/5 to-emerald-400/5 rounded-full blur-2xl"></div>
-
-      {/* Main content */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
-        {/* Hero section */}
-        <div className={`text-center mb-12 transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+    <div className="space-y-6 pb-20">
+      {/* Hero section */}
+      <div className={`text-center mb-12 transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           {/* Main title */}
           <div className="mb-8">
             <div className="relative inline-block">
@@ -67,8 +60,8 @@ const WelcomeTab: React.FC = () => {
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto mb-12"></div>
         </div>
 
-        {/* Stats section */}
-        <div className={`grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12 transition-all duration-1000 delay-300 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+      {/* Stats section */}
+      <div className={`grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12 transition-all duration-1000 delay-300 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                       {[
               { 
                 label: t('welcome.stats.activePlayers'), 
@@ -110,8 +103,8 @@ const WelcomeTab: React.FC = () => {
           ))}
         </div>
 
-        {/* Features section */}
-        <div className={`max-w-5xl mx-auto transition-all duration-1000 delay-500 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+      {/* Features section */}
+      <div className={`transition-all duration-1000 delay-500 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[
               { icon: <Icon type="cloud-lightning" size={24} className="text-purple-500" />, title: t('welcome.features.quickStart.title'), desc: t('welcome.features.quickStart.description') },
@@ -134,7 +127,6 @@ const WelcomeTab: React.FC = () => {
             ))}
           </div>
         </div>
-      </div>
     </div>
   );
 };

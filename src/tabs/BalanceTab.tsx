@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
-import type { GetPlayerBalanceResponse, PlayerBalanceTransaction } from '../api';
-import TransactionsList from '../components/TransactionsList';
+import type { GetPlayerBalanceResponse, PlayerBalanceTransaction, LocalizedField } from '../api';
+import BankingTransactionsList from '../components/BankingTransactionsList';
 import Icon from '../components/Icon';
+import FilterDropdown from '../components/FilterDropdown';
+import DateFilter from '../components/DateFilter';
 
 type BalanceTabProps = {
   isAuthenticated: boolean;
@@ -13,6 +15,9 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
   const [balance, setBalance] = useState<GetPlayerBalanceResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dateFilters, setDateFilters] = useState({ from: '', to: '' });
+  const [enumFilters, setEnumFilters] = useState<{[field: string]: string[]}>({});
+  const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const { t } = useLocalization();
 
   const loadBalance = useCallback(async () => {
@@ -29,6 +34,27 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
       setLoading(false);
     }
   }, [t]);
+
+  // Обработчики фильтров
+  const handleDateFilterChange = useCallback((from: string, to: string) => {
+    setDateFilters({ from, to });
+  }, []);
+
+  const handleEnumFilterChange = useCallback((field: string, values: string[]) => {
+    setEnumFilters(prev => ({
+      ...prev,
+      [field]: values
+    }));
+  }, []);
+
+  const handleClearFilters = useCallback(() => {
+    setDateFilters({ from: '', to: '' });
+    setEnumFilters({});
+  }, []);
+
+  const handleFiltersUpdate = useCallback((filters: LocalizedField[]) => {
+    setAvailableFilters(filters);
+  }, []);
 
   // Загружаем баланс при монтировании компонента
   useEffect(() => {
@@ -63,7 +89,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20">
       {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
@@ -72,60 +98,111 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
         <p className="text-gray-600">{t('balance.subtitle')}</p>
       </div>
 
-      {/* Current Balance - Mobile Banking Style */}
-      <div className="relative overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl"></div>
-        <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-white/10 rounded-2xl"></div>
-        
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16 rounded-full"></div>
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div>
-        
-        {/* Content */}
-        <div className="relative p-6 text-white">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <p className="text-blue-100 text-sm font-medium mb-1">{t('balance.totalBalance')}</p>
-              <p className="text-blue-200 text-xs">{t('balance.currencyName')}</p>
-            </div>
-            <Icon type="coins" size={24} className="text-yellow-300" />
-          </div>
+      {/* Current Balance - Mobile Banking Style with Glimmer - Fixed width and centered */}
+      <div className="flex justify-center">
+        <div className="relative overflow-hidden group max-w-md w-full">
+          {/* Background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-white/10 rounded-2xl"></div>
           
-          {/* Balance amount */}
-          <div className="mb-4">
-            <div className="text-4xl font-bold text-white mb-1">
-              {balance.balance.balance.amount}
-            </div>
-            <div className="text-blue-200 text-sm font-medium">
-              {balance.balance.balance.currencyCode}
-            </div>
-          </div>
+          {/* Glimmer effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
           
-          {/* Quick actions */}
-          <div className="flex space-x-3">
-            <button className="flex-1 bg-white/20 backdrop-blur-sm rounded-xl py-3 px-4 text-white text-sm font-medium hover:bg-white/30 transition-all duration-200">
-              {t('balance.topUp')}
-            </button>
-            <button className="flex-1 bg-white/20 backdrop-blur-sm rounded-xl py-3 px-4 text-white text-sm font-medium hover:bg-white/30 transition-all duration-200">
-              {t('balance.transfer')}
-            </button>
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16 rounded-full"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div>
+          
+          {/* Additional shimmer elements */}
+          <div className="absolute top-4 right-4 w-16 h-16 bg-white/5 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-4 left-4 w-12 h-12 bg-white/5 rounded-full animate-pulse delay-300"></div>
+          
+          {/* Content */}
+          <div className="relative p-6 text-white">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <p className="text-blue-100 text-sm font-medium mb-1">{t('balance.totalBalance')}</p>
+                <p className="text-blue-200 text-xs">{t('balance.currencyName')}</p>
+              </div>
+              <Icon type="coins" size={24} className="text-yellow-300" />
+            </div>
+            
+            {/* Balance amount */}
+            <div className="mb-4">
+              <div className="text-4xl font-bold text-white mb-1">
+                {balance.balance.balance.amount}
+              </div>
+              <div className="text-blue-200 text-sm font-medium">
+                {balance.balance.balance.currencyCode}
+              </div>
+            </div>
+            
+            {/* Quick actions */}
+            <div className="flex space-x-3">
+              <button className="flex-1 bg-white/20 backdrop-blur-sm rounded-xl py-3 px-4 text-white text-sm font-medium hover:bg-white/30 transition-all duration-200">
+                {t('balance.topUp')}
+              </button>
+              <button className="flex-1 bg-white/20 backdrop-blur-sm rounded-xl py-3 px-4 text-white text-sm font-medium hover:bg-white/30 transition-all duration-200">
+                {t('balance.transfer')}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Transactions */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
-          {t('balance.transactions.title')}
-        </h3>
-        <TransactionsList
-          onTransactionsLoad={(transactions: PlayerBalanceTransaction[]) => {
-            console.log('Transactions loaded:', transactions.length);
-          }}
-        />
-      </div>
+        {/* Transactions - Fixed width and centered */}
+        <div className="flex justify-center">
+          <div className="max-w-4xl w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">
+                {t('balance.transactions.title')}
+              </h3>
+            </div>
+
+            {/* Фильтры - горизонтальная строка */}
+            <div className="mb-6">
+              {/* Горизонтальная прокручиваемая строка фильтров с видимым скроллбаром на десктопе */}
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+                {/* Date Range Filter */}
+                <DateFilter
+                  from={dateFilters.from}
+                  to={dateFilters.to}
+                  onChange={handleDateFilterChange}
+                />
+
+                {/* Enum Filters */}
+                {availableFilters.map((filter) => (
+                  <FilterDropdown
+                    key={filter.field}
+                    label={filter.localization}
+                    options={filter.items}
+                    selectedValues={enumFilters[filter.field] || []}
+                    onSelectionChange={(values) => handleEnumFilterChange(filter.field, values)}
+                  />
+                ))}
+
+                {/* Clear Filters Button - Modern design matching other filters */}
+                <button
+                  onClick={handleClearFilters}
+                  className="flex items-center justify-center px-4 py-3 bg-white border border-red-200 rounded-xl hover:border-red-300 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 whitespace-nowrap shadow-sm"
+                >
+                  <span className="text-sm font-medium text-red-600">
+                    {t('balance.filters.reset')}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <BankingTransactionsList
+              dateFilters={dateFilters}
+              enumFilters={enumFilters}
+              onFiltersUpdate={handleFiltersUpdate}
+              onTransactionsLoad={(transactions: PlayerBalanceTransaction[]) => {
+                console.log('Transactions loaded:', transactions.length);
+              }}
+            />
+          </div>
+        </div>
     </div>
   );
 };

@@ -66,11 +66,15 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-dialog-backdrop"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[100] animate-dialog-backdrop"
       onClick={handleClose}
+      style={{ 
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingBottom: '5rem' // Отступ для BottomBar
+      }}
     >
       <div
-        className="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 w-full max-w-2xl max-h-[95vh] overflow-hidden animate-dialog-content"
+        className="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 w-full max-w-2xl max-h-[calc(95vh-env(safe-area-inset-top,0px)-5rem)] overflow-hidden animate-dialog-content"
         onClick={e => e.stopPropagation()}
       >
         {/* Decorative background elements */}

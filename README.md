@@ -1,46 +1,148 @@
-# Getting Started with Create React App
+# Solo Leveling UI
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+React Telegram Mini App с поддержкой локальной разработки.
 
-## Available Scripts
+## Быстрый старт
 
-In the project directory, you can run:
+### Установка зависимостей
+```bash
+npm install
+```
 
-### `npm start`
+### Локальная разработка (Development)
+```bash
+# Запуск в development режиме (по умолчанию)
+npm start
+# или явно
+npm run start:dev
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+**Development настройки:**
+- API URL: `https://solo-leveling-gateway.ru.tuna.am`
+- WebSocket: `wss://solo-leveling-gateway.ru.tuna.am/ws`
+- Индикатор: Желтый бейдж "DEVELOPMENT" в правом нижнем углу
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Тестирование production режима локально
+```bash
+# Запуск в production режиме
+npm run start:prod
+```
 
-### `npm test`
+**Production настройки:**
+- API URL: `https://gateway.solo-leveling.online`
+- WebSocket: `wss://gateway.solo-leveling.online/ws`
+- Индикатор: Зеленый бейдж "PRODUCTION" в правом нижнем углу
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Профили окружения
 
-### `npm run build`
+Проект поддерживает два профиля:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Development (по умолчанию)
+- Используется для локальной разработки
+- Подключается к локальному backend на `localhost:10002`
+- Показывает индикатор окружения
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Production
+- Используется для продакшена
+- Подключается к production backend
+- Индикатор окружения скрыт
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Переменные окружения
 
-### `npm run eject`
+Создайте файл `.env.local` в корне проекта для переопределения настроек:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```env
+# Environment: development or production
+REACT_APP_ENV=development
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# API Base URL
+REACT_APP_API_BASE_URL=https://solo-leveling-gateway.ru.tuna.am
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+# WebSocket URL
+REACT_APP_WS_URL=wss://solo-leveling-gateway.ru.tuna.am/ws
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Сборка
 
-## Learn More
+### Development сборка
+```bash
+npm run build:dev
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Production сборка
+```bash
+npm run build:prod
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Структура конфигурации
+
+```
+src/config/environment.ts - Основная конфигурация
+├── developmentConfig - Настройки для разработки
+├── productionConfig - Настройки для продакшена
+└── config - Текущая активная конфигурация
+```
+
+## Проверка конфигурации
+
+В консоли браузера можно проверить текущую конфигурацию:
+
+```javascript
+import { config } from './src/config/environment';
+console.log('Current config:', config);
+```
+
+## Автоматическое определение окружения
+
+Система автоматически определяет окружение в следующем порядке:
+1. Переменная `REACT_APP_ENV`
+2. Переменная `NODE_ENV` (production = production, остальное = development)
+3. По умолчанию: development
+
+## Доступные команды
+
+```bash
+npm start              # Запуск в development режиме
+npm run start:dev      # Запуск в development режиме (явно)
+npm run start:prod     # Запуск в production режиме
+npm run build          # Сборка (по умолчанию production)
+npm run build:dev      # Сборка для development
+npm run build:prod     # Сборка для production
+npm test               # Запуск тестов
+npm run generate-api   # Генерация API клиента
+```
+
+## Настройка dev-gateway
+
+Development режим использует HTTPS dev-gateway:
+
+- **API**: `https://solo-leveling-gateway.ru.tuna.am`
+- **WebSocket**: `wss://solo-leveling-gateway.ru.tuna.am/ws`
+
+Это позволяет тестировать приложение как локально, так и в Telegram WebApp без CORS проблем.
+
+## CI/CD и Production
+
+### Docker сборка
+```bash
+# Сборка production образа
+docker build -t solo-leveling-ui:latest .
+```
+
+### Kubernetes деплой
+```bash
+# Применение манифестов
+kubectl apply -f k8s/
+```
+
+### Production настройки в Docker
+- **NODE_ENV**: `production`
+- **REACT_APP_ENV**: `production`
+- **API URL**: `https://gateway.solo-leveling.online`
+- **WebSocket**: `wss://gateway.solo-leveling.online/ws`
+
+## Требования
+
+- Node.js 16+
+- npm или yarn
+- HTTPS dev-gateway на `solo-leveling-gateway.ru.tuna.am`

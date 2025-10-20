@@ -1,33 +1,61 @@
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import './App.css';
-import SideDrawer from './components/SideDrawer';
 import TasksTab from './tabs/TasksTab';
 import ProfileTab from './tabs/ProfileTab';
 import BalanceTab from './tabs/BalanceTab';
-import TopBar from './components/TopBar';
+import BottomBar from './components/BottomBar';
 import {TelegramWidget} from './components/TelegramWidget';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useNavigate,
   Navigate,
   useLocation
 } from 'react-router-dom';
 import TopicsTab from './tabs/TopicsTab';
 import WelcomeTab from './tabs/WelcomeTab';
-import {useLocalization} from './hooks/useLocalization';
 import {useSettings} from './hooks/useSettings';
 import {useAuth} from './hooks/useAuth';
 import {useLocaleSync} from './hooks/useLocaleSync';
 import WelcomeTabSkeleton from './components/WelcomeTabSkeleton';
 import {useWebSocketNotifications} from './hooks/useWebSocketNotifications';
 import {NotificationProvider} from './components/NotificationSystem';
+import {useTelegram} from './useTelegram';
+import {ModalProvider, useModal} from './contexts/ModalContext';
 
 function AppRoutes() {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
+  const { isBottomBarVisible } = useModal();
+  
+  // Инициализируем Telegram WebApp
+  useTelegram();
+
+  // Определяем платформу через Telegram WebApp API
+  useEffect(() => {
+    const tg = (window as any).Telegram?.WebApp;
+    if (tg) {
+      const platform = tg.platform;
+      const isDesktop = platform === 'macos' || platform === 'windows' || platform === 'linux' || platform === 'web';
+      
+      if (isDesktop) {
+        document.body.classList.add('desktop-version');
+        document.body.classList.remove('mobile-version');
+      } else {
+        document.body.classList.add('mobile-version');
+        document.body.classList.remove('desktop-version');
+      }
+    } else {
+      // Fallback для случаев когда Telegram WebApp недоступен
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        document.body.classList.add('mobile-version');
+        document.body.classList.remove('desktop-version');
+      } else {
+        document.body.classList.add('desktop-version');
+        document.body.classList.remove('mobile-version');
+      }
+    }
+  }, []);
 
   // Используем новые хуки для разделения логики
   const {
@@ -38,7 +66,6 @@ function AppRoutes() {
     authPromise
   } = useAuth();
   const {localeLoaded, setLocaleLoaded} = useSettings();
-  const {t} = useLocalization();
 
   // Синхронизация локализации
   useLocaleSync(isAuthenticated);
@@ -60,24 +87,6 @@ function AppRoutes() {
     }
   }, [location.pathname]);
 
-  // Конфигурация табов
-  const tabsConfig = [
-    {path: '/', key: 'welcome'},
-    {path: '/profile', key: 'profile'},
-    {path: '/balance', key: 'balance'},
-    {path: '/tasks', key: 'tasks'},
-    {path: '/topics', key: 'topics'},
-  ];
-
-  // Генерируем tabList для SideDrawer
-  const tabList = tabsConfig.map(tab => ({
-    label: t(`navigation.${tab.key}`),
-    active: location.pathname === tab.path,
-    onClick: () => {
-      navigate(tab.path);
-      setDrawerOpen(false);
-    },
-  }));
 
   // Показываем skeleton до загрузки локализации
   if (!localeLoaded) {
@@ -96,16 +105,10 @@ function AppRoutes() {
               )}
               {!showNoTelegramError && !authError && (
                   <>
-                    <TopBar
-                        title={''}
-                        onHamburgerClick={() => setDrawerOpen(!drawerOpen)}
-                        hamburgerOpen={drawerOpen}
-                    />
-                    <SideDrawer open={drawerOpen} tabs={tabList}
-                                onClose={() => setDrawerOpen(false)}/>
-                    <main className="tab-content">
+                    <main className={`tab-content custom-scrollbar ${isBottomBarVisible ? 'tab-content-with-bottom-bar' : 'tab-content-without-bottom-bar'}`}>
                       <Routes>
                         <Route path="/" element={<WelcomeTab/>}/>
+                        <Route path="/welcome" element={<WelcomeTab/>}/>
                         <Route path="/tasks"
                                element={<TasksTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="/topics"
@@ -114,9 +117,10 @@ function AppRoutes() {
                                element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="/balance"
                                element={<BalanceTab isAuthenticated={isAuthenticated}/>}/>
-                        <Route path="*" element={<Navigate to="/" replace/>}/>
+                        <Route path="*" element={<Navigate to="/profile" replace/>}/>
                       </Routes>
                     </main>
+                    {isAuthenticated && <BottomBar isAuthenticated={isAuthenticated} isVisible={isBottomBarVisible}/>}
                   </>
               )}
             </>
@@ -128,9 +132,11 @@ function AppRoutes() {
 export default function App() {
   return (
       <NotificationProvider>
-        <Router>
-          <AppRoutes/>
-        </Router>
+        <ModalProvider>
+          <Router>
+            <AppRoutes/>
+          </Router>
+        </ModalProvider>
       </NotificationProvider>
   );
 }

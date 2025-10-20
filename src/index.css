@@ -2,6 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Глобальное скрытие скроллбаров */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Скрытие скроллбара для всех элементов */
+html, body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Скрытие скроллбара для всех контейнеров */
+div, main, section, article, aside, nav, header, footer {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+div::-webkit-scrollbar,
+main::-webkit-scrollbar,
+section::-webkit-scrollbar,
+article::-webkit-scrollbar,
+aside::-webkit-scrollbar,
+nav::-webkit-scrollbar,
+header::-webkit-scrollbar,
+footer::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -9,6 +47,11 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Box sizing reset */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 code {
@@ -236,4 +279,115 @@ code {
 
 .animate-progress {
   animation: progress 5s linear forwards;
+}
+
+/* Утилитарный класс для скрытия скроллбара */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Утилитарные классы для тонкого скроллбара */
+.scrollbar-thin {
+  scrollbar-width: thin; /* Firefox */
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px; /* Chrome, Safari, Opera */
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f5f9; /* track color */
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* thumb color */
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* thumb hover color */
+}
+
+/* Белый фон сверху только для мобильных устройств */
+.mobile-version {
+  background-color: white;
+}
+
+.mobile-version #root {
+  position: relative;
+}
+
+.mobile-version #root::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top, 44px);
+  background-color: white;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.mobile-version .App {
+  padding-top: env(safe-area-inset-top, 44px);
+  background-color: white;
+}
+
+.mobile-version .App::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  background-color: white;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+/* Для устройств с вырезом (notch) */
+@supports (padding: max(0px)) {
+  .mobile-version .App::before {
+    height: max(44px, env(safe-area-inset-top));
+  }
+  
+  .mobile-version #root::before {
+    height: max(44px, env(safe-area-inset-top));
+  }
+}
+
+/* На десктопе убираем ВСЕ псевдоэлементы и белые полоски */
+.desktop-version {
+  background-color: transparent !important;
+}
+
+.desktop-version #root {
+  background-color: transparent !important;
+}
+
+.desktop-version #root::before,
+.desktop-version .App::before,
+.desktop-version body::before,
+.desktop-version html::before {
+  display: none !important;
+  content: none !important;
+}
+
+.desktop-version .App {
+  padding-top: 0 !important;
+  background-color: transparent !important;
+  margin-top: 0 !important;
+}
+
+.desktop-version body {
+  background-color: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }

@@ -134,10 +134,10 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
       <div className="relative z-10 p-6 min-h-[280px] flex flex-col">
         {/* Header section with proper spacing */}
         <div className="mb-6 pr-10">
-          <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight tracking-tight">
+          <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight tracking-tight" data-text="true">
             {task?.title || ''}
           </h3>
-          <p className="text-gray-700 leading-relaxed line-clamp-3 text-sm font-medium">
+          <p className="text-gray-700 leading-relaxed line-clamp-3 text-sm font-medium" data-text="true">
             {task?.description || ''}
           </p>
         </div>
@@ -155,7 +155,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
               }}
             >
               <TopicIcon topic={topic} size={16} className="mr-1.5 text-sm" />
-                                      {t(`topics.labels.${topic}`)}
+              <span data-text="true">{t(`topics.labels.${topic}`)}</span>
             </span>
           ))}
           {(task?.topics || []).length > 2 && (
@@ -167,7 +167,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
                 color: '#6B7280',
               }}
             >
-              +{(task?.topics || []).length - 2}
+              <span data-text="true">+{(task?.topics || []).length - 2}</span>
             </span>
           )}
         </div>

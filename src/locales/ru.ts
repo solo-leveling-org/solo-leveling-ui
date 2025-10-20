@@ -39,6 +39,8 @@ export const ru = {
       createdAt: 'Дата создания',
       amount: 'Сумма'
     },
+    today: 'Сегодня',
+    yesterday: 'Вчера',
     months: {
       january: 'Январь',
       february: 'Февраль',
@@ -231,6 +233,12 @@ export const ru = {
       DAILY_CHECK_IN: 'Ежедневная отметка',
       ITEM_PURCHASE: 'Покупка предмета',
     },
+        filters: {
+          period: 'Период',
+          reset: 'Сбросить',
+          selectPeriod: 'Выберите период',
+          selected: 'выбрано',
+        },
   },
 
   // Диалоги и модальные окна

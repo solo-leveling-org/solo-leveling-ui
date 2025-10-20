@@ -7,11 +7,19 @@ export type ResponseQueryOptions = {
     /**
      * Total number of rows/items
      */
-    totalRowCount?: number;
+    totalRowCount: number;
     /**
      * Total number of pages
      */
-    totalPageCount?: number;
+    totalPageCount: number;
+    /**
+     * Current page
+     */
+    currentPage: number;
+    /**
+     * Has more pages flag
+     */
+    hasMore: boolean;
     /**
      * Available filters with localization
      */
