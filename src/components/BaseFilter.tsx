@@ -52,28 +52,30 @@ const BaseFilter: React.FC<BaseFilterProps> = ({
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
       {/* Кнопка фильтра - современный дизайн */}
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 select-none shadow-sm"
-      >
-        <span className="text-sm font-medium text-gray-800 truncate select-none mr-3" data-text="true">
-          {displayText}
-        </span>
-        {hasValue ? (
-          <button
-            onClick={handleIconClick}
-            className="w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200 flex-shrink-0"
-          >
-            <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        ) : (
-          <svg className={`w-4 h-4 text-gray-500 transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-          </svg>
-        )}
-      </button>
+       <button
+         onClick={onToggle}
+         className="w-full max-w-fit flex items-center px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 select-none shadow-sm"
+       >
+         <span className="text-sm font-medium text-gray-800 truncate select-none" data-text="true">
+           {displayText}
+         </span>
+         <div className="ml-2 flex-shrink-0">
+           {hasValue ? (
+             <button
+               onClick={handleIconClick}
+               className="w-4 h-4 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
+             >
+               <svg className="w-2.5 h-2.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+               </svg>
+             </button>
+           ) : (
+             <svg className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+             </svg>
+           )}
+         </div>
+       </button>
 
       {/* Всплывающее окно */}
       <BottomSheet

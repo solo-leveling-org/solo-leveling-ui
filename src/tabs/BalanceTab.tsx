@@ -162,41 +162,34 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
             {/* Фильтры - горизонтальная строка */}
             <div className="mb-6">
               {/* Горизонтальная прокручиваемая строка фильтров с видимым скроллбаром на десктопе */}
-              <div className="flex space-x-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
                 {/* Date Range Filter */}
-                <div className="flex-shrink-0">
-                  <DateFilter
-                    from={dateFilters.from}
-                    to={dateFilters.to}
-                    onChange={handleDateFilterChange}
-                    className="min-w-[120px]"
-                  />
-                </div>
+                <DateFilter
+                  from={dateFilters.from}
+                  to={dateFilters.to}
+                  onChange={handleDateFilterChange}
+                />
 
                 {/* Enum Filters */}
                 {availableFilters.map((filter) => (
-                  <div key={filter.field} className="flex-shrink-0">
-                    <FilterDropdown
-                      label={filter.localization}
-                      options={filter.items}
-                      selectedValues={enumFilters[filter.field] || []}
-                      onSelectionChange={(values) => handleEnumFilterChange(filter.field, values)}
-                      className="min-w-[140px]"
-                    />
-                  </div>
+                  <FilterDropdown
+                    key={filter.field}
+                    label={filter.localization}
+                    options={filter.items}
+                    selectedValues={enumFilters[filter.field] || []}
+                    onSelectionChange={(values) => handleEnumFilterChange(filter.field, values)}
+                  />
                 ))}
 
                 {/* Clear Filters Button - Modern design matching other filters */}
-                <div className="flex-shrink-0">
-                  <button
-                    onClick={handleClearFilters}
-                    className="w-full flex items-center justify-center px-4 py-3 bg-white border border-red-200 rounded-xl hover:border-red-300 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 whitespace-nowrap shadow-sm"
-                  >
-                    <span className="text-sm font-medium text-red-600">
-                      {t('balance.filters.reset')}
-                    </span>
-                  </button>
-                </div>
+                <button
+                  onClick={handleClearFilters}
+                  className="flex items-center justify-center px-4 py-3 bg-white border border-red-200 rounded-xl hover:border-red-300 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 whitespace-nowrap shadow-sm"
+                >
+                  <span className="text-sm font-medium text-red-600">
+                    {t('balance.filters.reset')}
+                  </span>
+                </button>
               </div>
             </div>
 
