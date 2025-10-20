@@ -118,7 +118,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   // Показываем skeleton во время загрузки
   if (loading) {
     return (
-      <div className="relative min-h-screen">
+      <div className="relative min-h-screen pb-20">
         {/* Enhanced background with multiple layers */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20"></div>
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/8 to-purple-400/8 rounded-full blur-3xl animate-float"></div>
@@ -148,7 +148,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
 
   if (firstTime) {
     return (
-      <div className="relative">
+      <div className="relative pb-20">
         {/* Background decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 left-0 w-48 h-48 bg-gradient-to-tr from-pink-400/10 to-orange-400/10 rounded-full blur-2xl"></div>
@@ -187,7 +187,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen pb-20">
       {/* Enhanced background with multiple layers */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20"></div>
       <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/8 to-purple-400/8 rounded-full blur-3xl animate-float"></div>

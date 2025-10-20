@@ -10,6 +10,18 @@ export function useTelegram() {
     // Уведомляем Telegram, что приложение готово
     WebApp.ready();
     
+    // Отключаем возможность закрытия свайпом вниз
+    WebApp.enableClosingConfirmation();
+    
+    // Отключаем возможность закрытия свайпом
+    WebApp.disableVerticalSwipes();
+    
+    // Настройки для полноэкранного режима
+    WebApp.expand();
+    
+    // Устанавливаем белый фон для статус-бара
+    WebApp.setHeaderColor('#ffffff');
+    
     // Устанавливаем начальные данные
     setUser(WebApp.initDataUnsafe?.user);
     setInitData(WebApp.initData);
@@ -217,6 +229,38 @@ export function useTelegramWebApp() {
     }
   };
 
+  // Функции для управления свайпами
+  const swipeControl = {
+    disableVerticalSwipes: () => {
+      try {
+        webApp.disableVerticalSwipes();
+      } catch (error) {
+        console.error('Error disabling vertical swipes:', error);
+      }
+    },
+    enableVerticalSwipes: () => {
+      try {
+        webApp.enableVerticalSwipes();
+      } catch (error) {
+        console.error('Error enabling vertical swipes:', error);
+      }
+    },
+    enableClosingConfirmation: () => {
+      try {
+        webApp.enableClosingConfirmation();
+      } catch (error) {
+        console.error('Error enabling closing confirmation:', error);
+      }
+    },
+    disableClosingConfirmation: () => {
+      try {
+        webApp.disableClosingConfirmation();
+      } catch (error) {
+        console.error('Error disabling closing confirmation:', error);
+      }
+    }
+  };
+
   return {
     webApp,
     isAvailable: true,
@@ -226,6 +270,7 @@ export function useTelegramWebApp() {
     hapticFeedback,
     mainButton,
     backButton,
-    cloudStorage
+    cloudStorage,
+    swipeControl
   };
 } 

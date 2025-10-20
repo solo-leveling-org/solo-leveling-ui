@@ -287,9 +287,6 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     return type === 'IN' ? 'text-green-600' : 'text-red-600';
   };
 
-  const getTransactionBgColor = (type: string) => {
-    return type === 'IN' ? 'bg-green-50' : 'bg-red-50';
-  };
 
   // Форматирование времени
   const formatTime = (dateString: string) => {
@@ -363,45 +360,45 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Группы транзакций */}
+    <div className="select-none space-y-6 custom-scrollbar">
+      {/* Группы транзакций в стиле Сбербанка */}
       {groups.map((group, groupIndex) => (
-        <div key={group.date}>
-          {/* Заголовок группы */}
-          <div className="sticky top-0 bg-white/95 backdrop-blur-sm z-10 py-2 mb-3">
-            <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-              {group.displayDate}
-            </h3>
+        <div key={group.date} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          {/* Заголовок группы - интегрированный в список */}
+          <div className="sticky top-0 bg-white z-10 py-4 px-6 border-b border-gray-100 select-none">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-semibold text-gray-900 select-text" data-text="true">
+                {group.displayDate}
+              </h3>
+              <span className="text-base font-semibold text-gray-900 select-text" data-text="true">
+                {group.transactions.reduce((sum, t) => sum + (t.type === 'IN' ? t.amount.amount : -t.amount.amount), 0)} {group.transactions[0]?.amount.currencyCode || ''}
+              </span>
+            </div>
           </div>
           
           {/* Транзакции группы */}
-          <div className="space-y-2">
+          <div className="divide-y divide-gray-100">
             {group.transactions.map((transaction, index) => (
               <div
                 key={transaction.id}
-                className="group bg-white rounded-xl p-4 border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-200"
+                className="flex items-center py-5 px-6 hover:bg-gray-50 transition-colors duration-200 select-none"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-10 h-10 ${getTransactionBgColor(transaction.type)} rounded-xl flex items-center justify-center`}>
-                      {getTransactionIcon(transaction.type, transaction.cause)}
+                <div className="flex items-center space-x-4 flex-1 min-w-0">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    {getTransactionIcon(transaction.type, transaction.cause)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-base font-medium text-gray-900 truncate select-text" data-text="true">
+                      {getLocalizedValue('cause', transaction.cause)}
                     </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-gray-900">
-                        {getLocalizedValue('cause', transaction.cause)}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {formatTime(transaction.createdAt)}
-                      </div>
+                    <div className="text-sm text-gray-500 select-text" data-text="true">
+                      {formatTime(transaction.createdAt)}
                     </div>
                   </div>
-                  <div className={`text-right ${getTransactionColor(transaction.type)}`}>
-                    <div className="text-sm font-semibold">
-                      {transaction.type === 'IN' ? '+' : '-'}{transaction.amount.amount}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {transaction.amount.currencyCode}
-                    </div>
+                </div>
+                <div className="text-right flex-shrink-0 ml-4">
+                  <div className={`text-base font-semibold select-text ${getTransactionColor(transaction.type)}`} data-text="true">
+                    {transaction.type === 'IN' ? '+' : ''}{transaction.amount.amount} {transaction.amount.currencyCode}
                   </div>
                 </div>
               </div>

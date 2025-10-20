@@ -220,7 +220,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
   };
 
   return (
-      <div className="relative min-h-screen">
+      <div className="relative min-h-screen pb-20">
         {/* Background decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 left-0 w-48 h-48 bg-gradient-to-tr from-pink-400/10 to-orange-400/10 rounded-full blur-2xl"></div>
