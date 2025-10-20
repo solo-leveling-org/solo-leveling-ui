@@ -30,6 +30,33 @@ function AppRoutes() {
   // Инициализируем Telegram WebApp
   useTelegram();
 
+  // Определяем платформу через Telegram WebApp API
+  useEffect(() => {
+    const tg = (window as any).Telegram?.WebApp;
+    if (tg) {
+      const platform = tg.platform;
+      const isDesktop = platform === 'macos' || platform === 'windows' || platform === 'linux' || platform === 'web';
+      
+      if (isDesktop) {
+        document.body.classList.add('desktop-version');
+        document.body.classList.remove('mobile-version');
+      } else {
+        document.body.classList.add('mobile-version');
+        document.body.classList.remove('desktop-version');
+      }
+    } else {
+      // Fallback для случаев когда Telegram WebApp недоступен
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        document.body.classList.add('mobile-version');
+        document.body.classList.remove('desktop-version');
+      } else {
+        document.body.classList.add('desktop-version');
+        document.body.classList.remove('mobile-version');
+      }
+    }
+  }, []);
+
   // Используем новые хуки для разделения логики
   const {
     isAuthenticated,

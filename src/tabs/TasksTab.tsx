@@ -118,14 +118,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   // Показываем skeleton во время загрузки
   if (loading) {
     return (
-      <div className="relative min-h-screen pb-20">
-        {/* Enhanced background with multiple layers */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/8 to-purple-400/8 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-20 left-0 w-80 h-80 bg-gradient-to-tr from-pink-400/8 to-orange-400/8 rounded-full blur-3xl animate-float-delayed"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-cyan-400/5 to-emerald-400/5 rounded-full blur-2xl"></div>
-
-        <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
+      <div className="space-y-6 pb-20">
           <div className="text-center mb-12">
             {/* Skeleton для заголовка */}
             <div className="h-10 md:h-12 bg-gray-300 rounded-lg w-64 mx-auto mb-3 animate-pulse"></div>
@@ -141,19 +134,14 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           </div>
 
           <TasksGrid tasks={[]} loading={true} onTaskClick={() => {}} onComplete={handleCompleteTask} />
-        </div>
       </div>
     );
   }
 
   if (firstTime) {
     return (
-      <div className="relative pb-20">
-        {/* Background decorative elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-0 w-48 h-48 bg-gradient-to-tr from-pink-400/10 to-orange-400/10 rounded-full blur-2xl"></div>
-
-        <div className="relative z-10 max-w-md mx-auto px-6 py-16 text-center">
+      <div className="space-y-6 pb-20">
+        <div className="max-w-md mx-auto px-6 py-16 text-center">
           {/* Icon */}
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6 shadow-xl">
             <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -187,14 +175,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   }
 
   return (
-    <div className="relative min-h-screen pb-20">
-      {/* Enhanced background with multiple layers */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20"></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/8 to-purple-400/8 rounded-full blur-3xl animate-float"></div>
-      <div className="absolute bottom-20 left-0 w-80 h-80 bg-gradient-to-tr from-pink-400/8 to-orange-400/8 rounded-full blur-3xl animate-float-delayed"></div>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-cyan-400/5 to-emerald-400/5 rounded-full blur-2xl"></div>
-
-      <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
+    <div className="space-y-6 pb-20">
         <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 tracking-tight">
               {t('tasks.title')}
@@ -221,7 +202,6 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
             setShowConfirmDialog(true);
           }}
         />
-      </div>
 
       {dialogTask && dialogTask.task && (
         <TaskDialog task={dialogTask.task} onClose={() => setDialogTask(null)} />

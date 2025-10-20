@@ -220,12 +220,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
   };
 
   return (
-      <div className="relative min-h-screen pb-20">
-        {/* Background decorative elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-0 w-48 h-48 bg-gradient-to-tr from-pink-400/10 to-orange-400/10 rounded-full blur-2xl"></div>
-
-        <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
+      <div className="space-y-6 pb-20">
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 tracking-tight">
@@ -239,8 +234,8 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
             <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto"></div>
           </div>
 
-          {/* Topics Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
+        {/* Topics Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
             {allTopics.map((topic, index) => {
               const playerTopic = playerTopics.find(pt => pt.taskTopic === topic);
               const isSelected = playerTopic?.isActive || false;
@@ -352,8 +347,8 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
             })}
           </div>
 
-          {/* Info section */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-50/90 to-indigo-50/90 backdrop-blur-xl rounded-3xl p-6 mb-8 border border-blue-200/30 shadow-lg">
+        {/* Info section */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-50/90 to-indigo-50/90 backdrop-blur-xl rounded-3xl p-6 mb-8 border border-blue-200/30 shadow-lg">
             {/* Decorative background */}
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-2xl -translate-y-4 translate-x-4"></div>
 
@@ -389,8 +384,8 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
             </div>
           </div>
 
-          {/* Compact Save Section */}
-          <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
+        {/* Compact Save Section */}
+        <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
             <div className="flex items-center justify-between">
               {/* Status Info */}
               <div className="flex items-center">
@@ -437,7 +432,6 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
               </button>
             </div>
           </div>
-        </div>
       </div>
   );
 };

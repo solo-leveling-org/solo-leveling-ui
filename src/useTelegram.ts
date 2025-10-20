@@ -16,12 +16,6 @@ export function useTelegram() {
     // Отключаем возможность закрытия свайпом
     WebApp.disableVerticalSwipes();
     
-    // Настройки для полноэкранного режима
-    WebApp.expand();
-    
-    // Устанавливаем белый фон для статус-бара
-    WebApp.setHeaderColor('#ffffff');
-    
     // Устанавливаем начальные данные
     setUser(WebApp.initDataUnsafe?.user);
     setInitData(WebApp.initData);
