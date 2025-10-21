@@ -30,13 +30,22 @@ const Calendar: React.FC<CalendarProps> = ({
     setSelectedTo(initialSelectedTo);
   }, [initialSelectedFrom, initialSelectedTo]);
 
-  // Анимация открытия/закрытия
+  // Анимация открытия/закрытия и блокировка скролла
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
+      // Блокируем скролл body
+      document.body.style.overflow = 'hidden';
     } else {
       setIsVisible(false);
+      // Восстанавливаем скролл
+      document.body.style.overflow = 'unset';
     }
+
+    // Cleanup при размонтировании компонента
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [isOpen]);
 
   // Закрытие при клике вне компонента

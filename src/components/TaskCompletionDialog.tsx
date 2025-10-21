@@ -81,35 +81,24 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
         <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-green-400/20 to-emerald-400/20 rounded-full blur-3xl -translate-y-8 translate-x-8"></div>
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-blue-400/20 to-purple-400/20 rounded-full blur-2xl translate-y-4 -translate-x-4"></div>
 
-        {/* Header */}
-        <div className="relative z-10 p-6 pb-4 animate-dialog-stagger-1">
-          <div className="text-center">
-            {/* Success icon */}
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full mb-4 shadow-lg">
-              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+        {/* Header - Compact */}
+        <div className="relative z-10 p-4 pb-2">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-gray-800">
               {t('taskCompletion.title')}
             </h2>
-            <p className="text-gray-600 text-lg">
-              {t('taskCompletion.subtitle')}
-            </p>
+            {/* Close button */}
+            <button
+              onClick={handleClose}
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100/50 backdrop-blur-sm hover:bg-gray-200/50 transition-all duration-200 hover:scale-110 group"
+            >
+              <svg className="w-4 h-4 text-gray-500 group-hover:text-gray-700 transition-colors"
+                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
-
-          {/* Close button */}
-          <button
-            onClick={handleClose}
-            className="absolute top-6 right-6 flex items-center justify-center w-8 h-8 rounded-full bg-gray-100/50 backdrop-blur-sm hover:bg-gray-200/50 transition-all duration-200 hover:scale-110 group"
-          >
-            <svg className="w-4 h-4 text-gray-500 group-hover:text-gray-700 transition-colors"
-                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
         </div>
 
         {/* Content */}
