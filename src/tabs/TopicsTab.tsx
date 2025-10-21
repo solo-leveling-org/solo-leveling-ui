@@ -231,7 +231,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
               {t('topics.subtitle')}
             </p>
 
-            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto"></div>
+            <div className="w-24 h-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full mx-auto"></div>
           </div>
 
         {/* Topics Grid */}
@@ -416,7 +416,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                   className={`inline-flex items-center px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${
                     saving || !canSave
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:shadow-lg hover:scale-105 active:scale-95 shadow-md'
+                      : 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 hover:shadow-lg hover:scale-105 active:scale-95 shadow-md'
                   }`}
                 >
                   {saving ? (

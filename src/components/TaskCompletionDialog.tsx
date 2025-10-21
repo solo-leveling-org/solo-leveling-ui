@@ -79,7 +79,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
       >
         {/* Decorative background elements */}
         <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-green-400/20 to-emerald-400/20 rounded-full blur-3xl -translate-y-8 translate-x-8"></div>
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-blue-400/20 to-purple-400/20 rounded-full blur-2xl translate-y-4 -translate-x-4"></div>
+        <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-emerald-400/20 to-teal-400/20 rounded-full blur-2xl translate-y-4 -translate-x-4"></div>
 
         {/* Header - Compact */}
         <div className="relative z-10 p-4 pb-2">

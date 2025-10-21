@@ -219,7 +219,7 @@ export function AbstractDataList<T extends DataItem>({
         <div className="mb-6">
           <button
             onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-            className="inline-flex items-center px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm font-medium"
+            className="inline-flex items-center px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm font-medium"
           >
             <Icon type="search" size={16} className="mr-2" />
             {showFiltersPanel ? t('common.hideFilters') : t('common.showFilters')}

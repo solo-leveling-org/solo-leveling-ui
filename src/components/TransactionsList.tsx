@@ -149,8 +149,8 @@ const renderTransaction = (transaction: TransactionItem, index: number, getLocal
   // Рендер пустого состояния
   const renderEmpty = () => (
     <div className="text-center py-12">
-      <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 max-w-md mx-auto">
-        <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-8 max-w-md mx-auto">
+        <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Icon type="coins" size={32} className="text-blue-500" />
         </div>
         <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('balance.transactions.empty')}</h3>

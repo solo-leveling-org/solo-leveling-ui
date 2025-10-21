@@ -54,7 +54,7 @@ const BaseFilter: React.FC<BaseFilterProps> = ({
       {/* Кнопка фильтра - современный дизайн */}
        <button
          onClick={onToggle}
-         className="w-full max-w-fit flex items-center px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 select-none shadow-sm"
+         className="w-full max-w-fit flex items-center px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 select-none shadow-sm"
        >
          <span className="text-sm font-medium text-gray-800 truncate select-none" data-text="true">
            {displayText}

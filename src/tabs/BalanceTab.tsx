@@ -75,7 +75,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
           <div className="text-red-600 mb-4">{error}</div>
           <button
             onClick={loadBalance}
-            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+            className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
           >
             {t('common.retry')}
           </button>
@@ -102,8 +102,8 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
       <div className="flex justify-center">
         <div className="relative overflow-hidden group max-w-md w-full">
           {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl"></div>
-          <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-white/10 rounded-2xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-700 to-cyan-800 rounded-2xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-white/10 rounded-2xl"></div>
           
           {/* Glimmer effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
@@ -121,8 +121,8 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
               <div>
-                <p className="text-blue-100 text-sm font-medium mb-1">{t('balance.totalBalance')}</p>
-                <p className="text-blue-200 text-xs">{t('balance.currencyName')}</p>
+                <p className="text-emerald-100 text-sm font-medium mb-1">{t('balance.totalBalance')}</p>
+                <p className="text-emerald-200 text-xs">{t('balance.currencyName')}</p>
               </div>
               <Icon type="coins" size={24} className="text-yellow-300" />
             </div>
@@ -132,7 +132,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
               <div className="text-4xl font-bold text-white mb-1">
                 {balance.balance.balance.amount}
               </div>
-              <div className="text-blue-200 text-sm font-medium">
+              <div className="text-emerald-200 text-sm font-medium">
                 {balance.balance.balance.currencyCode}
               </div>
             </div>

@@ -64,9 +64,9 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
 
   return (
     <>
-      <div className="space-y-3 pb-20">
+      <div className="space-y-3 pb-20 -my-10" style={{ height: 'calc(100vh - 80px)' }}>
         {/* Settings Button - Top Right */}
-        <div className="flex justify-end -mt-3 pt-4 mobile-version:pt-8">
+        <div className="flex justify-end -mt-3 pt-4 mobile-version:pt-12">
           <button
             onClick={() => setShowSettings(true)}
             className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg"
@@ -81,7 +81,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
               {/* Avatar section */}
               <div className="text-center mb-6">
                 <div className="relative inline-block mb-4">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-pulse blur-sm scale-110"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full animate-pulse blur-sm scale-110"></div>
                   <img
                       src={user.photoUrl || ''}
                       alt="avatar"
@@ -162,9 +162,9 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
 };
 
 export const ProfileSkeleton: React.FC = () => (
-  <div className="space-y-3 pb-20">
+  <div className="space-y-3 pb-20 -my-10" style={{ height: 'calc(100vh - 80px)' }}>
     {/* Settings Button skeleton */}
-    <div className="flex justify-end -mt-3">
+    <div className="flex justify-end -mt-3 pt-4 mobile-version:pt-12">
       <div className="w-10 h-10 bg-gray-300 rounded-full animate-pulse"></div>
     </div>
 

@@ -64,7 +64,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
         >
           {/* Decorative background elements */}
           <div
-              className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl -translate-y-8 translate-x-8"></div>
+              className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-emerald-400/10 to-teal-400/10 rounded-full blur-3xl -translate-y-8 translate-x-8"></div>
           <div
               className="absolute bottom-20 left-0 w-32 h-32 bg-gradient-to-tr from-pink-400/10 to-orange-400/10 rounded-full blur-2xl translate-y-4 -translate-x-4"></div>
 
@@ -86,7 +86,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
               </button>
             </div>
             <div
-                className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
+                className="w-16 h-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full"></div>
           </div>
 
           {/* Navigation Items */}
@@ -96,7 +96,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
                     key={tab.label}
                     className={`group relative w-full p-4 text-left rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${
                         tab.active
-                            ? 'bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm border border-blue-200/30 shadow-lg text-gray-800'
+                            ? 'bg-gradient-to-r from-emerald-500/10 to-teal-500/10 backdrop-blur-sm border border-emerald-200/30 shadow-lg text-gray-800'
                             : 'bg-white/40 backdrop-blur-sm hover:bg-white/60 border border-transparent hover:border-white/30 text-gray-600 hover:text-gray-800'
                     }`}
                     onClick={tab.onClick}
@@ -107,7 +107,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
                   {/* Active indicator */}
                   {tab.active && (
                       <div
-                          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-blue-500 to-purple-600 rounded-r-full"></div>
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-emerald-500 to-teal-600 rounded-r-full"></div>
                   )}
 
                   <div className="flex items-center space-x-4">
@@ -147,7 +147,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
                   {/* Glow effect for active tab */}
                   {tab.active && (
                       <div
-                          className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-2xl blur-xl scale-105 -z-10"></div>
+                          className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-2xl blur-xl scale-105 -z-10"></div>
                   )}
                 </button>
             ))}
