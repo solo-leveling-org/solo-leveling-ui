@@ -72,8 +72,6 @@ const NotificationItem: React.FC<{
   };
 
   const getIcon = () => {
-    const iconClass = "w-5 h-5 flex-shrink-0";
-    
     switch (notification.type) {
       case 'success':
         return (
