@@ -111,15 +111,17 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 <Icon type="star" size={24} className="mr-2 text-yellow-500" />
                 {t('taskCompletion.level')}
               </h3>
-              {/* Level Display - Compact */}
-              <div className="flex items-center">
+              {/* Level Display - Compact with Sticker */}
+              <div className="relative">
                 <div className="text-2xl font-bold text-blue-600 bg-white/60 backdrop-blur-sm rounded-lg px-3 py-1 border border-blue-200/30 shadow-sm">
                   {playerAfter.level?.level || 1}
                 </div>
-                {/* Изменение уровня пользователя если повысился */}
+                {/* Изменение уровня пользователя если повысился - как стикер */}
                 {(playerAfter.level?.level || 1) > (playerBefore.level?.level || 1) && (
-                  <div className="ml-2 bg-green-50 text-green-600 border border-green-200 text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
-                    +{(playerAfter.level?.level || 1) - (playerBefore.level?.level || 1)}
+                  <div className="absolute -top-3 -right-3 z-10">
+                    <span className="text-xs font-bold px-1 py-0.5 rounded-full shadow-lg bg-green-50 text-green-600 border border-green-200">
+                      +{(playerAfter.level?.level || 1) - (playerBefore.level?.level || 1)}
+                    </span>
                   </div>
                 )}
               </div>

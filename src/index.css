@@ -391,3 +391,8 @@ code {
   margin: 0 !important;
   padding: 0 !important;
 }
+
+/* Позиционирование уведомлений для мобильных устройств */
+.mobile-version .notification-container {
+  top: calc(env(safe-area-inset-top, 44px) + 3rem) !important;
+}
