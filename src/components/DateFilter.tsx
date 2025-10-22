@@ -59,13 +59,6 @@ const DateFilter: React.FC<DateFilterProps> = ({
     setIsOpen(false);
   };
 
-  const handleDateSelect = (from: string, to: string) => {
-    setSelectedFrom(from);
-    setSelectedTo(to);
-    if (from && to) {
-      onChange(from, to);
-    }
-  };
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
@@ -81,10 +74,18 @@ const DateFilter: React.FC<DateFilterProps> = ({
           {hasValue ? (
             <button
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
-                handleDateSelect('', '');
+                setSelectedFrom('');
+                setSelectedTo('');
+                onChange('', '');
               }}
-              className="w-4 h-4 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              className="w-4 h-4 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200 cursor-pointer"
+              style={{ pointerEvents: 'auto' }}
             >
               <svg className="w-2.5 h-2.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -102,7 +103,13 @@ const DateFilter: React.FC<DateFilterProps> = ({
       <Calendar
         selectedFrom={selectedFrom}
         selectedTo={selectedTo}
-        onDateSelect={handleDateSelect}
+        onDateSelect={(from, to) => {
+          setSelectedFrom(from);
+          setSelectedTo(to);
+          if (from && to) {
+            onChange(from, to);
+          }
+        }}
         onClose={handleClose}
         isOpen={isOpen}
       />

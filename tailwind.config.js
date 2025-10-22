@@ -7,6 +7,10 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    function({ addVariant }) {
+      addVariant('mobile-version', '.mobile-version &')
+    }
+  ],
 }
 

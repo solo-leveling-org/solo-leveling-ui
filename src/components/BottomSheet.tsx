@@ -21,15 +21,12 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
     if (isOpen) {
       // Сброс позиции при открытии
       setDragY(0);
-      // Небольшая задержка для плавного появления
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-      }, 50);
+      // Сразу показываем для анимации
+      setIsVisible(true);
       // Блокируем скролл body
       document.body.style.overflow = 'hidden';
       // Уведомляем контекст об открытии
       setIsBottomSheetOpen(true);
-      return () => clearTimeout(timer);
     } else {
       setIsVisible(false);
       setDragY(0);
@@ -105,9 +102,12 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 bg-black/50 z-50 transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-black/50 z-50 ${
           isVisible ? 'opacity-100' : 'opacity-0'
         }`}
+        style={{
+          transition: 'opacity 0.3s ease-out'
+        }}
         onClick={onClose}
       />
       
@@ -119,6 +119,8 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
         }`}
         style={{
           ...transformStyle,
+          // Анимация всплытия
+          transition: dragY > 0 ? 'none' : 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out',
           // Дополнительные оптимизации для мобильных устройств
           WebkitTransform: `translate3d(0, ${dragY}px, 0)`, // WebKit оптимизация
           WebkitBackfaceVisibility: 'hidden',
@@ -132,7 +134,11 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
         </div>
         
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className={`px-6 py-4 border-b border-gray-200 ${
+          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+        }`} style={{ 
+          transition: isVisible ? 'transform 0.3s ease-out 0.1s, opacity 0.3s ease-out 0.1s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
+        }}>
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900 select-none">
               {title}
@@ -147,7 +153,11 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
         </div>
         
         {/* Content */}
-        <div className="px-6 py-4 overflow-y-auto max-h-[60vh]">
+        <div className={`px-6 py-4 overflow-y-auto max-h-[60vh] ${
+          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+        }`} style={{ 
+          transition: isVisible ? 'transform 0.3s ease-out 0.15s, opacity 0.3s ease-out 0.15s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
+        }}>
           {children}
         </div>
       </div>

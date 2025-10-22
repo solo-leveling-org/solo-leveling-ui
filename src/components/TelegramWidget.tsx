@@ -20,7 +20,7 @@ export const TelegramWidget: React.FC<TelegramWidgetProps> = ({ type, errorMessa
         bottomLeft: "bg-gradient-to-tr from-pink-400/20 to-red-500/20"
       }
     : {
-        topRight: "bg-gradient-to-br from-blue-400/20 to-purple-500/20",
+        topRight: "bg-gradient-to-br from-emerald-400/20 to-teal-500/20",
         bottomLeft: "bg-gradient-to-tr from-purple-400/20 to-pink-500/20"
       };
 

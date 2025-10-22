@@ -50,12 +50,12 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
           }}
       >
         <div
-            className="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 w-full max-w-md max-h-[calc(90vh-env(safe-area-inset-top,0px)-5rem)] overflow-hidden animate-dialog-content"
+            className="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 w-full max-w-md max-h-[calc(95vh-env(safe-area-inset-top,0px)-5rem)] mobile-version:max-h-[calc(85vh-env(safe-area-inset-top,0px)-5rem)] overflow-hidden animate-dialog-content"
             onClick={e => e.stopPropagation()}
         >
           {/* Decorative background elements */}
           <div
-              className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl -translate-y-8 translate-x-8"></div>
+              className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-full blur-3xl -translate-y-8 translate-x-8"></div>
           <div
               className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-400/20 to-orange-400/20 rounded-full blur-2xl translate-y-4 -translate-x-4"></div>
 
@@ -92,7 +92,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
           </div>
 
           {/* Scrollable content */}
-          <div className="relative z-10 px-6 pb-6 max-h-[calc(90vh-120px)] overflow-y-auto">
+          <div className="relative z-10 px-6 pb-6 overflow-y-auto max-h-[calc(90vh-200px)] mobile-version:max-h-[calc(75vh-200px)]">
             {/* Description */}
             <div
                 className="bg-gradient-to-br from-gray-50/80 to-white/80 backdrop-blur-sm rounded-2xl p-4 mb-6 border border-gray-200/30 animate-dialog-stagger-2">

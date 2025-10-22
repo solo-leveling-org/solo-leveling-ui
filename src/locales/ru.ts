@@ -278,7 +278,6 @@ export const ru = {
   // Диалог завершения задачи
   taskCompletion: {
     title: 'Задача выполнена!',
-    subtitle: 'Поздравляем с успешным завершением!',
     level: 'Уровень',
     experience: 'Опыт',
     topicsProgress: 'Прогресс по темам',

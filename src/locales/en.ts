@@ -278,7 +278,6 @@ export const en = {
   // Task completion dialog
   taskCompletion: {
     title: 'Task Completed!',
-    subtitle: 'Congratulations on successful completion!',
     level: 'Level',
     experience: 'Experience',
     topicsProgress: 'Topics Progress',
