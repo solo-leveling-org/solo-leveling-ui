@@ -123,14 +123,6 @@ const TasksList: React.FC<TasksListProps> = ({
       // Если получили 0 записей, значит больше нет данных, даже если API вернул hasMore: true
       const hasMoreData = newTasks.length > 0 && (response.options?.hasMore || false);
       
-      console.log('[TasksList] Loaded tasks:', {
-        page,
-        reset,
-        newCount: newTasks.length,
-        hasMoreData,
-        totalCount: reset ? newTasks.length : tasks.length + newTasks.length
-      });
-      
       if (reset) {
         setTasks(newTasks);
         setHasMore(hasMoreData);
@@ -189,17 +181,8 @@ const TasksList: React.FC<TasksListProps> = ({
 
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
       const entry = entries[0];
-      console.log('[TasksList] Intersection:', {
-        isIntersecting: entry.isIntersecting,
-        hasMore: hasMoreRef.current,
-        loadingMore,
-        isLoading: isLoadingRef.current,
-        currentPage: currentPageRef.current,
-        intersectionRatio: entry.intersectionRatio
-      });
       if (entry.isIntersecting && hasMoreRef.current && !loadingMore && !isLoadingRef.current) {
         const nextPage = currentPageRef.current + 1;
-        console.log('[TasksList] Loading next page:', nextPage);
         loadTasksRef.current?.(nextPage);
       }
     };
@@ -212,10 +195,7 @@ const TasksList: React.FC<TasksListProps> = ({
     // Используем setTimeout чтобы убедиться, что элемент уже в DOM
     const timeoutId = setTimeout(() => {
       if (loadMoreRef.current && observerRef.current) {
-        console.log('[TasksList] Observing element:', loadMoreRef.current);
         observerRef.current.observe(loadMoreRef.current);
-      } else {
-        console.log('[TasksList] Element not found for observation');
       }
     }, 100);
 
@@ -240,7 +220,7 @@ const TasksList: React.FC<TasksListProps> = ({
   // Показываем skeleton во время первой загрузки
   if (loading && tasks.length === 0) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
           <TaskCardSkeleton key={i} />
         ))}
@@ -306,7 +286,7 @@ const TasksList: React.FC<TasksListProps> = ({
       
       {/* Индикатор загрузки для дополнительных задач */}
       {loadingMore && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 mt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6 mt-6">
           {Array.from({ length: 4 }).map((_, i) => (
             <TaskCardSkeleton key={i} />
           ))}

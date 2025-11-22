@@ -65,7 +65,7 @@ const DateFilter: React.FC<DateFilterProps> = ({
       {/* Кнопка фильтра - Solo Leveling Style */}
       <button
         onClick={handleToggle}
-        className="w-full max-w-fit flex items-center px-4 py-3 rounded-xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-105 active:scale-95 select-none"
+        className="w-full max-w-fit flex items-center px-4 py-3 rounded-xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-[1.02] active:scale-95 select-none overflow-hidden"
         style={{
           background: hasValue
             ? 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)'
@@ -75,7 +75,7 @@ const DateFilter: React.FC<DateFilterProps> = ({
             ? '2px solid rgba(180, 220, 240, 0.4)'
             : '2px solid rgba(220, 235, 245, 0.2)',
           boxShadow: hasValue
-            ? '0 0 15px rgba(180, 220, 240, 0.3)'
+            ? '0 0 10px rgba(180, 220, 240, 0.2)'
             : '0 0 10px rgba(180, 220, 240, 0.1)',
           color: '#e8f4f8',
           textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'

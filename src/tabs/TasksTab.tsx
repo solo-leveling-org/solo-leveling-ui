@@ -193,13 +193,14 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                   background: 'rgba(220, 235, 245, 0.1)'
                 }}></div>
               </div>
-              <div className="w-16 h-1 rounded-full mx-auto animate-pulse" style={{
-                background: 'rgba(220, 235, 245, 0.1)'
+              <div className="w-24 sm:w-32 md:w-40 h-1 rounded-full mx-auto animate-pulse" style={{
+                background: 'rgba(180, 220, 240, 0.6)',
+                boxShadow: '0 0 8px rgba(180, 220, 240, 0.4)'
               }}></div>
             </div>
 
             {/* Tasks grid skeleton */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6">
               {Array.from({ length: 6 }).map((_, i) => (
                 <TaskCardSkeleton key={i} />
               ))}
@@ -358,6 +359,15 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
               {t('tasks.subtitle')}
             </p>
 
+            {/* Divider */}
+            <div
+              className="w-24 sm:w-32 md:w-40 h-1 rounded-full mx-auto mb-6"
+              style={{
+                background: 'rgba(180, 220, 240, 0.6)',
+                boxShadow: '0 0 8px rgba(180, 220, 240, 0.4)'
+              }}
+            ></div>
+
             {/* View Mode Toggle */}
             <div className="flex justify-center mb-6">
               <div 
@@ -408,14 +418,6 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                 </button>
               </div>
             </div>
-
-            <div 
-              className="w-16 sm:w-24 h-1 rounded-full mx-auto"
-              style={{
-                background: 'linear-gradient(90deg, rgba(180, 220, 240, 0.6) 0%, rgba(160, 210, 235, 0.4) 100%)',
-                boxShadow: '0 0 10px rgba(180, 220, 240, 0.3)'
-              }}
-            ></div>
           </div>
 
           {/* Фильтры для завершенных задач */}

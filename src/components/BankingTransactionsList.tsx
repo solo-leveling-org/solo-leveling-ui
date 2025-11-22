@@ -51,6 +51,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   const hasMoreRef = useRef(true);
   const isLoadingRef = useRef(false);
   const loadTransactionsRef = useRef<typeof loadTransactions | undefined>(undefined);
+  const hasInitialLoadRef = useRef(false);
   
   const { t } = useLocalization();
 
@@ -178,14 +179,6 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       // Если получили 0 записей, значит больше нет данных, даже если API вернул hasMore: true
       const hasMoreData = newTransactions.length > 0 && (response.options?.hasMore || false);
       
-      console.log('[BankingTransactionsList] Loaded transactions:', {
-        page,
-        reset,
-        newCount: newTransactions.length,
-        hasMoreData,
-        totalCount: reset ? newTransactions.length : transactions.length + newTransactions.length
-      });
-      
       if (reset) {
         setTransactions(newTransactions);
         setHasMore(hasMoreData);
@@ -241,17 +234,8 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
 
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
       const entry = entries[0];
-      console.log('[BankingTransactionsList] Intersection:', {
-        isIntersecting: entry.isIntersecting,
-        hasMore: hasMoreRef.current,
-        loadingMore,
-        isLoading: isLoadingRef.current,
-        currentPage: currentPageRef.current,
-        intersectionRatio: entry.intersectionRatio
-      });
       if (entry.isIntersecting && hasMoreRef.current && !loadingMore && !isLoadingRef.current) {
         const nextPage = currentPageRef.current + 1;
-        console.log('[BankingTransactionsList] Loading next page:', nextPage);
         loadTransactionsRef.current?.(nextPage);
       }
     };
@@ -264,10 +248,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     // Используем setTimeout чтобы убедиться, что элемент уже в DOM
     const timeoutId = setTimeout(() => {
       if (loadMoreRef.current && observerRef.current) {
-        console.log('[BankingTransactionsList] Observing element:', loadMoreRef.current);
         observerRef.current.observe(loadMoreRef.current);
-      } else {
-        console.log('[BankingTransactionsList] Element not found for observation');
       }
     }, 100);
 
@@ -285,7 +266,18 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     // Сбрасываем состояние перед загрузкой
     hasMoreRef.current = true;
     currentPageRef.current = 0;
-    loadTransactions(0, true);
+    
+    // Предотвращаем двойную загрузку при первом монтировании
+    if (!hasInitialLoadRef.current) {
+      hasInitialLoadRef.current = true;
+      // Используем requestAnimationFrame для загрузки после первого рендера
+      requestAnimationFrame(() => {
+        loadTransactions(0, true);
+      });
+    } else {
+      // При изменении фильтров загружаем сразу
+      loadTransactions(0, true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateFilters.from, dateFilters.to, JSON.stringify(enumFilters)]);
 
@@ -517,8 +509,8 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
                 className="text-base md:text-lg font-tech font-semibold select-text" 
                 data-text="true"
                 style={{
-                  color: 'rgba(234, 179, 8, 0.9)',
-                  textShadow: '0 0 8px rgba(234, 179, 8, 0.4)'
+                  color: 'rgba(180, 220, 240, 0.9)',
+                  textShadow: '0 0 8px rgba(180, 220, 240, 0.4)'
                 }}
               >
                 {group.transactions.reduce((sum, t) => sum + (t.type === 'IN' ? t.amount.amount : -t.amount.amount), 0)} {group.transactions[0]?.amount.currencyCode || ''}
@@ -527,13 +519,14 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
           </div>
           
           {/* Транзакции группы */}
-          <div className="relative z-10 divide-y" style={{ borderColor: 'rgba(220, 235, 245, 0.1)' }}>
+          <div className="relative z-10">
             {group.transactions.map((transaction, index) => (
               <div
                 key={transaction.id}
-                className="flex items-center py-5 px-6 transition-all duration-200 select-none hover:bg-opacity-10"
+                className={`flex items-center py-5 px-6 transition-all duration-200 select-none hover:bg-opacity-10 ${index < group.transactions.length - 1 ? 'border-b' : ''}`}
                 style={{
-                  background: index % 2 === 0 ? 'transparent' : 'rgba(220, 235, 245, 0.02)'
+                  background: index % 2 === 0 ? 'transparent' : 'rgba(220, 235, 245, 0.02)',
+                  borderColor: 'rgba(220, 235, 245, 0.1)'
                 }}
               >
                 <div className="flex items-center space-x-4 flex-1 min-w-0">
@@ -586,7 +579,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
                       textShadow: `0 0 6px ${transaction.type === 'IN' ? 'rgba(34, 197, 94, 0.4)' : 'rgba(220, 38, 38, 0.4)'}`
                     }}
                   >
-                    {transaction.type === 'IN' ? '+' : ''}{transaction.amount.amount} {transaction.amount.currencyCode}
+                    {transaction.type === 'IN' ? '+' : '-'}{transaction.amount.amount} {transaction.amount.currencyCode}
                   </div>
                 </div>
               </div>

@@ -174,7 +174,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
 
       <div className="relative z-10 p-6 min-h-[280px] flex flex-col">
         {/* Header section with proper spacing */}
-        <div className="mb-6 pr-10">
+        <div className="mb-6 pr-10 flex-grow">
           <h3 
             className="text-xl font-tech font-bold mb-3 leading-tight tracking-tight" 
             data-text="true"
@@ -226,19 +226,18 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
           )}
         </div>
 
-
-
-        {/* Status indicator as subtle bar */}
-        <div className="mt-auto">
+        {/* Fixed bottom section with status bar and buttons */}
+        <div className="mt-auto pt-4">
+          {/* Status indicator as full-width light bar */}
           <div 
             className="h-1 w-full rounded-full mb-4"
             style={{
-              background: `linear-gradient(90deg, ${colorScheme.accentColor} 0%, transparent 100%)`,
+              background: colorScheme.accentColor,
               boxShadow: `0 0 8px ${colorScheme.accentColor}`
             }}
           ></div>
 
-          {/* Action buttons - always visible at bottom */}
+          {/* Action buttons - fixed at bottom */}
           {status === PlayerTaskStatus.IN_PROGRESS && onComplete && onReplace && (
             <div className="flex items-center justify-end gap-2">
               {/* Complete button */}

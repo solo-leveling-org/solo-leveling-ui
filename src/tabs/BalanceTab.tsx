@@ -170,9 +170,9 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
             {t('balance.subtitle')}
           </p>
           <div
-            className="w-16 sm:w-24 h-1 rounded-full mx-auto"
+            className="w-24 sm:w-32 md:w-40 h-1 rounded-full mx-auto"
             style={{
-              background: 'linear-gradient(90deg, rgba(180, 220, 240, 0.6) 0%, transparent 100%)',
+              background: 'rgba(180, 220, 240, 0.6)',
               boxShadow: '0 0 8px rgba(180, 220, 240, 0.4)'
             }}
           ></div>
@@ -194,10 +194,10 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
           >
             {/* Glowing orbs */}
             <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full blur-2xl opacity-10 animate-float" style={{
-              background: 'rgba(234, 179, 8, 0.8)'
+              background: 'rgba(180, 220, 240, 0.8)'
             }}></div>
             <div className="absolute -bottom-4 -left-4 w-24 h-24 rounded-full blur-xl opacity-10 animate-float-delayed" style={{
-              background: 'rgba(234, 179, 8, 0.6)'
+              background: 'rgba(180, 220, 240, 0.6)'
             }}></div>
             
             {/* Shimmer effect on hover */}
@@ -229,8 +229,8 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
                 <div
                   className="profile-icon-wrapper"
                   style={{
-                    color: 'rgba(234, 179, 8, 0.9)',
-                    filter: 'drop-shadow(0 0 8px rgba(234, 179, 8, 0.6))'
+                    color: 'rgba(180, 220, 240, 0.9)',
+                    filter: 'drop-shadow(0 0 8px rgba(180, 220, 240, 0.6))'
                   }}
                 >
                   <Icon type="coins" size={28} />
@@ -243,7 +243,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
                   className="text-4xl md:text-5xl font-tech font-bold mb-2"
                   style={{
                     color: '#e8f4f8',
-                    textShadow: '0 0 12px rgba(234, 179, 8, 0.4)'
+                    textShadow: '0 0 12px rgba(180, 220, 240, 0.4)'
                   }}
                 >
                   {balance.balance.balance.amount}
@@ -251,8 +251,8 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
                 <div 
                   className="text-sm md:text-base font-tech font-semibold"
                   style={{
-                    color: 'rgba(234, 179, 8, 0.8)',
-                    textShadow: '0 0 6px rgba(234, 179, 8, 0.3)'
+                    color: 'rgba(180, 220, 240, 0.8)',
+                    textShadow: '0 0 6px rgba(180, 220, 240, 0.3)'
                   }}
                 >
                   {balance.balance.balance.currencyCode}
@@ -307,7 +307,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
 
             {/* Фильтры - горизонтальная строка */}
             <div className="mb-6">
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 overflow-y-visible">
                 {/* Date Range Filter */}
                 <DateFilter
                   from={dateFilters.from}
@@ -329,7 +329,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
                 {/* Clear Filters Button - Solo Leveling Style */}
                 <button
                   onClick={handleClearFilters}
-                  className="flex items-center justify-center px-4 py-3 rounded-xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap"
+                  className="flex items-center justify-center px-4 py-3 rounded-xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap overflow-hidden"
                   style={{
                     background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.08) 100%)',
                     border: '1px solid rgba(220, 38, 38, 0.4)',
@@ -403,9 +403,10 @@ export const BalanceSkeleton: React.FC = () => (
           }}
         ></div>
         <div
-          className="w-16 sm:w-24 h-1 rounded-full mx-auto"
+          className="w-24 sm:w-32 md:w-40 h-1 rounded-full mx-auto"
           style={{
-            background: 'rgba(220, 235, 245, 0.1)'
+            background: 'rgba(180, 220, 240, 0.6)',
+            boxShadow: '0 0 8px rgba(180, 220, 240, 0.4)'
           }}
         ></div>
       </div>

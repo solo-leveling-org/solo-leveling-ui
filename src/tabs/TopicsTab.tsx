@@ -250,9 +250,9 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
             {t('topics.subtitle')}
           </p>
           <div
-            className="w-16 sm:w-24 h-1 rounded-full mx-auto"
+            className="w-24 sm:w-32 md:w-40 h-1 rounded-full mx-auto"
             style={{
-              background: 'linear-gradient(90deg, rgba(180, 220, 240, 0.6) 0%, transparent 100%)',
+              background: 'rgba(180, 220, 240, 0.6)',
               boxShadow: '0 0 8px rgba(180, 220, 240, 0.4)'
             }}
           ></div>
@@ -688,9 +688,10 @@ const TopicsTabSkeleton: React.FC = () => {
             }}
           ></div>
           <div
-            className="w-16 sm:w-24 h-1 rounded-full mx-auto"
+            className="w-24 sm:w-32 md:w-40 h-1 rounded-full mx-auto"
             style={{
-              background: 'rgba(220, 235, 245, 0.1)'
+              background: 'rgba(180, 220, 240, 0.6)',
+              boxShadow: '0 0 8px rgba(180, 220, 240, 0.4)'
             }}
           ></div>
         </div>
