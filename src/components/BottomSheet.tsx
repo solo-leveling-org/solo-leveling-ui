@@ -111,14 +111,19 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
         onClick={onClose}
       />
       
-      {/* Bottom Sheet */}
+      {/* Bottom Sheet - Solo Leveling Style */}
       <div 
         ref={sheetRef}
-        className={`bottom-sheet fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl max-h-[80vh] overflow-hidden ${
+        className={`bottom-sheet fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl md:rounded-t-3xl shadow-2xl max-h-[80vh] overflow-hidden ${
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
         }`}
         style={{
           ...transformStyle,
+          background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.98) 0%, rgba(5, 8, 18, 0.98) 100%)',
+          backdropFilter: 'blur(20px)',
+          border: '2px solid rgba(220, 235, 245, 0.2)',
+          borderBottom: 'none',
+          boxShadow: '0 -4px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(180, 220, 240, 0.2), inset 0 0 20px rgba(200, 230, 245, 0.03)',
           // Анимация всплытия
           transition: dragY > 0 ? 'none' : 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out',
           // Дополнительные оптимизации для мобильных устройств
@@ -128,24 +133,52 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
         }}
         {...bind()}
       >
+        {/* Glowing orbs */}
+        <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl opacity-10" style={{
+          background: 'rgba(180, 216, 232, 0.8)'
+        }}></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full blur-xl opacity-10" style={{
+          background: 'rgba(200, 230, 245, 0.6)'
+        }}></div>
+
         {/* Handle bar */}
-        <div className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing">
-          <div className="w-10 h-1 bg-gray-300 rounded-full"></div>
+        <div className="relative z-10 flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing">
+          <div 
+            className="w-10 h-1 rounded-full"
+            style={{
+              background: 'rgba(220, 235, 245, 0.4)'
+            }}
+          ></div>
         </div>
         
         {/* Header */}
-        <div className={`px-6 py-4 border-b border-gray-200 ${
-          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-        }`} style={{ 
-          transition: isVisible ? 'transform 0.3s ease-out 0.1s, opacity 0.3s ease-out 0.1s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
-        }}>
+        <div 
+          className={`relative z-10 px-6 py-4 ${
+            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+          }`} 
+          style={{ 
+            transition: isVisible ? 'transform 0.3s ease-out 0.1s, opacity 0.3s ease-out 0.1s' : 'transform 0.2s ease-in, opacity 0.2s ease-in',
+            borderBottom: '1px solid rgba(220, 235, 245, 0.1)'
+          }}
+        >
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900 select-none">
+            <h3 
+              className="text-lg font-tech font-semibold select-none"
+              style={{
+                color: '#e8f4f8',
+                textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+              }}
+            >
               {title}
             </h3>
             <button
               onClick={onClose}
-              className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors select-none"
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 select-none"
+              style={{
+                background: 'rgba(220, 235, 245, 0.1)',
+                border: '1px solid rgba(220, 235, 245, 0.2)',
+                color: '#e8f4f8'
+              }}
             >
               ✕
             </button>
@@ -153,11 +186,14 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
         </div>
         
         {/* Content */}
-        <div className={`px-6 py-4 overflow-y-auto max-h-[60vh] ${
-          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-        }`} style={{ 
-          transition: isVisible ? 'transform 0.3s ease-out 0.15s, opacity 0.3s ease-out 0.15s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
-        }}>
+        <div 
+          className={`relative z-10 px-6 py-4 overflow-y-auto max-h-[60vh] ${
+            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+          }`} 
+          style={{ 
+            transition: isVisible ? 'transform 0.3s ease-out 0.15s, opacity 0.3s ease-out 0.15s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
+          }}
+        >
           {children}
         </div>
       </div>

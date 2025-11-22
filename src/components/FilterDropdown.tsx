@@ -76,20 +76,39 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
             <button
               key={option.name}
               onClick={() => handleOptionClick(option.name)}
-              className={`w-full flex items-center justify-between px-4 py-3 text-left rounded-xl transition-all duration-200 select-none group ${
-                isSelected 
-                  ? 'bg-emerald-50 border-2 border-emerald-200 shadow-sm' 
-                  : 'bg-white border-2 border-gray-100 hover:border-gray-200 hover:bg-gray-50 hover:shadow-sm'
-              }`}
+              className="w-full flex items-center justify-between px-4 py-3 text-left rounded-xl transition-all duration-300 select-none group hover:scale-[1.02] active:scale-[0.98]"
+              style={{
+                background: isSelected
+                  ? 'linear-gradient(135deg, rgba(180, 220, 240, 0.2) 0%, rgba(160, 210, 235, 0.1) 100%)'
+                  : 'linear-gradient(135deg, rgba(10, 14, 39, 0.6) 0%, rgba(5, 8, 18, 0.8) 100%)',
+                backdropFilter: 'blur(10px)',
+                border: isSelected
+                  ? '2px solid rgba(180, 220, 240, 0.4)'
+                  : '2px solid rgba(220, 235, 245, 0.2)',
+                boxShadow: isSelected
+                  ? '0 0 15px rgba(180, 220, 240, 0.2)'
+                  : 'none'
+              }}
             >
-              <span className={`text-base font-medium select-text transition-colors duration-200 ${
-                isSelected ? 'text-emerald-900' : 'text-gray-700 group-hover:text-gray-900'
-              }`} data-text="true">
+              <span 
+                className="text-sm md:text-base font-tech font-medium select-text transition-colors duration-200" 
+                data-text="true"
+                style={{
+                  color: isSelected ? '#e8f4f8' : 'rgba(220, 235, 245, 0.8)',
+                  textShadow: isSelected ? '0 0 4px rgba(180, 220, 240, 0.3)' : 'none'
+                }}
+              >
                 {option.localization}
               </span>
               {isSelected && (
-                <div className="w-5 h-5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div 
+                  className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.8) 0%, rgba(22, 163, 74, 0.6) 100%)',
+                    boxShadow: '0 0 8px rgba(34, 197, 94, 0.4)'
+                  }}
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#e8f4f8' }}>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>

@@ -282,10 +282,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     }
   };
 
-  // Получение цвета для транзакции
-  const getTransactionColor = (type: string) => {
-    return type === 'IN' ? 'text-green-600' : 'text-red-600';
-  };
+  // Получение цвета для транзакции (удалено, теперь используется inline стиль)
 
 
   // Форматирование времени
@@ -310,12 +307,48 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   // Рендер пустого состояния
   const renderEmpty = () => (
     <div className="text-center py-12">
-      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-8 max-w-md mx-auto">
-        <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Icon type="coins" size={32} className="text-blue-500" />
+      <div 
+        className="relative overflow-hidden rounded-2xl md:rounded-3xl p-8 max-w-md mx-auto"
+        style={{
+          background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+          backdropFilter: 'blur(20px)',
+          border: '2px solid rgba(220, 235, 245, 0.2)',
+          boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
+        }}
+      >
+        <div 
+          className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+          style={{
+            background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.2) 0%, rgba(234, 179, 8, 0.1) 100%)',
+            border: '2px solid rgba(234, 179, 8, 0.3)'
+          }}
+        >
+          <div
+            style={{
+              color: 'rgba(234, 179, 8, 0.9)',
+              filter: 'drop-shadow(0 0 8px rgba(234, 179, 8, 0.6))'
+            }}
+          >
+            <Icon type="coins" size={32} />
+          </div>
         </div>
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('balance.transactions.empty')}</h3>
-        <p className="text-gray-500 text-sm">Complete tasks to earn rewards!</p>
+        <h3 
+          className="text-lg font-tech font-semibold mb-2"
+          style={{
+            color: '#e8f4f8',
+            textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+          }}
+        >
+          {t('balance.transactions.empty')}
+        </h3>
+        <p 
+          className="text-sm font-tech"
+          style={{
+            color: 'rgba(220, 235, 245, 0.7)'
+          }}
+        >
+          Complete tasks to earn rewards!
+        </p>
       </div>
     </div>
   );
@@ -324,16 +357,43 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     return (
       <div className="space-y-4">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="bg-gradient-to-r from-gray-100 to-gray-50 rounded-xl p-5 border border-gray-200 animate-pulse">
+          <div 
+            key={i} 
+            className="rounded-xl p-5 animate-pulse"
+            style={{
+              background: 'rgba(220, 235, 245, 0.05)',
+              border: '1px solid rgba(220, 235, 245, 0.1)'
+            }}
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gray-300 rounded-xl"></div>
+                <div 
+                  className="w-12 h-12 rounded-xl"
+                  style={{
+                    background: 'rgba(220, 235, 245, 0.1)'
+                  }}
+                ></div>
                 <div className="flex-1">
-                  <div className="h-5 bg-gray-300 rounded w-32 mb-2"></div>
-                  <div className="h-4 bg-gray-300 rounded w-20"></div>
+                  <div 
+                    className="h-5 rounded w-32 mb-2"
+                    style={{
+                      background: 'rgba(220, 235, 245, 0.1)'
+                    }}
+                  ></div>
+                  <div 
+                    className="h-4 rounded w-20"
+                    style={{
+                      background: 'rgba(220, 235, 245, 0.08)'
+                    }}
+                  ></div>
                 </div>
               </div>
-              <div className="h-6 bg-gray-300 rounded w-20"></div>
+              <div 
+                className="h-6 rounded w-20"
+                style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }}
+              ></div>
             </div>
           </div>
         ))}
@@ -344,10 +404,25 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   if (error) {
     return (
       <div className="text-center py-8">
-        <div className="text-red-600 mb-4">{error}</div>
+        <div 
+          className="mb-4 font-tech font-semibold"
+          style={{
+            color: '#e8f4f8',
+            textShadow: '0 0 8px rgba(220, 38, 38, 0.3)'
+          }}
+        >
+          {error}
+        </div>
         <button
           onClick={() => loadTransactions()}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          className="px-4 py-2 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95"
+          style={{
+            background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
+            border: '1px solid rgba(180, 220, 240, 0.4)',
+            color: '#e8f4f8',
+            boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
+            textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+          }}
         >
           {t('common.retry')}
         </button>
@@ -361,43 +436,119 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
 
   return (
     <div className="select-none space-y-6 custom-scrollbar">
-      {/* Группы транзакций в стиле Сбербанка */}
+      {/* Группы транзакций в стиле Solo Leveling */}
       {groups.map((group, groupIndex) => (
-        <div key={group.date} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          {/* Заголовок группы - интегрированный в список */}
-          <div className="sticky top-0 bg-white z-10 py-4 px-6 border-b border-gray-100 select-none">
+        <div 
+          key={group.date} 
+          className="relative overflow-hidden rounded-2xl md:rounded-3xl"
+          style={{
+            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            backdropFilter: 'blur(20px)',
+            border: '2px solid rgba(220, 235, 245, 0.2)',
+            boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
+          }}
+        >
+          {/* Glowing orbs */}
+          <div className="absolute -top-4 -right-4 w-16 h-16 rounded-full blur-xl opacity-10" style={{
+            background: 'rgba(180, 216, 232, 0.8)'
+          }}></div>
+          <div className="absolute -bottom-2 -left-2 w-12 h-12 rounded-full blur-lg opacity-10" style={{
+            background: 'rgba(200, 230, 245, 0.6)'
+          }}></div>
+
+          {/* Заголовок группы */}
+          <div 
+            className="relative z-10 sticky top-0 py-4 px-6 select-none"
+            style={{
+              background: 'rgba(10, 14, 39, 0.7)',
+              backdropFilter: 'blur(10px)',
+              borderBottom: '1px solid rgba(220, 235, 245, 0.1)'
+            }}
+          >
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold text-gray-900 select-text" data-text="true">
+              <h3 
+                className="text-base md:text-lg font-tech font-semibold select-text" 
+                data-text="true"
+                style={{
+                  color: '#e8f4f8',
+                  textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+                }}
+              >
                 {group.displayDate}
               </h3>
-              <span className="text-base font-semibold text-gray-900 select-text" data-text="true">
+              <span 
+                className="text-base md:text-lg font-tech font-semibold select-text" 
+                data-text="true"
+                style={{
+                  color: 'rgba(234, 179, 8, 0.9)',
+                  textShadow: '0 0 8px rgba(234, 179, 8, 0.4)'
+                }}
+              >
                 {group.transactions.reduce((sum, t) => sum + (t.type === 'IN' ? t.amount.amount : -t.amount.amount), 0)} {group.transactions[0]?.amount.currencyCode || ''}
               </span>
             </div>
           </div>
           
           {/* Транзакции группы */}
-          <div className="divide-y divide-gray-100">
+          <div className="relative z-10 divide-y" style={{ borderColor: 'rgba(220, 235, 245, 0.1)' }}>
             {group.transactions.map((transaction, index) => (
               <div
                 key={transaction.id}
-                className="flex items-center py-5 px-6 hover:bg-gray-50 transition-colors duration-200 select-none"
+                className="flex items-center py-5 px-6 transition-all duration-200 select-none hover:bg-opacity-10"
+                style={{
+                  background: index % 2 === 0 ? 'transparent' : 'rgba(220, 235, 245, 0.02)'
+                }}
               >
                 <div className="flex items-center space-x-4 flex-1 min-w-0">
-                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    {getTransactionIcon(transaction.type, transaction.cause)}
+                  <div 
+                    className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{
+                      background: transaction.type === 'IN' 
+                        ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.1) 100%)'
+                        : 'linear-gradient(135deg, rgba(220, 38, 38, 0.2) 0%, rgba(185, 28, 28, 0.1) 100%)',
+                      border: `2px solid ${transaction.type === 'IN' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(220, 38, 38, 0.3)'}`
+                    }}
+                  >
+                    <div
+                      style={{
+                        color: transaction.type === 'IN' ? 'rgba(34, 197, 94, 0.9)' : 'rgba(220, 38, 38, 0.9)',
+                        filter: `drop-shadow(0 0 4px ${transaction.type === 'IN' ? 'rgba(34, 197, 94, 0.5)' : 'rgba(220, 38, 38, 0.5)'})`
+                      }}
+                    >
+                      {getTransactionIcon(transaction.type, transaction.cause)}
+                    </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-base font-medium text-gray-900 truncate select-text" data-text="true">
+                    <div 
+                      className="text-base font-tech font-medium truncate select-text" 
+                      data-text="true"
+                      style={{
+                        color: '#e8f4f8',
+                        textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+                      }}
+                    >
                       {getLocalizedValue('cause', transaction.cause)}
                     </div>
-                    <div className="text-sm text-gray-500 select-text" data-text="true">
+                    <div 
+                      className="text-sm font-tech select-text" 
+                      data-text="true"
+                      style={{
+                        color: 'rgba(220, 235, 245, 0.7)'
+                      }}
+                    >
                       {formatTime(transaction.createdAt)}
                     </div>
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0 ml-4">
-                  <div className={`text-base font-semibold select-text ${getTransactionColor(transaction.type)}`} data-text="true">
+                  <div 
+                    className="text-base font-tech font-semibold select-text" 
+                    data-text="true"
+                    style={{
+                      color: transaction.type === 'IN' ? 'rgba(34, 197, 94, 0.9)' : 'rgba(220, 38, 38, 0.9)',
+                      textShadow: `0 0 6px ${transaction.type === 'IN' ? 'rgba(34, 197, 94, 0.4)' : 'rgba(220, 38, 38, 0.4)'}`
+                    }}
+                  >
                     {transaction.type === 'IN' ? '+' : ''}{transaction.amount.amount} {transaction.amount.currencyCode}
                   </div>
                 </div>
@@ -410,7 +561,13 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       {/* Индикатор загрузки */}
       {loadingMore && (
         <div className="flex justify-center py-4">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+          <div 
+            className="animate-spin rounded-full h-6 w-6 border-2"
+            style={{
+              borderColor: 'rgba(220, 235, 245, 0.2)',
+              borderTopColor: 'rgba(180, 220, 240, 0.6)'
+            }}
+          ></div>
         </div>
       )}
 
