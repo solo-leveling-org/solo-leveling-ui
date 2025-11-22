@@ -35,13 +35,6 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
           accentColor: 'rgba(180, 220, 240, 0.4)',
           textColor: '#e8f4f8',
         };
-      case PlayerTaskStatus.PENDING_COMPLETION:
-        return {
-          bg: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
-          border: 'rgba(160, 210, 235, 0.4)',
-          accentColor: 'rgba(160, 210, 235, 0.5)',
-          textColor: '#e8f4f8',
-        };
       case PlayerTaskStatus.COMPLETED:
         return {
           bg: 'linear-gradient(135deg, rgba(10, 14, 39, 0.7) 0%, rgba(5, 8, 18, 0.85) 100%)',

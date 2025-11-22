@@ -12,7 +12,7 @@ import type {
   SavePlayerTopicsRequest,
   CompleteTaskRequest,
   SkipTaskRequest,
-  SearchPlayerBalanceTransactionsRequest,
+  SearchRequest,
 } from '../api';
 import {
   mockGetUserResponse,
@@ -53,7 +53,6 @@ class MockState {
     const task = this.tasks.find(t => t.id === taskId);
     if (task) {
       task.status = 'COMPLETED' as any;
-      task.closedAt = new Date().toISOString();
       this.completedTaskIds.add(taskId);
     }
     return mockCompleteTaskResponse;
@@ -63,7 +62,6 @@ class MockState {
     const task = this.tasks.find(t => t.id === taskId);
     if (task) {
       task.status = 'SKIPPED' as any;
-      task.closedAt = new Date().toISOString();
     }
   }
 
@@ -217,7 +215,7 @@ export const mockPlayerService = {
   },
 
   searchPlayerBalanceTransactions: (
-    requestBody: SearchPlayerBalanceTransactionsRequest,
+    requestBody: SearchRequest,
     page?: number,
     pageSize: number = 20
   ): CancelablePromise<SearchPlayerBalanceTransactionsResponse> => {

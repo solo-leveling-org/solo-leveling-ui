@@ -5,7 +5,7 @@ import AbstractDataList, { DataItem } from './AbstractDataList';
 import Icon from './Icon';
 import type { 
   PlayerBalanceTransaction, 
-  SearchPlayerBalanceTransactionsRequest,
+  SearchRequest,
   Filter,
   Sort
 } from '../api';
@@ -41,7 +41,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
     filters?: Filter, 
     sorts?: Sort[]
   ) => {
-    const request: SearchPlayerBalanceTransactionsRequest = {
+    const request: SearchRequest = {
       options: {
         filter: filters,
         sorts: sorts

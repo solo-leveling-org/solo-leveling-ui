@@ -4,7 +4,7 @@ import { api } from '../services';
 import Icon from './Icon';
 import type { 
   PlayerBalanceTransaction, 
-  SearchPlayerBalanceTransactionsRequest,
+  SearchRequest,
   SearchPlayerBalanceTransactionsResponse,
   LocalizedField,
   OrderMode
@@ -149,7 +149,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     setError(null);
 
     try {
-      const request: SearchPlayerBalanceTransactionsRequest = {
+      const request: SearchRequest = {
         options: {
           filter: {
             dateFilters: dateFilters.from && dateFilters.to ? [{

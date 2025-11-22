@@ -17,7 +17,6 @@ const TasksGrid: React.FC<TasksGridProps> = ({ tasks, loading, onTaskClick, onCo
     .filter(
       t => t.status === PlayerTaskStatus.PREPARING ||
            t.status === PlayerTaskStatus.IN_PROGRESS ||
-           t.status === PlayerTaskStatus.PENDING_COMPLETION ||
            t.status === PlayerTaskStatus.COMPLETED
     )
     .sort((a, b) => {

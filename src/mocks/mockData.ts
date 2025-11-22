@@ -164,7 +164,7 @@ export const mockTasks: PlayerTask[] = [
     id: 'task-3',
     version: 1,
     order: 3,
-    status: PlayerTaskStatus.PENDING_COMPLETION,
+            status: PlayerTaskStatus.IN_PROGRESS,
     task: createMockTask(
       'task-3',
       'Медитация 10 минут',
@@ -204,7 +204,6 @@ export const mockTasks: PlayerTask[] = [
       80,
       40
     ),
-    closedAt: new Date(Date.now() - 86400000).toISOString(), // 1 день назад
   },
   {
     id: 'task-6',
@@ -220,7 +219,6 @@ export const mockTasks: PlayerTask[] = [
       120,
       60
     ),
-    closedAt: new Date(Date.now() - 172800000).toISOString(), // 2 дня назад
   },
 ];
 

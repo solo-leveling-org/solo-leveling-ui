@@ -5,7 +5,7 @@ import type {
   GetUserResponse,
   PlayerTaskTopic,
   GetPlayerBalanceResponse,
-  SearchPlayerBalanceTransactionsRequest,
+  SearchRequest,
   SearchPlayerBalanceTransactionsResponse
 } from './api';
 import {PlayerService, PlayerTask, UserService} from './api';
@@ -78,7 +78,7 @@ export const api = {
   },
 
   searchPlayerBalanceTransactions: async (
-    request: SearchPlayerBalanceTransactionsRequest,
+    request: SearchRequest,
     page?: number,
     pageSize: number = 20
   ): Promise<SearchPlayerBalanceTransactionsResponse> => {
