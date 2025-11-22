@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader } from '../components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
-import { cn } from '../utils';
 
 type ProfileTabProps = {
   isAuthenticated: boolean;

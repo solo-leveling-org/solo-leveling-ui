@@ -17,7 +17,8 @@ const TasksGrid: React.FC<TasksGridProps> = ({ tasks, loading, onTaskClick, onCo
     .filter(
       t => t.status === PlayerTaskStatus.PREPARING ||
            t.status === PlayerTaskStatus.IN_PROGRESS ||
-           t.status === PlayerTaskStatus.PENDING_COMPLETION
+           t.status === PlayerTaskStatus.PENDING_COMPLETION ||
+           t.status === PlayerTaskStatus.COMPLETED
     )
     .sort((a, b) => {
       // Сортировка по полю order в возрастающем порядке
@@ -53,37 +54,80 @@ const TasksGrid: React.FC<TasksGridProps> = ({ tasks, loading, onTaskClick, onCo
         <div 
           className="group relative overflow-hidden flex flex-col items-center justify-center animate-fadeIn"
           style={{
-            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(255, 255, 255, 0.05))',
+            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
             backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(59, 130, 246, 0.2)',
+            border: '2px solid rgba(220, 235, 245, 0.2)',
             borderRadius: '24px',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+            boxShadow: `
+              0 0 20px rgba(180, 220, 240, 0.15),
+              inset 0 0 20px rgba(200, 230, 245, 0.03)
+            `,
             minHeight: '280px',
           }}
         >
-          {/* Floating orbs */}
-          <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-emerald-400/20 to-teal-500/10 rounded-full blur-xl animate-float"></div>
-          <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-tr from-pink-400/15 to-orange-400/10 rounded-full blur-lg animate-float-delayed"></div>
+          {/* Glowing orbs */}
+          <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-xl opacity-10 animate-float" style={{
+            background: 'rgba(180, 216, 232, 0.8)'
+          }}></div>
+          <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full blur-lg opacity-10 animate-float-delayed" style={{
+            background: 'rgba(200, 230, 245, 0.6)'
+          }}></div>
           
           <div className="relative z-10 text-center p-6">
             {/* Modern loading indicator */}
             <div className="flex flex-col items-center space-y-6">
               <div className="relative">
-                <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
-                <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-blue-300 rounded-full animate-spin-reverse"></div>
+                <div 
+                  className="w-16 h-16 border-4 rounded-full animate-spin"
+                  style={{
+                    borderColor: 'rgba(220, 235, 245, 0.2)',
+                    borderTopColor: 'rgba(180, 220, 240, 0.6)'
+                  }}
+                ></div>
+                <div 
+                  className="absolute inset-0 w-16 h-16 border-4 border-transparent rounded-full animate-spin-reverse"
+                  style={{
+                    borderRightColor: 'rgba(200, 230, 245, 0.4)'
+                  }}
+                ></div>
               </div>
               
               <div className="space-y-2">
-                <div className="text-blue-700 font-semibold text-lg tracking-wide">
+                <div 
+                  className="font-tech font-semibold text-lg tracking-wide"
+                  style={{
+                    color: '#e8f4f8',
+                    textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+                  }}
+                >
                   Генерируется новая задача
                 </div>
                 
                 {/* Loading dots */}
                 <div className="flex justify-center space-x-1">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                  <div 
+                    className="w-2 h-2 rounded-full animate-pulse"
+                    style={{
+                      background: 'rgba(180, 220, 240, 0.6)',
+                      boxShadow: '0 0 4px rgba(180, 220, 240, 0.4)'
+                    }}
+                  ></div>
+                  <div 
+                    className="w-2 h-2 rounded-full animate-pulse"
+                    style={{
+                      background: 'rgba(180, 220, 240, 0.6)',
+                      boxShadow: '0 0 4px rgba(180, 220, 240, 0.4)',
+                      animationDelay: '0.2s'
+                    }}
+                  ></div>
+                  <div 
+                    className="w-2 h-2 rounded-full animate-pulse"
+                    style={{
+                      background: 'rgba(180, 220, 240, 0.6)',
+                      boxShadow: '0 0 4px rgba(180, 220, 240, 0.4)',
+                      animationDelay: '0.4s'
+                    }}
+                  ></div>
                 </div>
               </div>
             </div>

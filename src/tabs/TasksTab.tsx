@@ -3,6 +3,7 @@ import type { PlayerTask, CompleteTaskResponse } from '../api';
 import TasksGrid from '../components/TasksGrid';
 import TaskDialog from '../components/TaskDialog';
 import TaskCompletionDialog from '../components/TaskCompletionDialog';
+import TaskCardSkeleton from '../components/TaskCardSkeleton';
 import { taskActions, api } from '../services';
 import { useNavigate } from 'react-router-dom';
 import { useLocalization } from '../hooks/useLocalization';
@@ -118,39 +119,61 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   // Показываем skeleton во время загрузки
   if (loading) {
     return (
-      <div className="space-y-6 pb-20">
-        {/* Header skeleton */}
-        <div className="text-center mb-8">
-          <div className="h-8 md:h-10 bg-gray-300 rounded-lg w-48 sm:w-64 mx-auto mb-3 animate-pulse"></div>
-          <div className="space-y-2 mb-6">
-            <div className="h-4 bg-gray-300 rounded-lg w-full max-w-2xl mx-auto animate-pulse"></div>
-            <div className="h-4 bg-gray-300 rounded-lg w-3/4 max-w-xl mx-auto animate-pulse"></div>
-          </div>
-          <div className="w-16 h-1 bg-gray-300 rounded-full mx-auto animate-pulse"></div>
+      <div 
+        className="fixed inset-0 overflow-y-auto overflow-x-hidden"
+        style={{ 
+          background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
+          boxSizing: 'border-box'
+        }}
+      >
+        {/* Holographic grid background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `
+              linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px',
+            transform: 'perspective(500px) rotateX(60deg)',
+            transformOrigin: 'center center'
+          }}></div>
         </div>
 
-        {/* Tasks grid skeleton */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-gray-100 rounded-2xl p-4 sm:p-6 animate-pulse">
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 rounded-full"></div>
-                <div className="w-4 h-4 sm:w-6 sm:h-6 bg-gray-300 rounded"></div>
+        {/* Glowing orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
+          background: 'rgba(180, 216, 232, 0.8)'
+        }}></div>
+        <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
+          background: 'rgba(200, 230, 245, 0.6)'
+        }}></div>
+
+        <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+          <div className="max-w-7xl mx-auto space-y-6">
+            {/* Header skeleton */}
+            <div className="text-center mb-8">
+              <div className="h-8 md:h-10 rounded-lg w-48 sm:w-64 mx-auto mb-3 animate-pulse" style={{
+                background: 'rgba(220, 235, 245, 0.1)'
+              }}></div>
+              <div className="space-y-2 mb-6">
+                <div className="h-4 rounded-lg w-full max-w-2xl mx-auto animate-pulse" style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }}></div>
+                <div className="h-4 rounded-lg w-3/4 max-w-xl mx-auto animate-pulse" style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }}></div>
               </div>
-              <div className="space-y-2 sm:space-y-3">
-                <div className="h-4 sm:h-5 bg-gray-300 rounded w-3/4"></div>
-                <div className="h-3 sm:h-4 bg-gray-300 rounded w-full"></div>
-                <div className="h-3 sm:h-4 bg-gray-300 rounded w-2/3"></div>
-              </div>
-              <div className="mt-3 sm:mt-4 flex items-center justify-between">
-                <div className="flex items-center space-x-1 sm:space-x-2">
-                  <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-300 rounded"></div>
-                  <div className="h-2 sm:h-3 bg-gray-300 rounded w-12 sm:w-16"></div>
-                </div>
-                <div className="h-6 sm:h-8 bg-gray-300 rounded w-16 sm:w-20"></div>
-              </div>
+              <div className="w-16 h-1 rounded-full mx-auto animate-pulse" style={{
+                background: 'rgba(220, 235, 245, 0.1)'
+              }}></div>
             </div>
-          ))}
+
+            {/* Tasks grid skeleton */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <TaskCardSkeleton key={i} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -158,70 +181,175 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
 
   if (firstTime) {
     return (
-      <div className="space-y-6 pb-20">
-        {/* Empty state */}
-        <div className="text-center py-12 px-4">
-          {/* Icon */}
-          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full mb-6 shadow-xl">
-            <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-            </svg>
+      <div 
+        className="fixed inset-0 overflow-y-auto overflow-x-hidden"
+        style={{ 
+          background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
+          boxSizing: 'border-box'
+        }}
+      >
+        {/* Holographic grid background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `
+              linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px',
+            transform: 'perspective(500px) rotateX(60deg)',
+            transformOrigin: 'center center'
+          }}></div>
+        </div>
+
+        {/* Glowing orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
+          background: 'rgba(180, 216, 232, 0.8)'
+        }}></div>
+        <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
+          background: 'rgba(200, 230, 245, 0.6)'
+        }}></div>
+
+        <div className="relative z-10 min-h-screen flex items-center justify-center pt-16 md:pt-20 px-4 md:px-6 pb-24">
+          <div className="max-w-2xl mx-auto text-center">
+            {/* Empty state */}
+            <div className="py-12 px-4">
+              {/* Icon */}
+              <div 
+                className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full mb-6"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.2) 0%, rgba(160, 210, 235, 0.15) 100%)',
+                  border: '2px solid rgba(220, 235, 245, 0.3)',
+                  boxShadow: '0 0 20px rgba(180, 220, 240, 0.3)'
+                }}
+              >
+                <svg className="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{
+                  color: '#e8f4f8',
+                  filter: 'drop-shadow(0 0 4px rgba(180, 220, 240, 0.5))'
+                }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+
+              {/* Title */}
+              <h2 
+                className="text-2xl sm:text-3xl font-tech font-bold mb-4"
+                style={{
+                  color: '#e8f4f8',
+                  textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+                }}
+              >
+                {t('tasks.noTasks.title')}
+              </h2>
+
+              {/* Subtitle */}
+              <p 
+                className="text-base sm:text-lg mb-8 leading-relaxed max-w-md mx-auto"
+                style={{
+                  color: 'rgba(220, 235, 245, 0.7)'
+                }}
+              >
+                {t('tasks.noTasks.subtitle')}
+              </p>
+
+              {/* Action button */}
+              <button
+                onClick={handleGoToTopics}
+                className="group relative overflow-hidden px-8 py-4 rounded-2xl font-tech text-sm tracking-[0.15em] uppercase transition-all duration-300"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  border: '2px solid rgba(220, 235, 245, 0.3)',
+                  boxShadow: '0 0 20px rgba(180, 220, 240, 0.2)',
+                  color: '#e8f4f8'
+                }}
+              >
+                <span className="relative z-10 transition-colors duration-300 group-hover:text-white">
+                  {t('tasks.noTasks.button')}
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+              </button>
+            </div>
           </div>
-
-          {/* Title */}
-          <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-4">
-            {t('tasks.noTasks.title')}
-          </h2>
-
-          {/* Subtitle */}
-          <p className="text-gray-600 text-base sm:text-lg mb-8 leading-relaxed max-w-md mx-auto">
-            {t('tasks.noTasks.subtitle')}
-          </p>
-
-          {/* Action button */}
-          <button
-            onClick={handleGoToTopics}
-            className="group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-4 rounded-3xl font-semibold text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 transform hover:-translate-y-1 border-0 focus:outline-none focus:ring-4 focus:ring-emerald-400/30"
-          >
-            <span className="relative z-10">
-              {t('tasks.noTasks.button')}
-            </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 pb-20">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-3 tracking-tight">
-          {t('tasks.title')}
-        </h1>
-
-        <p className="text-gray-600 mb-6 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto px-4">
-          {t('tasks.subtitle')}
-        </p>
-
-        <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full mx-auto"></div>
+    <div 
+      className="fixed inset-0 overflow-y-auto overflow-x-hidden"
+      style={{ 
+        background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
+        boxSizing: 'border-box'
+      }}
+    >
+      {/* Holographic grid background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px',
+          transform: 'perspective(500px) rotateX(60deg)',
+          transformOrigin: 'center center'
+        }}></div>
       </div>
 
-      {/* Tasks Grid */}
-      <TasksGrid
-        tasks={tasks}
-        loading={loading}
-        onTaskClick={(playerTask) => {
-          if (playerTask.task) setDialogTask(playerTask);
-        }}
-        onComplete={handleCompleteTask}
-        onReplace={async (playerTask) => {
-          if (loading) return;
-          setConfirmAction({ type: 'replace', task: playerTask });
-          setShowConfirmDialog(true);
-        }}
-      />
+      {/* Glowing orbs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
+        background: 'rgba(180, 216, 232, 0.8)'
+      }}></div>
+      <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
+        background: 'rgba(200, 230, 245, 0.6)'
+      }}></div>
+
+      <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 
+              className="text-2xl sm:text-3xl md:text-4xl font-tech font-bold mb-3 tracking-tight"
+              style={{
+                color: '#e8f4f8',
+                textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+              }}
+            >
+              {t('tasks.title')}
+            </h1>
+
+            <p 
+              className="mb-6 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto px-4"
+              style={{
+                color: 'rgba(220, 235, 245, 0.7)'
+              }}
+            >
+              {t('tasks.subtitle')}
+            </p>
+
+            <div 
+              className="w-16 sm:w-24 h-1 rounded-full mx-auto"
+              style={{
+                background: 'linear-gradient(90deg, rgba(180, 220, 240, 0.6) 0%, rgba(160, 210, 235, 0.4) 100%)',
+                boxShadow: '0 0 10px rgba(180, 220, 240, 0.3)'
+              }}
+            ></div>
+          </div>
+
+          {/* Tasks Grid */}
+          <TasksGrid
+            tasks={tasks}
+            loading={loading}
+            onTaskClick={(playerTask) => {
+              if (playerTask.task) setDialogTask(playerTask);
+            }}
+            onComplete={handleCompleteTask}
+            onReplace={async (playerTask) => {
+              if (loading) return;
+              setConfirmAction({ type: 'replace', task: playerTask });
+              setShowConfirmDialog(true);
+            }}
+          />
 
       {dialogTask && dialogTask.task && (
         <TaskDialog task={dialogTask.task} onClose={() => setDialogTask(null)} />
@@ -238,20 +366,22 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
         />
       )}
 
-      <ConfirmDialog
-        isOpen={showConfirmDialog}
-        message={confirmAction?.type === 'complete' 
-          ? t('tasks.confirm.complete') 
-          : t('tasks.confirm.replace')
-        }
-        onConfirm={handleConfirmAction}
-        onCancel={handleCancelConfirm}
-        confirmText={confirmAction?.type === 'complete' 
-          ? t('tasks.buttons.complete') 
-          : t('tasks.buttons.replace')
-        }
-        cancelText={t('common.cancel')}
-      />
+          <ConfirmDialog
+            isOpen={showConfirmDialog}
+            message={confirmAction?.type === 'complete' 
+              ? t('tasks.confirm.complete') 
+              : t('tasks.confirm.replace')
+            }
+            onConfirm={handleConfirmAction}
+            onCancel={handleCancelConfirm}
+            confirmText={confirmAction?.type === 'complete' 
+              ? t('tasks.buttons.complete') 
+              : t('tasks.buttons.replace')
+            }
+            cancelText={t('common.cancel')}
+          />
+        </div>
+      </div>
     </div>
   );
 };

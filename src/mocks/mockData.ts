@@ -134,7 +134,7 @@ export const mockTasks: PlayerTask[] = [
     id: 'task-1',
     version: 1,
     order: 1,
-    status: PlayerTaskStatus.IN_PROGRESS,
+    status: PlayerTaskStatus.PREPARING,
     task: createMockTask(
       'task-1',
       'Пробежка 5 км',
@@ -189,6 +189,38 @@ export const mockTasks: PlayerTask[] = [
       200,
       100
     ),
+  },
+  {
+    id: 'task-5',
+    version: 1,
+    order: 5,
+    status: PlayerTaskStatus.COMPLETED,
+    task: createMockTask(
+      'task-5',
+      'Утренняя зарядка',
+      'Выполните комплекс утренних упражнений',
+      TaskRarity.COMMON,
+      [TaskTopic.PHYSICAL_ACTIVITY],
+      80,
+      40
+    ),
+    closedAt: new Date(Date.now() - 86400000).toISOString(), // 1 день назад
+  },
+  {
+    id: 'task-6',
+    version: 1,
+    order: 6,
+    status: PlayerTaskStatus.COMPLETED,
+    task: createMockTask(
+      'task-6',
+      'Изучить новый язык',
+      'Потратьте 30 минут на изучение нового языка программирования',
+      TaskRarity.UNCOMMON,
+      [TaskTopic.EDUCATION],
+      120,
+      60
+    ),
+    closedAt: new Date(Date.now() - 172800000).toISOString(), // 2 дня назад
   },
 ];
 
