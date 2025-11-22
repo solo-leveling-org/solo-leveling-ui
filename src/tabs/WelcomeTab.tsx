@@ -64,6 +64,7 @@ const WelcomeTab: React.FC = () => {
           background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
           backdropFilter: 'blur(20px)',
           border: '2px solid rgba(220, 235, 245, 0.2)',
+          borderRadius: '24px',
           boxShadow: `
             0 0 20px rgba(180, 220, 240, 0.15),
             inset 0 0 20px rgba(200, 230, 245, 0.03)

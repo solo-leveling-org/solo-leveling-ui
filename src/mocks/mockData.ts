@@ -32,7 +32,7 @@ export const mockUser: User = {
   username: 'mock_user',
   firstName: 'Mock',
   lastName: 'User',
-  photoUrl: 'https://via.placeholder.com/150',
+  photoUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=MockUser&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf',
   locale: 'ru',
   roles: [],
   player: {
@@ -305,7 +305,7 @@ export const mockTelegramUser = {
   username: 'mock_user',
   language_code: 'ru',
   is_premium: false,
-  photo_url: 'https://via.placeholder.com/150',
+  photo_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=MockUser&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf',
 };
 
 export const mockTelegramWebAppData = {
