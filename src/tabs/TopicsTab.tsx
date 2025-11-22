@@ -410,7 +410,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
         </div>
 
         {/* Info section */}
-        <div className="flex justify-center mb-8 md:mb-10 mt-8 md:mt-10">
+        <div className="flex justify-center mb-8 md:mb-10 mt-20 md:mt-24">
           <div 
             className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 max-w-2xl w-full"
             style={{
@@ -505,15 +505,15 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
               <button
                 onClick={handleSave}
                 disabled={saving || !canSave}
-                className="inline-flex items-center justify-center px-4 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="inline-flex items-center justify-center px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-tech font-semibold text-sm md:text-base transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
-                  border: '1px solid rgba(180, 220, 240, 0.4)',
+                  background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.5) 0%, rgba(160, 210, 235, 0.4) 100%)',
+                  border: '2px solid rgba(180, 220, 240, 0.9)',
                   color: '#e8f4f8',
-                  boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
-                  textShadow: '0 0 4px rgba(180, 220, 240, 0.2)',
-                  minWidth: '140px',
-                  width: '140px'
+                  boxShadow: '0 0 35px rgba(180, 220, 240, 0.7), 0 0 70px rgba(180, 220, 240, 0.4), inset 0 0 25px rgba(180, 220, 240, 0.15)',
+                  textShadow: '0 0 12px rgba(180, 220, 240, 0.6)',
+                  minWidth: '160px',
+                  width: 'auto'
                 }}
               >
                 {saving ? (

@@ -134,10 +134,10 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
 
   // Загрузка транзакций
   const loadTransactions = useCallback(async (page: number = 0, reset: boolean = false) => {
-    if (isLoadingRef.current) return;
-    
     // Дополнительная защита: не загружаем если данных больше нет
     if (!reset && !hasMoreRef.current) return;
+    
+    if (isLoadingRef.current) return;
     
     isLoadingRef.current = true;
     
@@ -237,7 +237,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       if (entry.isIntersecting && hasMoreRef.current && !loadingMore && !isLoadingRef.current) {
         const nextPage = currentPageRef.current + 1;
         if (loadTransactionsRef.current) {
-          loadTransactionsRef.current(nextPage);
+          loadTransactionsRef.current(nextPage, false);
         }
       }
     };
@@ -253,6 +253,11 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
         observerRef.current.observe(loadMoreRef.current);
       }
     }, 100);
+
+    // Также наблюдаем сразу, если элемент уже в DOM
+    if (loadMoreRef.current && observerRef.current && hasMoreRef.current) {
+      observerRef.current.observe(loadMoreRef.current);
+    }
 
     return () => {
       clearTimeout(timeoutId);
@@ -274,16 +279,16 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       hasInitialLoadRef.current = true;
       // Загружаем сразу при монтировании, без задержки
       if (!isLoadingRef.current) {
-        loadTransactions(0, true);
+        loadTransactionsRef.current?.(0, true);
       }
     } else {
       // При изменении фильтров загружаем сразу
       if (!isLoadingRef.current) {
-        loadTransactions(0, true);
+        loadTransactionsRef.current?.(0, true);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dateFilters.from, dateFilters.to, JSON.stringify(enumFilters), loadTransactions]);
+  }, [dateFilters.from, dateFilters.to, JSON.stringify(enumFilters)]);
 
   // Обновление групп при изменении транзакций
   useEffect(() => {
@@ -607,7 +612,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       )}
 
       {/* Элемент для отслеживания скролла - только если есть еще данные */}
-      {hasMoreRef.current && !loadingMore && (
+      {hasMore && !loadingMore && (
         <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
           <div className="text-xs font-tech" style={{ color: 'rgba(220, 235, 245, 0.5)' }}>
             Загрузка...
