@@ -9,6 +9,14 @@ import './i18n';
 // Инициализируем конфигурацию OpenAPI с функцией getTokenForRequest
 import './api/config';
 
+// Инициализируем моки Telegram до рендеринга приложения, если они нужны
+import { useMocks } from './config/environment';
+if (useMocks && typeof window !== 'undefined') {
+  const { setupMockTelegram } = require('./mocks/mockTelegram');
+  setupMockTelegram();
+  console.log('[Index] Mock Telegram initialized before React render');
+}
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );

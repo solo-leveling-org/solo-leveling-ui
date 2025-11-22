@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "npx",
+      "args": [
+        "shadcn@latest",
+        "mcp"
+      ]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
+    },
+    "pickapicon-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "pickapicon-mcp@latest"
+      ]
+    },
+    "lottiefiles": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-server-lottiefiles"
+      ]
+    }
+  }
+}

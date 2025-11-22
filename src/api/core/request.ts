@@ -14,6 +14,7 @@ import type { OnCancel } from './CancelablePromise';
 import type { OpenAPIConfig } from './OpenAPI';
 import { auth } from '../../auth';
 import { getLanguageFromStorage } from '../../hooks/useSettings';
+import { useMocks } from '../../config/environment';
 
 export const isDefined = <T>(value: T | null | undefined): value is Exclude<T, null | undefined> => {
   return value !== undefined && value !== null;
@@ -252,6 +253,80 @@ export const getResponseBody = (response: AxiosResponse<any>): any => {
   return undefined;
 };
 
+/**
+ * Обработка моковых запросов
+ */
+const handleMockRequest = async <T>(options: ApiRequestOptions): Promise<T | null> => {
+  try {
+    const { mockAuthService, mockUserService, mockPlayerService } = await import('../../mocks/mockApi');
+    
+    // Обработка auth запросов
+    if (options.url === '/api/v1/auth/login' && options.method === 'POST') {
+      return await mockAuthService.login(options.body as any) as any;
+    }
+    if (options.url === '/api/v1/auth/refresh' && options.method === 'POST') {
+      return await mockAuthService.refresh(options.body as any) as any;
+    }
+    
+    // Обработка user запросов
+    if (options.url === '/api/v1/user/me' && options.method === 'GET') {
+      return await mockUserService.getCurrentUser() as any;
+    }
+    if (options.url?.startsWith('/api/v1/user/') && options.url !== '/api/v1/user/me' && options.method === 'GET') {
+      const userId = parseInt(options.path?.userId as string || '0');
+      return await mockUserService.getUser(userId) as any;
+    }
+    if (options.url === '/api/v1/user/locale' && options.method === 'GET') {
+      return await mockUserService.getUserLocale() as any;
+    }
+    if (options.url === '/api/v1/user/locale' && options.method === 'PUT') {
+      return await mockUserService.updateUserLocale(options.body as any) as any;
+    }
+    
+    // Обработка player запросов
+    if (options.url === '/api/v1/player/topics' && options.method === 'GET') {
+      return await mockPlayerService.getCurrentPlayerTopics() as any;
+    }
+    if (options.url?.startsWith('/api/v1/player/') && options.url.includes('/topics') && options.method === 'GET') {
+      const playerId = parseInt(options.path?.playerId as string || '0');
+      return await mockPlayerService.getPlayerTopics(playerId) as any;
+    }
+    if (options.url === '/api/v1/player/topics' && options.method === 'POST') {
+      return await mockPlayerService.savePlayerTopics(options.body as any) as any;
+    }
+    if (options.url === '/api/v1/player/tasks/active' && options.method === 'GET') {
+      return await mockPlayerService.getActiveTasks() as any;
+    }
+    if (options.url === '/api/v1/player/tasks/generate' && options.method === 'POST') {
+      return await mockPlayerService.generateTasks() as any;
+    }
+    if (options.url === '/api/v1/player/tasks/complete' && options.method === 'POST') {
+      return await mockPlayerService.completeTask(options.body as any) as any;
+    }
+    if (options.url === '/api/v1/player/tasks/skip' && options.method === 'POST') {
+      return await mockPlayerService.skipTask(options.body as any) as any;
+    }
+    if (options.url === '/api/v1/player/balance' && options.method === 'GET') {
+      return await mockPlayerService.getPlayerBalance() as any;
+    }
+    if (options.url === '/api/v1/player/balance/transaction/search' && options.method === 'POST') {
+      const page = options.query?.page as number | undefined;
+      const pageSize = (options.query?.pageSize as number) || 20;
+      return await mockPlayerService.searchPlayerBalanceTransactions(
+        options.body as any,
+        page,
+        pageSize
+      ) as any;
+    }
+    
+    // Если запрос не обработан, возвращаем null (будет использован реальный запрос)
+    return null;
+  } catch (error) {
+    console.error('[Mock API] Error handling mock request:', error);
+    return null;
+  }
+};
+
 export const catchErrorCodes = (options: ApiRequestOptions, result: ApiResult): void => {
   const errors: Record<number, string> = {
     400: 'Bad Request',
@@ -297,6 +372,15 @@ export const catchErrorCodes = (options: ApiRequestOptions, result: ApiResult): 
 export const request = <T>(config: OpenAPIConfig, options: ApiRequestOptions, axiosClient: AxiosInstance = axios): CancelablePromise<T> => {
   return new CancelablePromise(async (resolve, reject, onCancel) => {
     try {
+      // Если используем моки, перехватываем запросы
+      if (useMocks) {
+        const mockResponse = await handleMockRequest<T>(options);
+        if (mockResponse !== null) {
+          resolve(mockResponse);
+          return;
+        }
+      }
+
       const url = getUrl(config, options);
       const formData = getFormData(options);
       const body = getRequestBody(options);

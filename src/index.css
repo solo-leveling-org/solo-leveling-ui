@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --background: 10 14 39;
+    --foreground: 224 231 255;
+    --card: 10 14 39;
+    --card-foreground: 224 231 255;
+    --popover: 10 14 39;
+    --popover-foreground: 224 231 255;
+    --primary: 0 212 255;
+    --primary-foreground: 255 255 255;
+    --secondary: 26 31 58;
+    --secondary-foreground: 224 231 255;
+    --muted: 26 31 58;
+    --muted-foreground: 77 208 225;
+    --accent: 0 255 255;
+    --accent-foreground: 255 255 255;
+    --destructive: 239 68 68;
+    --destructive-foreground: 255 255 255;
+    --border: 0 212 255 / 0.3;
+    --input: 0 212 255 / 0.2;
+    --ring: 0 212 255;
+    --radius: 0.5rem;
+  }
+}
+
 /* Глобальное скрытие скроллбаров */
 * {
   scrollbar-width: none; /* Firefox */
@@ -23,6 +48,15 @@ body::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
 
+html {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: #050812;
+  margin: 0;
+  padding: 0;
+}
+
 /* Скрытие скроллбара для всех контейнеров */
 div, main, section, article, aside, nav, header, footer {
   scrollbar-width: none; /* Firefox */
@@ -42,11 +76,24 @@ footer::-webkit-scrollbar {
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  padding: 0;
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: #050812;
+  box-sizing: border-box;
+}
+
+/* Tech/futuristic font for headings and UI elements */
+.font-tech {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
 }
 
 /* Box sizing reset */
@@ -86,6 +133,191 @@ code {
   100% {
     background-position: 200% 0;
   }
+}
+
+/* Solo Leveling Neon Effects */
+@keyframes neon-glow {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px rgba(0, 212, 255, 0.8),
+      0 0 20px rgba(0, 212, 255, 0.6),
+      0 0 30px rgba(0, 212, 255, 0.4),
+      0 0 40px rgba(0, 212, 255, 0.2);
+  }
+  50% {
+    text-shadow: 
+      0 0 15px rgba(0, 255, 255, 1),
+      0 0 30px rgba(0, 255, 255, 0.8),
+      0 0 45px rgba(0, 255, 255, 0.6),
+      0 0 60px rgba(0, 255, 255, 0.4);
+  }
+}
+
+@keyframes holographic-shimmer {
+  0% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  25% {
+    background-position: 50% 50%;
+    filter: hue-rotate(45deg) brightness(1.1);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: hue-rotate(90deg) brightness(1.2);
+  }
+  75% {
+    background-position: 50% 50%;
+    filter: hue-rotate(45deg) brightness(1.1);
+  }
+  100% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg) brightness(1);
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+@keyframes circuit-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    opacity: 0.8;
+    stroke-dashoffset: 20;
+  }
+}
+
+@keyframes glitch {
+  0%, 100% {
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+    filter: hue-rotate(90deg);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+    filter: hue-rotate(180deg);
+  }
+  60% {
+    transform: translate(2px, 2px);
+    filter: hue-rotate(270deg);
+  }
+  80% {
+    transform: translate(2px, -2px);
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes energy-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-neon-glow {
+  animation: neon-glow 2s ease-in-out infinite;
+}
+
+.animate-holographic {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 212, 255, 0.1) 0%,
+    rgba(0, 255, 255, 0.15) 25%,
+    rgba(124, 58, 237, 0.1) 50%,
+    rgba(0, 255, 255, 0.15) 75%,
+    rgba(0, 212, 255, 0.1) 100%
+  );
+  background-size: 200% 200%;
+  animation: holographic-shimmer 4s ease-in-out infinite;
+}
+
+.animate-scan-line {
+  animation: scan-line 3s linear infinite;
+}
+
+.animate-circuit {
+  animation: circuit-pulse 2s ease-in-out infinite;
+}
+
+.animate-glitch {
+  animation: glitch 0.3s infinite;
+}
+
+.animate-energy-flow {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 212, 255, 0.1) 25%,
+    rgba(0, 255, 255, 0.2) 50%,
+    rgba(0, 212, 255, 0.1) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: energy-flow 3s linear infinite;
+}
+
+/* Holographic frame effect */
+.holographic-frame {
+  position: relative;
+  border: 2px solid rgba(0, 212, 255, 0.5);
+  background: rgba(10, 14, 39, 0.8);
+  box-shadow: 
+    0 0 20px rgba(0, 212, 255, 0.3),
+    inset 0 0 20px rgba(0, 212, 255, 0.1);
+}
+
+.holographic-frame::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(
+    45deg,
+    rgba(0, 212, 255, 0.5) 0%,
+    transparent 25%,
+    transparent 75%,
+    rgba(0, 255, 255, 0.5) 100%
+  );
+  background-size: 200% 200%;
+  animation: holographic-shimmer 3s ease-in-out infinite;
+  z-index: -1;
+  border-radius: inherit;
+}
+
+.holographic-frame::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 @keyframes float {
@@ -314,13 +546,14 @@ code {
   background: #94a3b8; /* thumb hover color */
 }
 
-/* Белый фон сверху только для мобильных устройств */
+/* Белый фон сверху только для мобильных устройств - только для safe area */
 .mobile-version {
-  background-color: white;
+  background-color: #050812;
 }
 
 .mobile-version #root {
   position: relative;
+  background-color: #050812;
 }
 
 .mobile-version #root::before {
@@ -329,15 +562,23 @@ code {
   top: 0;
   left: 0;
   right: 0;
+  width: 100vw;
+  max-width: 100vw;
   height: env(safe-area-inset-top, 44px);
   background-color: white;
   z-index: 9999;
   pointer-events: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 .mobile-version .App {
   padding-top: env(safe-area-inset-top, 44px);
-  background-color: white;
+  background-color: #050812;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 .mobile-version .App::before {
@@ -346,10 +587,23 @@ code {
   top: 0;
   left: 0;
   right: 0;
+  width: 100vw;
+  max-width: 100vw;
   height: 44px;
   background-color: white;
   z-index: 10000;
   pointer-events: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.mobile-version main,
+.mobile-version .tab-content {
+  background-color: #050812 !important;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 /* Для устройств с вырезом (notch) */
@@ -365,11 +619,16 @@ code {
 
 /* На десктопе убираем ВСЕ псевдоэлементы и белые полоски */
 .desktop-version {
-  background-color: transparent !important;
+  background-color: #050812 !important;
 }
 
 .desktop-version #root {
-  background-color: transparent !important;
+  background-color: #050812 !important;
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .desktop-version #root::before,
@@ -382,14 +641,30 @@ code {
 
 .desktop-version .App {
   padding-top: 0 !important;
-  background-color: transparent !important;
+  background-color: #050812 !important;
   margin-top: 0 !important;
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.desktop-version main,
+.desktop-version .tab-content {
+  background-color: #050812 !important;
 }
 
 .desktop-version body {
-  background-color: transparent !important;
+  background-color: #050812 !important;
   margin: 0 !important;
   padding: 0 !important;
+  overflow-x: hidden !important;
+  width: 100% !important;
+}
+
+.desktop-version html {
+  overflow-x: hidden !important;
+  width: 100% !important;
+  background-color: #050812 !important;
 }
 
 /* Позиционирование уведомлений для мобильных устройств */

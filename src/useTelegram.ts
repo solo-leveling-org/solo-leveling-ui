@@ -1,33 +1,73 @@
 import { useEffect, useState } from 'react';
 import WebApp from '@twa-dev/sdk';
+import { useMocks } from './config/environment';
+
+// Получаем WebApp объект (реальный или моковый)
+const getWebApp = () => {
+  if (useMocks) {
+    // В мок режиме используем мок из window
+    return (window as any).Telegram?.WebApp || WebApp;
+  }
+  return WebApp;
+};
 
 export function useTelegram() {
-  const [user, setUser] = useState(WebApp.initDataUnsafe?.user);
-  const [initData, setInitData] = useState(WebApp.initData);
-  const [tgWebAppData, setTgWebAppData] = useState(WebApp.initDataUnsafe);
+  // Получаем webApp динамически, чтобы учесть моки
+  const [webApp, setWebApp] = useState(() => getWebApp());
+  const [user, setUser] = useState(() => webApp.initDataUnsafe?.user);
+  const [initData, setInitData] = useState(() => webApp.initData || '');
+  const [tgWebAppData, setTgWebAppData] = useState(() => webApp.initDataUnsafe);
 
   useEffect(() => {
+    // Обновляем webApp, если моки были инициализированы позже
+    const currentWebApp = getWebApp();
+    setWebApp(currentWebApp);
+    
     // Уведомляем Telegram, что приложение готово
-    WebApp.ready();
+    if (currentWebApp.ready) {
+      currentWebApp.ready();
+    }
     
     // Отключаем возможность закрытия свайпом вниз
-    WebApp.enableClosingConfirmation();
+    if (currentWebApp.enableClosingConfirmation) {
+      currentWebApp.enableClosingConfirmation();
+    }
     
     // Отключаем возможность закрытия свайпом
-    WebApp.disableVerticalSwipes();
+    if (currentWebApp.disableVerticalSwipes) {
+      currentWebApp.disableVerticalSwipes();
+    }
     
     // Устанавливаем начальные данные
-    setUser(WebApp.initDataUnsafe?.user);
-    setInitData(WebApp.initData);
-    setTgWebAppData(WebApp.initDataUnsafe);
+    const newUser = currentWebApp.initDataUnsafe?.user;
+    const newInitData = currentWebApp.initData || '';
+    const newTgWebAppData = currentWebApp.initDataUnsafe;
+    
+    setUser(newUser);
+    setInitData(newInitData);
+    setTgWebAppData(newTgWebAppData);
+    
+    // Если данные все еще пустые и используем моки, ждем немного и проверяем снова
+    if (useMocks && (!newInitData || !newTgWebAppData)) {
+      const timeoutId = setTimeout(() => {
+        const updatedWebApp = getWebApp();
+        if (updatedWebApp.initData || updatedWebApp.initDataUnsafe) {
+          setInitData(updatedWebApp.initData || '');
+          setTgWebAppData(updatedWebApp.initDataUnsafe);
+          setUser(updatedWebApp.initDataUnsafe?.user);
+        }
+      }, 100);
+      return () => clearTimeout(timeoutId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { 
     user, 
     initData, 
     tgWebAppData, 
-    webApp: WebApp,
-    isAvailable: true // WebApp всегда доступен при использовании SDK
+    webApp,
+    isAvailable: true // WebApp всегда доступен при использовании SDK или моков
   };
 }
 
@@ -37,7 +77,13 @@ export function useTelegramWebApp() {
 
   const showAlert = (message: string, callback?: () => void) => {
     try {
-      webApp.showAlert(message, callback);
+      if (webApp.showAlert) {
+        webApp.showAlert(message, callback);
+      } else {
+        // Fallback для обычного браузера или моков
+        window.alert(message);
+        if (callback) callback();
+      }
     } catch (error) {
       console.error('Error showing alert:', error);
       // Fallback для обычного браузера
@@ -48,7 +94,13 @@ export function useTelegramWebApp() {
 
   const showConfirm = (message: string, callback: (confirmed: boolean) => void) => {
     try {
-      webApp.showConfirm(message, callback);
+      if (webApp.showConfirm) {
+        webApp.showConfirm(message, callback);
+      } else {
+        // Fallback для обычного браузера или моков
+        const confirmed = window.confirm(message);
+        callback(confirmed);
+      }
     } catch (error) {
       console.error('Error showing confirm:', error);
       // Fallback для обычного браузера
@@ -67,7 +119,16 @@ export function useTelegramWebApp() {
     }>;
   }, callback: (buttonId: string | undefined) => void) => {
     try {
-      webApp.showPopup(params, callback);
+      if (webApp.showPopup) {
+        webApp.showPopup(params, callback);
+      } else {
+        // Fallback для обычного браузера или моков
+        const buttonTexts = params.buttons.map(btn => btn.text).join(' | ');
+        const result = window.prompt(`${params.title}\n\n${params.message}\n\nДоступные кнопки: ${buttonTexts}\nВведите ID кнопки:`);
+        if (result) {
+          callback(result);
+        }
+      }
     } catch (error) {
       console.error('Error showing popup:', error);
       // Fallback для обычного браузера
@@ -84,21 +145,27 @@ export function useTelegramWebApp() {
   const hapticFeedback = {
     impactOccurred: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft') => {
       try {
-        webApp.HapticFeedback.impactOccurred(style);
+        if (webApp.HapticFeedback?.impactOccurred) {
+          webApp.HapticFeedback.impactOccurred(style);
+        }
       } catch (error) {
         console.error('Error with haptic feedback:', error);
       }
     },
     notificationOccurred: (type: 'error' | 'success' | 'warning') => {
       try {
-        webApp.HapticFeedback.notificationOccurred(type);
+        if (webApp.HapticFeedback?.notificationOccurred) {
+          webApp.HapticFeedback.notificationOccurred(type);
+        }
       } catch (error) {
         console.error('Error with haptic feedback:', error);
       }
     },
     selectionChanged: () => {
       try {
-        webApp.HapticFeedback.selectionChanged();
+        if (webApp.HapticFeedback?.selectionChanged) {
+          webApp.HapticFeedback.selectionChanged();
+        }
       } catch (error) {
         console.error('Error with haptic feedback:', error);
       }
@@ -108,42 +175,54 @@ export function useTelegramWebApp() {
   const mainButton = {
     show: () => {
       try {
-        webApp.MainButton.show();
+        if (webApp.MainButton?.show) {
+          webApp.MainButton.show();
+        }
       } catch (error) {
         console.error('Error showing main button:', error);
       }
     },
     hide: () => {
       try {
-        webApp.MainButton.hide();
+        if (webApp.MainButton?.hide) {
+          webApp.MainButton.hide();
+        }
       } catch (error) {
         console.error('Error hiding main button:', error);
       }
     },
     setText: (text: string) => {
       try {
-        webApp.MainButton.setText(text);
+        if (webApp.MainButton?.setText) {
+          webApp.MainButton.setText(text);
+        }
       } catch (error) {
         console.error('Error setting main button text:', error);
       }
     },
     onClick: (callback: () => void) => {
       try {
-        webApp.MainButton.onClick(callback);
+        if (webApp.MainButton?.onClick) {
+          webApp.MainButton.onClick(callback);
+        }
       } catch (error) {
         console.error('Error setting main button click:', error);
       }
     },
     showProgress: (leaveActive?: boolean) => {
       try {
-        webApp.MainButton.showProgress(leaveActive);
+        if (webApp.MainButton?.showProgress) {
+          webApp.MainButton.showProgress(leaveActive);
+        }
       } catch (error) {
         console.error('Error showing main button progress:', error);
       }
     },
     hideProgress: () => {
       try {
-        webApp.MainButton.hideProgress();
+        if (webApp.MainButton?.hideProgress) {
+          webApp.MainButton.hideProgress();
+        }
       } catch (error) {
         console.error('Error hiding main button progress:', error);
       }
@@ -153,21 +232,27 @@ export function useTelegramWebApp() {
   const backButton = {
     show: () => {
       try {
-        webApp.BackButton.show();
+        if (webApp.BackButton?.show) {
+          webApp.BackButton.show();
+        }
       } catch (error) {
         console.error('Error showing back button:', error);
       }
     },
     hide: () => {
       try {
-        webApp.BackButton.hide();
+        if (webApp.BackButton?.hide) {
+          webApp.BackButton.hide();
+        }
       } catch (error) {
         console.error('Error hiding back button:', error);
       }
     },
     onClick: (callback: () => void) => {
       try {
-        webApp.BackButton.onClick(callback);
+        if (webApp.BackButton?.onClick) {
+          webApp.BackButton.onClick(callback);
+        }
       } catch (error) {
         console.error('Error setting back button click:', error);
       }
@@ -177,7 +262,24 @@ export function useTelegramWebApp() {
   const cloudStorage = {
     getItem: async (key: string): Promise<string | null> => {
       try {
-        // CloudStorage.getItem возвращает void, поэтому используем localStorage как fallback
+        if (webApp.CloudStorage?.getItem) {
+          return new Promise((resolve) => {
+            webApp.CloudStorage.getItem(key, (error: Error | null, value: string | null) => {
+              if (error) {
+                console.error('Error getting cloud storage item:', error);
+                // Fallback на localStorage
+                if (typeof window !== 'undefined' && window.localStorage) {
+                  resolve(window.localStorage.getItem(key));
+                } else {
+                  resolve(null);
+                }
+              } else {
+                resolve(value);
+              }
+            });
+          });
+        }
+        // Fallback на localStorage
         if (typeof window !== 'undefined' && window.localStorage) {
           return window.localStorage.getItem(key);
         }
@@ -189,7 +291,26 @@ export function useTelegramWebApp() {
     },
     setItem: async (key: string, value: string): Promise<void> => {
       try {
-        webApp.CloudStorage.setItem(key, value);
+        if (webApp.CloudStorage?.setItem) {
+          return new Promise((resolve, reject) => {
+            webApp.CloudStorage.setItem(key, value, (error: Error | null) => {
+              if (error) {
+                console.error('Error setting cloud storage item:', error);
+                // Fallback на localStorage
+                if (typeof window !== 'undefined' && window.localStorage) {
+                  window.localStorage.setItem(key, value);
+                }
+                reject(error);
+              } else {
+                resolve();
+              }
+            });
+          });
+        }
+        // Fallback на localStorage
+        if (typeof window !== 'undefined' && window.localStorage) {
+          window.localStorage.setItem(key, value);
+        }
       } catch (error) {
         console.error('Error setting cloud storage item:', error);
         // Fallback на localStorage
@@ -200,7 +321,26 @@ export function useTelegramWebApp() {
     },
     removeItem: async (key: string): Promise<void> => {
       try {
-        webApp.CloudStorage.removeItem(key);
+        if (webApp.CloudStorage?.removeItem) {
+          return new Promise((resolve, reject) => {
+            webApp.CloudStorage.removeItem(key, (error: Error | null) => {
+              if (error) {
+                console.error('Error removing cloud storage item:', error);
+                // Fallback на localStorage
+                if (typeof window !== 'undefined' && window.localStorage) {
+                  window.localStorage.removeItem(key);
+                }
+                reject(error);
+              } else {
+                resolve();
+              }
+            });
+          });
+        }
+        // Fallback на localStorage
+        if (typeof window !== 'undefined' && window.localStorage) {
+          window.localStorage.removeItem(key);
+        }
       } catch (error) {
         console.error('Error removing cloud storage item:', error);
         // Fallback на localStorage
@@ -211,7 +351,24 @@ export function useTelegramWebApp() {
     },
     getKeys: async (): Promise<string[]> => {
       try {
-        // CloudStorage.getKeys возвращает void, поэтому используем localStorage как fallback
+        if (webApp.CloudStorage?.getKeys) {
+          return new Promise((resolve) => {
+            webApp.CloudStorage.getKeys((error: Error | null, keys: string[]) => {
+              if (error) {
+                console.error('Error getting cloud storage keys:', error);
+                // Fallback на localStorage
+                if (typeof window !== 'undefined' && window.localStorage) {
+                  resolve(Object.keys(window.localStorage));
+                } else {
+                  resolve([]);
+                }
+              } else {
+                resolve(keys);
+              }
+            });
+          });
+        }
+        // Fallback на localStorage
         if (typeof window !== 'undefined' && window.localStorage) {
           return Object.keys(window.localStorage);
         }
@@ -227,28 +384,36 @@ export function useTelegramWebApp() {
   const swipeControl = {
     disableVerticalSwipes: () => {
       try {
-        webApp.disableVerticalSwipes();
+        if (webApp.disableVerticalSwipes) {
+          webApp.disableVerticalSwipes();
+        }
       } catch (error) {
         console.error('Error disabling vertical swipes:', error);
       }
     },
     enableVerticalSwipes: () => {
       try {
-        webApp.enableVerticalSwipes();
+        if (webApp.enableVerticalSwipes) {
+          webApp.enableVerticalSwipes();
+        }
       } catch (error) {
         console.error('Error enabling vertical swipes:', error);
       }
     },
     enableClosingConfirmation: () => {
       try {
-        webApp.enableClosingConfirmation();
+        if (webApp.enableClosingConfirmation) {
+          webApp.enableClosingConfirmation();
+        }
       } catch (error) {
         console.error('Error enabling closing confirmation:', error);
       }
     },
     disableClosingConfirmation: () => {
       try {
-        webApp.disableClosingConfirmation();
+        if (webApp.disableClosingConfirmation) {
+          webApp.disableClosingConfirmation();
+        }
       } catch (error) {
         console.error('Error disabling closing confirmation:', error);
       }

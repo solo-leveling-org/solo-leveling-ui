@@ -5,6 +5,7 @@ import type { Message, LoginResponse } from '../api';
 import { useNotification } from '../components/NotificationSystem';
 import { useSettings } from './useSettings';
 import { fetchAndUpdateUserLocale } from '../utils/localeUtils';
+import { useMocks } from '../config/environment';
 
 interface UseWebSocketNotificationsProps {
   enabled: boolean;
@@ -15,8 +16,15 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
   const clientRef = useRef<Client | null>(null);
   const { show } = useNotification();
   const { updateSettings } = useSettings();
+  const isMockMode = useMocks;
 
   useEffect(() => {
+    // В мок режиме не подключаемся к WebSocket
+    if (isMockMode) {
+      console.log('[WS] Mock mode: WebSocket disabled');
+      return;
+    }
+
     if (!enabled) {
       // Отключаем WebSocket если не авторизован
       if (clientRef.current) {
@@ -153,5 +161,5 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
       }
       clientRef.current = null;
     };
-  }, [enabled, authPromise, show, updateSettings]);
+  }, [enabled, authPromise, show, updateSettings, isMockMode]);
 }

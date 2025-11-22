@@ -6,7 +6,25 @@ export interface EnvironmentConfig {
   wsUrl: string;
   isDevelopment: boolean;
   isProduction: boolean;
+  useMocks: boolean;
 }
+
+// Проверяем, нужно ли использовать моки
+const shouldUseMocks = (): boolean => {
+  // Проверяем переменную окружения REACT_APP_USE_MOCKS
+  const useMocksEnv = process.env.REACT_APP_USE_MOCKS;
+  if (useMocksEnv === 'true' || useMocksEnv === '1') {
+    return true;
+  }
+  if (useMocksEnv === 'false' || useMocksEnv === '0') {
+    return false;
+  }
+  
+  // В development режиме можно использовать моки, если Telegram недоступен
+  // Но проверка будет выполнена позже, когда window доступен
+  // По умолчанию в development не используем моки, если явно не указано
+  return false;
+};
 
 const developmentConfig: EnvironmentConfig = {
   env: 'development',
@@ -14,6 +32,7 @@ const developmentConfig: EnvironmentConfig = {
   wsUrl: 'wss://solo-leveling-gateway.ru.tuna.am/ws',
   isDevelopment: true,
   isProduction: false,
+  useMocks: shouldUseMocks(),
 };
 
 const productionConfig: EnvironmentConfig = {
@@ -22,6 +41,7 @@ const productionConfig: EnvironmentConfig = {
   wsUrl: 'wss://gateway.solo-leveling.online/ws',
   isDevelopment: false,
   isProduction: true,
+  useMocks: false, // В production никогда не используем моки
 };
 
 // Определяем текущее окружение
@@ -45,15 +65,46 @@ const currentEnv = getCurrentEnvironment();
 
 export const config: EnvironmentConfig = currentEnv === 'production' ? productionConfig : developmentConfig;
 
-// Логируем конфигурацию для отладки
+// Логируем конфигурацию для отладки и определяем моки динамически
 if (typeof window !== 'undefined') {
+  // Переопределяем useMocks, если Telegram недоступен в development
+  if (config.isDevelopment && !config.useMocks) {
+    // Проверяем наличие Telegram WebApp (может быть загружен позже)
+    // Если Telegram недоступен, используем моки
+    const checkTelegram = () => {
+      const hasTelegram = !!(window as any).Telegram?.WebApp;
+      if (!hasTelegram) {
+        // Telegram недоступен, используем моки
+        (config as any).useMocks = true;
+        console.log('[Config] Telegram WebApp not available, enabling mocks');
+        // Инициализируем моки синхронно
+        const { setupMockTelegram } = require('../mocks/mockTelegram');
+        setupMockTelegram();
+      }
+    };
+    
+    // Проверяем сразу
+    checkTelegram();
+    
+    // Также проверяем через небольшую задержку на случай, если Telegram загружается асинхронно
+    setTimeout(checkTelegram, 100);
+  }
+  
+  // Если моки уже включены через переменную окружения, инициализируем их синхронно
+  // Но лучше инициализировать в index.tsx до рендеринга React
+  if (config.useMocks) {
+    // Инициализация будет выполнена в index.tsx
+    console.log('[Config] Mocks enabled, will be initialized in index.tsx');
+  }
+  
   console.log('[Config] Environment:', config.env);
   console.log('[Config] API URL:', config.apiBaseUrl);
   console.log('[Config] WebSocket URL:', config.wsUrl);
+  console.log('[Config] Use Mocks:', config.useMocks);
 }
 
 // Экспортируем отдельные значения для удобства
-export const { env, apiBaseUrl, wsUrl, isDevelopment, isProduction } = config;
+export const { env, apiBaseUrl, wsUrl, isDevelopment, isProduction, useMocks } = config;
 
 // Функция для получения конфигурации по имени окружения
 export const getConfigByEnvironment = (environment: Environment): EnvironmentConfig => {

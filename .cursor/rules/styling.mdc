@@ -1,0 +1,29 @@
+---
+alwaysApply: true
+---
+# UI/UX Rules
+
+## Icons
+When adding icons to the project:
+- ALWAYS use pickapicon-mcp to search for icons
+- Use the search_icons tool before manually adding SVG icons
+- Example prompt: "Search for a user icon using pickapicon"
+
+## Animations
+For animations and micro-interactions:
+- ALWAYS check lottiefiles MCP first
+- Use search_lottiefiles tool to find relevant animations
+- Prefer animations that match our brand colors
+- Example: "Find a loading animation using lottiefiles"
+
+## Testing & Automation
+For UI testing and browser automation:
+- Use playwright MCP for automated browser testing
+- Create tests for critical user flows
+- Run tests before major UI changes
+
+## General Style Guidelines
+- Use Tailwind CSS with our custom theme
+- Follow shadcn/ui component patterns
+- Keep animations subtle and purposeful
+- Ensure all icons are consistent in style
