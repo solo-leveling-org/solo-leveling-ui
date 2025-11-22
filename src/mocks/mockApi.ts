@@ -27,6 +27,7 @@ import {
   mockSearchPlayerBalanceTransactionsResponse,
   mockSearchPlayerTasksResponse,
   mockTasks,
+  mockTransactions,
   mockPlayerTopics,
 } from './mockData';
 import { CancelablePromise } from '../api/core/CancelablePromise';
@@ -226,7 +227,86 @@ export const mockPlayerService = {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
       console.log('[Mock API] Search player balance transactions:', { requestBody, page, pageSize });
-      resolve(mockSearchPlayerBalanceTransactionsResponse);
+      
+      let filteredTransactions = [...mockTransactions];
+      
+      // Применяем фильтры по датам
+      if (requestBody.options?.filter?.dateFilters) {
+        requestBody.options.filter.dateFilters.forEach(dateFilter => {
+          if (dateFilter.field === 'createdAt' && dateFilter.from && dateFilter.to) {
+            const fromDate = new Date(dateFilter.from);
+            const toDate = new Date(dateFilter.to);
+            filteredTransactions = filteredTransactions.filter(transaction => {
+              const transactionDate = new Date(transaction.createdAt);
+              return transactionDate >= fromDate && transactionDate <= toDate;
+            });
+          }
+        });
+      }
+      
+      // Применяем enum фильтры
+      if (requestBody.options?.filter?.enumFilters) {
+        requestBody.options.filter.enumFilters.forEach(enumFilter => {
+          if (enumFilter.values.length > 0) {
+            if (enumFilter.field === 'type') {
+              filteredTransactions = filteredTransactions.filter(transaction => 
+                enumFilter.values.includes(transaction.type.toString())
+              );
+            } else if (enumFilter.field === 'cause') {
+              filteredTransactions = filteredTransactions.filter(transaction => 
+                enumFilter.values.includes(transaction.cause.toString())
+              );
+            }
+          }
+        });
+      }
+      
+      // Сортируем по дате создания (новые сначала)
+      filteredTransactions.sort((a, b) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      
+      // Применяем пагинацию
+      const currentPage = page || 0;
+      const startIndex = currentPage * pageSize;
+      const endIndex = startIndex + pageSize;
+      const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
+      const hasMore = endIndex < filteredTransactions.length;
+      
+      // Моковые доступные фильтры
+      const mockFilters: LocalizedField[] = [
+        {
+          field: 'type',
+          localization: 'Тип',
+          items: [
+            { name: 'IN', localization: 'Пополнение' },
+            { name: 'OUT', localization: 'Списание' },
+          ]
+        },
+        {
+          field: 'cause',
+          localization: 'Причина',
+          items: [
+            { name: 'TASK_COMPLETION', localization: 'Выполнение задачи' },
+            { name: 'DAILY_CHECK_IN', localization: 'Ежедневный вход' },
+            { name: 'LEVEL_UP', localization: 'Повышение уровня' },
+            { name: 'ITEM_PURCHASE', localization: 'Покупка предмета' },
+          ]
+        }
+      ];
+      
+      const response: SearchPlayerBalanceTransactionsResponse = {
+        transactions: paginatedTransactions,
+        options: {
+          totalRowCount: filteredTransactions.length,
+          totalPageCount: Math.ceil(filteredTransactions.length / pageSize),
+          currentPage: currentPage,
+          hasMore: hasMore,
+          filters: mockFilters,
+        },
+      };
+      
+      resolve(response);
     });
   },
 
@@ -288,6 +368,13 @@ export const mockPlayerService = {
           }
         });
       }
+      
+      // Сортируем по дате создания (новые сначала), если есть createdAt
+      filteredTasks.sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA; // Новые сначала
+      });
       
       // Применяем пагинацию
       const currentPage = page || 0;

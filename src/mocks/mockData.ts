@@ -130,6 +130,74 @@ const createMockTask = (
   intelligence: 5,
 });
 
+// Генерируем много завершенных задач для тестирования lazy loading
+const generateCompletedTasks = (): PlayerTask[] => {
+  const tasks: PlayerTask[] = [];
+  const taskTitles = [
+    'Утренняя зарядка', 'Изучить новый язык', 'Пробежка 3 км', 'Медитация 15 минут',
+    'Прочитать статью', 'Написать код', 'Решить задачу по алгоритмам', 'Изучить React',
+    'Сделать 50 отжиманий', 'Изучить TypeScript', 'Написать тесты', 'Рефакторинг кода',
+    'Изучить GraphQL', 'Изучить Docker', 'Изучить Kubernetes', 'Изучить AWS',
+    'Изучить Python', 'Изучить Go', 'Изучить Rust', 'Изучить Swift',
+    'Йога 30 минут', 'Плавание 1 км', 'Велосипед 10 км', 'Тренировка в зале',
+    'Изучить машинное обучение', 'Изучить нейросети', 'Изучить блокчейн', 'Изучить криптографию',
+    'Написать блог-пост', 'Создать проект', 'Изучить дизайн', 'Изучить UX/UI',
+    'Изучить английский', 'Изучить испанский', 'Изучить китайский', 'Изучить японский',
+    'Изучить философию', 'Изучить историю', 'Изучить психологию', 'Изучить экономику',
+    'Изучить физику', 'Изучить математику', 'Изучить химию', 'Изучить биологию',
+  ];
+  const taskDescriptions = [
+    'Выполните комплекс утренних упражнений',
+    'Потратьте 30 минут на изучение нового языка программирования',
+    'Пробегите 3 километра для улучшения физической формы',
+    'Проведите 15 минут в медитации для улучшения ментального здоровья',
+    'Прочитайте интересную статью по вашей специальности',
+    'Напишите новый компонент для проекта',
+    'Решите задачу по алгоритмам и структурам данных',
+    'Изучите новые возможности React',
+    'Выполните 50 отжиманий для развития силы',
+    'Изучите возможности TypeScript',
+    'Напишите unit-тесты для вашего кода',
+    'Проведите рефакторинг существующего кода',
+  ];
+  const rarities = [TaskRarity.COMMON, TaskRarity.UNCOMMON, TaskRarity.RARE, TaskRarity.EPIC, TaskRarity.LEGENDARY];
+  const topics = [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.EDUCATION, TaskTopic.MENTAL_HEALTH, TaskTopic.CREATIVITY];
+  const statuses = [PlayerTaskStatus.COMPLETED, PlayerTaskStatus.SKIPPED];
+  
+  // Генерируем 60 завершенных/пропущенных задач
+  for (let i = 0; i < 60; i++) {
+    const title = taskTitles[i % taskTitles.length];
+    const description = taskDescriptions[i % taskDescriptions.length];
+    const rarity = rarities[i % rarities.length];
+    const topic = topics[i % topics.length];
+    const status = statuses[i % statuses.length];
+    const daysAgo = Math.floor(i / 2); // Распределяем по дням
+    
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    date.setHours(10 + (i % 12), (i * 5) % 60, 0, 0);
+    
+    tasks.push({
+      id: `task-completed-${i + 1}`,
+      version: 1,
+      order: i + 1,
+      status,
+      createdAt: date.toISOString(),
+      task: createMockTask(
+        `task-completed-${i + 1}`,
+        `${title} #${i + 1}`,
+        description,
+        rarity,
+        [topic],
+        80 + (i % 5) * 20,
+        40 + (i % 5) * 10
+      ),
+    });
+  }
+  
+  return tasks;
+};
+
 export const mockTasks: PlayerTask[] = [
   {
     id: 'task-1',
@@ -165,7 +233,7 @@ export const mockTasks: PlayerTask[] = [
     id: 'task-3',
     version: 1,
     order: 3,
-            status: PlayerTaskStatus.IN_PROGRESS,
+    status: PlayerTaskStatus.IN_PROGRESS,
     task: createMockTask(
       'task-3',
       'Медитация 10 минут',
@@ -191,36 +259,8 @@ export const mockTasks: PlayerTask[] = [
       100
     ),
   },
-  {
-    id: 'task-5',
-    version: 1,
-    order: 5,
-    status: PlayerTaskStatus.COMPLETED,
-    task: createMockTask(
-      'task-5',
-      'Утренняя зарядка',
-      'Выполните комплекс утренних упражнений',
-      TaskRarity.COMMON,
-      [TaskTopic.PHYSICAL_ACTIVITY],
-      80,
-      40
-    ),
-  },
-  {
-    id: 'task-6',
-    version: 1,
-    order: 6,
-    status: PlayerTaskStatus.COMPLETED,
-    task: createMockTask(
-      'task-6',
-      'Изучить новый язык',
-      'Потратьте 30 минут на изучение нового языка программирования',
-      TaskRarity.UNCOMMON,
-      [TaskTopic.EDUCATION],
-      120,
-      60
-    ),
-  },
+  // Добавляем сгенерированные завершенные задачи
+  ...generateCompletedTasks(),
 ];
 
 // Моковые транзакции баланса
@@ -246,14 +286,48 @@ const createMockTransaction = (
   };
 };
 
-export const mockTransactions: PlayerBalanceTransaction[] = [
-  createMockTransaction('trans-1', 100, PlayerBalanceTransactionType.IN, PlayerBalanceTransactionCause.TASK_COMPLETION, 0),
-  createMockTransaction('trans-2', 50, PlayerBalanceTransactionType.IN, PlayerBalanceTransactionCause.DAILY_CHECK_IN, 1),
-  createMockTransaction('trans-3', 200, PlayerBalanceTransactionType.IN, PlayerBalanceTransactionCause.LEVEL_UP, 2),
-  createMockTransaction('trans-4', 75, PlayerBalanceTransactionType.IN, PlayerBalanceTransactionCause.TASK_COMPLETION, 3),
-  createMockTransaction('trans-5', 150, PlayerBalanceTransactionType.OUT, PlayerBalanceTransactionCause.ITEM_PURCHASE, 4),
-  createMockTransaction('trans-6', 120, PlayerBalanceTransactionType.IN, PlayerBalanceTransactionCause.TASK_COMPLETION, 5),
-];
+// Генерируем много транзакций для тестирования lazy loading
+const generateMockTransactions = (): PlayerBalanceTransaction[] => {
+  const transactions: PlayerBalanceTransaction[] = [];
+  const causes = [
+    PlayerBalanceTransactionCause.TASK_COMPLETION,
+    PlayerBalanceTransactionCause.DAILY_CHECK_IN,
+    PlayerBalanceTransactionCause.LEVEL_UP,
+    PlayerBalanceTransactionCause.ITEM_PURCHASE,
+  ];
+  
+  // Генерируем 80 транзакций
+  for (let i = 0; i < 80; i++) {
+    const daysAgo = Math.floor(i / 3); // Распределяем по дням
+    const cause = causes[i % causes.length];
+    const type = cause === PlayerBalanceTransactionCause.ITEM_PURCHASE
+      ? PlayerBalanceTransactionType.OUT
+      : PlayerBalanceTransactionType.IN;
+    const amount = type === PlayerBalanceTransactionType.IN
+      ? 50 + (i % 10) * 10 // 50-140 для входящих
+      : 100 + (i % 5) * 20; // 100-180 для исходящих
+    
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    date.setHours(8 + (i % 12), (i * 7) % 60, 0, 0);
+    
+    transactions.push({
+      id: `trans-${i + 1}`,
+      version: 1,
+      amount: {
+        currencyCode: 'GOLD',
+        amount,
+      },
+      type,
+      cause,
+      createdAt: date.toISOString(),
+    });
+  }
+  
+  return transactions;
+};
+
+export const mockTransactions: PlayerBalanceTransaction[] = generateMockTransactions();
 
 // Моковые токены
 const createMockJwtToken = (type: JwtTokenType): JwtToken => {

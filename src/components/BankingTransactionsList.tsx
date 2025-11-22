@@ -50,6 +50,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   const currentPageRef = useRef(0);
   const hasMoreRef = useRef(true);
   const isLoadingRef = useRef(false);
+  const loadTransactionsRef = useRef<typeof loadTransactions | undefined>(undefined);
   
   const { t } = useLocalization();
 
@@ -174,21 +175,35 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       );
       
       const newTransactions = response.transactions || [];
-      const hasMoreData = response.options?.hasMore || false;
+      // Если получили 0 записей, значит больше нет данных, даже если API вернул hasMore: true
+      const hasMoreData = newTransactions.length > 0 && (response.options?.hasMore || false);
       
+      console.log('[BankingTransactionsList] Loaded transactions:', {
+        page,
+        reset,
+        newCount: newTransactions.length,
+        hasMoreData,
+        totalCount: reset ? newTransactions.length : transactions.length + newTransactions.length
+      });
       
       if (reset) {
         setTransactions(newTransactions);
         setHasMore(hasMoreData);
         currentPageRef.current = 0;
+        hasMoreRef.current = hasMoreData;
       } else {
-        setTransactions(prev => [...prev, ...newTransactions]);
-        setHasMore(hasMoreData);
-        currentPageRef.current = page;
+        // Проверяем, что мы действительно получили новые данные
+        if (newTransactions.length > 0) {
+          setTransactions(prev => [...prev, ...newTransactions]);
+          setHasMore(hasMoreData);
+          currentPageRef.current = page;
+          hasMoreRef.current = hasMoreData;
+        } else {
+          // Если новых данных нет, значит больше нет страниц
+          setHasMore(false);
+          hasMoreRef.current = false;
+        }
       }
-      
-      // Обновляем ref сразу после установки состояния
-      hasMoreRef.current = hasMoreData;
       
       // Обновляем фильтры и сортировки
       if (response.options) {
@@ -208,6 +223,10 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     }
   }, [dateFilters, enumFilters, sorts, t, onTransactionsLoad]);
 
+  // Сохраняем актуальную версию функции в ref
+  useEffect(() => {
+    loadTransactionsRef.current = loadTransactions;
+  }, [loadTransactions]);
 
   // Настройка Intersection Observer для бесконечного скролла
   useEffect(() => {
@@ -215,42 +234,60 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       observerRef.current.disconnect();
     }
 
-    // Не создаем observer если данных больше нет
-    if (!hasMoreRef.current) {
+    // Не создаем observer если данных больше нет или идет загрузка
+    if (!hasMoreRef.current || loadingMore || isLoadingRef.current) {
       return;
     }
 
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-      if (entries[0].isIntersecting && hasMoreRef.current && !loadingMore && !isLoadingRef.current) {
+      const entry = entries[0];
+      console.log('[BankingTransactionsList] Intersection:', {
+        isIntersecting: entry.isIntersecting,
+        hasMore: hasMoreRef.current,
+        loadingMore,
+        isLoading: isLoadingRef.current,
+        currentPage: currentPageRef.current,
+        intersectionRatio: entry.intersectionRatio
+      });
+      if (entry.isIntersecting && hasMoreRef.current && !loadingMore && !isLoadingRef.current) {
         const nextPage = currentPageRef.current + 1;
-        loadTransactions(nextPage);
+        console.log('[BankingTransactionsList] Loading next page:', nextPage);
+        loadTransactionsRef.current?.(nextPage);
       }
     };
 
-    observerRef.current = new IntersectionObserver(handleIntersection, { threshold: 0.1 });
+    observerRef.current = new IntersectionObserver(handleIntersection, { 
+      threshold: 0,
+      rootMargin: '200px' // Увеличиваем rootMargin для более раннего срабатывания
+    });
 
-    if (loadMoreRef.current) {
-      observerRef.current.observe(loadMoreRef.current);
-    }
+    // Используем setTimeout чтобы убедиться, что элемент уже в DOM
+    const timeoutId = setTimeout(() => {
+      if (loadMoreRef.current && observerRef.current) {
+        console.log('[BankingTransactionsList] Observing element:', loadMoreRef.current);
+        observerRef.current.observe(loadMoreRef.current);
+      } else {
+        console.log('[BankingTransactionsList] Element not found for observation');
+      }
+    }, 100);
 
     return () => {
+      clearTimeout(timeoutId);
       if (observerRef.current) {
         observerRef.current.disconnect();
       }
     };
-  }, [hasMore, loadingMore]); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, loadingMore, transactions.length]);
 
-  // Загрузка при монтировании
+  // Загрузка при монтировании и изменении фильтров
   useEffect(() => {
+    // Сбрасываем состояние перед загрузкой
+    hasMoreRef.current = true;
+    currentPageRef.current = 0;
     loadTransactions(0, true);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Перезагрузка при изменении фильтров
-  useEffect(() => {
-    if (dateFilters || enumFilters) {
-      loadTransactions(0, true);
-    }
-  }, [dateFilters, enumFilters]); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateFilters.from, dateFilters.to, JSON.stringify(enumFilters)]);
 
   // Обновление групп при изменении транзакций
   useEffect(() => {
@@ -572,7 +609,13 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       )}
 
       {/* Элемент для отслеживания скролла - только если есть еще данные */}
-      {hasMore && <div ref={loadMoreRef} className="h-1" />}
+      {hasMore && !loadingMore && (
+        <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
+          <div className="text-xs font-tech" style={{ color: 'rgba(220, 235, 245, 0.5)' }}>
+            Загрузка...
+          </div>
+        </div>
+      )}
     </div>
   );
 };

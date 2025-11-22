@@ -53,6 +53,7 @@ const TasksList: React.FC<TasksListProps> = ({
   const currentPageRef = useRef(0);
   const hasMoreRef = useRef(true);
   const isLoadingRef = useRef(false);
+  const loadTasksRef = useRef<typeof loadTasks | undefined>(undefined);
   
   const { t } = useLocalization();
 
@@ -119,20 +120,35 @@ const TasksList: React.FC<TasksListProps> = ({
       );
       
       const newTasks = response.tasks || [];
-      const hasMoreData = response.options?.hasMore || false;
+      // Если получили 0 записей, значит больше нет данных, даже если API вернул hasMore: true
+      const hasMoreData = newTasks.length > 0 && (response.options?.hasMore || false);
+      
+      console.log('[TasksList] Loaded tasks:', {
+        page,
+        reset,
+        newCount: newTasks.length,
+        hasMoreData,
+        totalCount: reset ? newTasks.length : tasks.length + newTasks.length
+      });
       
       if (reset) {
         setTasks(newTasks);
         setHasMore(hasMoreData);
         currentPageRef.current = 0;
+        hasMoreRef.current = hasMoreData;
       } else {
-        setTasks(prev => [...prev, ...newTasks]);
-        setHasMore(hasMoreData);
-        currentPageRef.current = page;
+        // Проверяем, что мы действительно получили новые данные
+        if (newTasks.length > 0) {
+          setTasks(prev => [...prev, ...newTasks]);
+          setHasMore(hasMoreData);
+          currentPageRef.current = page;
+          hasMoreRef.current = hasMoreData;
+        } else {
+          // Если новых данных нет, значит больше нет страниц
+          setHasMore(false);
+          hasMoreRef.current = false;
+        }
       }
-      
-      // Обновляем ref сразу после установки состояния
-      hasMoreRef.current = hasMoreData;
       
       // Обновляем фильтры и сортировки
       if (response.options) {
@@ -155,41 +171,71 @@ const TasksList: React.FC<TasksListProps> = ({
     }
   }, [statusFilter, dateFilters, enumFilters, sorts, t, onFiltersUpdate]);
 
+  // Сохраняем актуальную версию функции в ref
+  useEffect(() => {
+    loadTasksRef.current = loadTasks;
+  }, [loadTasks]);
+
   // Настройка Intersection Observer для бесконечного скролла
   useEffect(() => {
     if (observerRef.current) {
       observerRef.current.disconnect();
     }
 
-    // Не создаем observer если данных больше нет
-    if (!hasMoreRef.current) {
+    // Не создаем observer если данных больше нет или идет загрузка
+    if (!hasMoreRef.current || loadingMore || isLoadingRef.current) {
       return;
     }
 
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-      if (entries[0].isIntersecting && hasMoreRef.current && !loadingMore && !isLoadingRef.current) {
+      const entry = entries[0];
+      console.log('[TasksList] Intersection:', {
+        isIntersecting: entry.isIntersecting,
+        hasMore: hasMoreRef.current,
+        loadingMore,
+        isLoading: isLoadingRef.current,
+        currentPage: currentPageRef.current,
+        intersectionRatio: entry.intersectionRatio
+      });
+      if (entry.isIntersecting && hasMoreRef.current && !loadingMore && !isLoadingRef.current) {
         const nextPage = currentPageRef.current + 1;
-        loadTasks(nextPage);
+        console.log('[TasksList] Loading next page:', nextPage);
+        loadTasksRef.current?.(nextPage);
       }
     };
 
-    observerRef.current = new IntersectionObserver(handleIntersection, { threshold: 0.1 });
+    observerRef.current = new IntersectionObserver(handleIntersection, { 
+      threshold: 0,
+      rootMargin: '200px' // Увеличиваем rootMargin для более раннего срабатывания
+    });
 
-    if (loadMoreRef.current) {
-      observerRef.current.observe(loadMoreRef.current);
-    }
+    // Используем setTimeout чтобы убедиться, что элемент уже в DOM
+    const timeoutId = setTimeout(() => {
+      if (loadMoreRef.current && observerRef.current) {
+        console.log('[TasksList] Observing element:', loadMoreRef.current);
+        observerRef.current.observe(loadMoreRef.current);
+      } else {
+        console.log('[TasksList] Element not found for observation');
+      }
+    }, 100);
 
     return () => {
+      clearTimeout(timeoutId);
       if (observerRef.current) {
         observerRef.current.disconnect();
       }
     };
-  }, [hasMore, loadingMore, loadTasks]); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, loadingMore, tasks.length]);
 
   // Загрузка при монтировании и изменении фильтров
   useEffect(() => {
+    // Сбрасываем состояние перед загрузкой
+    hasMoreRef.current = true;
+    currentPageRef.current = 0;
     loadTasks(0, true);
-  }, [statusFilter, dateFilters, enumFilters]); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter.join(','), dateFilters.from, dateFilters.to, JSON.stringify(enumFilters)]);
 
   // Показываем skeleton во время первой загрузки
   if (loading && tasks.length === 0) {
@@ -269,7 +315,11 @@ const TasksList: React.FC<TasksListProps> = ({
       
       {/* Элемент для отслеживания Intersection Observer */}
       {hasMore && !loadingMore && (
-        <div ref={loadMoreRef} className="h-4" />
+        <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
+          <div className="text-xs font-tech" style={{ color: 'rgba(220, 235, 245, 0.5)' }}>
+            Загрузка...
+          </div>
+        </div>
       )}
     </>
   );
