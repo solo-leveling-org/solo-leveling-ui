@@ -6,7 +6,8 @@ import type {
   PlayerTaskTopic,
   GetPlayerBalanceResponse,
   SearchRequest,
-  SearchPlayerBalanceTransactionsResponse
+  SearchPlayerBalanceTransactionsResponse,
+  SearchPlayerTasksResponse
 } from './api';
 import {PlayerService, PlayerTask, UserService} from './api';
 import type {User as ApiUser} from './api/models/User';
@@ -86,6 +87,19 @@ export const api = {
       return await PlayerService.searchPlayerBalanceTransactions(request, page, pageSize);
     } catch (error) {
       console.error('Error searching player balance transactions:', error);
+      throw error;
+    }
+  },
+
+  searchPlayerTasks: async (
+    request: SearchRequest,
+    page?: number,
+    pageSize: number = 20
+  ): Promise<SearchPlayerTasksResponse> => {
+    try {
+      return await PlayerService.searchPlayerTasks(request, page, pageSize);
+    } catch (error) {
+      console.error('Error searching player tasks:', error);
       throw error;
     }
   },

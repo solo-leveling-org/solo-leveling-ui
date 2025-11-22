@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import type { PlayerTask, CompleteTaskResponse } from '../api';
+import React, { useState, useEffect, useCallback } from 'react';
+import type { PlayerTask, CompleteTaskResponse, LocalizedField } from '../api';
+import { PlayerTaskStatus as TaskStatus } from '../api';
 import TasksGrid from '../components/TasksGrid';
+import TasksList from '../components/TasksList';
 import TaskDialog from '../components/TaskDialog';
 import TaskCompletionDialog from '../components/TaskCompletionDialog';
 import TaskCardSkeleton from '../components/TaskCardSkeleton';
+import DateFilter from '../components/DateFilter';
+import FilterDropdown from '../components/FilterDropdown';
 import { taskActions, api } from '../services';
 import { useNavigate } from 'react-router-dom';
 import { useLocalization } from '../hooks/useLocalization';
@@ -14,10 +18,13 @@ type TasksTabProps = {
   isAuthenticated: boolean;
 };
 
+type TaskViewMode = 'active' | 'completed';
+
 const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [tasks, setTasks] = useState<PlayerTask[]>([]);
   const [firstTime, setFirstTime] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<TaskViewMode>('active');
   const [dialogTask, setDialogTask] = useState<PlayerTask | null>(null);
   const [completionResponse, setCompletionResponse] = useState<CompleteTaskResponse | null>(null);
   const [completedTask, setCompletedTask] = useState<PlayerTask | null>(null);
@@ -26,6 +33,9 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     type: 'complete' | 'replace';
     task: PlayerTask;
   } | null>(null);
+  const [dateFilters, setDateFilters] = useState({ from: '', to: '' });
+  const [enumFilters, setEnumFilters] = useState<{[field: string]: string[]}>({});
+  const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const navigate = useNavigate();
   const { t } = useLocalization();
 
@@ -115,6 +125,27 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     setShowConfirmDialog(false);
     setConfirmAction(null);
   };
+
+  // Обработчики фильтров
+  const handleDateFilterChange = useCallback((from: string, to: string) => {
+    setDateFilters({ from, to });
+  }, []);
+
+  const handleEnumFilterChange = useCallback((field: string, values: string[]) => {
+    setEnumFilters(prev => ({
+      ...prev,
+      [field]: values
+    }));
+  }, []);
+
+  const handleClearFilters = useCallback(() => {
+    setDateFilters({ from: '', to: '' });
+    setEnumFilters({});
+  }, []);
+
+  const handleFiltersUpdate = useCallback((filters: LocalizedField[]) => {
+    setAvailableFilters(filters);
+  }, []);
 
   // Показываем skeleton во время загрузки
   if (loading) {
@@ -327,6 +358,57 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
               {t('tasks.subtitle')}
             </p>
 
+            {/* View Mode Toggle */}
+            <div className="flex justify-center mb-6">
+              <div 
+                className="inline-flex rounded-xl p-1"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                  border: '2px solid rgba(220, 235, 245, 0.2)',
+                  boxShadow: '0 0 15px rgba(180, 220, 240, 0.15)'
+                }}
+              >
+                <button
+                  onClick={() => setViewMode('active')}
+                  className={`px-6 py-2.5 rounded-lg font-tech font-semibold text-sm transition-all duration-300 ${
+                    viewMode === 'active' ? '' : 'opacity-60 hover:opacity-80'
+                  }`}
+                  style={viewMode === 'active' ? {
+                    background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
+                    border: '1px solid rgba(180, 220, 240, 0.4)',
+                    color: '#e8f4f8',
+                    boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
+                    textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+                  } : {
+                    background: 'transparent',
+                    border: '1px solid transparent',
+                    color: 'rgba(220, 235, 245, 0.7)'
+                  }}
+                >
+                  {t('tasks.viewMode.active')}
+                </button>
+                <button
+                  onClick={() => setViewMode('completed')}
+                  className={`px-6 py-2.5 rounded-lg font-tech font-semibold text-sm transition-all duration-300 ${
+                    viewMode === 'completed' ? '' : 'opacity-60 hover:opacity-80'
+                  }`}
+                  style={viewMode === 'completed' ? {
+                    background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
+                    border: '1px solid rgba(180, 220, 240, 0.4)',
+                    color: '#e8f4f8',
+                    boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
+                    textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+                  } : {
+                    background: 'transparent',
+                    border: '1px solid transparent',
+                    color: 'rgba(220, 235, 245, 0.7)'
+                  }}
+                >
+                  {t('tasks.viewMode.completed')}
+                </button>
+              </div>
+            </div>
+
             <div 
               className="w-16 sm:w-24 h-1 rounded-full mx-auto"
               style={{
@@ -336,20 +418,72 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
             ></div>
           </div>
 
-          {/* Tasks Grid */}
-          <TasksGrid
-            tasks={tasks}
-            loading={loading}
-            onTaskClick={(playerTask) => {
-              if (playerTask.task) setDialogTask(playerTask);
-            }}
-            onComplete={handleCompleteTask}
-            onReplace={async (playerTask) => {
-              if (loading) return;
-              setConfirmAction({ type: 'replace', task: playerTask });
-              setShowConfirmDialog(true);
-            }}
-          />
+          {/* Фильтры для завершенных задач */}
+          {viewMode === 'completed' && (
+            <div className="mb-6">
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+                {/* Date Range Filter */}
+                <DateFilter
+                  from={dateFilters.from}
+                  to={dateFilters.to}
+                  onChange={handleDateFilterChange}
+                />
+
+                {/* Enum Filters */}
+                {availableFilters.map((filter) => (
+                  <FilterDropdown
+                    key={filter.field}
+                    label={filter.localization}
+                    options={filter.items}
+                    selectedValues={enumFilters[filter.field] || []}
+                    onSelectionChange={(values) => handleEnumFilterChange(filter.field, values)}
+                  />
+                ))}
+
+                {/* Clear Filters Button - Solo Leveling Style */}
+                <button
+                  onClick={handleClearFilters}
+                  className="flex items-center justify-center px-4 py-3 rounded-xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.08) 100%)',
+                    border: '1px solid rgba(220, 38, 38, 0.4)',
+                    color: '#e8f4f8',
+                    boxShadow: '0 0 10px rgba(220, 38, 38, 0.2)',
+                    textShadow: '0 0 4px rgba(220, 38, 38, 0.2)'
+                  }}
+                >
+                  {t('tasks.filters.reset')}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Tasks Grid or List */}
+          {viewMode === 'active' ? (
+            <TasksGrid
+              tasks={tasks}
+              loading={loading}
+              onTaskClick={(playerTask) => {
+                if (playerTask.task) setDialogTask(playerTask);
+              }}
+              onComplete={handleCompleteTask}
+              onReplace={async (playerTask) => {
+                if (loading) return;
+                setConfirmAction({ type: 'replace', task: playerTask });
+                setShowConfirmDialog(true);
+              }}
+            />
+          ) : (
+            <TasksList
+              statusFilter={[TaskStatus.COMPLETED, TaskStatus.SKIPPED]}
+              dateFilters={dateFilters}
+              enumFilters={enumFilters}
+              onFiltersUpdate={handleFiltersUpdate}
+              onTaskClick={(playerTask) => {
+                if (playerTask.task) setDialogTask(playerTask);
+              }}
+            />
+          )}
 
       {dialogTask && dialogTask.task && (
         <TaskDialog task={dialogTask.task} onClose={() => setDialogTask(null)} />

@@ -1,162 +1,277 @@
-import React from 'react';
-import { api } from '../services';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useLocalization } from '../hooks/useLocalization';
-import AbstractDataList, { DataItem } from './AbstractDataList';
-import Icon from './Icon';
+import { api } from '../services';
 import type { 
-  PlayerTask,
-  Filter,
-  Sort,
-  ResponseQueryOptions
+  PlayerTask, 
+  SearchRequest,
+  SearchPlayerTasksResponse,
+  PlayerTaskStatus,
+  LocalizedField,
+  OrderMode
 } from '../api';
+import { OrderMode as OrderModeEnum } from '../api';
+import TasksGrid from './TasksGrid';
+import TaskCardSkeleton from './TaskCardSkeleton';
 
-// Расширяем базовый тип для задач
-interface TaskItem extends DataItem {
-  id: string;
-  version: number;
-  title: string;
-  description: string;
-  status: string;
-  experience: number;
-  currencyReward: number;
-  createdAt: string;
+interface TasksListProps {
+  statusFilter: PlayerTaskStatus[];
+  dateFilters?: { from: string; to: string };
+  enumFilters?: {[field: string]: string[]};
+  onFiltersUpdate?: (filters: LocalizedField[]) => void;
+  onTaskClick?: (task: PlayerTask) => void;
+  onComplete?: (task: PlayerTask) => void;
+  onReplace?: (task: PlayerTask) => void;
 }
 
-type TasksListProps = {
-  onTasksLoad?: (tasks: PlayerTask[]) => void;
-  className?: string;
-};
-
 const TasksList: React.FC<TasksListProps> = ({ 
-  onTasksLoad, 
-  className = '' 
+  statusFilter,
+  dateFilters: propDateFilters,
+  enumFilters: propEnumFilters,
+  onFiltersUpdate,
+  onTaskClick,
+  onComplete,
+  onReplace
 }) => {
+  const [tasks, setTasks] = useState<PlayerTask[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
+  const [, setAvailableSorts] = useState<string[]>([]);
+  
+  // Используем переданные фильтры или значения по умолчанию
+  const dateFilters = useMemo(() => propDateFilters || { from: '', to: '' }, [propDateFilters]);
+  const enumFilters = useMemo(() => propEnumFilters || {}, [propEnumFilters]);
+  const sorts: {field: string, mode: OrderMode}[] = useMemo(() => [{
+    field: 'createdAt',
+    mode: OrderModeEnum.DESC
+  }], []);
+  
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const currentPageRef = useRef(0);
+  const hasMoreRef = useRef(true);
+  const isLoadingRef = useRef(false);
+  
   const { t } = useLocalization();
 
-  // Метод загрузки данных для абстрактного компонента
-  const loadTasks = async (
-    page: number, 
-    pageSize: number, 
-    filters?: Filter, 
-    sorts?: Sort[]
-  ) => {
-    // Здесь можно добавить логику загрузки задач с фильтрацией
-    // Пока используем простую загрузку активных задач
-    const response = await api.getPlayerTasks();
+  // Загрузка задач
+  const loadTasks = useCallback(async (page: number = 0, reset: boolean = false) => {
+    if (isLoadingRef.current) return;
     
-    return {
-      data: response.tasks as TaskItem[],
-      options: {
-        totalRowCount: response.tasks.length,
-        totalPageCount: 1,
-        currentPage: 0,
-        hasMore: false,
-        filters: [],
-        sorts: []
-      } as ResponseQueryOptions
-    };
-  };
-
-  // Получение цвета статуса
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'COMPLETED':
-        return 'text-green-600 bg-green-100';
-      case 'IN_PROGRESS':
-        return 'text-blue-600 bg-blue-100';
-      case 'PENDING':
-        return 'text-yellow-600 bg-yellow-100';
-      default:
-        return 'text-gray-600 bg-gray-100';
+    // Дополнительная защита: не загружаем если данных больше нет
+    if (!reset && !hasMoreRef.current) return;
+    
+    isLoadingRef.current = true;
+    
+    if (reset) {
+      setLoading(true);
+      currentPageRef.current = 0;
+    } else {
+      setLoadingMore(true);
     }
-  };
+    
+    setError(null);
 
-  // Рендер элемента задачи
-  const renderTask = (task: TaskItem, index: number, getLocalizedValue: (field: string, value: string) => string) => (
-    <div
-      key={task.id}
-      className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/30 hover:shadow-lg transition-all duration-300"
-    >
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">{task.title}</h3>
-          <p className="text-sm text-gray-600 mb-3">{task.description}</p>
-        </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(task.status)}`}>
-          {t(`tasks.status.${task.status.toLowerCase()}`)}
-        </span>
-      </div>
+    try {
+      // Объединяем фильтры статусов с переданными enum фильтрами
+      const allEnumFilters = [];
       
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center text-sm text-gray-600">
-            <Icon type="star" size={16} className="mr-1" />
-            <span>{task.experience} XP</span>
-          </div>
-          <div className="flex items-center text-sm text-gray-600">
-            <Icon type="coins" size={16} className="mr-1" />
-            <span>{task.currencyReward} GCO</span>
-          </div>
+      // Добавляем фильтр по статусам
+      if (statusFilter.length > 0) {
+        allEnumFilters.push({
+          field: 'status',
+          values: statusFilter.map(s => s.toString())
+        });
+      }
+      
+      // Добавляем переданные enum фильтры
+      if (Object.keys(enumFilters).length > 0) {
+        Object.entries(enumFilters).forEach(([field, values]) => {
+          if (values.length > 0) {
+            allEnumFilters.push({
+              field,
+              values: values
+            });
+          }
+        });
+      }
+      
+      const request: SearchRequest = {
+        options: {
+          filter: {
+            dateFilters: dateFilters.from && dateFilters.to ? [{
+              field: 'createdAt',
+              from: dateFilters.from,
+              to: dateFilters.to
+            }] : undefined,
+            enumFilters: allEnumFilters.length > 0 ? allEnumFilters : undefined
+          },
+          sorts: sorts.length > 0 ? sorts : undefined
+        }
+      };
+
+      const response: SearchPlayerTasksResponse = await api.searchPlayerTasks(
+        request,
+        page,
+        20 // pageSize
+      );
+      
+      const newTasks = response.tasks || [];
+      const hasMoreData = response.options?.hasMore || false;
+      
+      if (reset) {
+        setTasks(newTasks);
+        setHasMore(hasMoreData);
+        currentPageRef.current = 0;
+      } else {
+        setTasks(prev => [...prev, ...newTasks]);
+        setHasMore(hasMoreData);
+        currentPageRef.current = page;
+      }
+      
+      // Обновляем ref сразу после установки состояния
+      hasMoreRef.current = hasMoreData;
+      
+      // Обновляем фильтры и сортировки
+      if (response.options) {
+        setAvailableFilters(response.options.filters || []);
+        setAvailableSorts(response.options.sorts || []);
+      }
+      
+      // Уведомляем родительский компонент о доступных фильтрах
+      if (response.options?.filters) {
+        onFiltersUpdate?.(response.options.filters);
+      }
+      
+    } catch (err) {
+      console.error('Error loading tasks:', err);
+      setError(t('common.error.loadingData'));
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+      isLoadingRef.current = false;
+    }
+  }, [statusFilter, dateFilters, enumFilters, sorts, t, onFiltersUpdate]);
+
+  // Настройка Intersection Observer для бесконечного скролла
+  useEffect(() => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    // Не создаем observer если данных больше нет
+    if (!hasMoreRef.current) {
+      return;
+    }
+
+    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting && hasMoreRef.current && !loadingMore && !isLoadingRef.current) {
+        const nextPage = currentPageRef.current + 1;
+        loadTasks(nextPage);
+      }
+    };
+
+    observerRef.current = new IntersectionObserver(handleIntersection, { threshold: 0.1 });
+
+    if (loadMoreRef.current) {
+      observerRef.current.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [hasMore, loadingMore, loadTasks]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Загрузка при монтировании и изменении фильтров
+  useEffect(() => {
+    loadTasks(0, true);
+  }, [statusFilter, dateFilters, enumFilters]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Показываем skeleton во время первой загрузки
+  if (loading && tasks.length === 0) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <TaskCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
+
+  // Показываем ошибку
+  if (error && tasks.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <div 
+          className="text-lg font-tech font-semibold mb-2"
+          style={{
+            color: '#e8f4f8',
+            textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+          }}
+        >
+          {error}
         </div>
-        <div className="text-xs text-gray-500">
-          {new Date(task.createdAt).toLocaleDateString()}
+        <button
+          onClick={() => loadTasks(0, true)}
+          className="px-6 py-3 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95"
+          style={{
+            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            border: '2px solid rgba(220, 235, 245, 0.3)',
+            color: '#e8f4f8',
+            boxShadow: '0 0 15px rgba(180, 220, 240, 0.2)'
+          }}
+        >
+          {t('common.retry')}
+        </button>
+      </div>
+    );
+  }
+
+  // Показываем пустое состояние
+  if (tasks.length === 0 && !loading) {
+    return (
+      <div className="text-center py-12">
+        <div 
+          className="text-lg font-tech font-semibold"
+          style={{
+            color: 'rgba(220, 235, 245, 0.7)',
+            textShadow: '0 0 2px rgba(180, 220, 240, 0.1)'
+          }}
+        >
+          {t('tasks.noCompletedTasks')}
         </div>
       </div>
-    </div>
-  );
-
-  // Рендер скелетона
-  const renderSkeleton = () => (
-    <>
-      {[...Array(3)].map((_, i) => (
-        <div key={i} className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/30 animate-pulse">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex-1">
-              <div className="h-6 bg-gray-300 rounded w-3/4 mb-2"></div>
-              <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
-              <div className="h-4 bg-gray-300 rounded w-2/3"></div>
-            </div>
-            <div className="h-6 bg-gray-300 rounded w-20"></div>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="h-4 bg-gray-300 rounded w-16"></div>
-              <div className="h-4 bg-gray-300 rounded w-16"></div>
-            </div>
-            <div className="h-3 bg-gray-300 rounded w-20"></div>
-          </div>
-        </div>
-      ))}
-    </>
-  );
-
-  // Рендер пустого состояния
-  const renderEmpty = () => (
-    <div className="text-center py-8">
-      <div className="text-gray-500 mb-2">📋</div>
-      <div className="text-gray-500">{t('tasks.noTasks.title')}</div>
-    </div>
-  );
+    );
+  }
 
   return (
-    <div className={className}>
-      <AbstractDataList<TaskItem>
-        loadData={loadTasks}
-        renderItem={renderTask}
-        renderSkeleton={renderSkeleton}
-        renderEmpty={renderEmpty}
-        onDataLoad={(tasks) => {
-          if (onTasksLoad) {
-            onTasksLoad(tasks as PlayerTask[]);
-          }
-        }}
-        className="mt-6"
-        pageSize={10}
-        showFilters={false} // Для задач пока не нужны фильтры
-        showPagination={true}
-        autoLoad={true}
+    <>
+      <TasksGrid
+        tasks={tasks}
+        loading={false}
+        onTaskClick={onTaskClick || (() => {})}
+        onComplete={onComplete}
+        onReplace={onReplace}
       />
-    </div>
+      
+      {/* Индикатор загрузки для дополнительных задач */}
+      {loadingMore && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 mt-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <TaskCardSkeleton key={i} />
+          ))}
+        </div>
+      )}
+      
+      {/* Элемент для отслеживания Intersection Observer */}
+      {hasMore && !loadingMore && (
+        <div ref={loadMoreRef} className="h-4" />
+      )}
+    </>
   );
 };
 

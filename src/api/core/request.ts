@@ -318,6 +318,15 @@ const handleMockRequest = async <T>(options: ApiRequestOptions): Promise<T | nul
         pageSize
       ) as any;
     }
+    if (options.url === '/api/v1/player/tasks/search' && options.method === 'POST') {
+      const page = options.query?.page as number | undefined;
+      const pageSize = (options.query?.pageSize as number) || 20;
+      return await mockPlayerService.searchPlayerTasks(
+        options.body as any,
+        page,
+        pageSize
+      ) as any;
+    }
     
     // Если запрос не обработан, возвращаем null (будет использован реальный запрос)
     return null;

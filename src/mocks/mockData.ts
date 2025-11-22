@@ -11,6 +11,7 @@ import type {
   LoginResponse,
   RefreshResponse,
   SearchPlayerBalanceTransactionsResponse,
+  SearchPlayerTasksResponse,
   PlayerBalanceTransaction,
   Level,
   JwtToken,
@@ -314,6 +315,16 @@ export const mockCompleteTaskResponse: CompleteTaskResponse = {
         amount: mockUser.player.balance!.balance.amount + 50,
       },
     },
+  },
+};
+
+export const mockSearchPlayerTasksResponse: SearchPlayerTasksResponse = {
+  tasks: mockTasks.filter(t => t.status === PlayerTaskStatus.COMPLETED || t.status === PlayerTaskStatus.SKIPPED),
+  options: {
+    totalRowCount: 2,
+    totalPageCount: 1,
+    currentPage: 0,
+    hasMore: false,
   },
 };
 

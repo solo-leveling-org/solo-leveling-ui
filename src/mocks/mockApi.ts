@@ -7,12 +7,15 @@ import type {
   GetPlayerBalanceResponse,
   CompleteTaskResponse,
   SearchPlayerBalanceTransactionsResponse,
+  SearchPlayerTasksResponse,
   TgAuthData,
   RefreshRequest,
   SavePlayerTopicsRequest,
   CompleteTaskRequest,
   SkipTaskRequest,
   SearchRequest,
+  PlayerTask,
+  LocalizedField,
 } from '../api';
 import {
   mockGetUserResponse,
@@ -22,6 +25,7 @@ import {
   mockRefreshResponse,
   mockCompleteTaskResponse,
   mockSearchPlayerBalanceTransactionsResponse,
+  mockSearchPlayerTasksResponse,
   mockTasks,
   mockPlayerTopics,
 } from './mockData';
@@ -223,6 +227,113 @@ export const mockPlayerService = {
       await delay(400);
       console.log('[Mock API] Search player balance transactions:', { requestBody, page, pageSize });
       resolve(mockSearchPlayerBalanceTransactionsResponse);
+    });
+  },
+
+  searchPlayerTasks: (
+    requestBody: SearchRequest,
+    page?: number,
+    pageSize: number = 20
+  ): CancelablePromise<SearchPlayerTasksResponse> => {
+    return new CancelablePromise(async (resolve) => {
+      await delay(400);
+      console.log('[Mock API] Search player tasks:', { requestBody, page, pageSize });
+      
+      // Фильтруем задачи по статусам из запроса
+      let filteredTasks = [...mockTasks];
+      
+      // Применяем фильтры по датам
+      if (requestBody.options?.filter?.dateFilters) {
+        requestBody.options.filter.dateFilters.forEach(dateFilter => {
+          if (dateFilter.field === 'createdAt' && dateFilter.from && dateFilter.to) {
+            const fromDate = new Date(dateFilter.from);
+            const toDate = new Date(dateFilter.to);
+            filteredTasks = filteredTasks.filter(task => {
+              if (!task.createdAt) return false;
+              const taskDate = new Date(task.createdAt);
+              return taskDate >= fromDate && taskDate <= toDate;
+            });
+          }
+        });
+      }
+      
+      // Применяем enum фильтры
+      if (requestBody.options?.filter?.enumFilters) {
+        requestBody.options.filter.enumFilters.forEach(enumFilter => {
+          if (enumFilter.values.length > 0) {
+            if (enumFilter.field === 'status') {
+              filteredTasks = filteredTasks.filter(task => 
+                task.status && enumFilter.values.includes(task.status.toString())
+              );
+            } else if (enumFilter.field === 'rarity') {
+              // Фильтр по редкости задачи
+              filteredTasks = filteredTasks.filter(task => 
+                task.task?.rarity && enumFilter.values.includes(task.task.rarity.toString())
+              );
+            } else if (enumFilter.field === 'topic') {
+              // Фильтр по темам задачи
+              filteredTasks = filteredTasks.filter(task => {
+                if (!task.task?.topics || task.task.topics.length === 0) return false;
+                return task.task.topics.some(topic => 
+                  enumFilter.values.includes(topic.toString())
+                );
+              });
+            } else {
+              // Для других enum фильтров
+              filteredTasks = filteredTasks.filter(task => {
+                const taskValue = (task as any)[enumFilter.field];
+                return taskValue && enumFilter.values.includes(taskValue.toString());
+              });
+            }
+          }
+        });
+      }
+      
+      // Применяем пагинацию
+      const currentPage = page || 0;
+      const startIndex = currentPage * pageSize;
+      const endIndex = startIndex + pageSize;
+      const paginatedTasks = filteredTasks.slice(startIndex, endIndex);
+      const hasMore = endIndex < filteredTasks.length;
+      
+      // Моковые доступные фильтры (можно расширить)
+      const mockFilters: LocalizedField[] = [
+        {
+          field: 'rarity',
+          localization: 'Редкость',
+          items: [
+            { name: 'COMMON', localization: 'Обычная' },
+            { name: 'UNCOMMON', localization: 'Необычная' },
+            { name: 'RARE', localization: 'Редкая' },
+            { name: 'EPIC', localization: 'Эпическая' },
+            { name: 'LEGENDARY', localization: 'Легендарная' },
+          ]
+        },
+        {
+          field: 'topic',
+          localization: 'Тема',
+          items: [
+            { name: 'PHYSICAL_ACTIVITY', localization: 'Физическая активность' },
+            { name: 'EDUCATION', localization: 'Образование' },
+            { name: 'MENTAL_HEALTH', localization: 'Ментальное здоровье' },
+            { name: 'CREATIVITY', localization: 'Креативность' },
+          ]
+        }
+      ];
+      
+      const response: SearchPlayerTasksResponse = {
+        tasks: paginatedTasks,
+        options: {
+          totalRowCount: filteredTasks.length,
+          totalPageCount: Math.ceil(filteredTasks.length / pageSize),
+          currentPage: currentPage,
+          hasMore: hasMore,
+          filters: mockFilters,
+          sorts: ['createdAt', 'updatedAt', 'order']
+        },
+      };
+      
+      resolve(response);
     });
   },
 };

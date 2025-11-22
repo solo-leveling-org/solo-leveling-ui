@@ -14,11 +14,13 @@ export const ru = {
     preparing: 'Подготовка',
     pending: 'Ожидает',
     skipped: 'Пропущено',
-    error: 'Ошибка',
     success: 'Успешно',
     warning: 'Предупреждение',
     info: 'Информация',
     retry: 'Повторить',
+    error: {
+      loadingData: 'Ошибка загрузки данных',
+    },
     filters: 'Фильтры',
     clearFilters: 'Очистить фильтры',
     sortBy: 'Сортировать по',
@@ -133,6 +135,14 @@ export const ru = {
     confirm: {
       complete: 'Вы уверены, что хотите завершить эту задачу?',
       replace: 'Вы уверены, что хотите заменить эту задачу?',
+    },
+    viewMode: {
+      active: 'Активные',
+      completed: 'Завершенные',
+    },
+    noCompletedTasks: 'Нет завершенных задач',
+    filters: {
+      reset: 'Сбросить фильтры',
     },
   },
 

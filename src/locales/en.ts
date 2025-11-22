@@ -14,7 +14,6 @@ export const en = {
     preparing: 'Preparing',
     pending: 'Pending',
     skipped: 'Skipped',
-    error: 'Error',
     success: 'Success',
     warning: 'Warning',
     info: 'Information',
@@ -28,6 +27,9 @@ export const en = {
     dateRange: 'Date Range',
     loadingData: 'Error loading data',
     noData: 'No data available',
+    error: {
+      loadingData: 'Error loading data',
+    },
     showFilters: 'Show Filters',
     hideFilters: 'Hide Filters',
     from: 'From',
@@ -133,6 +135,14 @@ export const en = {
     confirm: {
       complete: 'Are you sure you want to complete this task?',
       replace: 'Are you sure you want to replace this task?',
+    },
+    viewMode: {
+      active: 'Active',
+      completed: 'Completed',
+    },
+    noCompletedTasks: 'No completed tasks',
+    filters: {
+      reset: 'Reset Filters',
     },
   },
 
