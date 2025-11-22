@@ -37,10 +37,17 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
         };
       case PlayerTaskStatus.COMPLETED:
         return {
-          bg: 'linear-gradient(135deg, rgba(10, 14, 39, 0.7) 0%, rgba(5, 8, 18, 0.85) 100%)',
-          border: 'rgba(160, 210, 235, 0.2)',
-          accentColor: 'rgba(160, 210, 235, 0.3)',
-          textColor: 'rgba(220, 235, 245, 0.5)',
+          bg: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%)',
+          border: 'rgba(34, 197, 94, 0.3)',
+          accentColor: 'rgba(34, 197, 94, 0.5)',
+          textColor: 'rgba(220, 235, 245, 0.6)',
+        };
+      case PlayerTaskStatus.SKIPPED:
+        return {
+          bg: 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.05) 100%)',
+          border: 'rgba(220, 38, 38, 0.3)',
+          accentColor: 'rgba(220, 38, 38, 0.5)',
+          textColor: 'rgba(220, 235, 245, 0.6)',
         };
       default:
         return {
@@ -142,10 +149,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
         backdropFilter: 'blur(20px)',
         border: `2px solid ${colorScheme.border}`,
         borderRadius: '24px',
-        boxShadow: `
-          0 0 20px rgba(180, 220, 240, 0.15),
-          inset 0 0 20px rgba(200, 230, 245, 0.03)
-        `,
+        boxShadow: status === PlayerTaskStatus.COMPLETED
+          ? `0 0 20px rgba(34, 197, 94, 0.2),
+             inset 0 0 20px rgba(200, 230, 245, 0.03)`
+          : status === PlayerTaskStatus.SKIPPED
+          ? `0 0 20px rgba(220, 38, 38, 0.2),
+             inset 0 0 20px rgba(200, 230, 245, 0.03)`
+          : `0 0 20px rgba(180, 220, 240, 0.15),
+             inset 0 0 20px rgba(200, 230, 245, 0.03)`,
         animationDelay: `${index * 150}ms`,
       }}
     >
@@ -156,13 +167,22 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
         }}></div>
       </div>
       
-      {/* Glowing orbs */}
+      {/* Glowing orbs - different colors for completed/skipped */}
       <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-xl opacity-10 animate-float" style={{
-        background: 'rgba(180, 216, 232, 0.8)'
+        background: status === PlayerTaskStatus.COMPLETED 
+          ? 'rgba(34, 197, 94, 0.8)'
+          : status === PlayerTaskStatus.SKIPPED
+          ? 'rgba(220, 38, 38, 0.8)'
+          : 'rgba(180, 216, 232, 0.8)'
       }}></div>
       <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full blur-lg opacity-10 animate-float-delayed" style={{
-        background: 'rgba(200, 230, 245, 0.6)'
+        background: status === PlayerTaskStatus.COMPLETED 
+          ? 'rgba(22, 163, 74, 0.6)'
+          : status === PlayerTaskStatus.SKIPPED
+          ? 'rgba(185, 28, 28, 0.6)'
+          : 'rgba(200, 230, 245, 0.6)'
       }}></div>
+
 
       {/* Rarity indicator */}
       <div className="absolute top-4 right-4 z-20">
@@ -179,8 +199,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
             className="text-xl font-tech font-bold mb-3 leading-tight tracking-tight" 
             data-text="true"
             style={{
-              color: '#e8f4f8',
-              textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+              color: colorScheme.textColor,
+              textShadow: status === PlayerTaskStatus.COMPLETED
+                ? '0 0 4px rgba(34, 197, 94, 0.2)'
+                : status === PlayerTaskStatus.SKIPPED
+                ? '0 0 4px rgba(220, 38, 38, 0.2)'
+                : '0 0 4px rgba(180, 220, 240, 0.2)'
             }}
           >
             {task?.title || ''}
@@ -189,7 +213,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
             className="leading-relaxed line-clamp-3 text-sm font-medium" 
             data-text="true"
             style={{
-              color: 'rgba(220, 235, 245, 0.7)'
+              color: colorScheme.textColor
             }}
           >
             {task?.description || ''}

@@ -154,7 +154,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
         {/* Header */}
         <div 
           className={`relative z-10 px-6 py-4 ${
-            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
           }`} 
           style={{ 
             transition: isVisible ? 'transform 0.3s ease-out 0.1s, opacity 0.3s ease-out 0.1s' : 'transform 0.2s ease-in, opacity 0.2s ease-in',
@@ -188,10 +188,10 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
         {/* Content */}
         <div 
           className={`relative z-10 px-6 py-4 overflow-y-auto max-h-[60vh] ${
-            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
           }`} 
           style={{ 
-            transition: isVisible ? 'transform 0.3s ease-out 0.15s, opacity 0.3s ease-out 0.15s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
+          transition: isVisible ? 'transform 0.3s ease-out 0.15s, opacity 0.3s ease-out 0.15s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
           }}
         >
           {children}

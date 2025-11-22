@@ -236,7 +236,9 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       const entry = entries[0];
       if (entry.isIntersecting && hasMoreRef.current && !loadingMore && !isLoadingRef.current) {
         const nextPage = currentPageRef.current + 1;
-        loadTransactionsRef.current?.(nextPage);
+        if (loadTransactionsRef.current) {
+          loadTransactionsRef.current(nextPage);
+        }
       }
     };
 
@@ -247,7 +249,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
 
     // Используем setTimeout чтобы убедиться, что элемент уже в DOM
     const timeoutId = setTimeout(() => {
-      if (loadMoreRef.current && observerRef.current) {
+      if (loadMoreRef.current && observerRef.current && hasMoreRef.current) {
         observerRef.current.observe(loadMoreRef.current);
       }
     }, 100);
@@ -270,16 +272,18 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     // Предотвращаем двойную загрузку при первом монтировании
     if (!hasInitialLoadRef.current) {
       hasInitialLoadRef.current = true;
-      // Используем requestAnimationFrame для загрузки после первого рендера
-      requestAnimationFrame(() => {
+      // Загружаем сразу при монтировании, без задержки
+      if (!isLoadingRef.current) {
         loadTransactions(0, true);
-      });
+      }
     } else {
       // При изменении фильтров загружаем сразу
-      loadTransactions(0, true);
+      if (!isLoadingRef.current) {
+        loadTransactions(0, true);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dateFilters.from, dateFilters.to, JSON.stringify(enumFilters)]);
+  }, [dateFilters.from, dateFilters.to, JSON.stringify(enumFilters), loadTransactions]);
 
   // Обновление групп при изменении транзакций
   useEffect(() => {
@@ -382,6 +386,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     </div>
   );
 
+  // Показываем skeleton при загрузке, если нет транзакций
   if (loading && transactions.length === 0) {
     return (
       <div className="space-y-4">
@@ -602,7 +607,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       )}
 
       {/* Элемент для отслеживания скролла - только если есть еще данные */}
-      {hasMore && !loadingMore && (
+      {hasMoreRef.current && !loadingMore && (
         <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
           <div className="text-xs font-tech" style={{ color: 'rgba(220, 235, 245, 0.5)' }}>
             Загрузка...

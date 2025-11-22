@@ -258,34 +258,6 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
                   {balance.balance.balance.currencyCode}
                 </div>
               </div>
-              
-              {/* Quick actions */}
-              <div className="flex gap-3">
-                <button 
-                  className="flex-1 py-3 px-4 rounded-xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-105 active:scale-95"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
-                    border: '1px solid rgba(180, 220, 240, 0.4)',
-                    color: '#e8f4f8',
-                    boxShadow: '0 0 10px rgba(180, 220, 240, 0.2)',
-                    textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
-                  }}
-                >
-                  {t('balance.topUp')}
-                </button>
-                <button 
-                  className="flex-1 py-3 px-4 rounded-xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-105 active:scale-95"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
-                    border: '1px solid rgba(180, 220, 240, 0.4)',
-                    color: '#e8f4f8',
-                    boxShadow: '0 0 10px rgba(180, 220, 240, 0.2)',
-                    textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
-                  }}
-                >
-                  {t('balance.transfer')}
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -307,7 +279,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
 
             {/* Фильтры - горизонтальная строка */}
             <div className="mb-6">
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 overflow-y-visible">
+              <div className="flex gap-3 overflow-x-auto pb-2 px-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
                 {/* Date Range Filter */}
                 <DateFilter
                   from={dateFilters.from}
@@ -329,7 +301,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
                 {/* Clear Filters Button - Solo Leveling Style */}
                 <button
                   onClick={handleClearFilters}
-                  className="flex items-center justify-center px-4 py-3 rounded-xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap overflow-hidden"
+                  className="flex items-center justify-center px-4 py-3 rounded-xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-[1.01] active:scale-95 whitespace-nowrap flex-shrink-0"
                   style={{
                     background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.08) 100%)',
                     border: '1px solid rgba(220, 38, 38, 0.4)',

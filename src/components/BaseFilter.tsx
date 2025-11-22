@@ -50,11 +50,11 @@ const BaseFilter: React.FC<BaseFilterProps> = ({
   };
 
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
+    <div className={`relative flex-shrink-0 ${className}`} ref={dropdownRef}>
       {/* Кнопка фильтра - Solo Leveling Style */}
       <button
         onClick={onToggle}
-        className="w-full max-w-fit flex items-center px-4 py-3 rounded-xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-[1.02] active:scale-95 select-none overflow-hidden"
+        className="w-full max-w-fit flex items-center px-4 py-3 rounded-xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-[1.01] active:scale-95 select-none"
          style={{
            background: hasValue
              ? 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)'

@@ -410,7 +410,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
         </div>
 
         {/* Info section */}
-        <div className="flex justify-center mb-8 md:mb-10">
+        <div className="flex justify-center mb-8 md:mb-10 mt-8 md:mt-10">
           <div 
             className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 max-w-2xl w-full"
             style={{
@@ -493,115 +493,49 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
       {/* Fixed Save Button - Only show when there are changes */}
       {(hasChanges() || firstTime) && canSave && (
         <div 
-          className="fixed bottom-20 left-0 right-0 z-50 px-4 md:px-6 pointer-events-none"
+          className="fixed left-0 right-0 z-50 px-4 md:px-6 pointer-events-none"
           style={{
-            paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+            bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))', // Отступ от нижнего бара (80px высота + safe area)
+            paddingBottom: '1rem' // Дополнительный отступ от бара
           }}
         >
           <div className="max-w-2xl mx-auto flex justify-end">
-            <div className="pointer-events-auto w-full">
-              {/* Expanded mode when there are changes */}
-              <div 
-                className="rounded-2xl md:rounded-3xl p-3 md:p-4 transition-all duration-300 relative"
+            <div className="pointer-events-auto">
+              {/* Save Button - Compact mode */}
+              <button
+                onClick={handleSave}
+                disabled={saving || !canSave}
+                className="inline-flex items-center justify-center px-4 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.98) 0%, rgba(5, 8, 18, 0.98) 100%)',
-                  backdropFilter: 'blur(20px)',
-                  border: '2px solid rgba(180, 220, 240, 0.4)',
-                  boxShadow: `0 -4px 30px rgba(0, 0, 0, 0.5),
-                    0 0 25px rgba(180, 220, 240, 0.3),
-                    inset 0 0 20px rgba(200, 230, 245, 0.05)`,
-                  animation: 'pulse-glow 2s ease-in-out infinite',
-                  marginTop: '1.5rem' // Отступ от информационного блока
+                  background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
+                  border: '1px solid rgba(180, 220, 240, 0.4)',
+                  color: '#e8f4f8',
+                  boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
+                  textShadow: '0 0 4px rgba(180, 220, 240, 0.2)',
+                  minWidth: '140px',
+                  width: '140px'
                 }}
               >
-                {/* Pulsing indicator for unsaved changes */}
-                <div 
-                  className="absolute -top-1 -right-1 w-3 h-3 rounded-full"
-                  style={{
-                    background: 'rgba(34, 197, 94, 0.9)',
-                    boxShadow: '0 0 10px rgba(34, 197, 94, 0.6)',
-                    animation: 'pulse-dot 1.5s ease-in-out infinite'
-                  }}
-                ></div>
-
-                {/* Glowing orbs */}
-                <div className="absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl opacity-10" style={{
-                  background: 'rgba(180, 216, 232, 0.8)'
-                }}></div>
-                <div className="absolute bottom-0 left-0 w-16 h-16 rounded-full blur-xl opacity-10" style={{
-                  background: 'rgba(200, 230, 245, 0.6)'
-                }}></div>
-
-                <div className="relative z-10 flex items-center gap-3 md:gap-4">
-                  {/* Status Info */}
-                  <div className="flex items-center min-w-0">
+                {saving ? (
+                  <>
                     <div 
-                      className="w-2.5 h-2.5 rounded-full mr-2.5 flex-shrink-0"
+                      className="animate-spin w-3.5 h-3.5 md:w-4 md:h-4 border-2 rounded-full mr-2 flex-shrink-0"
                       style={{
-                        background: 'rgba(34, 197, 94, 0.8)',
-                        boxShadow: '0 0 8px rgba(34, 197, 94, 0.4)'
+                        borderColor: 'rgba(220, 235, 245, 0.2)',
+                        borderTopColor: 'rgba(180, 220, 240, 0.6)'
                       }}
                     ></div>
-                    <div className="min-w-0">
-                      <div 
-                        className="text-xs md:text-sm font-tech font-semibold truncate"
-                        style={{
-                          color: '#e8f4f8',
-                          textShadow: '0 0 2px rgba(180, 220, 240, 0.2)'
-                        }}
-                      >
-                        {getActiveTopicsCount()} / {allTopics.length} {t('topics.selected')}
-                      </div>
-                      <div 
-                        className="text-[10px] md:text-xs font-tech truncate"
-                        style={{
-                          color: 'rgba(220, 235, 245, 0.7)'
-                        }}
-                      >
-                        {firstTime
-                          ? t('topics.status.newProfile')
-                          : t('topics.status.hasChanges')}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Save Button - Fixed width to prevent size changes */}
-                  <button
-                    onClick={handleSave}
-                    disabled={saving || !canSave}
-                    className="inline-flex items-center justify-center px-4 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex-shrink-0"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
-                      border: '1px solid rgba(180, 220, 240, 0.4)',
-                      color: '#e8f4f8',
-                      boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
-                      textShadow: '0 0 4px rgba(180, 220, 240, 0.2)',
-                      minWidth: '140px', // Fixed minimum width to prevent size changes (accommodates both "Сохранить" and "Сохраняется...")
-                      width: '140px' // Fixed width to prevent any size changes
-                    }}
-                  >
-                    {saving ? (
-                      <>
-                        <div 
-                          className="animate-spin w-3.5 h-3.5 md:w-4 md:h-4 border-2 rounded-full mr-2 flex-shrink-0"
-                          style={{
-                            borderColor: 'rgba(220, 235, 245, 0.2)',
-                            borderTopColor: 'rgba(180, 220, 240, 0.6)'
-                          }}
-                        ></div>
-                        <span className="whitespace-nowrap text-xs md:text-sm truncate">{t('topics.saving')}</span>
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
-                        </svg>
-                        <span className="whitespace-nowrap text-xs md:text-sm">{t('topics.save')}</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
+                    <span className="whitespace-nowrap text-xs md:text-sm truncate">{t('topics.saving')}</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                    </svg>
+                    <span className="whitespace-nowrap text-xs md:text-sm">{t('topics.save')}</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>

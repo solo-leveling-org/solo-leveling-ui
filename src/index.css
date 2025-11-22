@@ -565,7 +565,7 @@ code {
   width: 100vw;
   max-width: 100vw;
   height: env(safe-area-inset-top, 44px);
-  background-color: white;
+  background-color: #000000;
   z-index: 9999;
   pointer-events: none;
   box-sizing: border-box;
@@ -590,7 +590,7 @@ code {
   width: 100vw;
   max-width: 100vw;
   height: 44px;
-  background-color: white;
+  background-color: #000000;
   z-index: 10000;
   pointer-events: none;
   box-sizing: border-box;

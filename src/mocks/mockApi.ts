@@ -369,12 +369,7 @@ export const mockPlayerService = {
         });
       }
       
-      // Сортируем по дате создания (новые сначала), если есть createdAt
-      filteredTasks.sort((a, b) => {
-        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return dateB - dateA; // Новые сначала
-      });
+      // Не сортируем задачи - оставляем порядок как в исходном массиве
       
       // Применяем пагинацию
       const currentPage = page || 0;
@@ -382,6 +377,14 @@ export const mockPlayerService = {
       const endIndex = startIndex + pageSize;
       const paginatedTasks = filteredTasks.slice(startIndex, endIndex);
       const hasMore = endIndex < filteredTasks.length;
+      
+      // Логируем статусы задач на первой странице для отладки
+      if (currentPage === 0) {
+        const statuses = paginatedTasks.map(t => t.status);
+        const completedCount = statuses.filter(s => s === 'COMPLETED').length;
+        const skippedCount = statuses.filter(s => s === 'SKIPPED').length;
+        console.log('[Mock API] First page statuses:', { completed: completedCount, skipped: skippedCount, total: paginatedTasks.length, statuses: statuses.slice(0, 10) });
+      }
       
       // Моковые доступные фильтры (можно расширить)
       const mockFilters: LocalizedField[] = [

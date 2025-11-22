@@ -13,18 +13,12 @@ type TasksGridProps = {
 };
 
 const TasksGrid: React.FC<TasksGridProps> = ({ tasks, loading, onTaskClick, onComplete, onReplace }) => {
-  const visibleTasks = tasks
-    .filter(
-      t => t.status === PlayerTaskStatus.PREPARING ||
-           t.status === PlayerTaskStatus.IN_PROGRESS ||
-           t.status === PlayerTaskStatus.COMPLETED
-    )
-    .sort((a, b) => {
-      // Сортировка по полю order в возрастающем порядке
-      const orderA = a.order || 0;
-      const orderB = b.order || 0;
-      return orderA - orderB;
-    });
+  const visibleTasks = tasks.filter(
+    t => t.status === PlayerTaskStatus.PREPARING ||
+         t.status === PlayerTaskStatus.IN_PROGRESS ||
+         t.status === PlayerTaskStatus.COMPLETED ||
+         t.status === PlayerTaskStatus.SKIPPED
+  );
 
   if (loading && visibleTasks.length === 0) {
     return (

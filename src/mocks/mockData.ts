@@ -162,26 +162,49 @@ const generateCompletedTasks = (): PlayerTask[] => {
   ];
   const rarities = [TaskRarity.COMMON, TaskRarity.UNCOMMON, TaskRarity.RARE, TaskRarity.EPIC, TaskRarity.LEGENDARY];
   const topics = [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.EDUCATION, TaskTopic.MENTAL_HEALTH, TaskTopic.CREATIVITY];
-  const statuses = [PlayerTaskStatus.COMPLETED, PlayerTaskStatus.SKIPPED];
   
   // Генерируем 60 завершенных/пропущенных задач
+  // Создаем задачи в порядке номеров (1, 2, 3...), но с перемешанными статусами
+  // Используем детерминированное перемешивание для предсказуемости
+  const taskStatuses: PlayerTaskStatus[] = [];
+  for (let i = 0; i < 30; i++) {
+    taskStatuses.push(PlayerTaskStatus.COMPLETED);
+    taskStatuses.push(PlayerTaskStatus.SKIPPED);
+  }
+  
+  // Перемешиваем статусы детерминированно
+  let seed = 12345;
+  const random = () => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+  for (let i = taskStatuses.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [taskStatuses[i], taskStatuses[j]] = [taskStatuses[j], taskStatuses[i]];
+  }
+  
+  // Создаем задачи в порядке номеров (1, 2, 3...), но с перемешанными статусами
   for (let i = 0; i < 60; i++) {
+    const taskStatus = taskStatuses[i];
     const title = taskTitles[i % taskTitles.length];
     const description = taskDescriptions[i % taskDescriptions.length];
     const rarity = rarities[i % rarities.length];
     const topic = topics[i % topics.length];
-    const status = statuses[i % statuses.length];
-    const daysAgo = Math.floor(i / 2); // Распределяем по дням
+    
+    // Создаем даты в порядке номеров (более новые даты для больших номеров)
+    const daysAgo = Math.floor(i / 3);
+    const hoursOffset = i % 24;
+    const minutesOffset = (i * 11) % 60;
     
     const date = new Date();
     date.setDate(date.getDate() - daysAgo);
-    date.setHours(10 + (i % 12), (i * 5) % 60, 0, 0);
+    date.setHours(hoursOffset, minutesOffset, 0, 0);
     
     tasks.push({
       id: `task-completed-${i + 1}`,
       version: 1,
       order: i + 1,
-      status,
+      status: taskStatus,
       createdAt: date.toISOString(),
       task: createMockTask(
         `task-completed-${i + 1}`,

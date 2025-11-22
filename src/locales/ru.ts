@@ -283,6 +283,8 @@ export const ru = {
   taskCard: {
     complete: 'Готово',
     replace: 'Заменить',
+    completed: 'Завершено',
+    skipped: 'Пропущено',
   },
 
   // Диалог завершения задачи

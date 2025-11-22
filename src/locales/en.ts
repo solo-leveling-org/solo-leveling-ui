@@ -283,6 +283,8 @@ export const en = {
   taskCard: {
     complete: 'Done',
     replace: 'Replace',
+    completed: 'Completed',
+    skipped: 'Skipped',
   },
 
   // Task completion dialog

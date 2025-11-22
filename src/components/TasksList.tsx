@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useLocalization } from '../hooks/useLocalization';
 import { api } from '../services';
+import Icon from './Icon';
 import type { 
   PlayerTask, 
   SearchRequest,
@@ -194,7 +195,7 @@ const TasksList: React.FC<TasksListProps> = ({
 
     // Используем setTimeout чтобы убедиться, что элемент уже в DOM
     const timeoutId = setTimeout(() => {
-      if (loadMoreRef.current && observerRef.current) {
+      if (loadMoreRef.current && observerRef.current && hasMoreRef.current) {
         observerRef.current.observe(loadMoreRef.current);
       }
     }, 100);
@@ -262,14 +263,40 @@ const TasksList: React.FC<TasksListProps> = ({
     return (
       <div className="text-center py-12">
         <div 
-          className="text-lg font-tech font-semibold"
+          className="relative inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 mx-auto"
           style={{
-            color: 'rgba(220, 235, 245, 0.7)',
-            textShadow: '0 0 2px rgba(180, 220, 240, 0.1)'
+            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            border: '2px solid rgba(220, 235, 245, 0.2)',
+            boxShadow: '0 0 20px rgba(180, 220, 240, 0.15)'
+          }}
+        >
+          <div
+            className="profile-icon-wrapper"
+            style={{
+              color: 'rgba(180, 220, 240, 0.9)',
+              filter: 'drop-shadow(0 0 8px rgba(180, 220, 240, 0.6))'
+            }}
+          >
+            <Icon type="check" size={32} />
+          </div>
+        </div>
+        <h3 
+          className="text-lg font-tech font-semibold mb-2"
+          style={{
+            color: '#e8f4f8',
+            textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
           }}
         >
           {t('tasks.noCompletedTasks')}
-        </div>
+        </h3>
+        <p 
+          className="text-sm font-tech"
+          style={{
+            color: 'rgba(220, 235, 245, 0.7)'
+          }}
+        >
+          Complete tasks to see them here!
+        </p>
       </div>
     );
   }
@@ -294,7 +321,7 @@ const TasksList: React.FC<TasksListProps> = ({
       )}
       
       {/* Элемент для отслеживания Intersection Observer */}
-      {hasMore && !loadingMore && (
+      {hasMoreRef.current && !loadingMore && (
         <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
           <div className="text-xs font-tech" style={{ color: 'rgba(220, 235, 245, 0.5)' }}>
             Загрузка...
