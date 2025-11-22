@@ -67,8 +67,12 @@ export const config: EnvironmentConfig = currentEnv === 'production' ? productio
 
 // Логируем конфигурацию для отладки и определяем моки динамически
 if (typeof window !== 'undefined') {
-  // Переопределяем useMocks, если Telegram недоступен в development
-  if (config.isDevelopment && !config.useMocks) {
+  // В production никогда не переопределяем useMocks
+  if (config.isProduction) {
+    // В production всегда используем реальные API вызовы
+    (config as any).useMocks = false;
+  } else if (config.isDevelopment && !config.useMocks) {
+    // Переопределяем useMocks, если Telegram недоступен в development
     // Проверяем наличие Telegram WebApp (может быть загружен позже)
     // Если Telegram недоступен, используем моки
     const checkTelegram = () => {
