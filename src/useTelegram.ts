@@ -27,73 +27,46 @@ export function useTelegram() {
     if (currentWebApp.ready) {
       currentWebApp.ready();
       
-      // Используем новый API для управления полноэкранным режимом
-      // web_app_request_fullscreen для мобильных устройств
-      // web_app_expand для desktop устройств
       const platform = currentWebApp.platform;
       const isDesktop = platform === 'macos' || platform === 'windows' || platform === 'linux' || platform === 'web';
       const isMobile = platform === 'ios' || platform === 'android';
       
-      // Функция для отправки события согласно документации Telegram Mini Apps
-      // https://docs.telegram-mini-apps.com/platform/methods#web_app_request_fullscreen
       const postEvent = (eventType: string, eventData?: any) => {
         try {
-          // Для web версии используем window.parent.postMessage
           if (platform === 'web') {
             const message = JSON.stringify({
               eventType: eventType,
               eventData: eventData || {}
             });
             window.parent.postMessage(message, 'https://web.telegram.org');
-            console.log(`[Telegram] postMessage (web): ${eventType}`, eventData);
-          }
-          // Для desktop и mobile используем TelegramWebviewProxy.postEvent
-          else if (typeof (window as any).TelegramWebviewProxy?.postEvent === 'function') {
+          } else if (typeof (window as any).TelegramWebviewProxy?.postEvent === 'function') {
             const data = eventData ? JSON.stringify(eventData) : '';
             (window as any).TelegramWebviewProxy.postEvent(eventType, data);
-            console.log(`[Telegram] postEvent (native): ${eventType}`, eventData);
-          }
-          // Fallback: пробуем через SDK postEvent
-          else if (typeof (currentWebApp as any).postEvent === 'function') {
+          } else if (typeof (currentWebApp as any).postEvent === 'function') {
             (currentWebApp as any).postEvent(eventType, eventData);
-            console.log(`[Telegram] postEvent (SDK): ${eventType}`, eventData);
           } else if (typeof (window as any).Telegram?.WebApp?.postEvent === 'function') {
             (window as any).Telegram.WebApp.postEvent(eventType, eventData);
-            console.log(`[Telegram] postEvent (window): ${eventType}`, eventData);
-          } else {
-            // Fallback: используем expand() для мобильных, если postEvent недоступен
-            if (isMobile && currentWebApp.expand && !currentWebApp.isExpanded) {
-              currentWebApp.expand();
-              console.log('[Telegram] Fallback: expand() called for mobile platform:', platform);
-            }
+          } else if (isMobile && currentWebApp.expand && !currentWebApp.isExpanded) {
+            currentWebApp.expand();
           }
         } catch (error) {
-          console.warn(`[Telegram] Failed to postEvent ${eventType}:`, error);
-          // Fallback: используем expand() для мобильных
           if (isMobile && currentWebApp.expand && !currentWebApp.isExpanded) {
             try {
               currentWebApp.expand();
-              console.log('[Telegram] Fallback: expand() called after postEvent error');
             } catch (expandError) {
-              console.warn('[Telegram] Failed to expand after postEvent error:', expandError);
+              // Silent fail
             }
           }
         }
       };
       
       if (isMobile) {
-        // Для мобильных устройств запрашиваем полноэкранный режим
-        setTimeout(() => {
-          postEvent('web_app_request_fullscreen');
-        }, 100);
+        setTimeout(() => postEvent('web_app_request_fullscreen'), 100);
       } else if (isDesktop) {
-        // Для desktop устройств используем expand для fullsize режима
         setTimeout(() => {
           if (currentWebApp.expand && !currentWebApp.isExpanded) {
             currentWebApp.expand();
-            console.log('[Telegram] expand() called for desktop platform:', platform);
           } else {
-            // Если expand недоступен, пробуем через postEvent
             postEvent('web_app_expand');
           }
         }, 100);
@@ -110,8 +83,6 @@ export function useTelegram() {
       currentWebApp.disableVerticalSwipes();
     }
     
-    // Примечание: Дополнительное управление полноэкранным режимом (expand) 
-    // также есть в useTelegramAdaptive для дополнительных попыток и fallback логики
     
     // Устанавливаем начальные данные
     const newUser = currentWebApp.initDataUnsafe?.user;
