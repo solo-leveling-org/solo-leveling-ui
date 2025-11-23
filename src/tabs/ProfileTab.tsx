@@ -292,25 +292,24 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                   }}>
                     {/* Progress fill with smooth transition */}
                     <div 
-                      className="absolute top-0 left-0 h-full rounded-full"
+                      className="absolute top-0 left-0 h-full rounded-full transition-all duration-500"
                       style={{
                         width: `${expPercentage}%`,
-                        background: 'linear-gradient(90deg, rgba(180, 220, 240, 0.9) 0%, rgba(160, 210, 235, 0.7) 50%, rgba(140, 200, 230, 0.9) 100%)',
-                        boxShadow: '0 0 12px rgba(180, 220, 240, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-                        minWidth: expPercentage > 0 ? '4px' : '0px',
-                        transition: 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out, min-width 0.3s ease-in-out'
+                        background: 'linear-gradient(90deg, rgba(180, 220, 240, 0.8) 0%, rgba(160, 210, 235, 0.6) 100%)',
+                        boxShadow: '0 0 8px rgba(180, 220, 240, 0.4)',
+                        minWidth: expPercentage > 0 ? '4px' : '0px'
                       }}
                     >
-                      {/* Animated shimmer effect - subtle */}
+                      {/* Shimmer effect - всегда на всю ширину контейнера (как в топиках) */}
                       {expPercentage > 0 && (
                         <div 
-                          className="absolute inset-0 rounded-full"
+                          className="absolute top-0 left-0 h-full rounded-full pointer-events-none"
                           style={{
-                            background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.15) 50%, transparent 100%)',
+                            width: '100%',
+                            background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%)',
                             backgroundSize: '200% 100%',
-                            animation: 'shimmer 4s ease-in-out infinite',
-                            transform: 'translateX(-100%)',
-                            opacity: 0.4
+                            animation: 'shimmer 3s ease-in-out infinite',
+                            opacity: 0.5
                           }}
                         ></div>
                       )}

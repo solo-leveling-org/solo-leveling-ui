@@ -131,12 +131,12 @@ function AppRoutes() {
 
 export default function App() {
   return (
+      <ModalProvider>
       <NotificationProvider>
-        <ModalProvider>
           <Router>
             <AppRoutes/>
           </Router>
+        </NotificationProvider>
         </ModalProvider>
-      </NotificationProvider>
   );
 }

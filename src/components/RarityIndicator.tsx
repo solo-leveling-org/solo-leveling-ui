@@ -21,8 +21,8 @@ const getRarityColors = (rarity: string): {
       };
     case 'UNCOMMON':
       return {
-        neon: 'rgba(180, 220, 240, 1)',
-        glow: 'rgba(180, 220, 240, 0.7)'
+        neon: 'rgba(34, 197, 94, 1)',
+        glow: 'rgba(34, 197, 94, 0.7)'
       };
     case 'RARE':
       // Более синий оттенок для RARE

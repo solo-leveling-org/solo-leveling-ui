@@ -23,6 +23,7 @@ export const ru = {
     },
     filters: 'Фильтры',
     clearFilters: 'Очистить фильтры',
+    resetFilters: 'Сбросить фильтры',
     sortBy: 'Сортировать по',
     noSort: 'Без сортировки',
     ascending: 'По возрастанию',

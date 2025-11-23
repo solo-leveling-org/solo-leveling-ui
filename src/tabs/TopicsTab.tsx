@@ -482,7 +482,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
             background: 'linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%)'
           }}
         >
-          <div className="max-w-2xl mx-auto flex justify-end">
+          <div className="flex justify-end">
             <div className="pointer-events-auto">
               {/* Save Button - Compact mode */}
               <button

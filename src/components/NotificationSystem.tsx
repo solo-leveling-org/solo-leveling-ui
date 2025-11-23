@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import { useModal } from '../contexts/ModalContext';
 
 export interface Notification {
   id: string;
@@ -31,9 +32,19 @@ const NotificationItem: React.FC<{
 }> = ({ notification, onRemove }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
+  const { isDialogOpen } = useModal();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const elapsedTimeRef = useRef(0);
+  const startTimeRef = useRef(Date.now());
+  const [progressPercentage, setProgressPercentage] = useState(100);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleRemove = useCallback(() => {
     setIsRemoving(true);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
     setTimeout(() => {
       onRemove(notification.id);
     }, 300); // Время для анимации исчезновения
@@ -45,14 +56,96 @@ const NotificationItem: React.FC<{
     return () => clearTimeout(timer);
   }, []);
 
+  // Упрощенная логика прогресс-бара (уменьшается от 100% к 0%)
   useEffect(() => {
-    if (notification.duration && notification.duration > 0) {
-      const timer = setTimeout(() => {
-        handleRemove();
-      }, notification.duration);
-      return () => clearTimeout(timer);
+    if (!notification.duration || notification.duration <= 0) {
+      setProgressPercentage(100);
+      return;
     }
-  }, [notification.duration, handleRemove]);
+
+    // Если dialog открыт, останавливаем обновление прогресс-бара
+    if (isDialogOpen) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return;
+    }
+
+    // Если dialog закрыт, запускаем обновление прогресс-бара
+    const updateProgress = () => {
+      if (!notification.duration) return;
+      
+      const now = Date.now();
+      const elapsed = elapsedTimeRef.current + (now - startTimeRef.current);
+      const elapsedPercent = Math.min(100, (elapsed / notification.duration) * 100);
+      const remainingPercent = Math.max(0, 100 - elapsedPercent);
+      
+      setProgressPercentage(remainingPercent);
+
+      if (remainingPercent <= 0) {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+      }
+    };
+
+    // Обновляем прогресс каждые 50ms для плавности
+    if (!intervalRef.current) {
+      startTimeRef.current = Date.now();
+      updateProgress(); // Сразу обновляем
+      intervalRef.current = setInterval(updateProgress, 50);
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      // Сохраняем прошедшее время при размонтировании
+      if (startTimeRef.current) {
+        elapsedTimeRef.current += Date.now() - startTimeRef.current;
+        startTimeRef.current = Date.now();
+      }
+    };
+  }, [notification.duration, isDialogOpen]);
+
+  useEffect(() => {
+    if (!notification.duration || notification.duration <= 0) return;
+
+    // Если dialog открыт, останавливаем таймер и сохраняем прошедшее время
+    if (isDialogOpen) {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+        // Сохраняем прошедшее время
+        elapsedTimeRef.current += Date.now() - startTimeRef.current;
+      }
+      // Сбрасываем startTimeRef, чтобы не учитывать время пока dialog открыт
+      startTimeRef.current = Date.now();
+      return;
+    }
+
+    // Если dialog закрыт, запускаем/возобновляем таймер
+    const remainingTime = notification.duration - elapsedTimeRef.current;
+    if (remainingTime > 0) {
+      startTimeRef.current = Date.now();
+      timerRef.current = setTimeout(() => {
+        handleRemove();
+      }, remainingTime);
+    } else {
+      // Если время уже истекло, удаляем сразу
+      handleRemove();
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [notification.duration, handleRemove, isDialogOpen]);
 
   const getNotificationStyles = () => {
     const baseStyles = "relative overflow-hidden rounded-2xl md:rounded-3xl shadow-lg backdrop-blur-md border transition-all duration-300 ease-out transform";
@@ -250,8 +343,9 @@ const NotificationItem: React.FC<{
           background: 'rgba(220, 235, 245, 0.1)'
         }}>
           <div 
-            className="h-full rounded-t-2xl"
+            className="h-full rounded-t-2xl transition-all duration-100 ease-linear"
             style={{
+              width: `${progressPercentage}%`,
               background: notification.type === 'info' 
                 ? 'linear-gradient(90deg, rgba(180, 220, 240, 0.8) 0%, rgba(160, 210, 235, 0.6) 100%)'
                 : notification.type === 'success'
@@ -259,7 +353,6 @@ const NotificationItem: React.FC<{
                 : notification.type === 'warning'
                 ? 'linear-gradient(90deg, rgba(251, 191, 36, 0.8) 0%, rgba(245, 158, 11, 0.6) 100%)'
                 : 'linear-gradient(90deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.6) 100%)',
-              animation: `progress ${notification.duration}ms linear forwards`,
             }}
           />
         </div>

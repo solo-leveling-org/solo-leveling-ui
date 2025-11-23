@@ -302,44 +302,44 @@ const Calendar: React.FC<CalendarProps> = ({
           }`} style={{ 
             transition: isVisible ? 'transform 0.3s ease-out 0.3s, opacity 0.3s ease-out 0.3s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
           }}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleClear();
-            }}
-            className="flex-1 px-4 py-2 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95 select-none"
-            style={{
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClear();
+              }}
+              className="flex-1 px-4 py-2 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95 select-none"
+              style={{
               background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
-              border: '1px solid rgba(220, 235, 245, 0.3)',
-              color: '#e8f4f8',
-              boxShadow: '0 0 10px rgba(180, 220, 240, 0.2)'
-            }}
-          >
-            {t('common.clear')}
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleApply();
-            }}
-            disabled={!selectedFrom || !selectedTo}
-            className="flex-1 px-4 py-2 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 select-none"
-            style={!selectedFrom || !selectedTo ? {
-              background: 'rgba(148, 163, 184, 0.2)',
-              border: '1px solid rgba(148, 163, 184, 0.3)',
-              color: 'rgba(220, 235, 245, 0.5)'
-            } : {
-              background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
-              border: '1px solid rgba(180, 220, 240, 0.4)',
-              color: '#e8f4f8',
-              boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
-              textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
-            }}
-          >
-            {t('common.apply')}
-          </button>
+                border: '1px solid rgba(220, 235, 245, 0.3)',
+                color: '#e8f4f8',
+                boxShadow: '0 0 10px rgba(180, 220, 240, 0.2)'
+              }}
+            >
+              {t('common.clear')}
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleApply();
+              }}
+              disabled={!selectedFrom || !selectedTo}
+              className="flex-1 px-4 py-2 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 select-none"
+              style={!selectedFrom || !selectedTo ? {
+                background: 'rgba(148, 163, 184, 0.2)',
+                border: '1px solid rgba(148, 163, 184, 0.3)',
+                color: 'rgba(220, 235, 245, 0.5)'
+              } : {
+                background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
+                border: '1px solid rgba(180, 220, 240, 0.4)',
+                color: '#e8f4f8',
+                boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
+                textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+              }}
+            >
+              {t('common.apply')}
+            </button>
+          </div>
         </div>
-      </div>
     </BaseDialog>
   );
 };

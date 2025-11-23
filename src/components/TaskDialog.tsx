@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import type {Task} from '../api';
+import type {Task, PlayerTaskStatus} from '../api';
+import { PlayerTaskStatus as TaskStatus } from '../api';
 import TopicIcon from './TopicIcons';
 import Icon from './Icon';
 import RarityIndicator from './RarityIndicator';
@@ -9,15 +10,63 @@ import BaseDialog from './BaseDialog';
 
 type TaskDialogProps = {
   task: Task;
+  status?: PlayerTaskStatus;
   onClose: () => void;
   isOpen: boolean;
 };
 
-const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
+// Определяем цветовые схемы для разных статусов (из TaskCard.tsx)
+const getStatusColorScheme = (status?: PlayerTaskStatus) => {
+  if (!status) {
+    return {
+      bg: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+      border: 'rgba(220, 235, 245, 0.2)',
+    };
+  }
+  
+  switch (status) {
+    case TaskStatus.COMPLETED:
+      return {
+        bg: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%), linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%)',
+        border: 'rgba(34, 197, 94, 0.3)',
+        innerBg: 'linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(22, 163, 74, 0.05) 100%)',
+        innerBorder: 'rgba(34, 197, 94, 0.2)',
+      };
+    case TaskStatus.SKIPPED:
+      return {
+        bg: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%), linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.1) 100%)',
+        border: 'rgba(220, 38, 38, 0.3)',
+        innerBg: 'linear-gradient(135deg, rgba(220, 38, 38, 0.08) 0%, rgba(185, 28, 28, 0.05) 100%)',
+        innerBorder: 'rgba(220, 38, 38, 0.2)',
+      };
+    default:
+      return {
+        bg: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+        border: 'rgba(220, 235, 245, 0.2)',
+        innerBg: 'rgba(220, 235, 245, 0.05)',
+        innerBorder: 'rgba(220, 235, 245, 0.15)',
+      };
+  }
+};
+
+const TaskDialog: React.FC<TaskDialogProps> = ({task, status, onClose, isOpen}) => {
   const { t } = useLocalization();
 
   // Мемоизируем стили для оптимизации
   const rarityText = useMemo(() => t(`rarity.${task.rarity || 'COMMON'}`), [t, task.rarity]);
+  
+  // Получаем цветовую схему на основе статуса
+  const colorScheme = useMemo(() => getStatusColorScheme(status), [status]);
+  
+  // Определяем boxShadow на основе статуса
+  const dialogBoxShadow = useMemo(() => {
+    if (status === TaskStatus.COMPLETED) {
+      return '0 0 30px rgba(34, 197, 94, 0.2), inset 0 0 30px rgba(200, 230, 245, 0.03)';
+    } else if (status === TaskStatus.SKIPPED) {
+      return '0 0 30px rgba(220, 38, 38, 0.2), inset 0 0 30px rgba(200, 230, 245, 0.03)';
+    }
+    return '0 0 30px rgba(180, 220, 240, 0.2), inset 0 0 30px rgba(200, 230, 245, 0.03)';
+  }, [status]);
 
   return (
     <BaseDialog
@@ -25,6 +74,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
       onClose={onClose}
       maxWidth="max-w-md"
       maxHeight="max-h-[calc(95vh-env(safe-area-inset-top,0px)-5rem)]"
+      contentClassName="task-dialog-content"
     >
         <style>{`
           .profile-icon-wrapper svg {
@@ -32,6 +82,11 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
             fill: none;
             stroke: currentColor;
           }
+        .task-dialog-content {
+          background: ${colorScheme.bg} !important;
+          border: 2px solid ${colorScheme.border} !important;
+          box-shadow: ${dialogBoxShadow} !important;
+        }
         `}</style>
 
         <div className="flex flex-col h-full min-h-0">
@@ -189,7 +244,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
                   </div>
                   {t('dialogs.task.statsTitle')}
                 </h3>
-                <div className="grid grid-cols-3 gap-3 md:gap-4">
+                <div className="grid grid-cols-3 gap-3 md:gap-4 items-stretch">
                   {/* Strength */}
                   <Card 
                     className="border-0 shadow-none bg-transparent text-center p-4"
@@ -266,7 +321,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
 
                   {/* Intelligence */}
                   <Card 
-                    className="border-0 shadow-none bg-transparent text-center p-4"
+                    className="border-0 shadow-none bg-transparent text-center p-4 flex flex-col items-center justify-center"
                     style={{
                       background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
                       border: '1px solid rgba(168, 85, 247, 0.2)',
@@ -294,7 +349,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
                       {task.intelligence || 0}
                     </div>
                     <div 
-                      className="text-[10px] md:text-xs font-tech"
+                      className="text-[10px] md:text-xs font-tech text-center"
                       style={{ color: 'rgba(220, 235, 245, 0.7)' }}
                     >
                       {t('profile.stats.intelligence')}

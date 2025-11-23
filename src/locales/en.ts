@@ -20,6 +20,7 @@ export const en = {
     retry: 'Retry',
     filters: 'Filters',
     clearFilters: 'Clear Filters',
+    resetFilters: 'Reset Filters',
     sortBy: 'Sort by',
     noSort: 'No sorting',
     ascending: 'Ascending',

@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { CompleteTaskResponse, Task } from '../api';
 import { useLocalization } from '../hooks/useLocalization';
 import Icon from './Icon';
 import TopicIcon from './TopicIcons';
 import BaseDialog from './BaseDialog';
+
+// Определяем цветовую схему для COMPLETED статуса
+const getCompletedColorScheme = () => {
+  return {
+    bg: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%), linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%)',
+    border: 'rgba(34, 197, 94, 0.3)',
+    innerBg: 'linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(22, 163, 74, 0.05) 100%)',
+    innerBorder: 'rgba(34, 197, 94, 0.2)',
+  };
+};
 
 
 type TaskCompletionDialogProps = {
@@ -16,6 +26,10 @@ type TaskCompletionDialogProps = {
 const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, completedTask, onClose, isOpen }) => {
   const { playerBefore, playerAfter } = response;
   const { t } = useLocalization();
+  
+  // Получаем цветовую схему для COMPLETED статуса
+  const colorScheme = useMemo(() => getCompletedColorScheme(), []);
+  const dialogBoxShadow = '0 0 30px rgba(34, 197, 94, 0.2), inset 0 0 30px rgba(200, 230, 245, 0.03)';
 
   if (!playerBefore || !playerAfter) {
     return null;
@@ -53,12 +67,18 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
       onClose={onClose}
       maxWidth="max-w-md"
       maxHeight="max-h-[calc(95vh-env(safe-area-inset-top,0px)-5rem)]"
+      contentClassName="task-completion-dialog-content"
     >
       <style>{`
         .profile-icon-wrapper svg {
           color: inherit;
           fill: none;
           stroke: currentColor;
+        }
+        .task-completion-dialog-content {
+          background: ${colorScheme.bg} !important;
+          border: 2px solid ${colorScheme.border} !important;
+          box-shadow: ${dialogBoxShadow} !important;
         }
       `}</style>
 
@@ -99,22 +119,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
           <div className="relative z-10 px-6 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
             
             {/* Level Progress - Solo Leveling Style */}
-            <div 
-              className="relative overflow-hidden rounded-2xl p-4 mb-4"
-              style={{
-                background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
-                border: '2px solid rgba(220, 235, 245, 0.2)',
-                boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
-              }}
-            >
-              {/* Glowing orbs */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 rounded-full blur-xl opacity-10" style={{
-                background: 'rgba(234, 179, 8, 0.8)'
-              }}></div>
-              <div className="absolute -bottom-2 -left-2 w-16 h-16 rounded-full blur-lg opacity-10" style={{
-                background: 'rgba(234, 179, 8, 0.6)'
-              }}></div>
-
+            <div className="relative overflow-hidden rounded-2xl p-4 mb-4">
               <div className="relative z-10 flex items-center justify-between mb-3">
                 <h3 
                   className="text-base font-tech font-bold flex items-center"
@@ -168,13 +173,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
               </div>
             
               {/* Experience Progress */}
-              <div 
-                className="rounded-xl p-3"
-                style={{
-                  background: 'rgba(220, 235, 245, 0.05)',
-                  border: '1px solid rgba(220, 235, 245, 0.1)'
-                }}
-              >
+              <div className="rounded-xl p-3">
                 <div className="flex justify-between items-center mb-2">
                   <span 
                     className="text-xs font-tech font-medium"
@@ -213,10 +212,6 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 
                 <div 
                   className="relative w-full rounded-full h-2 overflow-hidden"
-                  style={{
-                    background: 'rgba(220, 235, 245, 0.1)',
-                    border: '1px solid rgba(220, 235, 245, 0.2)'
-                  }}
                 >
                   <div
                     className="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out"
@@ -278,10 +273,6 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                         <div 
                           key={topic} 
                           className="rounded-lg p-2"
-                          style={{
-                            background: 'rgba(220, 235, 245, 0.05)',
-                            border: '1px solid rgba(220, 235, 245, 0.1)'
-                          }}
                         >
                           <div className="flex items-center justify-between mb-1">
                             <div className="flex items-center">
@@ -355,10 +346,6 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                             </div>
                             <div 
                               className="relative w-full rounded-full h-1.5 overflow-hidden"
-                              style={{
-                                background: 'rgba(220, 235, 245, 0.1)',
-                                border: '1px solid rgba(220, 235, 245, 0.2)'
-                              }}
                             >
                               <div
                                 className="absolute top-0 left-0 h-full rounded-full transition-all duration-500"
@@ -391,22 +378,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
             </div>
 
             {/* Stats Changes - Solo Leveling Style */}
-            <div 
-              className="relative overflow-hidden rounded-2xl p-4 mb-4"
-              style={{
-                background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
-                border: '2px solid rgba(220, 235, 245, 0.2)',
-                boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
-              }}
-            >
-              {/* Glowing orbs */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 rounded-full blur-xl opacity-10" style={{
-                background: 'rgba(180, 216, 232, 0.8)'
-              }}></div>
-              <div className="absolute -bottom-2 -left-2 w-16 h-16 rounded-full blur-lg opacity-10" style={{
-                background: 'rgba(200, 230, 245, 0.6)'
-              }}></div>
-
+            <div className="relative overflow-hidden rounded-2xl p-4 mb-4">
               <h3 
                 className="relative z-10 text-sm font-tech font-semibold mb-3 flex items-center"
                 style={{
@@ -424,7 +396,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 </div>
                 {t('taskCompletion.stats')}
               </h3>
-              <div className="relative z-10 grid grid-cols-3 gap-2">
+              <div className="relative z-10 grid grid-cols-3 gap-2 items-stretch">
                 {/* Strength */}
                 <div 
                   className="relative rounded-xl p-4 text-center"
@@ -551,7 +523,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
 
                 {/* Intelligence */}
                 <div 
-                  className="relative rounded-xl p-4 text-center"
+                  className="relative rounded-xl p-4 text-center flex flex-col items-center justify-center"
                   style={{
                     background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
                     border: '1px solid rgba(168, 85, 247, 0.2)',
@@ -602,7 +574,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     {playerAfter.intelligence || 0}
                   </div>
                   <div 
-                    className="text-[10px] font-tech"
+                    className="text-[10px] font-tech text-center"
                     style={{
                       color: 'rgba(220, 235, 245, 0.7)'
                     }}
@@ -614,14 +586,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
             </div>
 
             {/* Balance Change - Solo Leveling Style */}
-            <div 
-              className="relative overflow-hidden rounded-2xl p-3 mb-3"
-              style={{
-                background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
-                border: '2px solid rgba(220, 235, 245, 0.2)',
-                boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
-              }}
-            >
+            <div className="relative overflow-hidden rounded-2xl p-3 mb-3">
               {/* Content */}
               <div className="relative z-10 text-center">
                 {/* Header */}
@@ -651,7 +616,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     className="text-2xl font-tech font-bold mb-1"
                     style={{
                       color: '#e8f4f8',
-                      textShadow: '0 0 12px rgba(234, 179, 8, 0.4)'
+                      textShadow: '0 0 12px rgba(180, 220, 240, 0.4)'
                     }}
                   >
                     {playerAfter.balance?.balance?.amount || 0}
@@ -659,8 +624,8 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                   <div 
                     className="text-xs font-tech font-semibold"
                     style={{
-                      color: 'rgba(234, 179, 8, 0.8)',
-                      textShadow: '0 0 6px rgba(234, 179, 8, 0.3)'
+                      color: 'rgba(180, 220, 240, 0.8)',
+                      textShadow: '0 0 6px rgba(180, 220, 240, 0.3)'
                     }}
                   >
                     {playerAfter.balance?.balance?.currencyCode || 'SLCN'}

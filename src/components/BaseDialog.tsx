@@ -1,4 +1,4 @@
-import React, { useEffect, ReactNode, useState, useRef } from 'react';
+import React, { useEffect, ReactNode, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useModal } from '../contexts/ModalContext';
 import { useScrollLock } from '../hooks/useScrollLock';
@@ -92,7 +92,7 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
         .base-dialog-content-animated .overflow-y-auto {
           overflow-y: auto !important;
           overflow-x: hidden !important;
-        }
+          }
         
         /* Ограничиваем диалог снизу, чтобы не накладывался на BottomBar */
         .base-dialog-content-animated {
