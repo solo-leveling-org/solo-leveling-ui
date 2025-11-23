@@ -18,6 +18,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [contentLoaded, setContentLoaded] = useState(false);
   const { isLoaded } = useSettings();
   const { t } = useLocalization();
 
@@ -25,14 +26,22 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
   useEffect(() => {
     if (isAuthenticated) {
       setLoading(true);
+      setContentLoaded(false);
       api.getUser()
         .then((userData: User) => {
           setUser(userData);
           setLoading(false);
+          // Запускаем анимацию появления контента
+          setTimeout(() => {
+            setContentLoaded(true);
+          }, 50);
         })
         .catch((error: any) => {
           console.error('Error getting user:', error);
           setLoading(false);
+          setTimeout(() => {
+            setContentLoaded(true);
+          }, 50);
         });
     }
   }, [isAuthenticated]);
@@ -100,10 +109,13 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
         }
       `}</style>
       <div 
-        className="fixed inset-0 overflow-y-auto overflow-x-hidden"
+        className={`fixed inset-0 overflow-y-auto overflow-x-hidden ${contentLoaded ? 'tab-content-enter-active' : ''}`}
         style={{ 
           background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          opacity: contentLoaded ? 1 : 0,
+          transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
+          transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
         }}
       >
         {/* Holographic grid background */}

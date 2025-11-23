@@ -17,6 +17,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
   const [firstTime, setFirstTime] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [contentLoaded, setContentLoaded] = useState(false);
   const navigate = useNavigate();
   const { t } = useLocalization();
 
@@ -33,13 +34,21 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
           // firstTime определяется по пустоте списка активных топиков
           setFirstTime(activeTopics.length === 0);
           setLoading(false);
+          // Запускаем анимацию появления контента
+          setTimeout(() => {
+            setContentLoaded(true);
+          }, 50);
         })
         .catch((error: any) => {
           console.error('Error getting player topics:', error);
           setLoading(false);
+          setTimeout(() => {
+            setContentLoaded(true);
+          }, 50);
         });
     } else {
       setLoading(false);
+      setContentLoaded(true);
     }
   }, [isAuthenticated]);
 
@@ -114,9 +123,6 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
     setOriginalTopics(activeTopics);
   };
 
-  // Получаем активные топики для отображения
-  const getActiveTopics = () => playerTopics.filter(pt => pt.isActive).map(pt => pt.taskTopic).filter(Boolean);
-  const getActiveTopicsCount = () => getActiveTopics().length;
 
   // Определяем цветовые схемы для разных топиков в стиле Solo Leveling
   const getTopicColorScheme = (topic: TaskTopic) => {
@@ -201,10 +207,13 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
 
   return (
     <div
-      className="fixed inset-0 overflow-y-auto overflow-x-hidden"
+      className={`fixed inset-0 overflow-y-auto overflow-x-hidden ${contentLoaded ? 'tab-content-enter-active' : ''}`}
       style={{
         background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
         boxSizing: 'border-box',
+        opacity: contentLoaded ? 1 : 0,
+        transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
+        transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
       }}
     >
       {/* Holographic grid background */}

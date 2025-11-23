@@ -14,7 +14,6 @@ import type {
   CompleteTaskRequest,
   SkipTaskRequest,
   SearchRequest,
-  PlayerTask,
   LocalizedField,
 } from '../api';
 import {
@@ -24,13 +23,11 @@ import {
   mockLoginResponse,
   mockRefreshResponse,
   mockCompleteTaskResponse,
-  mockSearchPlayerBalanceTransactionsResponse,
-  mockSearchPlayerTasksResponse,
   mockTasks,
   mockTransactions,
   mockPlayerTopics,
 } from './mockData';
-import { CancelablePromise } from '../api/core/CancelablePromise';
+import { CancelablePromise } from '../api';
 
 // Имитация задержки сети
 const delay = (ms: number = 300) => new Promise(resolve => setTimeout(resolve, ms));

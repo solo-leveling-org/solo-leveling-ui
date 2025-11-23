@@ -38,7 +38,7 @@ const TasksList: React.FC<TasksListProps> = ({
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
-  const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
+  const [, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [, setAvailableSorts] = useState<string[]>([]);
   
   // Используем переданные фильтры или значения по умолчанию

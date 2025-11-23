@@ -10,23 +10,6 @@ export const TelegramWidget: React.FC<TelegramWidgetProps> = ({ type, errorMessa
   const { t } = useLocalization();
   const isAuthError = type === 'auth-error';
   
-  const backgroundGradient = isAuthError 
-    ? "bg-gradient-to-br from-red-900/95 via-pink-900/95 to-red-900/95"
-    : "bg-gradient-to-br from-blue-900/95 via-purple-900/95 to-indigo-900/95";
-    
-  const decorativeColors = isAuthError
-    ? {
-        topRight: "bg-gradient-to-br from-red-400/20 to-pink-500/20",
-        bottomLeft: "bg-gradient-to-tr from-pink-400/20 to-red-500/20"
-      }
-    : {
-        topRight: "bg-gradient-to-br from-emerald-400/20 to-teal-500/20",
-        bottomLeft: "bg-gradient-to-tr from-purple-400/20 to-pink-500/20"
-      };
-
-  const iconGradient = isAuthError
-    ? "bg-gradient-to-br from-red-500 to-red-600"
-    : "bg-gradient-to-br from-blue-500 to-blue-600";
 
   const title = isAuthError ? t('errors.authError') : t('errors.telegramRequired');
   

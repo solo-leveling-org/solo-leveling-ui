@@ -286,29 +286,6 @@ export const mockTasks: PlayerTask[] = [
   ...generateCompletedTasks(),
 ];
 
-// Моковые транзакции баланса
-const createMockTransaction = (
-  id: string,
-  amount: number,
-  type: PlayerBalanceTransactionType,
-  cause: PlayerBalanceTransactionCause,
-  daysAgo: number
-): PlayerBalanceTransaction => {
-  const date = new Date();
-  date.setDate(date.getDate() - daysAgo);
-  return {
-    id,
-    version: 1,
-    amount: {
-      currencyCode: 'GOLD',
-      amount,
-    },
-    type,
-    cause,
-    createdAt: date.toISOString(),
-  };
-};
-
 // Генерируем много транзакций для тестирования lazy loading
 const generateMockTransactions = (): PlayerBalanceTransaction[] => {
   const transactions: PlayerBalanceTransaction[] = [];

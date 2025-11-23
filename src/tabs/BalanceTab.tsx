@@ -18,6 +18,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
   const [dateFilters, setDateFilters] = useState({ from: '', to: '' });
   const [enumFilters, setEnumFilters] = useState<{[field: string]: string[]}>({});
   const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
+  const [contentLoaded, setContentLoaded] = useState(false);
   const { t } = useLocalization();
 
   const loadBalance = useCallback(async () => {
@@ -27,9 +28,16 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
     try {
       const balanceData: GetPlayerBalanceResponse = await api.getPlayerBalance();
       setBalance(balanceData);
+      // Запускаем анимацию появления контента
+      setTimeout(() => {
+        setContentLoaded(true);
+      }, 50);
     } catch (err) {
       console.error('Error loading balance:', err);
       setError(t('common.error.loadingData'));
+      setTimeout(() => {
+        setContentLoaded(true);
+      }, 50);
     } finally {
       setLoading(false);
     }
@@ -121,10 +129,13 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
 
   return (
     <div
-      className="fixed inset-0 overflow-y-auto overflow-x-hidden"
+      className={`fixed inset-0 overflow-y-auto overflow-x-hidden ${contentLoaded ? 'tab-content-enter-active' : ''}`}
       style={{
         background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
         boxSizing: 'border-box',
+        opacity: contentLoaded ? 1 : 0,
+        transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
+        transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
       }}
     >
       {/* Holographic grid background */}

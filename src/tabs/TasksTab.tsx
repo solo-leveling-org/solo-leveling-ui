@@ -25,6 +25,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [firstTime, setFirstTime] = useState(false);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<TaskViewMode>('active');
+  const [contentLoaded, setContentLoaded] = useState(false);
   const [dialogTask, setDialogTask] = useState<PlayerTask | null>(null);
   const [completionResponse, setCompletionResponse] = useState<CompleteTaskResponse | null>(null);
   const [completedTask, setCompletedTask] = useState<PlayerTask | null>(null);
@@ -57,19 +58,28 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   // Загружаем задачи только при монтировании компонента и если авторизованы
   useEffect(() => {
     if (isAuthenticated) {
+      setContentLoaded(false);
       api.getPlayerTasks()
         .then((res) => {
           setTasks(res.tasks);
           setFirstTime(res.firstTime);
           setLoading(false);
+          // Запускаем анимацию появления контента
+          setTimeout(() => {
+            setContentLoaded(true);
+          }, 50);
         })
         .catch((error) => {
           console.error('Error getting tasks:', error);
           setLoading(false);
+          setTimeout(() => {
+            setContentLoaded(true);
+          }, 50);
         });
     } else {
       // Если не авторизованы, не показываем loading
       setLoading(false);
+      setContentLoaded(true);
     }
   }, [isAuthenticated]);
 
@@ -214,10 +224,13 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   if (firstTime) {
     return (
       <div 
-        className="fixed inset-0 overflow-y-auto overflow-x-hidden"
+        className={`fixed inset-0 overflow-y-auto overflow-x-hidden ${contentLoaded ? 'tab-content-enter-active' : ''}`}
         style={{ 
           background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          opacity: contentLoaded ? 1 : 0,
+          transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
+          transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
         }}
       >
         {/* Holographic grid background */}
@@ -309,10 +322,13 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
 
   return (
     <div 
-      className="fixed inset-0 overflow-y-auto overflow-x-hidden"
+      className={`fixed inset-0 overflow-y-auto overflow-x-hidden ${contentLoaded ? 'tab-content-enter-active' : ''}`}
       style={{ 
         background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        opacity: contentLoaded ? 1 : 0,
+        transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
+        transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
       }}
     >
       {/* Holographic grid background */}
