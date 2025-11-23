@@ -35,34 +35,12 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
       onClose={onClose}
       maxWidth="max-w-md"
       maxHeight="max-h-[70vh]"
-      contentClassName="settings-dialog-no-blur"
+      contentClassName="settings-dialog"
     >
       <style>{`
-        /* Отключаем backdrop-filter для SettingsDialog, но сохраняем filter для drop-shadow */
-        .settings-dialog-no-blur,
-        .settings-dialog-no-blur * {
-          backdrop-filter: none !important;
-          -webkit-backdrop-filter: none !important;
-        }
-        
-        /* Делаем фон полностью непрозрачным для SettingsDialog */
-        .settings-dialog-no-blur {
-          background: linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%) !important;
-        }
-        
-        /* Скрываем размывающие элементы (glowing orbs) для SettingsDialog */
-        .settings-dialog-no-blur > div[class*="blur-3xl"] {
+        /* Скрываем декоративные элементы BaseDialog для SettingsDialog */
+        .settings-dialog > div[class*="overflow-hidden"][class*="opacity-5"] {
           display: none !important;
-        }
-        
-        /* Убираем holographic grid overlay */
-        .settings-dialog-no-blur > div[class*="overflow-hidden"][class*="opacity-5"] {
-          display: none !important;
-        }
-        
-        /* Сохраняем filter для drop-shadow иконок */
-        .settings-dialog-content .profile-icon-wrapper[style*="filter"] {
-          filter: inherit !important;
         }
         
         .settings-dialog-close-button {
@@ -81,8 +59,6 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
           pointer-events: auto !important;
           outline: none !important;
           box-shadow: none !important;
-          backdrop-filter: none !important;
-          -webkit-backdrop-filter: none !important;
         }
         
         .settings-dialog-close-button:focus {
@@ -106,19 +82,11 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
         }
       `}</style>
 
-        <div className="relative z-10 settings-dialog-content" style={{
-          isolation: 'isolate',
-          backdropFilter: 'none',
-          WebkitBackdropFilter: 'none',
-          transform: 'translateZ(0)',
-          willChange: 'auto'
-        }}>
+        <div className="relative z-10">
           {/* Header */}
         <div className="p-6 pb-4 border-b relative" style={{
             borderColor: 'rgba(220, 235, 245, 0.1)',
-            zIndex: 10,
-            backdropFilter: 'none',
-            WebkitBackdropFilter: 'none'
+            zIndex: 10
           }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -154,9 +122,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
 
           {/* Content */}
         <div className="p-6 space-y-6 overflow-y-auto" style={{ 
-          maxHeight: 'calc(70vh - 100px)',
-          backdropFilter: 'none',
-          WebkitBackdropFilter: 'none'
+          maxHeight: 'calc(70vh - 100px)'
         }}>
             {/* Language Source Setting */}
             <div>
