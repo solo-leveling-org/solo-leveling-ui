@@ -14,13 +14,16 @@ export const ru = {
     preparing: 'Подготовка',
     pending: 'Ожидает',
     skipped: 'Пропущено',
-    error: 'Ошибка',
     success: 'Успешно',
     warning: 'Предупреждение',
     info: 'Информация',
     retry: 'Повторить',
+    error: {
+      loadingData: 'Ошибка загрузки данных',
+    },
     filters: 'Фильтры',
     clearFilters: 'Очистить фильтры',
+    resetFilters: 'Сбросить фильтры',
     sortBy: 'Сортировать по',
     noSort: 'Без сортировки',
     ascending: 'По возрастанию',
@@ -134,6 +137,15 @@ export const ru = {
       complete: 'Вы уверены, что хотите завершить эту задачу?',
       replace: 'Вы уверены, что хотите заменить эту задачу?',
     },
+    viewMode: {
+      active: 'Активные',
+      completed: 'Завершенные',
+    },
+    noCompletedTasks: 'Нет завершенных задач',
+    noCompletedTasksDescription: 'Выполняйте задачи, чтобы увидеть их здесь!',
+    filters: {
+      reset: 'Сбросить фильтры',
+    },
   },
 
   // Темы
@@ -224,7 +236,8 @@ export const ru = {
     transfer: 'Перевести',
     transactions: {
       title: 'История транзакций',
-      empty: 'Транзакции не найдены'
+      empty: 'Транзакции не найдены',
+      emptyDescription: 'Выполняйте задачи, чтобы заработать награды!'
     },
     empty: 'Пока нет транзакций',
     causes: {
@@ -273,6 +286,9 @@ export const ru = {
   taskCard: {
     complete: 'Готово',
     replace: 'Заменить',
+    completed: 'Завершено',
+    skipped: 'Пропущено',
+    generating: 'Генерируется...',
   },
 
   // Диалог завершения задачи

@@ -1,16 +1,27 @@
 @import url('https://fonts.googleapis.com/css?family=Inter');
 
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 body, .App {
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  background: #f7f8fa;
-  color: #222;
+  color: #e0e7ff;
   min-height: 100vh;
   margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .tab-content {
-  margin: 0 auto;
+  margin: 0;
   padding: 2.5rem 2rem 2rem 2rem;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  background-color: #050812;
 }
 
 
@@ -20,5 +31,13 @@ body, .App {
   .tab-content {
     padding-left: 1rem;
     padding-right: 1rem;
+  }
+}
+
+/* Remove padding for welcome tab on mobile */
+@media (max-width: 600px) {
+  .tab-content-welcome {
+    padding: 0 !important;
+    margin: 0 !important;
   }
 }

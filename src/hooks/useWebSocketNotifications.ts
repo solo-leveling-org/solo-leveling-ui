@@ -5,6 +5,7 @@ import type { Message, LoginResponse } from '../api';
 import { useNotification } from '../components/NotificationSystem';
 import { useSettings } from './useSettings';
 import { fetchAndUpdateUserLocale } from '../utils/localeUtils';
+import { useMocks } from '../config/environment';
 
 interface UseWebSocketNotificationsProps {
   enabled: boolean;
@@ -15,8 +16,47 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
   const clientRef = useRef<Client | null>(null);
   const { show } = useNotification();
   const { updateSettings } = useSettings();
+  const isMockMode = useMocks;
 
   useEffect(() => {
+    // В мок режиме слушаем события mock-notification вместо WebSocket
+    if (isMockMode) {
+      console.log('[WS] Mock mode: WebSocket disabled, listening to mock-notification events');
+      
+      const handleMockNotification = (event: CustomEvent) => {
+        try {
+          const body = event.detail;
+          const notification = body.payload;
+
+          // Если visible = true, показываем уведомление пользователю
+          if (notification.visible && notification.message) {
+            show({
+              message: notification.message,
+              type: notification.type?.toLowerCase() || 'info',
+              duration: 3000,
+            });
+          }
+
+          // Обрабатываем действия в зависимости от source
+          if (notification.source === 'TASKS' || notification.source === 'tasks') {
+            // Отправляем кастомное событие для уведомлений с source = 'tasks'
+            const tasksEvent = new CustomEvent('tasks-notification', {
+              detail: { source: 'tasks' }
+            });
+            window.dispatchEvent(tasksEvent);
+          }
+        } catch (e) {
+          console.warn('[WS][Mock Notification] Failed to parse message', e, event.detail);
+        }
+      };
+
+      window.addEventListener('mock-notification', handleMockNotification as EventListener);
+
+      return () => {
+        window.removeEventListener('mock-notification', handleMockNotification as EventListener);
+      };
+    }
+
     if (!enabled) {
       // Отключаем WebSocket если не авторизован
       if (clientRef.current) {
@@ -153,5 +193,5 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
       }
       clientRef.current = null;
     };
-  }, [enabled, authPromise, show, updateSettings]);
+  }, [enabled, authPromise, show, updateSettings, isMockMode]);
 }

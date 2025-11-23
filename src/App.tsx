@@ -22,6 +22,7 @@ import {useWebSocketNotifications} from './hooks/useWebSocketNotifications';
 import {NotificationProvider} from './components/NotificationSystem';
 import {useTelegram} from './useTelegram';
 import {ModalProvider, useModal} from './contexts/ModalContext';
+import {useTelegramAdaptive} from './hooks/useTelegramAdaptive';
 
 function AppRoutes() {
   const location = useLocation();
@@ -29,33 +30,9 @@ function AppRoutes() {
   
   // Инициализируем Telegram WebApp
   useTelegram();
-
-  // Определяем платформу через Telegram WebApp API
-  useEffect(() => {
-    const tg = (window as any).Telegram?.WebApp;
-    if (tg) {
-      const platform = tg.platform;
-      const isDesktop = platform === 'macos' || platform === 'windows' || platform === 'linux' || platform === 'web';
-      
-      if (isDesktop) {
-        document.body.classList.add('desktop-version');
-        document.body.classList.remove('mobile-version');
-      } else {
-        document.body.classList.add('mobile-version');
-        document.body.classList.remove('desktop-version');
-      }
-    } else {
-      // Fallback для случаев когда Telegram WebApp недоступен
-      const isMobile = window.innerWidth <= 768;
-      if (isMobile) {
-        document.body.classList.add('mobile-version');
-        document.body.classList.remove('desktop-version');
-      } else {
-        document.body.classList.add('desktop-version');
-        document.body.classList.remove('mobile-version');
-      }
-    }
-  }, []);
+  
+  // Централизованное управление адаптивностью (определение устройства, полноэкранный режим, CSS классы)
+  useTelegramAdaptive();
 
   // Используем новые хуки для разделения логики
   const {
@@ -131,12 +108,12 @@ function AppRoutes() {
 
 export default function App() {
   return (
+      <ModalProvider>
       <NotificationProvider>
-        <ModalProvider>
           <Router>
             <AppRoutes/>
           </Router>
+        </NotificationProvider>
         </ModalProvider>
-      </NotificationProvider>
   );
 }

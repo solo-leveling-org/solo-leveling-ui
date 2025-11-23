@@ -14,13 +14,13 @@ export const en = {
     preparing: 'Preparing',
     pending: 'Pending',
     skipped: 'Skipped',
-    error: 'Error',
     success: 'Success',
     warning: 'Warning',
     info: 'Information',
     retry: 'Retry',
     filters: 'Filters',
     clearFilters: 'Clear Filters',
+    resetFilters: 'Reset Filters',
     sortBy: 'Sort by',
     noSort: 'No sorting',
     ascending: 'Ascending',
@@ -28,6 +28,9 @@ export const en = {
     dateRange: 'Date Range',
     loadingData: 'Error loading data',
     noData: 'No data available',
+    error: {
+      loadingData: 'Error loading data',
+    },
     showFilters: 'Show Filters',
     hideFilters: 'Hide Filters',
     from: 'From',
@@ -134,6 +137,15 @@ export const en = {
       complete: 'Are you sure you want to complete this task?',
       replace: 'Are you sure you want to replace this task?',
     },
+    viewMode: {
+      active: 'Active',
+      completed: 'Completed',
+    },
+    noCompletedTasks: 'No completed tasks',
+    noCompletedTasksDescription: 'Complete tasks to see them here!',
+    filters: {
+      reset: 'Reset Filters',
+    },
   },
 
   // Topics
@@ -224,7 +236,8 @@ export const en = {
     transfer: 'Transfer',
     transactions: {
       title: 'Transaction History',
-      empty: 'No transactions found'
+      empty: 'No transactions found',
+      emptyDescription: 'Complete tasks to earn rewards!'
     },
     empty: 'No transactions yet',
     causes: {
@@ -273,6 +286,9 @@ export const en = {
   taskCard: {
     complete: 'Done',
     replace: 'Replace',
+    completed: 'Completed',
+    skipped: 'Skipped',
+    generating: 'Generating...',
   },
 
   // Task completion dialog

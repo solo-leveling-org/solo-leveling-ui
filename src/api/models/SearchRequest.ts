@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { RequestQueryOptions } from './RequestQueryOptions';
-export type SearchPlayerBalanceTransactionsRequest = {
+export type SearchRequest = {
     options?: RequestQueryOptions;
 };
 

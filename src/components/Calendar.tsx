@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocalization } from '../hooks/useLocalization';
+import BaseDialog from './BaseDialog';
 
 interface CalendarProps {
   selectedFrom: string;
@@ -21,7 +22,6 @@ const Calendar: React.FC<CalendarProps> = ({
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [hoverDate, setHoverDate] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const calendarRef = useRef<HTMLDivElement>(null);
   const { t } = useLocalization();
 
   // Синхронизируем с внешними значениями
@@ -30,39 +30,16 @@ const Calendar: React.FC<CalendarProps> = ({
     setSelectedTo(initialSelectedTo);
   }, [initialSelectedFrom, initialSelectedTo]);
 
-  // Анимация открытия/закрытия и блокировка скролла
+  // Анимация открытия/закрытия
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
-      // Блокируем скролл body
-      document.body.style.overflow = 'hidden';
     } else {
       setIsVisible(false);
-      // Восстанавливаем скролл
-      document.body.style.overflow = 'unset';
     }
-
-    // Cleanup при размонтировании компонента
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
   }, [isOpen]);
 
-  // Закрытие при клике вне компонента
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-    }
-  }, [isOpen, onClose]);
+  // Убрали handleClickOutside - BaseDialog сам обрабатывает клики на backdrop
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -147,86 +124,110 @@ const Calendar: React.FC<CalendarProps> = ({
     t('common.days.sunday')
   ];
 
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className={`fixed inset-0 bg-black/20 z-[9998] ${
-          isVisible ? 'opacity-100' : 'opacity-0'
-        }`}
-        style={{
-          transition: 'opacity 0.3s ease-out'
-        }}
-        onClick={onClose}
-      />
-      
-      {/* Calendar Modal */}
-      <div 
-        ref={calendarRef}
-        className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] bg-white rounded-2xl shadow-2xl border border-gray-200 p-3 w-[calc(100vw-2rem)] max-w-[450px] sm:min-w-[400px] sm:w-auto select-none ${
+    <BaseDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidth="max-w-[450px]"
+      maxHeight="max-h-[90vh]"
+      contentClassName={`w-[calc(100vw-2rem)] sm:min-w-[400px] sm:w-auto select-none ${
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
-        style={{
-          transition: 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out'
-        }}
-      >
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-full blur-xl -translate-y-4 translate-x-4"></div>
-        <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-green-400/20 to-emerald-400/20 rounded-full blur-lg translate-y-2 -translate-x-2"></div>
-        
-        <div className="relative z-10">
+      onClickBackdrop={onClose}
+    >
+      <div className="flex flex-col h-full min-h-0">
+        <div className="relative z-10 p-3 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
           {/* Header */}
-          <div className={`flex items-center justify-between mb-6 ${
+          <div className={`relative z-10 flex items-center justify-between mb-6 ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
           }`} style={{ 
             transition: isVisible ? 'transform 0.3s ease-out 0.1s, opacity 0.3s ease-out 0.1s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
           }}>
-            <h3 className="text-lg font-bold text-gray-800 select-none">{t('balance.filters.selectPeriod')}</h3>
+            <h3 
+              className="text-lg font-tech font-bold select-none"
+              style={{
+                color: '#e8f4f8',
+                textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+              }}
+            >
+              {t('balance.filters.selectPeriod')}
+            </h3>
             <button
               onClick={onClose}
-              className="w-8 h-8 bg-gray-100/50 rounded-full flex items-center justify-center hover:bg-gray-200/50 transition-colors select-none"
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 select-none"
+              style={{
+                background: 'rgba(220, 235, 245, 0.1)',
+                border: '1px solid rgba(220, 235, 245, 0.2)',
+                color: '#e8f4f8'
+              }}
             >
               ✕
             </button>
           </div>
 
           {/* Month Navigation */}
-          <div className={`flex items-center justify-between mb-4 ${
+          <div className={`relative z-10 flex items-center justify-between mb-4 ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
           }`} style={{ 
             transition: isVisible ? 'transform 0.3s ease-out 0.15s, opacity 0.3s ease-out 0.15s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
           }}>
             <button
-              onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
-              className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors select-none"
+              onClick={(e) => {
+                e.stopPropagation();
+                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
+              }}
+              className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 select-none"
+              style={{
+                background: 'rgba(220, 235, 245, 0.1)',
+                border: '1px solid rgba(220, 235, 245, 0.2)',
+                color: '#e8f4f8'
+              }}
             >
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <h4 className="text-lg font-semibold text-gray-800 select-none">
+            <h4 
+              className="text-lg font-tech font-semibold select-none"
+              style={{
+                color: '#e8f4f8',
+                textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+              }}
+            >
               {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
             </h4>
             <button
-              onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
-              className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors select-none"
+              onClick={(e) => {
+                e.stopPropagation();
+                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
+              }}
+              className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 select-none"
+              style={{
+                background: 'rgba(220, 235, 245, 0.1)',
+                border: '1px solid rgba(220, 235, 245, 0.2)',
+                color: '#e8f4f8'
+              }}
             >
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
               </svg>
             </button>
           </div>
 
           {/* Day Headers */}
-          <div className={`grid grid-cols-7 gap-0 mb-2 ${
+          <div className={`relative z-10 grid grid-cols-7 gap-0 mb-2 ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
           }`} style={{ 
             transition: isVisible ? 'transform 0.3s ease-out 0.2s, opacity 0.3s ease-out 0.2s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
           }}>
             {dayNames.map((day) => (
-              <div key={day} className="text-center text-xs font-semibold text-gray-500 py-1 select-none">
+              <div 
+                key={day} 
+                className="text-center text-xs font-tech font-semibold py-1 select-none"
+                style={{
+                  color: 'rgba(220, 235, 245, 0.7)'
+                }}
+              >
                 {day.slice(0, 3)}
               </div>
             ))}
@@ -251,26 +252,40 @@ const Calendar: React.FC<CalendarProps> = ({
               return (
                 <button
                   key={dateStr}
-                  onClick={() => handleDateClick(day)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDateClick(day);
+                  }}
                   onMouseEnter={() => setHoverDate(dateStr)}
                   onMouseLeave={() => setHoverDate(null)}
-                  className={`
-                    aspect-square rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-105 sm:hover:scale-110 cursor-pointer relative select-none
-                    ${isSelected 
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg z-10' 
-                      : isInRange 
-                        ? 'bg-gradient-to-r from-emerald-200 to-teal-200 text-emerald-800 relative' 
-                        : isHovered
-                          ? 'bg-gray-100 text-gray-800'
-                          : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
+                  className="aspect-square rounded-lg sm:rounded-xl text-xs sm:text-sm font-tech font-medium transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer relative select-none"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     minHeight: '32px',
-                    minWidth: '32px'
+                    minWidth: '32px',
+                    background: isSelected
+                      ? 'linear-gradient(135deg, rgba(180, 220, 240, 0.3) 0%, rgba(160, 210, 235, 0.2) 100%)'
+                      : isInRange
+                        ? 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)'
+                        : isHovered
+                          ? 'rgba(220, 235, 245, 0.1)'
+                          : 'transparent',
+                    border: isSelected
+                      ? '2px solid rgba(180, 220, 240, 0.6)'
+                      : '1px solid transparent',
+                    color: isSelected
+                      ? '#e8f4f8'
+                      : isInRange
+                        ? 'rgba(220, 235, 245, 0.9)'
+                        : 'rgba(220, 235, 245, 0.7)',
+                    boxShadow: isSelected
+                      ? '0 0 12px rgba(180, 220, 240, 0.4)'
+                      : 'none',
+                    textShadow: isSelected
+                      ? '0 0 4px rgba(180, 220, 240, 0.3)'
+                      : 'none'
                   }}
                 >
                   {day.getDate()}
@@ -279,29 +294,53 @@ const Calendar: React.FC<CalendarProps> = ({
             })}
           </div>
 
-          {/* Action Buttons */}
-          <div className={`flex space-x-3 ${
+        </div>
+        
+        {/* Action Buttons - фиксированные внизу */}
+        <div className={`relative z-10 flex space-x-3 p-3 pt-0 flex-shrink-0 ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
           }`} style={{ 
             transition: isVisible ? 'transform 0.3s ease-out 0.3s, opacity 0.3s ease-out 0.3s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
           }}>
             <button
-              onClick={handleClear}
-              className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors select-none"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClear();
+              }}
+              className="flex-1 px-4 py-2 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95 select-none"
+              style={{
+              background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+                border: '1px solid rgba(220, 235, 245, 0.3)',
+                color: '#e8f4f8',
+                boxShadow: '0 0 10px rgba(180, 220, 240, 0.2)'
+              }}
             >
               {t('common.clear')}
             </button>
             <button
-              onClick={handleApply}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleApply();
+              }}
               disabled={!selectedFrom || !selectedTo}
-              className="flex-1 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-600 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 select-none"
+              className="flex-1 px-4 py-2 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 select-none"
+              style={!selectedFrom || !selectedTo ? {
+                background: 'rgba(148, 163, 184, 0.2)',
+                border: '1px solid rgba(148, 163, 184, 0.3)',
+                color: 'rgba(220, 235, 245, 0.5)'
+              } : {
+                background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
+                border: '1px solid rgba(180, 220, 240, 0.4)',
+                color: '#e8f4f8',
+                boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
+                textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+              }}
             >
               {t('common.apply')}
             </button>
           </div>
         </div>
-      </div>
-    </>
+    </BaseDialog>
   );
 };
 

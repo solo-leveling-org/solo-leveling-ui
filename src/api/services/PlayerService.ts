@@ -8,8 +8,9 @@ import type { GetActiveTasksResponse } from '../models/GetActiveTasksResponse';
 import type { GetPlayerBalanceResponse } from '../models/GetPlayerBalanceResponse';
 import type { GetPlayerTopicsResponse } from '../models/GetPlayerTopicsResponse';
 import type { SavePlayerTopicsRequest } from '../models/SavePlayerTopicsRequest';
-import type { SearchPlayerBalanceTransactionsRequest } from '../models/SearchPlayerBalanceTransactionsRequest';
 import type { SearchPlayerBalanceTransactionsResponse } from '../models/SearchPlayerBalanceTransactionsResponse';
+import type { SearchPlayerTasksResponse } from '../models/SearchPlayerTasksResponse';
+import type { SearchRequest } from '../models/SearchRequest';
 import type { SkipTaskRequest } from '../models/SkipTaskRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -114,6 +115,30 @@ export class PlayerService {
         });
     }
     /**
+     * Search player tasks
+     * @param requestBody
+     * @param page
+     * @param pageSize
+     * @returns SearchPlayerTasksResponse Successful response
+     * @throws ApiError
+     */
+    public static searchPlayerTasks(
+        requestBody: SearchRequest,
+        page?: number,
+        pageSize: number = 20,
+    ): CancelablePromise<SearchPlayerTasksResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/player/tasks/search',
+            query: {
+                'page': page,
+                'pageSize': pageSize,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
      * Get player balance
      * @returns GetPlayerBalanceResponse Successful response
      * @throws ApiError
@@ -133,7 +158,7 @@ export class PlayerService {
      * @throws ApiError
      */
     public static searchPlayerBalanceTransactions(
-        requestBody: SearchPlayerBalanceTransactionsRequest,
+        requestBody: SearchRequest,
         page?: number,
         pageSize: number = 20,
     ): CancelablePromise<SearchPlayerBalanceTransactionsResponse> {

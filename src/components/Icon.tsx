@@ -23,6 +23,8 @@ import { ReactComponent as DumbbellIcon } from '../assets/icons/dumbbell.svg';
 import { ReactComponent as ZapIcon } from '../assets/icons/zap.svg';
 import { ReactComponent as SparklesIcon } from '../assets/icons/sparkles.svg';
 import { ReactComponent as GlobeIcon } from '../assets/icons/globe.svg';
+import { ReactComponent as RefreshIcon } from '../assets/icons/refresh.svg';
+import { ReactComponent as ArrowLeftRightIcon } from '../assets/icons/arrow-left-right.svg';
 
 export type IconType = 
   | 'brain' 
@@ -49,7 +51,9 @@ export type IconType =
   | 'zap'
   | 'sparkles'
   | 'clock'
-  | 'globe';
+  | 'globe'
+  | 'refresh'
+  | 'arrow-left-right';
 
 interface IconProps {
   type: IconType;
@@ -114,6 +118,10 @@ const Icon: React.FC<IconProps> = ({ type, className = '', size = 24 }) => {
       return <CalendarIcon {...iconProps} />;
     case 'globe':
       return <GlobeIcon {...iconProps} />;
+    case 'refresh':
+      return <RefreshIcon {...iconProps} />;
+    case 'arrow-left-right':
+      return <ArrowLeftRightIcon {...iconProps} />;
     default:
       return <div className={className} style={{ width: size, height: size }}>❓</div>;
   }

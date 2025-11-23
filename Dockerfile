@@ -2,12 +2,13 @@
 FROM node:18-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 COPY . .
 # Используем production сборку для CI/CD
 # Устанавливаем переменные окружения для production режима
 ENV NODE_ENV=production
 ENV REACT_APP_ENV=production
+ENV REACT_APP_USE_MOCKS=false
 # Собираем приложение в production режиме
 RUN npm run build:prod
 

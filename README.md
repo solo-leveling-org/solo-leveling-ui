@@ -1,6 +1,6 @@
 # Solo Leveling UI
 
-React Telegram Mini App с поддержкой локальной разработки.
+React Telegram Mini App с поддержкой локальной разработки и моков для независимой разработки frontend.
 
 ## Быстрый старт
 
@@ -21,6 +21,27 @@ npm run start:dev
 - API URL: `https://solo-leveling-gateway.ru.tuna.am`
 - WebSocket: `wss://solo-leveling-gateway.ru.tuna.am/ws`
 - Индикатор: Желтый бейдж "DEVELOPMENT" в правом нижнем углу
+
+### Локальная разработка с моками (без backend)
+
+Для разработки frontend без необходимости запуска backend и Telegram Mini App инфраструктуры:
+
+```bash
+npm run start:mocks
+```
+
+**Режим моков:**
+- Использует моковые данные для всех API запросов
+- Имитирует Telegram WebApp API
+- Не требует запущенного backend
+- Автоматически активируется, если Telegram WebApp недоступен в development режиме
+- Все запросы обрабатываются локально с имитацией задержки сети
+
+**Что мокируется:**
+- Все API endpoints (Auth, User, Player, Tasks, Topics, Balance)
+- Telegram WebApp SDK (initData, user, buttons, alerts, etc.)
+- Авторизация и токены
+- WebSocket уведомления (отключены в мок режиме)
 
 ### Тестирование production режима локально
 ```bash
@@ -55,12 +76,21 @@ npm run start:prod
 # Environment: development or production
 REACT_APP_ENV=development
 
+# Использовать моки для локальной разработки (true/false)
+# Автоматически активируется, если Telegram WebApp недоступен в development
+REACT_APP_USE_MOCKS=true
+
 # API Base URL
 REACT_APP_API_BASE_URL=https://solo-leveling-gateway.ru.tuna.am
 
 # WebSocket URL
 REACT_APP_WS_URL=wss://solo-leveling-gateway.ru.tuna.am/ws
 ```
+
+**Автоматическое определение моков:**
+В development режиме моки автоматически активируются, если:
+- Telegram WebApp недоступен (приложение запущено в обычном браузере)
+- Или явно установлена переменная `REACT_APP_USE_MOCKS=true`
 
 ## Сборка
 
@@ -105,11 +135,58 @@ console.log('Current config:', config);
 npm start              # Запуск в development режиме
 npm run start:dev      # Запуск в development режиме (явно)
 npm run start:prod     # Запуск в production режиме
+npm run start:mocks     # Запуск с моками (без backend)
 npm run build          # Сборка (по умолчанию production)
 npm run build:dev      # Сборка для development
 npm run build:prod     # Сборка для production
 npm test               # Запуск тестов
 npm run generate-api   # Генерация API клиента
+```
+
+## Режим моков
+
+### Когда использовать моки
+
+Моки полезны для:
+- Разработки UI без зависимости от backend
+- Тестирования различных сценариев (пустые списки, ошибки, etc.)
+- Демонстрации приложения без инфраструктуры
+- Отладки frontend логики
+
+### Структура моков
+
+```
+src/mocks/
+├── mockData.ts        # Моковые данные для всех endpoints
+├── mockApi.ts         # Моковые API сервисы с состоянием
+└── mockTelegram.ts    # Мок Telegram WebApp SDK
+```
+
+### Моковые данные
+
+Моки включают:
+- Пользователь с профилем и балансом
+- Список задач (4 задачи разных статусов)
+- Топики игрока (активные и неактивные)
+- Транзакции баланса
+- Авторизация с моковыми токенами
+
+### Изменение моковых данных
+
+Отредактируйте файлы в `src/mocks/` для изменения моковых данных:
+- `mockData.ts` - измените данные
+- `mockApi.ts` - измените логику обработки запросов
+
+### Отключение моков
+
+Чтобы отключить моки даже в development:
+```bash
+REACT_APP_USE_MOCKS=false npm start
+```
+
+Или в `.env.local`:
+```env
+REACT_APP_USE_MOCKS=false
 ```
 
 ## Настройка dev-gateway

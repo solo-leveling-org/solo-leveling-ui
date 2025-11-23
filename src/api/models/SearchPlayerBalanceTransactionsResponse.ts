@@ -3,9 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { PlayerBalanceTransaction } from './PlayerBalanceTransaction';
-import type { ResponseQueryOptions } from './ResponseQueryOptions';
-export type SearchPlayerBalanceTransactionsResponse = {
+import type { QueryableResponse } from './QueryableResponse';
+export type SearchPlayerBalanceTransactionsResponse = (QueryableResponse & {
     transactions: Array<PlayerBalanceTransaction>;
-    options: ResponseQueryOptions;
-};
+});
 

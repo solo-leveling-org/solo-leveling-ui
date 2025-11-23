@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { api } from '../services';
 import { useSettings } from '../hooks/useSettings';
 import { useLocalization } from '../hooks/useLocalization';
 import type { User } from '../api';
 import SettingsDialog from '../components/SettingsDialog';
 import Icon from '../components/Icon';
+import { Card, CardContent, CardHeader } from '../components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
+import { Badge } from '../components/ui/badge';
+import { Skeleton } from '../components/ui/skeleton';
 
 type ProfileTabProps = {
   isAuthenticated: boolean;
@@ -14,6 +18,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [contentLoaded, setContentLoaded] = useState(false);
   const { isLoaded } = useSettings();
   const { t } = useLocalization();
 
@@ -21,134 +26,427 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
   useEffect(() => {
     if (isAuthenticated) {
       setLoading(true);
+      setContentLoaded(false);
       api.getUser()
         .then((userData: User) => {
           setUser(userData);
           setLoading(false);
+          // Запускаем анимацию появления контента
+          setTimeout(() => {
+            setContentLoaded(true);
+          }, 50);
         })
         .catch((error: any) => {
           console.error('Error getting user:', error);
           setLoading(false);
+          setTimeout(() => {
+            setContentLoaded(true);
+          }, 50);
         });
     }
   }, [isAuthenticated]);
+
+  // Мемоизируем вычисления для оптимизации (до раннего возврата!)
+  const level = useMemo(() => user?.player?.level?.level || 1, [user?.player?.level?.level]);
+  const currentExp = useMemo(() => user?.player?.level?.currentExperience || 0, [user?.player?.level?.currentExperience]);
+  const maxExp = useMemo(() => user?.player?.level?.experienceToNextLevel || 100, [user?.player?.level?.experienceToNextLevel]);
+  const expPercentage = useMemo(() => {
+    if (!currentExp || !maxExp) return 0;
+    return Math.min(100, Math.round((currentExp / maxExp) * 100));
+  }, [currentExp, maxExp]);
+  const assessment = useMemo(() => user?.player?.level?.assessment || 'F', [user?.player?.level?.assessment]);
+
+  // Получаем характеристики из полей сущности Player
+  const strength = useMemo(() => user?.player?.strength || 0, [user?.player?.strength]);
+  const agility = useMemo(() => user?.player?.agility || 0, [user?.player?.agility]);
+  const intelligence = useMemo(() => user?.player?.intelligence || 0, [user?.player?.intelligence]);
+
+  const getAssessmentColor = (assessment: string) => {
+    const colorMap: Record<string, { bg: string; border: string; text: string }> = {
+      'S': { 
+        bg: 'rgba(220, 38, 38, 0.15)', 
+        border: 'rgba(220, 38, 38, 0.4)',
+        text: '#e8f4f8'
+      },
+      'A': { 
+        bg: 'rgba(249, 115, 22, 0.15)', 
+        border: 'rgba(249, 115, 22, 0.4)',
+        text: '#e8f4f8'
+      },
+      'B': { 
+        bg: 'rgba(234, 179, 8, 0.15)', 
+        border: 'rgba(234, 179, 8, 0.4)',
+        text: '#e8f4f8'
+      },
+      'C': { 
+        bg: 'rgba(34, 197, 94, 0.15)', 
+        border: 'rgba(34, 197, 94, 0.4)',
+        text: '#e8f4f8'
+      },
+      'D': { 
+        bg: 'rgba(59, 130, 246, 0.15)', 
+        border: 'rgba(59, 130, 246, 0.4)',
+        text: '#e8f4f8'
+      },
+      'E': { 
+        bg: 'rgba(148, 163, 184, 0.15)', 
+        border: 'rgba(148, 163, 184, 0.4)',
+        text: '#e8f4f8'
+      }
+    };
+    return colorMap[assessment] || colorMap['E'];
+  };
+
+  const assessmentStyle = useMemo(() => getAssessmentColor(assessment), [assessment]);
 
   if (loading || !user || !isLoaded) {
     return <ProfileSkeleton />;
   }
 
-  const level = user.player?.level?.level || 1;
-  const currentExp = user.player?.level?.currentExperience || 0;
-  const maxExp = user.player?.level?.experienceToNextLevel || 100;
-  const expPercentage = Math.min(100, Math.round((currentExp / maxExp) * 100));
-  const assessment = user.player?.level?.assessment || 'F';
-
-  // Получаем характеристики из полей сущности Player
-  const strength = user.player?.strength || 0;
-  const agility = user.player?.agility || 0;
-  const intelligence = user.player?.intelligence || 0;
-
-  const getAssessmentColor = (assessment: string) => {
-    const colorMap: Record<string, string> = {
-      'S': 'from-red-500 to-red-600',        // Красный - высший уровень
-      'A': 'from-orange-500 to-orange-600',  // Оранжевый
-      'B': 'from-yellow-500 to-yellow-600',  // Желтый
-      'C': 'from-green-500 to-green-600',    // Зеленый
-      'D': 'from-blue-500 to-blue-600',      // Синий
-      'E': 'from-slate-500 to-slate-600'     // Серый - низший уровень
-    };
-    return colorMap[assessment] || colorMap['E'];
-  };
-
-  const assessmentColor = getAssessmentColor(assessment);
-
   return (
     <>
-      <div className="space-y-3 pb-20 -my-10" style={{ height: 'calc(100vh - 80px)' }}>
-        {/* Settings Button - Top Right */}
-        <div className="flex justify-end -mt-3 pt-4 mobile-version:pt-12">
-          <button
-            onClick={() => setShowSettings(true)}
-            className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg"
-            title={t('profile.settings.title')}
-          >
-            <Icon type="settings" size={20} className="text-gray-600" />
-          </button>
+      <style>{`
+        .profile-icon-wrapper svg {
+          color: inherit;
+          fill: none;
+          stroke: currentColor;
+        }
+      `}</style>
+      <div 
+        className={`fixed inset-0 overflow-y-auto overflow-x-hidden ${contentLoaded ? 'tab-content-enter-active' : ''}`}
+        style={{ 
+          background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
+          boxSizing: 'border-box',
+          opacity: contentLoaded ? 1 : 0,
+          transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
+          transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
+        }}
+      >
+        {/* Holographic grid background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `
+              linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px',
+            transform: 'perspective(500px) rotateX(60deg)',
+            transformOrigin: 'center center'
+          }}></div>
         </div>
 
-        {/* Profile content */}
-        <div className="max-w-md mx-auto">
-              {/* Avatar section */}
-              <div className="text-center mb-6">
-                <div className="relative inline-block mb-4">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full animate-pulse blur-sm scale-110"></div>
-                  <img
-                      src={user.photoUrl || ''}
-                      alt="avatar"
-                      className="relative w-28 h-28 rounded-full object-cover shadow-xl border-4 border-white/50 backdrop-blur-sm transition-transform duration-300 hover:scale-105"
-                  />
-                  {/* Level badge */}
-                  <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-slate-500 to-slate-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold shadow-lg border-2 border-white">
-                    {level}
-                  </div>
+        {/* Glowing orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
+          background: 'rgba(180, 216, 232, 0.8)'
+        }}></div>
+        <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
+          background: 'rgba(200, 230, 245, 0.6)'
+        }}></div>
+
+        {/* Content container */}
+        <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+          <div className="max-w-2xl mx-auto space-y-6">
+            
+            {/* Profile Card */}
+            <Card 
+              className="border-0 shadow-none bg-transparent relative"
+              style={{
+                background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                backdropFilter: 'blur(20px)',
+                border: '2px solid rgba(220, 235, 245, 0.2)',
+                borderRadius: '24px',
+                boxShadow: `
+                  0 0 20px rgba(180, 220, 240, 0.15),
+                  inset 0 0 20px rgba(200, 230, 245, 0.03)
+                `
+              }}
+            >
+              {/* Settings Button - Integrated into card top right */}
+              <button
+                onClick={() => setShowSettings(true)}
+                className="group absolute top-4 right-4 transition-all duration-300 hover:scale-110 active:scale-95 z-20"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  boxShadow: 'none',
+                  padding: 0
+                }}
+                title={t('profile.settings.title')}
+              >
+                <div
+                  className="profile-icon-wrapper transition-all duration-300 group-hover:rotate-90"
+                  style={{
+                    color: 'rgba(220, 235, 245, 0.8)',
+                    filter: 'drop-shadow(0 0 4px rgba(180, 220, 240, 0.3))'
+                  }}
+                >
+                  <Icon type="settings" size={24} />
                 </div>
+              </button>
+              <CardHeader className="pb-6">
+                {/* Avatar, Level, and Class section - Horizontal layout */}
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 mb-6">
+                  {/* Avatar with Level badge */}
+                  <div className="relative flex-shrink-0">
+                    {/* Glow effect */}
+                    <div 
+                      className="absolute inset-0 rounded-full blur-xl opacity-50"
+                      style={{
+                        background: 'radial-gradient(circle, rgba(180, 220, 240, 0.4) 0%, transparent 70%)'
+                      }}
+                    ></div>
+                    
+                    <Avatar className="relative w-24 h-24 md:w-28 md:h-28 border-2" style={{
+                      borderColor: 'rgba(220, 235, 245, 0.3)',
+                      boxShadow: '0 0 20px rgba(180, 220, 240, 0.3)'
+                    }}>
+                      <AvatarImage src={user.photoUrl || ''} alt="avatar" />
+                      <AvatarFallback className="font-tech text-xl" style={{
+                        background: 'rgba(10, 14, 39, 0.8)',
+                        color: '#e8f4f8'
+                      }}>
+                        {(user.firstName?.[0] || '') + (user.lastName?.[0] || '')}
+                      </AvatarFallback>
+                    </Avatar>
 
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-1">
-                  {user.firstName || ''} {user.lastName || ''}
-                </h2>
-                <p className="text-slate-500 text-lg font-medium mb-2">@{user.username || ''}</p>
-
-                {/* Assessment badge */}
-                <div className={`inline-flex items-center bg-gradient-to-r ${assessmentColor} text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg`}>
-                  {t('profile.stats.class')} {assessment}
-                </div>
-              </div>
-
-              {/* Stats Content */}
-              <div className="space-y-6">
-                {/* Experience bar */}
-                <div className="mb-6">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-gray-600">{t('profile.stats.progress')}</span>
-                    <span className="text-sm font-bold text-gray-800">{currentExp} / {maxExp} XP</span>
-                  </div>
-                  <div className="relative w-full bg-slate-200/50 rounded-full h-3 overflow-hidden backdrop-blur-sm">
-                    <div
-                        className="absolute top-0 left-0 h-full bg-gradient-to-r from-slate-500 to-slate-600 rounded-full transition-all duration-1000 ease-out shadow-lg"
-                        style={{ width: `${expPercentage}%` }}
+                    {/* Level badge - positioned at top right, adaptive size */}
+                    <div 
+                      className="absolute -top-2 -right-2 md:-top-3 md:-right-3 rounded-full flex items-center justify-center font-tech font-bold shadow-lg border-2"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                        borderColor: 'rgba(220, 235, 245, 0.4)',
+                        color: '#e8f4f8',
+                        boxShadow: '0 0 15px rgba(180, 220, 240, 0.4)',
+                        minWidth: level >= 100 ? '3rem' : level >= 10 ? '2.75rem' : '2.5rem',
+                        minHeight: level >= 100 ? '3rem' : level >= 10 ? '2.75rem' : '2.5rem',
+                        width: level >= 100 ? '3rem' : level >= 10 ? '2.75rem' : '2.5rem',
+                        height: level >= 100 ? '3rem' : level >= 10 ? '2.75rem' : '2.5rem',
+                        fontSize: level >= 100 ? '0.85rem' : level >= 10 ? '0.9rem' : '0.95rem',
+                        padding: '0.35rem'
+                      }}
                     >
-                      <div className="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
+                      {level}
+                    </div>
+                  </div>
+
+                  {/* Name, Username, and Class */}
+                  <div className="flex-1 text-center md:text-left">
+                    {/* Name */}
+                    <h2 
+                      className="text-xl md:text-2xl font-tech font-bold mb-1"
+                      style={{
+                        color: '#e8f4f8',
+                        textShadow: '0 0 8px rgba(180, 220, 240, 0.3), 0 0 15px rgba(160, 210, 235, 0.15)'
+                      }}
+                    >
+                      {user.firstName || ''} {user.lastName || ''}
+                    </h2>
+                    
+                    {/* Username */}
+                    <p 
+                      className="text-xs md:text-sm font-tech mb-3"
+                      style={{
+                        color: 'rgba(220, 235, 245, 0.7)'
+                      }}
+                    >
+                      @{user.username || ''}
+                    </p>
+
+                    {/* Assessment badge */}
+                    <Badge 
+                      className="px-3 py-1.5 text-xs md:text-sm font-tech font-bold border-2 rounded-full inline-block"
+                      style={{
+                        background: assessmentStyle.bg,
+                        borderColor: assessmentStyle.border,
+                        color: assessmentStyle.text,
+                        boxShadow: `0 0 15px ${assessmentStyle.border}40`
+                      }}
+                    >
+                      {t('profile.stats.class')} {assessment}
+                    </Badge>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className="space-y-6">
+                {/* Experience bar */}
+                <div>
+                  <div className="flex justify-between items-center mb-3">
+                    <span 
+                      className="text-xs md:text-sm font-tech"
+                      style={{ color: 'rgba(220, 235, 245, 0.7)' }}
+                    >
+                      {t('profile.stats.progress')}
+                    </span>
+                    <span 
+                      className="text-xs md:text-sm font-tech font-bold"
+                      style={{ color: '#e8f4f8' }}
+                    >
+                      {currentExp} / {maxExp} XP
+                    </span>
+                  </div>
+                  <div className="relative w-full rounded-full h-2.5 md:h-3.5 overflow-hidden" style={{
+                    background: 'rgba(220, 235, 245, 0.1)',
+                    border: '1px solid rgba(220, 235, 245, 0.2)',
+                    boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.2)'
+                  }}>
+                    {/* Progress fill with smooth transition */}
+                    <div 
+                      className="absolute top-0 left-0 h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${expPercentage}%`,
+                        background: 'linear-gradient(90deg, rgba(180, 220, 240, 0.8) 0%, rgba(160, 210, 235, 0.6) 100%)',
+                        boxShadow: '0 0 8px rgba(180, 220, 240, 0.4)',
+                        minWidth: expPercentage > 0 ? '4px' : '0px'
+                      }}
+                    >
+                      {/* Shimmer effect - всегда на всю ширину контейнера (как в топиках) */}
+                      {expPercentage > 0 && (
+                        <div 
+                          className="absolute top-0 left-0 h-full rounded-full pointer-events-none"
+                          style={{
+                            width: '100%',
+                            background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%)',
+                            backgroundSize: '200% 100%',
+                            animation: 'shimmer 3s ease-in-out infinite',
+                            opacity: 0.5
+                          }}
+                        ></div>
+                      )}
+                      {/* Pulsing glow effect - subtle */}
+                      {expPercentage > 0 && (
+                        <div 
+                          className="absolute inset-0 rounded-full"
+                          style={{
+                            background: 'radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, transparent 70%)',
+                            animation: 'pulse-glow 3s ease-in-out infinite',
+                            opacity: 0.3
+                          }}
+                        ></div>
+                      )}
                     </div>
                   </div>
                 </div>
 
                 {/* Stats grid */}
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="bg-gradient-to-br from-red-50 to-red-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-red-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <div className="grid grid-cols-3 gap-3 md:gap-4">
+                  {/* Strength */}
+                  <Card 
+                    className="border-0 shadow-none bg-transparent text-center p-4 transition-all duration-300 hover:scale-105"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.05) 100%)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(220, 38, 38, 0.2)',
+                      boxShadow: '0 0 15px rgba(220, 38, 38, 0.1)'
+                    }}
+                  >
                     <div className="flex justify-center items-center mb-2">
-                      <Icon type="dumbbell" size={32} className="text-red-500" />
+                      <div
+                        className="profile-icon-wrapper"
+                        style={{
+                          color: '#e8f4f8',
+                          filter: 'drop-shadow(0 0 8px rgba(220, 38, 38, 0.6))'
+                        }}
+                      >
+                        <Icon type="dumbbell" size={28} />
+                      </div>
                     </div>
-                    <div className="text-xl font-bold text-red-600 mb-1">{strength}</div>
-                    <div className="text-xs text-red-500 font-medium">{t('profile.stats.strength')}</div>
-                  </div>
+                    <div 
+                      className="text-xl md:text-2xl font-tech font-bold mb-1"
+                      style={{
+                        color: '#e8f4f8',
+                        textShadow: '0 0 8px rgba(220, 38, 38, 0.4)'
+                      }}
+                    >
+                      {strength}
+                    </div>
+                    <div 
+                      className="text-[10px] md:text-xs font-tech"
+                      style={{ color: 'rgba(220, 235, 245, 0.7)' }}
+                    >
+                      {t('profile.stats.strength')}
+                    </div>
+                  </Card>
 
-                  <div className="bg-gradient-to-br from-green-50 to-green-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-green-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  {/* Agility */}
+                  <Card 
+                    className="border-0 shadow-none bg-transparent text-center p-4 transition-all duration-300 hover:scale-105"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(34, 197, 94, 0.2)',
+                      boxShadow: '0 0 15px rgba(34, 197, 94, 0.1)'
+                    }}
+                  >
                     <div className="flex justify-center items-center mb-2">
-                      <Icon type="zap" size={32} className="text-green-500" />
+                      <div
+                        className="profile-icon-wrapper"
+                        style={{
+                          color: '#e8f4f8',
+                          filter: 'drop-shadow(0 0 8px rgba(34, 197, 94, 0.6))'
+                        }}
+                      >
+                        <Icon type="zap" size={28} />
+                      </div>
                     </div>
-                    <div className="text-xl font-bold text-green-600 mb-1">{agility}</div>
-                    <div className="text-xs text-green-500 font-medium">{t('profile.stats.agility')}</div>
-                  </div>
+                    <div 
+                      className="text-xl md:text-2xl font-tech font-bold mb-1"
+                      style={{
+                        color: '#e8f4f8',
+                        textShadow: '0 0 8px rgba(34, 197, 94, 0.4)'
+                      }}
+                    >
+                      {agility}
+                    </div>
+                    <div 
+                      className="text-[10px] md:text-xs font-tech"
+                      style={{ color: 'rgba(220, 235, 245, 0.7)' }}
+                    >
+                      {t('profile.stats.agility')}
+                    </div>
+                  </Card>
 
-                  <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 backdrop-blur-sm rounded-2xl p-4 text-center border border-purple-200/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  {/* Intelligence */}
+                  <Card 
+                    className="border-0 shadow-none bg-transparent text-center p-4 transition-all duration-300 hover:scale-105"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(168, 85, 247, 0.2)',
+                      boxShadow: '0 0 15px rgba(168, 85, 247, 0.1)'
+                    }}
+                  >
                     <div className="flex justify-center items-center mb-2">
-                      <Icon type="brain" size={32} className="text-purple-500" />
+                      <div
+                        className="profile-icon-wrapper"
+                        style={{
+                          color: '#e8f4f8',
+                          filter: 'drop-shadow(0 0 8px rgba(168, 85, 247, 0.6))'
+                        }}
+                      >
+                        <Icon type="brain" size={28} />
+                      </div>
                     </div>
-                    <div className="text-xl font-bold text-purple-600 mb-1">{intelligence}</div>
-                    <div className="text-xs text-purple-500 font-medium">{t('profile.stats.intelligence')}</div>
-                  </div>
+                    <div 
+                      className="text-xl md:text-2xl font-tech font-bold mb-1"
+                      style={{
+                        color: '#e8f4f8',
+                        textShadow: '0 0 8px rgba(168, 85, 247, 0.4)'
+                      }}
+                    >
+                      {intelligence}
+                    </div>
+                    <div 
+                      className="text-[10px] md:text-xs font-tech"
+                      style={{ color: 'rgba(220, 235, 245, 0.7)' }}
+                    >
+                      {t('profile.stats.intelligence')}
+                    </div>
+                  </Card>
                 </div>
-              </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
 
@@ -157,53 +455,132 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
       />
+
+      <style>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+        @keyframes pulse-glow {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.6; }
+        }
+      `}</style>
     </>
   );
 };
 
 export const ProfileSkeleton: React.FC = () => (
-  <div className="space-y-3 pb-20 -my-10" style={{ height: 'calc(100vh - 80px)' }}>
-    {/* Settings Button skeleton */}
-    <div className="flex justify-end -mt-3 pt-4 mobile-version:pt-12">
-      <div className="w-10 h-10 bg-gray-300 rounded-full animate-pulse"></div>
+  <div 
+    className="fixed inset-0 overflow-y-auto overflow-x-hidden"
+    style={{ 
+      background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
+      boxSizing: 'border-box'
+    }}
+  >
+    {/* Holographic grid background */}
+    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+      <div className="absolute inset-0" style={{
+        backgroundImage: `
+          linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
+        `,
+        backgroundSize: '50px 50px',
+        transform: 'perspective(500px) rotateX(60deg)',
+        transformOrigin: 'center center'
+      }}></div>
     </div>
 
-    {/* Profile content skeleton */}
-    <div className="max-w-md mx-auto">
-          {/* Avatar section skeleton */}
-          <div className="text-center mb-6">
-            <div className="relative inline-block mb-4">
-              <div className="w-28 h-28 rounded-full bg-gray-300 animate-pulse mx-auto"></div>
-              <div className="absolute -bottom-2 -right-2 bg-gray-300 rounded-full w-10 h-10 animate-pulse"></div>
-            </div>
+    {/* Glowing orbs */}
+    <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
+      background: 'rgba(180, 216, 232, 0.8)'
+    }}></div>
+    <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
+      background: 'rgba(200, 230, 245, 0.6)'
+    }}></div>
 
-            <div className="h-7 bg-gray-300 rounded-lg w-48 mx-auto mb-2 animate-pulse"></div>
-            <div className="h-5 bg-gray-300 rounded-lg w-32 mx-auto mb-2 animate-pulse"></div>
-            <div className="h-8 bg-gray-300 rounded-full w-24 mx-auto animate-pulse"></div>
+    <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+      <div className="max-w-2xl mx-auto space-y-6">
+        {/* Profile Card skeleton */}
+        <Card 
+          className="border-0 shadow-none bg-transparent relative"
+          style={{
+            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            backdropFilter: 'blur(20px)',
+            border: '2px solid rgba(220, 235, 245, 0.2)',
+            borderRadius: '24px'
+          }}
+        >
+          {/* Settings Button skeleton */}
+          <div className="absolute top-4 right-4">
+            <Skeleton className="w-6 h-6 rounded" style={{
+              background: 'rgba(220, 235, 245, 0.1)'
+            }} />
           </div>
-
-          {/* Stats Content skeleton */}
-          <div className="space-y-6">
-            {/* Experience bar skeleton */}
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-2">
-                <div className="h-4 bg-gray-300 rounded w-16 animate-pulse"></div>
-                <div className="h-4 bg-gray-300 rounded w-20 animate-pulse"></div>
+          <CardHeader className="pb-6">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 mb-6">
+              <div className="relative flex-shrink-0">
+                <Skeleton className="w-24 h-24 md:w-28 md:h-28 rounded-full" style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }} />
+                <Skeleton className="absolute -top-2 -right-2 w-8 h-8 md:w-10 md:h-10 rounded-full" style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }} />
               </div>
-              <div className="w-full bg-gray-300 rounded-full h-3 animate-pulse"></div>
+              <div className="flex-1 text-center md:text-left">
+                <Skeleton className="h-6 md:h-7 w-40 md:w-48 mx-auto md:mx-0 mb-2" style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }} />
+                <Skeleton className="h-4 w-32 mx-auto md:mx-0 mb-3" style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }} />
+                <Skeleton className="h-7 w-20 mx-auto md:mx-0 rounded-full" style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }} />
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            <div>
+              <div className="flex justify-between items-center mb-3">
+                <Skeleton className="h-4 w-16" style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }} />
+                <Skeleton className="h-4 w-20" style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }} />
+              </div>
+              <Skeleton className="w-full h-2 md:h-3 rounded-full" style={{
+                background: 'rgba(220, 235, 245, 0.1)'
+              }} />
             </div>
 
-            {/* Stats grid skeleton */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-3 gap-3 md:gap-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-gray-200/50 rounded-2xl p-4 text-center animate-pulse">
-                  <div className="w-8 h-8 bg-gray-300 rounded mx-auto mb-2"></div>
-                  <div className="h-6 bg-gray-300 rounded w-8 mx-auto mb-1"></div>
-                  <div className="h-3 bg-gray-300 rounded w-12 mx-auto"></div>
-                </div>
+                <Card 
+                  key={i} 
+                  className="border-0 shadow-none bg-transparent p-4"
+                  style={{
+                    background: 'rgba(220, 235, 245, 0.05)',
+                    border: '1px solid rgba(220, 235, 245, 0.1)'
+                  }}
+                >
+                  <Skeleton className="w-7 h-7 mx-auto mb-2 rounded" style={{
+                    background: 'rgba(220, 235, 245, 0.1)'
+                  }} />
+                  <Skeleton className="h-6 w-8 mx-auto mb-1" style={{
+                    background: 'rgba(220, 235, 245, 0.1)'
+                  }} />
+                  <Skeleton className="h-3 w-12 mx-auto" style={{
+                    background: 'rgba(220, 235, 245, 0.1)'
+                  }} />
+                </Card>
               ))}
             </div>
-          </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   </div>
 );

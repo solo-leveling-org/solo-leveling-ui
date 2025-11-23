@@ -6,6 +6,7 @@ import BankingTransactionsList from '../components/BankingTransactionsList';
 import Icon from '../components/Icon';
 import FilterDropdown from '../components/FilterDropdown';
 import DateFilter from '../components/DateFilter';
+import ResetFiltersButton from '../components/ResetFiltersButton';
 
 type BalanceTabProps = {
   isAuthenticated: boolean;
@@ -18,6 +19,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
   const [dateFilters, setDateFilters] = useState({ from: '', to: '' });
   const [enumFilters, setEnumFilters] = useState<{[field: string]: string[]}>({});
   const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
+  const [contentLoaded, setContentLoaded] = useState(false);
   const { t } = useLocalization();
 
   const loadBalance = useCallback(async () => {
@@ -27,9 +29,16 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
     try {
       const balanceData: GetPlayerBalanceResponse = await api.getPlayerBalance();
       setBalance(balanceData);
+      // Запускаем анимацию появления контента
+      setTimeout(() => {
+        setContentLoaded(true);
+      }, 50);
     } catch (err) {
       console.error('Error loading balance:', err);
       setError(t('common.error.loadingData'));
+      setTimeout(() => {
+        setContentLoaded(true);
+      }, 50);
     } finally {
       setLoading(false);
     }
@@ -69,13 +78,44 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
 
   if (error) {
     return (
-      <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-400/20 via-orange-400/20 to-pink-400/20 rounded-3xl blur-3xl -z-10 transform scale-105"></div>
-        <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 max-w-md mx-auto mt-8 text-center">
-          <div className="text-red-600 mb-4">{error}</div>
+      <div
+        className="fixed inset-0 overflow-y-auto overflow-x-hidden flex items-center justify-center px-4"
+        style={{
+          background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
+          boxSizing: 'border-box',
+        }}
+      >
+        <div 
+          className="relative rounded-2xl md:rounded-3xl p-6 md:p-8 max-w-md w-full"
+          style={{
+            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
+            backdropFilter: 'blur(20px)',
+            border: '2px solid rgba(220, 38, 38, 0.3)',
+            boxShadow: `
+              0 0 30px rgba(220, 38, 38, 0.2),
+              inset 0 0 30px rgba(200, 230, 245, 0.03)
+            `
+          }}
+        >
+          <div 
+            className="text-center mb-6 font-tech font-semibold"
+            style={{
+              color: '#e8f4f8',
+              textShadow: '0 0 8px rgba(220, 38, 38, 0.3)'
+            }}
+          >
+            {error}
+          </div>
           <button
             onClick={loadBalance}
-            className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+            className="w-full px-6 py-3 font-tech font-semibold rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95"
+            style={{
+              background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
+              border: '1px solid rgba(180, 220, 240, 0.4)',
+              color: '#e8f4f8',
+              boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
+              textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+            }}
           >
             {t('common.retry')}
           </button>
@@ -89,80 +129,169 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
   }
 
   return (
-    <div className="space-y-6 pb-20">
-      {/* Header */}
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          {t('balance.title')}
-        </h2>
-        <p className="text-gray-600">{t('balance.subtitle')}</p>
+    <div
+      className={`fixed inset-0 overflow-y-auto overflow-x-hidden ${contentLoaded ? 'tab-content-enter-active' : ''}`}
+      style={{
+        background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
+        boxSizing: 'border-box',
+        opacity: contentLoaded ? 1 : 0,
+        transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
+        transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
+      }}
+    >
+      {/* Holographic grid background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px',
+          transform: 'perspective(500px) rotateX(60deg)',
+          transformOrigin: 'center center'
+        }}></div>
       </div>
 
-      {/* Current Balance - Mobile Banking Style with Glimmer - Fixed width and centered */}
-      <div className="flex justify-center">
-        <div className="relative overflow-hidden group max-w-md w-full">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-700 to-cyan-800 rounded-2xl"></div>
-          <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-white/10 rounded-2xl"></div>
-          
-          {/* Glimmer effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
-          
-          {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16 rounded-full"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div>
-          
-          {/* Additional shimmer elements */}
-          <div className="absolute top-4 right-4 w-16 h-16 bg-white/5 rounded-full animate-pulse"></div>
-          <div className="absolute bottom-4 left-4 w-12 h-12 bg-white/5 rounded-full animate-pulse delay-300"></div>
-          
-          {/* Content */}
-          <div className="relative p-6 text-white">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <p className="text-emerald-100 text-sm font-medium mb-1">{t('balance.totalBalance')}</p>
-                <p className="text-emerald-200 text-xs">{t('balance.currencyName')}</p>
-              </div>
-              <Icon type="coins" size={24} className="text-yellow-300" />
-            </div>
+      {/* Glowing orbs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
+        background: 'rgba(180, 216, 232, 0.8)'
+      }}></div>
+      <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
+        background: 'rgba(200, 230, 245, 0.6)'
+      }}></div>
+
+      <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1
+            className="text-2xl sm:text-3xl md:text-4xl font-tech font-bold mb-3 tracking-tight"
+            style={{
+              color: '#e8f4f8',
+              textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+            }}
+          >
+            {t('balance.title')}
+          </h1>
+          <p
+            className="mb-6 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto px-4"
+            style={{
+              color: 'rgba(220, 235, 245, 0.7)',
+              textShadow: '0 0 4px rgba(180, 220, 240, 0.1)'
+            }}
+          >
+            {t('balance.subtitle')}
+          </p>
+          <div
+            className="w-24 sm:w-32 md:w-40 h-1 rounded-full mx-auto"
+            style={{
+              background: 'rgba(180, 220, 240, 0.6)',
+              boxShadow: '0 0 8px rgba(180, 220, 240, 0.4)'
+            }}
+          ></div>
+        </div>
+
+        {/* Current Balance Card - Solo Leveling Style */}
+        <div className="flex justify-center mb-8">
+          <div 
+            className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 md:p-8 max-w-md w-full group"
+            style={{
+              background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+              backdropFilter: 'blur(20px)',
+              border: '2px solid rgba(220, 235, 245, 0.2)',
+              boxShadow: `
+                0 0 20px rgba(180, 220, 240, 0.15),
+                inset 0 0 20px rgba(200, 230, 245, 0.03)
+              `
+            }}
+          >
+            {/* Glowing orbs */}
+            <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full blur-2xl opacity-10 animate-float" style={{
+              background: 'rgba(180, 220, 240, 0.8)'
+            }}></div>
+            <div className="absolute -bottom-4 -left-4 w-24 h-24 rounded-full blur-xl opacity-10 animate-float-delayed" style={{
+              background: 'rgba(180, 220, 240, 0.6)'
+            }}></div>
             
-            {/* Balance amount */}
-            <div className="mb-4">
-              <div className="text-4xl font-bold text-white mb-1">
-                {balance.balance.balance.amount}
-              </div>
-              <div className="text-emerald-200 text-sm font-medium">
-                {balance.balance.balance.currencyCode}
-              </div>
-            </div>
+            {/* Shimmer effect on hover */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
             
-            {/* Quick actions */}
-            <div className="flex space-x-3">
-              <button className="flex-1 bg-white/20 backdrop-blur-sm rounded-xl py-3 px-4 text-white text-sm font-medium hover:bg-white/30 transition-all duration-200">
-                {t('balance.topUp')}
-              </button>
-              <button className="flex-1 bg-white/20 backdrop-blur-sm rounded-xl py-3 px-4 text-white text-sm font-medium hover:bg-white/30 transition-all duration-200">
-                {t('balance.transfer')}
-              </button>
+            {/* Content */}
+            <div className="relative z-10">
+              {/* Header */}
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <p 
+                    className="text-xs md:text-sm font-tech mb-1"
+                    style={{
+                      color: 'rgba(220, 235, 245, 0.7)',
+                      textShadow: '0 0 2px rgba(180, 220, 240, 0.2)'
+                    }}
+                  >
+                    {t('balance.totalBalance')}
+                  </p>
+                  <p 
+                    className="text-[10px] md:text-xs font-tech"
+                    style={{
+                      color: 'rgba(220, 235, 245, 0.6)'
+                    }}
+                  >
+                    {t('balance.currencyName')}
+                  </p>
+                </div>
+                <div
+                  className="profile-icon-wrapper"
+                  style={{
+                    color: 'rgba(180, 220, 240, 0.9)',
+                    filter: 'drop-shadow(0 0 8px rgba(180, 220, 240, 0.6))'
+                  }}
+                >
+                  <Icon type="coins" size={28} />
+                </div>
+              </div>
+              
+              {/* Balance amount */}
+              <div className="mb-6">
+                <div 
+                  className="text-4xl md:text-5xl font-tech font-bold mb-2"
+                  style={{
+                    color: '#e8f4f8',
+                    textShadow: '0 0 12px rgba(180, 220, 240, 0.4)'
+                  }}
+                >
+                  {balance.balance.balance.amount}
+                </div>
+                <div 
+                  className="text-sm md:text-base font-tech font-semibold"
+                  style={{
+                    color: 'rgba(180, 220, 240, 0.8)',
+                    textShadow: '0 0 6px rgba(180, 220, 240, 0.3)'
+                  }}
+                >
+                  {balance.balance.balance.currencyCode}
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-        {/* Transactions - Fixed width and centered */}
+        {/* Transactions Section */}
         <div className="flex justify-center">
           <div className="max-w-4xl w-full">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+            <div className="flex items-center justify-between mb-6">
+              <h3 
+                className="text-xl md:text-2xl font-tech font-bold"
+                style={{
+                  color: '#e8f4f8',
+                  textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+                }}
+              >
                 {t('balance.transactions.title')}
               </h3>
             </div>
 
             {/* Фильтры - горизонтальная строка */}
             <div className="mb-6">
-              {/* Горизонтальная прокручиваемая строка фильтров с видимым скроллбаром на десктопе */}
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+              <div className="flex gap-3 overflow-x-auto pb-2 px-1 filters-scrollbar">
                 {/* Date Range Filter */}
                 <DateFilter
                   from={dateFilters.from}
@@ -181,15 +310,8 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
                   />
                 ))}
 
-                {/* Clear Filters Button - Modern design matching other filters */}
-                <button
-                  onClick={handleClearFilters}
-                  className="flex items-center justify-center px-4 py-3 bg-white border border-red-200 rounded-xl hover:border-red-300 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 whitespace-nowrap shadow-sm"
-                >
-                  <span className="text-sm font-medium text-red-600">
-                    {t('balance.filters.reset')}
-                  </span>
-                </button>
+                {/* Clear Filters Button */}
+                <ResetFiltersButton onClick={handleClearFilters} />
               </div>
             </div>
 
@@ -203,43 +325,181 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
             />
           </div>
         </div>
+      </div>
     </div>
   );
 };
 
 export const BalanceSkeleton: React.FC = () => (
-  <div className="space-y-6">
-    {/* Header skeleton */}
-    <div className="text-center">
-      <div className="h-8 bg-gray-300 rounded-lg w-48 mx-auto mb-2 animate-pulse"></div>
-      <div className="h-5 bg-gray-300 rounded-lg w-32 mx-auto animate-pulse"></div>
+  <div
+    className="fixed inset-0 overflow-y-auto overflow-x-hidden"
+    style={{
+      background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
+      boxSizing: 'border-box',
+    }}
+  >
+    {/* Holographic grid background */}
+    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+      <div className="absolute inset-0" style={{
+        backgroundImage: `
+          linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
+        `,
+        backgroundSize: '50px 50px',
+        transform: 'perspective(500px) rotateX(60deg)',
+        transformOrigin: 'center center'
+      }}></div>
     </div>
 
-    {/* Balance skeleton */}
-    <div className="bg-gray-100 rounded-lg p-6 text-center animate-pulse">
-      <div className="w-8 h-8 bg-gray-300 rounded mx-auto mb-3"></div>
-      <div className="h-12 bg-gray-300 rounded w-32 mx-auto mb-2"></div>
-      <div className="h-6 bg-gray-300 rounded w-20 mx-auto"></div>
-    </div>
+    {/* Glowing orbs */}
+    <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
+      background: 'rgba(180, 216, 232, 0.8)'
+    }}></div>
+    <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
+      background: 'rgba(200, 230, 245, 0.6)'
+    }}></div>
 
-    {/* Transactions skeleton */}
-    <div>
-      <div className="h-6 bg-gray-300 rounded w-32 mb-4 animate-pulse"></div>
-      <div className="space-y-3">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="bg-gray-100 rounded-lg p-4 animate-pulse">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-                <div>
-                  <div className="h-4 bg-gray-300 rounded w-24 mb-2"></div>
-                  <div className="h-3 bg-gray-300 rounded w-16"></div>
+    <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+      {/* Header skeleton */}
+      <div className="text-center mb-8">
+        <div 
+          className="h-8 md:h-10 w-48 md:w-64 mx-auto mb-3 rounded-lg animate-pulse"
+          style={{
+            background: 'rgba(220, 235, 245, 0.1)'
+          }}
+        ></div>
+        <div 
+          className="h-4 md:h-5 w-72 md:w-96 mx-auto mb-6 rounded-lg animate-pulse"
+          style={{
+            background: 'rgba(220, 235, 245, 0.08)'
+          }}
+        ></div>
+        <div
+          className="w-24 sm:w-32 md:w-40 h-1 rounded-full mx-auto"
+          style={{
+            background: 'rgba(180, 220, 240, 0.6)',
+            boxShadow: '0 0 8px rgba(180, 220, 240, 0.4)'
+          }}
+        ></div>
+      </div>
+
+      {/* Balance skeleton */}
+      <div className="flex justify-center mb-8">
+        <div 
+          className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 md:p-8 max-w-md w-full animate-pulse"
+          style={{
+            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            backdropFilter: 'blur(20px)',
+            border: '2px solid rgba(220, 235, 245, 0.2)',
+            boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
+          }}
+        >
+          <div className="flex justify-between items-center mb-6">
+            <div className="space-y-2">
+              <div 
+                className="h-4 w-24 rounded"
+                style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }}
+              ></div>
+              <div 
+                className="h-3 w-16 rounded"
+                style={{
+                  background: 'rgba(220, 235, 245, 0.08)'
+                }}
+              ></div>
+            </div>
+            <div 
+              className="w-7 h-7 rounded-lg"
+              style={{
+                background: 'rgba(220, 235, 245, 0.1)'
+              }}
+            ></div>
+          </div>
+          <div className="mb-6">
+            <div 
+              className="h-12 w-32 rounded mb-2"
+              style={{
+                background: 'rgba(220, 235, 245, 0.1)'
+              }}
+            ></div>
+            <div 
+              className="h-5 w-20 rounded"
+              style={{
+                background: 'rgba(220, 235, 245, 0.08)'
+              }}
+            ></div>
+          </div>
+          <div className="flex gap-3">
+            <div 
+              className="flex-1 h-12 rounded-xl"
+              style={{
+                background: 'rgba(220, 235, 245, 0.1)'
+              }}
+            ></div>
+            <div 
+              className="flex-1 h-12 rounded-xl"
+              style={{
+                background: 'rgba(220, 235, 245, 0.1)'
+              }}
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Transactions skeleton */}
+      <div className="flex justify-center">
+        <div className="max-w-4xl w-full">
+          <div 
+            className="h-6 w-48 mb-6 rounded animate-pulse"
+            style={{
+              background: 'rgba(220, 235, 245, 0.1)'
+            }}
+          ></div>
+          <div className="space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <div 
+                key={i} 
+                className="rounded-xl p-4 animate-pulse"
+                style={{
+                  background: 'rgba(220, 235, 245, 0.05)',
+                  border: '1px solid rgba(220, 235, 245, 0.1)'
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div 
+                      className="w-10 h-10 rounded-full"
+                      style={{
+                        background: 'rgba(220, 235, 245, 0.1)'
+                      }}
+                    ></div>
+                    <div>
+                      <div 
+                        className="h-4 w-32 rounded mb-2"
+                        style={{
+                          background: 'rgba(220, 235, 245, 0.1)'
+                        }}
+                      ></div>
+                      <div 
+                        className="h-3 w-24 rounded"
+                        style={{
+                          background: 'rgba(220, 235, 245, 0.08)'
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                  <div 
+                    className="h-4 w-20 rounded"
+                    style={{
+                      background: 'rgba(220, 235, 245, 0.1)'
+                    }}
+                  ></div>
                 </div>
               </div>
-              <div className="h-4 bg-gray-300 rounded w-16"></div>
-            </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   </div>

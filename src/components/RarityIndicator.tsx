@@ -8,21 +8,43 @@ export interface RarityIndicatorProps {
   className?: string;
 }
 
-// Определяем цвета для анимированных градиентов редкости
-const getRarityColors = (rarity: string): string[] => {
+// Определяем цвета для неоновых эффектов редкости
+const getRarityColors = (rarity: string): { 
+  neon: string; 
+  glow: string;
+} => {
   switch (rarity) {
     case 'COMMON':
-      return ['#9CA3AF', '#6B7280', '#4B5563', '#9CA3AF'];
+      return {
+        neon: 'rgba(180, 220, 240, 0.8)',
+        glow: 'rgba(180, 220, 240, 0.5)'
+      };
     case 'UNCOMMON':
-      return ['#10B981', '#059669', '#047857', '#10B981'];
+      return {
+        neon: 'rgba(34, 197, 94, 1)',
+        glow: 'rgba(34, 197, 94, 0.7)'
+      };
     case 'RARE':
-      return ['#3B82F6', '#1D4ED8', '#1E40AF', '#3B82F6'];
+      // Более синий оттенок для RARE
+      return {
+        neon: 'rgba(100, 180, 255, 1)',
+        glow: 'rgba(100, 180, 255, 0.8)'
+      };
     case 'EPIC':
-      return ['#8B5CF6', '#7C3AED', '#6D28D9', '#8B5CF6'];
+      return {
+        neon: 'rgba(168, 85, 247, 1)',
+        glow: 'rgba(168, 85, 247, 0.7)'
+      };
     case 'LEGENDARY':
-      return ['#F59E0B', '#D97706', '#B45309', '#F59E0B'];
+      return {
+        neon: 'rgba(234, 179, 8, 1)',
+        glow: 'rgba(234, 179, 8, 0.7)'
+      };
     default:
-      return ['#9CA3AF', '#6B7280', '#4B5563', '#9CA3AF'];
+      return {
+        neon: 'rgba(180, 220, 240, 0.8)',
+        glow: 'rgba(180, 220, 240, 0.5)'
+      };
   }
 };
 
@@ -61,7 +83,7 @@ const RarityIndicator: React.FC<RarityIndicatorProps> = ({
   className = ''
 }) => {
   const { t } = useLocalization();
-  const colors = getRarityColors(rarity);
+  const colorScheme = getRarityColors(rarity);
   const sizeClasses = getSizeClasses(size);
   const rarityLabel = getRarityLabel(rarity, t);
 
@@ -70,29 +92,28 @@ const RarityIndicator: React.FC<RarityIndicatorProps> = ({
       <div className={`flex items-center space-x-3 ${className}`}>
         {/* Rarity circle */}
         <div className="relative">
+          {/* Простой неоновый круг */}
           <div 
-            className={`${sizeClasses.circle} rounded-full shadow-lg`}
+            className={`${sizeClasses.circle} rounded-full`}
             style={{
-              background: `linear-gradient(45deg, ${colors.join(', ')})`,
-              backgroundSize: '300% 300%',
-              animation: 'rarityShimmerSmooth 3s ease-in-out infinite',
-            }}
-          ></div>
-          
-          {/* Outer glow ring */}
-          <div 
-            className={`absolute inset-0 ${sizeClasses.circle} rounded-full animate-pulse`}
-            style={{
-              background: `linear-gradient(45deg, ${colors.join(', ')})`,
-              filter: sizeClasses.blur,
-              opacity: '0.6',
-              zIndex: -1,
+              border: `2px solid ${colorScheme.neon}`,
+              boxShadow: `0 0 ${size === 'sm' ? '8px' : size === 'lg' ? '12px' : '10px'} ${colorScheme.neon}`,
+              background: `radial-gradient(circle at 30% 30%, ${colorScheme.neon}40 0%, transparent 70%)`,
             }}
           ></div>
         </div>
         
         {/* Rarity text */}
-        <span className={`font-bold text-gray-700 bg-white/60 backdrop-blur-sm ${sizeClasses.text} rounded-full border border-white/30`}>
+        <span 
+          className={`font-tech font-bold ${sizeClasses.text} rounded-full backdrop-blur-sm border relative`}
+          style={{
+            color: colorScheme.neon,
+            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            borderColor: colorScheme.neon,
+            boxShadow: `0 0 8px ${colorScheme.neon}`,
+            textShadow: `0 0 4px ${colorScheme.neon}`,
+          }}
+        >
           {rarityLabel}
         </span>
       </div>
@@ -101,24 +122,13 @@ const RarityIndicator: React.FC<RarityIndicatorProps> = ({
 
   return (
     <div className={`relative ${className}`}>
-      {/* Main circle */}
+      {/* Простой неоновый круг */}
       <div 
-        className={`${sizeClasses.circle} rounded-full shadow-lg`}
+        className={`${sizeClasses.circle} rounded-full`}
         style={{
-          background: `linear-gradient(45deg, ${colors.join(', ')})`,
-          backgroundSize: '300% 300%',
-          animation: 'rarityShimmerSmooth 3s ease-in-out infinite',
-        }}
-      ></div>
-      
-      {/* Outer glow ring */}
-      <div 
-        className={`absolute inset-0 ${sizeClasses.circle} rounded-full animate-pulse`}
-        style={{
-          background: `linear-gradient(45deg, ${colors.join(', ')})`,
-          filter: sizeClasses.blur,
-          opacity: '0.6',
-          zIndex: -1,
+          border: `2px solid ${colorScheme.neon}`,
+          boxShadow: `0 0 ${size === 'sm' ? '8px' : size === 'lg' ? '12px' : '10px'} ${colorScheme.neon}`,
+          background: `radial-gradient(circle at 30% 30%, ${colorScheme.neon}40 0%, transparent 70%)`,
         }}
       ></div>
     </div>
