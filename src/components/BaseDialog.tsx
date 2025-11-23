@@ -1,4 +1,4 @@
-import React, { useEffect, ReactNode } from 'react';
+import React, { useEffect, ReactNode, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useModal } from '../contexts/ModalContext';
 import { useScrollLock } from '../hooks/useScrollLock';
@@ -29,14 +29,36 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
   onClickBackdrop,
 }) => {
   const { openDialog, closeDialog } = useModal();
+  const [isVisible, setIsVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Определяем размер экрана
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Управление модальным контекстом и блокировкой скролла
   useEffect(() => {
     if (isOpen) {
       openDialog();
+      setIsVisible(false); // Сбрасываем видимость перед анимацией
+      // Запускаем анимацию после монтирования (двойной RAF для гарантии)
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
+      });
       return () => {
         closeDialog();
+        setIsVisible(false);
       };
+    } else {
+      setIsVisible(false);
     }
   }, [isOpen, openDialog, closeDialog]);
 
@@ -56,54 +78,19 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
   const dialogContent = (
     <>
       <style>{`
-        @keyframes baseDialogBackdropFadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-        
-        @keyframes baseDialogContentFadeIn {
-          from {
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-          }
-        }
-        
-        @keyframes baseDialogContentFadeInMobile {
-          from {
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0.98);
-          }
-          to {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-          }
-        }
-        
-        .base-dialog-backdrop {
-          animation: baseDialogBackdropFadeIn 0.3s ease-out forwards;
-        }
-        
-        .base-dialog-content {
-          animation: baseDialogContentFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .base-dialog-content-animated {
+          will-change: transform, opacity;
         }
         
         @media (max-width: 768px) {
-          .base-dialog-content {
-            animation: baseDialogContentFadeInMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          .base-dialog-content-animated {
+            transform-origin: center center;
           }
         }
       `}</style>
       {/* Backdrop - единообразное затемнение без blur */}
       <div
-        className={`base-dialog-backdrop fixed inset-0 z-[9999] ${className}`}
+        className={`fixed inset-0 z-[9999] ${className}`}
         onClick={(e) => {
           // Закрываем только если клик был именно на backdrop, а не на дочерних элементах
           if (e.target === e.currentTarget) {
@@ -115,16 +102,24 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
           backdropFilter: 'none', // Явно убираем blur
           paddingTop: 'env(safe-area-inset-top, 0px)',
           paddingBottom: '5rem', // Отступ для BottomBar
+          opacity: isVisible ? 1 : 0,
+          transition: 'opacity 0.3s ease-out',
         }}
       />
       
       {/* Dialog Content */}
       <div
-        className={`base-dialog-content fixed left-1/2 top-1/2 z-[10000] w-[calc(100%-2rem)] sm:w-full ${maxWidth} ${maxHeight} flex flex-col rounded-2xl md:rounded-3xl ${contentClassName}`}
+        className={`base-dialog-content-animated fixed left-1/2 top-1/2 z-[10000] w-[calc(100%-2rem)] sm:w-full ${maxWidth} ${maxHeight} flex flex-col rounded-2xl md:rounded-3xl ${contentClassName}`}
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
         style={{
-          transform: 'translate(-50%, -50%)',
+          transform: isVisible 
+            ? 'translate(-50%, -50%) scale(1)' 
+            : `translate(-50%, -50%) scale(${isMobile ? 0.96 : 0.92})`,
+          opacity: isVisible ? 1 : 0,
+          transition: isVisible 
+            ? `transform ${isMobile ? '0.4s' : '0.35s'} cubic-bezier(0.16, 1, 0.3, 1), opacity ${isMobile ? '0.4s' : '0.35s'} ease-out`
+            : 'transform 0.2s ease-in, opacity 0.2s ease-in',
           background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
           backdropFilter: 'blur(20px)',
           border: '2px solid rgba(220, 235, 245, 0.2)',
