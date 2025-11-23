@@ -9,6 +9,7 @@ import type {
   LocalizedField,
   OrderMode
 } from '../api';
+import { OrderMode as OrderModeEnum } from '../api';
 
 type TransactionItem = PlayerBalanceTransaction;
 
@@ -43,7 +44,10 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   // Используем переданные фильтры или значения по умолчанию
   const dateFilters = useMemo(() => propDateFilters || { from: '', to: '' }, [propDateFilters]);
   const enumFilters = useMemo(() => propEnumFilters || {}, [propEnumFilters]);
-  const sorts: {field: string, mode: OrderMode}[] = useMemo(() => [], []);
+  const sorts: {field: string, mode: OrderMode}[] = useMemo(() => [{
+    field: 'createdAt',
+    mode: OrderModeEnum.DESC
+  }], []);
   
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
