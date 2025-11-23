@@ -236,7 +236,8 @@ export const ru = {
     transfer: 'Перевести',
     transactions: {
       title: 'История транзакций',
-      empty: 'Транзакции не найдены'
+      empty: 'Транзакции не найдены',
+      emptyDescription: 'Выполняйте задачи, чтобы заработать награды!'
     },
     empty: 'Пока нет транзакций',
     causes: {

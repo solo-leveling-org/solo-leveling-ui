@@ -23,16 +23,29 @@ export function useTelegramAdaptive() {
         document.body.classList.add('desktop-version');
         document.body.classList.remove('mobile-version');
         
-        // НЕ вызываем expand() для desktop - оставляем обычный режим
-        // Это отключает полноэкранный режим для desktop
+        // Для desktop НЕ вызываем expand() - это предотвращает полноэкранный режим
+        // Если приложение уже в полноэкранном режиме по умолчанию, мы не можем программно его свернуть,
+        // но не вызывая expand() мы гарантируем, что оно не перейдет в полноэкранный режим
+        // если еще не перешло, или останется в обычном режиме
+        
+        // ready() уже вызывается в useTelegram, поэтому здесь не вызываем
       } else {
         // Для mobile устройств
         document.body.classList.add('mobile-version');
         document.body.classList.remove('desktop-version');
         
         // Включаем полноэкранный режим для mobile
-        if (tg.expand && !tg.isExpanded) {
-          tg.expand();
+        // ready() уже вызывается в useTelegram, поэтому здесь только expand()
+        if (tg.expand) {
+          // Проверяем, не развернуто ли уже приложение
+          if (!tg.isExpanded) {
+            // Небольшая задержка для гарантии, что ready() из useTelegram выполнился
+            setTimeout(() => {
+              if (tg.expand && !tg.isExpanded) {
+                tg.expand();
+              }
+            }, 150);
+          }
         }
       }
     } else {

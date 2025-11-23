@@ -236,7 +236,8 @@ export const en = {
     transfer: 'Transfer',
     transactions: {
       title: 'Transaction History',
-      empty: 'No transactions found'
+      empty: 'No transactions found',
+      emptyDescription: 'Complete tasks to earn rewards!'
     },
     empty: 'No transactions yet',
     causes: {

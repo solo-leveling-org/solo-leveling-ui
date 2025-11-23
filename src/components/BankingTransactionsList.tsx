@@ -389,7 +389,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
             color: 'rgba(220, 235, 245, 0.7)'
           }}
         >
-          Complete tasks to earn rewards!
+          {t('balance.transactions.emptyDescription')}
         </p>
       </div>
     </div>

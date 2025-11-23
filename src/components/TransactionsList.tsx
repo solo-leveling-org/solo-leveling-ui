@@ -154,7 +154,7 @@ const renderTransaction = (transaction: TransactionItem, index: number, getLocal
           <Icon type="coins" size={32} className="text-blue-500" />
         </div>
         <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('balance.transactions.empty')}</h3>
-        <p className="text-gray-500 text-sm">Complete tasks to earn rewards!</p>
+        <p className="text-gray-500 text-sm">{t('balance.transactions.emptyDescription')}</p>
       </div>
     </div>
   );
