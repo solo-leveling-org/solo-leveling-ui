@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDrag } from '@use-gesture/react';
 import { useModal } from '../contexts/ModalContext';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface BottomSheetProps {
   isOpen: boolean;
@@ -15,6 +16,8 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
   const sheetRef = useRef<HTMLDivElement>(null);
   const { setIsBottomSheetOpen } = useModal();
 
+  // Блокировка скролла при открытом BottomSheet
+  useScrollLock(isOpen);
 
   // Анимация открытия
   useEffect(() => {
@@ -23,15 +26,11 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
       setDragY(0);
       // Сразу показываем для анимации
       setIsVisible(true);
-      // Блокируем скролл body
-      document.body.style.overflow = 'hidden';
-      // Уведомляем контекст об открытии
+      // Уведомляем контекст об открытии (но НЕ скрываем BottomBar)
       setIsBottomSheetOpen(true);
     } else {
       setIsVisible(false);
       setDragY(0);
-      // Восстанавливаем скролл
-      document.body.style.overflow = 'unset';
       // Уведомляем контекст о закрытии
       setIsBottomSheetOpen(false);
     }
@@ -100,13 +99,16 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop - используем единообразный backdrop от BaseDialog */}
       <div
-        className={`fixed inset-0 bg-black/50 z-50 ${
+        className={`fixed inset-0 z-[9999] ${
           isVisible ? 'opacity-100' : 'opacity-0'
         }`}
         style={{
-          transition: 'opacity 0.3s ease-out'
+          background: 'rgba(0, 0, 0, 0.5)',
+          backdropFilter: 'none', // Без blur, как в BaseDialog
+          transition: 'opacity 0.3s ease-out',
+          paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
         onClick={onClose}
       />
@@ -114,7 +116,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
       {/* Bottom Sheet - Solo Leveling Style */}
       <div 
         ref={sheetRef}
-        className={`bottom-sheet fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl md:rounded-t-3xl shadow-2xl max-h-[80vh] overflow-hidden ${
+        className={`bottom-sheet fixed bottom-0 left-0 right-0 z-[10000] rounded-t-2xl md:rounded-t-3xl shadow-2xl max-h-[80vh] overflow-hidden ${
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
         }`}
         style={{
@@ -129,7 +131,10 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
           // Дополнительные оптимизации для мобильных устройств
           WebkitTransform: `translate3d(0, ${dragY}px, 0)`, // WebKit оптимизация
           WebkitBackfaceVisibility: 'hidden',
-          WebkitPerspective: '1000px'
+          WebkitPerspective: '1000px',
+          // Явно устанавливаем z-index и bottom, чтобы BottomSheet был поверх всего
+          zIndex: 10000,
+          bottom: 0,
         }}
         {...bind()}
       >

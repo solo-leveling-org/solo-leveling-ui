@@ -1,19 +1,11 @@
 import React, { useEffect } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { useLocalization } from '../hooks/useLocalization';
-import { useModal } from '../contexts/ModalContext';
-import { useScrollLock } from '../hooks/useScrollLock';
 import { TelegramIcon } from './TelegramWidget';
 import Icon from './Icon';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from './ui/dialog';
 import { Card } from './ui/card';
 import { cn } from '../utils';
+import BaseDialog from './BaseDialog';
 
 type SettingsDialogProps = {
   isOpen: boolean;
@@ -23,66 +15,29 @@ type SettingsDialogProps = {
 const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
   const { settings, setLanguage, setIsManual } = useSettings();
   const { t } = useLocalization();
-  const { openDialog, closeDialog } = useModal();
 
-  // Блокируем скролл при открытом диалоге и убираем фокус с кнопки закрытия
+  // Убираем фокус с кнопки закрытия
   useEffect(() => {
     if (isOpen) {
-      openDialog();
-
-      // Убираем фокус с кнопки закрытия
       setTimeout(() => {
-        const closeButton = document.querySelector('.settings-dialog-content button[class*="absolute right-4 top-4"]') as HTMLElement;
+        const closeButton = document.querySelector('.settings-dialog-close-button') as HTMLElement;
         if (closeButton) {
           closeButton.blur();
           closeButton.setAttribute('tabIndex', '-1');
         }
       }, 0);
-
-      return () => {
-        closeDialog();
-      };
     }
-  }, [isOpen, openDialog, closeDialog]);
-
-  // Используем хук для блокировки скролла
-  useScrollLock(isOpen);
+  }, [isOpen]);
 
   return (
-    <>
+    <BaseDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidth="max-w-md"
+      maxHeight="max-h-[70vh]"
+    >
       <style>{`
-        @keyframes dialogFadeIn {
-          from {
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-          }
-        }
-        
-        @keyframes dialogFadeOut {
-          from {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-          }
-          to {
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0.9);
-          }
-        }
-        
-        .settings-dialog-content[data-state="open"] {
-          animation: dialogFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        
-        .settings-dialog-content[data-state="closed"] {
-          animation: dialogFadeOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        
-        /* Style the close button inside settings dialog */
-        .settings-dialog-content button[class*="absolute right-4 top-4"] {
+        .settings-dialog-close-button {
           color: #e8f4f8 !important;
           opacity: 0.7 !important;
           transition: all 0.2s ease !important;
@@ -100,13 +55,13 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
           box-shadow: none !important;
         }
         
-        .settings-dialog-content button[class*="absolute right-4 top-4"]:focus {
+        .settings-dialog-close-button:focus {
           outline: none !important;
           box-shadow: none !important;
           ring: none !important;
         }
         
-        .settings-dialog-content button[class*="absolute right-4 top-4"]:hover {
+        .settings-dialog-close-button:hover {
           opacity: 1 !important;
           color: #ffffff !important;
           transform: rotate(90deg) scale(1.1) !important;
@@ -115,81 +70,52 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
           border-color: rgba(220, 235, 245, 0.4) !important;
         }
         
-        .settings-dialog-content button[class*="absolute right-4 top-4"] svg {
+        .settings-dialog-close-button svg {
           width: 18px !important;
           height: 18px !important;
         }
       `}</style>
-      <Dialog open={isOpen} onOpenChange={(open) => {
-        if (!open) {
-          closeDialog();
-          onClose();
-        }
-      }}>
-        <DialogContent
-          className="settings-dialog-content border-0 shadow-none bg-transparent p-0 max-w-md"
-          style={{
-            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
-            backdropFilter: 'blur(20px)',
-            border: '2px solid rgba(220, 235, 245, 0.2)',
-            borderRadius: '24px',
-            boxShadow: `
-              0 0 30px rgba(180, 220, 240, 0.2),
-              inset 0 0 30px rgba(200, 230, 245, 0.03)
-            `
-          }}
-        >
-        {/* Holographic grid overlay */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `
-              linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '30px 30px'
-          }}></div>
+      
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="p-6 pb-4 border-b relative" style={{
+          borderColor: 'rgba(220, 235, 245, 0.1)',
+          zIndex: 10
+        }}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div
+                className="profile-icon-wrapper"
+                style={{
+                  color: '#e8f4f8',
+                  filter: 'drop-shadow(0 0 8px rgba(180, 220, 240, 0.4))'
+                }}
+              >
+                <Icon type="settings" size={28} />
+              </div>
+              <h2 
+                className="font-tech text-xl font-bold m-0"
+                style={{
+                  color: '#e8f4f8',
+                  textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+                }}
+              >
+                {t('profile.settings.title')}
+              </h2>
+            </div>
+            <button
+              onClick={onClose}
+              className="settings-dialog-close-button absolute right-4 top-4"
+            >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
-        {/* Glowing orbs */}
-        <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-10" style={{
-          background: 'rgba(180, 216, 232, 0.8)'
-        }}></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full blur-3xl opacity-10" style={{
-          background: 'rgba(200, 230, 245, 0.6)'
-        }}></div>
-
-        <div className="relative z-10">
-          {/* Header */}
-          <DialogHeader className="p-6 pb-4 border-b relative" style={{
-            borderColor: 'rgba(220, 235, 245, 0.1)',
-            zIndex: 10
-          }}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="profile-icon-wrapper"
-                  style={{
-                    color: '#e8f4f8',
-                    filter: 'drop-shadow(0 0 8px rgba(180, 220, 240, 0.4))'
-                  }}
-                >
-                  <Icon type="settings" size={28} />
-                </div>
-                <DialogTitle 
-                  className="font-tech text-xl font-bold m-0"
-                  style={{
-                    color: '#e8f4f8',
-                    textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
-                  }}
-                >
-                  {t('profile.settings.title')}
-                </DialogTitle>
-              </div>
-            </div>
-          </DialogHeader>
-
-          {/* Content */}
-          <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+        {/* Content */}
+        <div className="p-6 space-y-6 overflow-y-auto" style={{ maxHeight: 'calc(70vh - 100px)' }}>
             {/* Language Source Setting */}
             <div>
               <div className="flex items-center gap-3 mb-4">
@@ -203,18 +129,18 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
                   <Icon type="globe" size={24} />
                 </div>
                 <div>
-                  <DialogDescription 
+                  <p 
                     className="font-tech font-bold text-sm m-0"
                     style={{ color: '#e8f4f8' }}
                   >
                     {t('profile.settings.language.sourceTitle')}
-                  </DialogDescription>
-                  <DialogDescription 
+                  </p>
+                  <p 
                     className="text-xs mt-1 m-0"
                     style={{ color: 'rgba(220, 235, 245, 0.6)' }}
                   >
                     {t('profile.settings.language.sourceDescription')}
-                  </DialogDescription>
+                  </p>
                 </div>
               </div>
 
@@ -416,10 +342,8 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-    </>
+      </div>
+    </BaseDialog>
   );
 };
 

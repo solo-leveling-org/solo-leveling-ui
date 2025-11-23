@@ -504,7 +504,11 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           )}
 
       {dialogTask && dialogTask.task && (
-        <TaskDialog task={dialogTask.task} onClose={() => setDialogTask(null)} />
+        <TaskDialog 
+          task={dialogTask.task} 
+          onClose={() => setDialogTask(null)}
+          isOpen={!!dialogTask}
+        />
       )}
 
       {completionResponse && (
@@ -514,7 +518,8 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           onClose={() => {
             setCompletionResponse(null);
             setCompletedTask(null);
-          }} 
+          }}
+          isOpen={!!completionResponse}
         />
       )}
 

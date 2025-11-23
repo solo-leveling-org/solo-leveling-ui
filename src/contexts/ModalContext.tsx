@@ -27,6 +27,7 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [dialogCount, setDialogCount] = useState(0);
 
+  // Скрываем BottomBar когда открыт BottomSheet (фильтр с выбором значений)
   const isBottomBarVisible = !isBottomSheetOpen;
   const isDialogOpen = dialogCount > 0;
 

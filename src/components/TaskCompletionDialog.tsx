@@ -1,39 +1,21 @@
-import React, { useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import React from 'react';
 import type { CompleteTaskResponse, Task } from '../api';
 import { useLocalization } from '../hooks/useLocalization';
-import { useModal } from '../contexts/ModalContext';
-import { useScrollLock } from '../hooks/useScrollLock';
 import Icon from './Icon';
 import TopicIcon from './TopicIcons';
+import BaseDialog from './BaseDialog';
 
 
 type TaskCompletionDialogProps = {
   response: CompleteTaskResponse;
   completedTask?: Task; // Добавляем задачу, которую выполнил пользователь
   onClose: () => void;
+  isOpen: boolean;
 };
 
-const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, completedTask, onClose }) => {
+const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, completedTask, onClose, isOpen }) => {
   const { playerBefore, playerAfter } = response;
   const { t } = useLocalization();
-  const { openDialog, closeDialog } = useModal();
-
-  // Блокируем скролл фонового контента при открытии диалога
-  useEffect(() => {
-    openDialog();
-    return () => {
-      closeDialog();
-    };
-  }, [openDialog, closeDialog]);
-
-  // Используем хук для блокировки скролла
-  useScrollLock(true);
-
-  const handleClose = () => {
-    closeDialog();
-    onClose();
-  };
 
   if (!playerBefore || !playerAfter) {
     return null;
@@ -65,105 +47,53 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
       .map(tp => [tp.taskTopic!, tp.level])
   );
 
-  // Рендерим диалог через Portal на уровне body
-  const dialogContent = (
-    <>
+  return (
+    <BaseDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidth="max-w-2xl"
+      maxHeight="max-h-[calc(95vh-env(safe-area-inset-top,0px)-5rem)]"
+    >
       <style>{`
-        @keyframes taskCompletionDialogFadeIn {
-          from {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        
-        .task-completion-dialog-content {
-          animation: taskCompletionDialogFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        
         .profile-icon-wrapper svg {
           color: inherit;
           fill: none;
           stroke: currentColor;
         }
       `}</style>
-      <div
-        className="fixed inset-0 flex items-center justify-center p-4 z-[100]"
-        onClick={handleClose}
-        style={{ 
-          background: 'rgba(0, 0, 0, 0.7)',
-          backdropFilter: 'blur(4px)',
-          paddingTop: 'env(safe-area-inset-top, 0px)',
-          paddingBottom: '5rem' // Отступ для BottomBar
-        }}
-      >
-        <div
-          className="task-completion-dialog-content relative w-full max-w-2xl max-h-[calc(95vh-env(safe-area-inset-top,0px)-5rem)] rounded-2xl md:rounded-3xl overflow-hidden"
-          onClick={e => e.stopPropagation()}
-          style={{
-            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
-            backdropFilter: 'blur(20px)',
-            border: '2px solid rgba(220, 235, 245, 0.2)',
-            boxShadow: `
-              0 0 30px rgba(180, 220, 240, 0.2),
-              inset 0 0 30px rgba(200, 230, 245, 0.03)
-            `
-          }}
-        >
-          {/* Holographic grid overlay */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
-            <div className="absolute inset-0" style={{
-              backgroundImage: `
-                linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-              `,
-              backgroundSize: '30px 30px'
-            }}></div>
-          </div>
 
-          {/* Glowing orbs */}
-          <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-10" style={{
-            background: 'rgba(180, 216, 232, 0.8)'
-          }}></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full blur-3xl opacity-10" style={{
-            background: 'rgba(200, 230, 245, 0.6)'
-          }}></div>
+      {/* Header */}
+      <div className="relative z-10 p-4 md:p-6 pb-4">
+        <div className="flex items-center justify-between">
+          <h2 
+            className="text-xl md:text-2xl font-tech font-bold"
+            style={{
+              color: '#e8f4f8',
+              textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+            }}
+          >
+            {t('taskCompletion.title')}
+          </h2>
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 hover:scale-110 active:scale-95"
+            style={{
+              background: 'rgba(220, 235, 245, 0.1)',
+              border: '1px solid rgba(220, 235, 245, 0.2)',
+              color: '#e8f4f8'
+            }}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
 
-          {/* Header */}
-          <div className="relative z-10 p-4 md:p-6 pb-4">
-            <div className="flex items-center justify-between">
-              <h2 
-                className="text-xl md:text-2xl font-tech font-bold"
-                style={{
-                  color: '#e8f4f8',
-                  textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
-                }}
-              >
-                {t('taskCompletion.title')}
-              </h2>
-              {/* Close button */}
-              <button
-                onClick={handleClose}
-                className="flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 hover:scale-110 active:scale-95"
-                style={{
-                  background: 'rgba(220, 235, 245, 0.1)',
-                  border: '1px solid rgba(220, 235, 245, 0.2)',
-                  color: '#e8f4f8'
-                }}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="relative z-10 px-4 md:px-6 pb-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
+      {/* Content */}
+      <div className="relative z-10 px-4 md:px-6 pb-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
             
             {/* Level Progress - Solo Leveling Style */}
             <div 
@@ -770,14 +700,9 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 </div>
               </div>
             </div>
-          </div>
-        </div>
       </div>
-      </>
-    );
-
-  // Рендерим через Portal на уровне body
-  return createPortal(dialogContent, document.body);
+    </BaseDialog>
+  );
 };
 
 export default TaskCompletionDialog;

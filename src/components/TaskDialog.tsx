@@ -1,187 +1,94 @@
-import React, {useEffect} from 'react';
-import { createPortal } from 'react-dom';
+import React from 'react';
 import type {Task} from '../api';
 import TopicIcon from './TopicIcons';
 import Icon from './Icon';
 import RarityIndicator from './RarityIndicator';
 import { useLocalization } from '../hooks/useLocalization';
-import { useModal } from '../contexts/ModalContext';
-import { useScrollLock } from '../hooks/useScrollLock';
 import { Card } from './ui/card';
+import BaseDialog from './BaseDialog';
 
 type TaskDialogProps = {
   task: Task;
   onClose: () => void;
+  isOpen: boolean;
 };
 
-const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
+const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
   const { t } = useLocalization();
-  const { openDialog, closeDialog } = useModal();
-  
-  // Блокируем скролл фонового контента при открытии диалога
-  useEffect(() => {
-    openDialog();
-    
-    // Сохраняем позицию скролла контейнера ДО блокировки скролла
-    // Это нужно для правильного позиционирования диалога
-    const scrollableContainer = document.querySelector('.fixed.inset-0.overflow-y-auto') as HTMLElement;
-    const containerScrollTop = scrollableContainer?.scrollTop || 0;
-    
-    return () => {
-      closeDialog();
-    };
-  }, [openDialog, closeDialog]);
 
-  // Используем хук для блокировки скролла
-  useScrollLock(true);
+  return (
+    <BaseDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidth="max-w-md"
+      maxHeight="max-h-[calc(95vh-env(safe-area-inset-top,0px)-5rem)] mobile-version:max-h-[calc(85vh-env(safe-area-inset-top,0px)-5rem)]"
+    >
+      <style>{`
+        .profile-icon-wrapper svg {
+          color: inherit;
+          fill: none;
+          stroke: currentColor;
+        }
+      `}</style>
 
-  // Обработчик закрытия с восстановлением скролла
-  const handleClose = () => {
-    closeDialog();
-    onClose();
-  };
-
-
-
-
-  // Рендерим диалог через Portal на уровне body, чтобы он был вне скроллируемого контейнера
-  const dialogContent = (
-      <>
-        <style>{`
-          @keyframes dialogBackdropFadeIn {
-            from {
-              opacity: 0;
-            }
-            to {
-              opacity: 1;
-            }
-          }
-          
-          @keyframes taskDialogFadeIn {
-            from {
-              opacity: 0;
-              transform: scale(0.95) translateY(20px);
-            }
-            to {
-              opacity: 1;
-              transform: scale(1) translateY(0);
-            }
-          }
-          
-          .task-dialog-backdrop {
-            animation: dialogBackdropFadeIn 0.2s ease-out forwards;
-          }
-          
-          .task-dialog-content {
-            animation: taskDialogFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          }
-          
-          .profile-icon-wrapper svg {
-            color: inherit;
-            fill: none;
-            stroke: currentColor;
-          }
-        `}</style>
-        <div
-            className="task-dialog-backdrop fixed inset-0 flex items-center justify-center p-4 z-[100]"
-            onClick={handleClose}
-            style={{ 
-              background: 'rgba(0, 0, 0, 0.7)',
-              backdropFilter: 'blur(8px)',
-              paddingTop: 'env(safe-area-inset-top, 0px)',
-              paddingBottom: '5rem', // Отступ для BottomBar
-            }}
-        >
-          <div
-              className="task-dialog-content relative w-full max-w-md max-h-[calc(95vh-env(safe-area-inset-top,0px)-5rem)] mobile-version:max-h-[calc(85vh-env(safe-area-inset-top,0px)-5rem)] overflow-hidden rounded-2xl md:rounded-3xl"
-              onClick={e => e.stopPropagation()}
+      {/* Header */}
+      <div className="relative z-10 p-6 pb-4 border-b" style={{
+        borderColor: 'rgba(220, 235, 245, 0.1)'
+      }}>
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1 pr-4">
+            <h2 
+              className="text-xl font-tech font-bold leading-tight mb-3"
               style={{
-                background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
-                backdropFilter: 'blur(20px)',
-                border: '2px solid rgba(220, 235, 245, 0.2)',
-                boxShadow: `
-                  0 0 30px rgba(180, 220, 240, 0.2),
-                  inset 0 0 30px rgba(200, 230, 245, 0.03)
-                `
+                color: '#e8f4f8',
+                textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+              }}
+            >
+              {task.title}
+            </h2>
+            
+            {/* Rarity indicator - integrated with title */}
+            <div className="flex items-center gap-2">
+              <RarityIndicator 
+                rarity={task.rarity || 'COMMON'} 
+                size="sm"
+                showLabel={false}
+              />
+              <span 
+                className="text-xs font-tech font-semibold px-2 py-1 rounded-full border"
+                style={{
+                  background: 'rgba(220, 235, 245, 0.1)',
+                  borderColor: 'rgba(220, 235, 245, 0.2)',
+                  color: '#e8f4f8',
+                  textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+                }}
+              >
+                {t(`rarity.${task.rarity || 'COMMON'}`)}
+              </span>
+            </div>
+          </div>
+
+          {/* Close button */}
+          <button
+              onClick={onClose}
+              className="flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 hover:scale-110 group"
+              style={{
+                background: 'rgba(220, 235, 245, 0.05)',
+                border: '1px solid rgba(220, 235, 245, 0.2)',
+                color: '#e8f4f8'
               }}
           >
-            {/* Holographic grid overlay */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
-              <div className="absolute inset-0" style={{
-                backgroundImage: `
-                  linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-                `,
-                backgroundSize: '30px 30px'
-              }}></div>
-            </div>
+            <svg className="w-4 h-4 transition-colors group-hover:text-white"
+                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
 
-            {/* Glowing orbs */}
-            <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-10" style={{
-              background: 'rgba(180, 216, 232, 0.8)'
-            }}></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full blur-3xl opacity-10" style={{
-              background: 'rgba(200, 230, 245, 0.6)'
-            }}></div>
-
-            {/* Header */}
-            <div className="relative z-10 p-6 pb-4 border-b" style={{
-              borderColor: 'rgba(220, 235, 245, 0.1)'
-            }}>
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1 pr-4">
-                  <h2 
-                    className="text-xl font-tech font-bold leading-tight mb-3"
-                    style={{
-                      color: '#e8f4f8',
-                      textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
-                    }}
-                  >
-                    {task.title}
-                  </h2>
-                  
-                  {/* Rarity indicator - integrated with title */}
-                  <div className="flex items-center gap-2">
-                    <RarityIndicator 
-                      rarity={task.rarity || 'COMMON'} 
-                      size="sm"
-                      showLabel={false}
-                    />
-                    <span 
-                      className="text-xs font-tech font-semibold px-2 py-1 rounded-full border"
-                      style={{
-                        background: 'rgba(220, 235, 245, 0.1)',
-                        borderColor: 'rgba(220, 235, 245, 0.2)',
-                        color: '#e8f4f8',
-                        textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
-                      }}
-                    >
-                      {t(`rarity.${task.rarity || 'COMMON'}`)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Close button */}
-                <button
-                    onClick={handleClose}
-                    className="flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 hover:scale-110 group"
-                    style={{
-                      background: 'rgba(220, 235, 245, 0.05)',
-                      border: '1px solid rgba(220, 235, 245, 0.2)',
-                      color: '#e8f4f8'
-                    }}
-                >
-                  <svg className="w-4 h-4 transition-colors group-hover:text-white"
-                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Scrollable content */}
-            <div className="relative z-10 px-6 pb-6 overflow-y-auto max-h-[calc(90vh-200px)] mobile-version:max-h-[calc(75vh-200px)]">
+      {/* Scrollable content */}
+      <div className="relative z-10 px-6 pb-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
               {/* Description */}
               <div
                   className="rounded-2xl p-4 mb-6 border"
@@ -431,14 +338,9 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
                     </div>
                   </div>
               )}
-            </div>
-          </div>
-        </div>
-      </>
+      </div>
+    </BaseDialog>
   );
-
-  // Рендерим через Portal на уровне body
-  return createPortal(dialogContent, document.body);
 };
 
 export default TaskDialog;
