@@ -1,4 +1,4 @@
-import React, { useEffect, ReactNode, useState } from 'react';
+import React, { useEffect, ReactNode, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useModal } from '../contexts/ModalContext';
 import { useScrollLock } from '../hooks/useScrollLock';
@@ -87,6 +87,26 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
             transform-origin: center center;
           }
         }
+        
+        /* Гарантируем, что overflow-y-auto применяется */
+        .base-dialog-content-animated .overflow-y-auto {
+          overflow-y: auto !important;
+          overflow-x: hidden !important;
+        }
+        
+        /* Ограничиваем диалог снизу, чтобы не накладывался на BottomBar */
+        .base-dialog-content-animated {
+          /* Максимальная высота с учетом BottomBar (80px) + safe area + отступ (6rem для безопасности) */
+          max-height: calc(100vh - 80px - env(safe-area-inset-bottom, 0px) - 6rem) !important;
+        }
+        
+        /* На мобильных устройствах увеличиваем размер диалогов */
+        @media (max-width: 768px) {
+          .base-dialog-content-animated {
+            /* Увеличиваем максимальную высоту на мобильных, оставляя минимальный отступ (6rem для безопасности) */
+            max-height: calc(100vh - 80px - env(safe-area-inset-bottom, 0px) - 6rem) !important;
+          }
+        }
       `}</style>
       {/* Backdrop - единообразное затемнение без blur */}
       <div
@@ -109,7 +129,7 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
       
       {/* Dialog Content */}
       <div
-        className={`base-dialog-content-animated fixed left-1/2 top-1/2 z-[10000] w-[calc(100%-2rem)] sm:w-full ${maxWidth} ${maxHeight} flex flex-col rounded-2xl md:rounded-3xl ${contentClassName}`}
+        className={`base-dialog-content-animated fixed left-1/2 top-1/2 z-[10000] w-[calc(100%-2rem)] sm:w-full ${maxWidth} flex flex-col rounded-2xl md:rounded-3xl ${contentClassName}`}
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
         style={{
@@ -120,8 +140,8 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
           transition: isVisible 
             ? `transform ${isMobile ? '0.4s' : '0.35s'} cubic-bezier(0.16, 1, 0.3, 1), opacity ${isMobile ? '0.4s' : '0.35s'} ease-out`
             : 'transform 0.2s ease-in, opacity 0.2s ease-in',
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
-          backdropFilter: 'blur(20px)',
+          background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+          backdropFilter: 'none',
           border: '2px solid rgba(220, 235, 245, 0.2)',
           boxShadow: `
             0 0 30px rgba(180, 220, 240, 0.2),
@@ -143,19 +163,6 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
           />
         </div>
 
-        {/* Glowing orbs */}
-        <div
-          className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-10"
-          style={{
-            background: 'rgba(180, 216, 232, 0.8)',
-          }}
-        />
-        <div
-          className="absolute bottom-0 left-0 w-48 h-48 rounded-full blur-3xl opacity-10"
-          style={{
-            background: 'rgba(200, 230, 245, 0.6)',
-          }}
-        />
 
         {/* Children content - с поддержкой скролла */}
         <div className="relative z-10 flex-1 flex flex-col min-h-0">{children}</div>

@@ -35,8 +35,36 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
       onClose={onClose}
       maxWidth="max-w-md"
       maxHeight="max-h-[70vh]"
+      contentClassName="settings-dialog-no-blur"
     >
       <style>{`
+        /* Отключаем backdrop-filter для SettingsDialog, но сохраняем filter для drop-shadow */
+        .settings-dialog-no-blur,
+        .settings-dialog-no-blur * {
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+        }
+        
+        /* Делаем фон полностью непрозрачным для SettingsDialog */
+        .settings-dialog-no-blur {
+          background: linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%) !important;
+        }
+        
+        /* Скрываем размывающие элементы (glowing orbs) для SettingsDialog */
+        .settings-dialog-no-blur > div[class*="blur-3xl"] {
+          display: none !important;
+        }
+        
+        /* Убираем holographic grid overlay */
+        .settings-dialog-no-blur > div[class*="overflow-hidden"][class*="opacity-5"] {
+          display: none !important;
+        }
+        
+        /* Сохраняем filter для drop-shadow иконок */
+        .settings-dialog-content .profile-icon-wrapper[style*="filter"] {
+          filter: inherit !important;
+        }
+        
         .settings-dialog-close-button {
           color: #e8f4f8 !important;
           opacity: 0.7 !important;
@@ -53,6 +81,8 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
           pointer-events: auto !important;
           outline: none !important;
           box-shadow: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
         }
         
         .settings-dialog-close-button:focus {
@@ -76,11 +106,19 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
         }
       `}</style>
 
-        <div className="relative z-10">
+        <div className="relative z-10 settings-dialog-content" style={{
+          isolation: 'isolate',
+          backdropFilter: 'none',
+          WebkitBackdropFilter: 'none',
+          transform: 'translateZ(0)',
+          willChange: 'auto'
+        }}>
           {/* Header */}
         <div className="p-6 pb-4 border-b relative" style={{
             borderColor: 'rgba(220, 235, 245, 0.1)',
-            zIndex: 10
+            zIndex: 10,
+            backdropFilter: 'none',
+            WebkitBackdropFilter: 'none'
           }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -115,7 +153,11 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
         </div>
 
           {/* Content */}
-        <div className="p-6 space-y-6 overflow-y-auto" style={{ maxHeight: 'calc(70vh - 100px)' }}>
+        <div className="p-6 space-y-6 overflow-y-auto" style={{ 
+          maxHeight: 'calc(70vh - 100px)',
+          backdropFilter: 'none',
+          WebkitBackdropFilter: 'none'
+        }}>
             {/* Language Source Setting */}
             <div>
               <div className="flex items-center gap-3 mb-4">
@@ -156,7 +198,6 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
                     background: !settings.isManual
                       ? 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)'
                       : 'rgba(220, 235, 245, 0.05)',
-                    backdropFilter: 'blur(10px)',
                     border: !settings.isManual
                       ? '1px solid rgba(220, 235, 245, 0.4)'
                       : '1px solid rgba(220, 235, 245, 0.15)',
@@ -207,7 +248,6 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
                     background: settings.isManual
                       ? 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)'
                       : 'rgba(220, 235, 245, 0.05)',
-                    backdropFilter: 'blur(10px)',
                     border: settings.isManual
                       ? '1px solid rgba(220, 235, 245, 0.4)'
                       : '1px solid rgba(220, 235, 245, 0.15)',
@@ -267,7 +307,6 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
                     background: settings.language === 'ru'
                       ? 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)'
                       : 'rgba(220, 235, 245, 0.05)',
-                    backdropFilter: 'blur(10px)',
                     border: settings.language === 'ru'
                       ? '1px solid rgba(220, 235, 245, 0.4)'
                       : '1px solid rgba(220, 235, 245, 0.15)',
@@ -309,7 +348,6 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
                     background: settings.language === 'en'
                       ? 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)'
                       : 'rgba(220, 235, 245, 0.05)',
-                    backdropFilter: 'blur(10px)',
                     border: settings.language === 'en'
                       ? '1px solid rgba(220, 235, 245, 0.4)'
                       : '1px solid rgba(220, 235, 245, 0.15)',

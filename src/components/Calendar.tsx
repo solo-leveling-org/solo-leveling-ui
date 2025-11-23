@@ -135,7 +135,8 @@ const Calendar: React.FC<CalendarProps> = ({
         }`}
       onClickBackdrop={onClose}
     >
-      <div className="relative z-10 p-3">
+      <div className="flex flex-col h-full min-h-0">
+        <div className="relative z-10 p-3 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
           {/* Header */}
           <div className={`relative z-10 flex items-center justify-between mb-6 ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
@@ -293,50 +294,52 @@ const Calendar: React.FC<CalendarProps> = ({
             })}
           </div>
 
-          {/* Action Buttons */}
-          <div className={`relative z-10 flex space-x-3 ${
+        </div>
+        
+        {/* Action Buttons - фиксированные внизу */}
+        <div className={`relative z-10 flex space-x-3 p-3 pt-0 flex-shrink-0 ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
           }`} style={{ 
             transition: isVisible ? 'transform 0.3s ease-out 0.3s, opacity 0.3s ease-out 0.3s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
           }}>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleClear();
-              }}
-              className="flex-1 px-4 py-2 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95 select-none"
-              style={{
-                background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
-                border: '1px solid rgba(220, 235, 245, 0.3)',
-                color: '#e8f4f8',
-                boxShadow: '0 0 10px rgba(180, 220, 240, 0.2)'
-              }}
-            >
-              {t('common.clear')}
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleApply();
-              }}
-              disabled={!selectedFrom || !selectedTo}
-              className="flex-1 px-4 py-2 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 select-none"
-              style={!selectedFrom || !selectedTo ? {
-                background: 'rgba(148, 163, 184, 0.2)',
-                border: '1px solid rgba(148, 163, 184, 0.3)',
-                color: 'rgba(220, 235, 245, 0.5)'
-              } : {
-                background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
-                border: '1px solid rgba(180, 220, 240, 0.4)',
-                color: '#e8f4f8',
-                boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
-                textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
-              }}
-            >
-              {t('common.apply')}
-            </button>
-          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClear();
+            }}
+            className="flex-1 px-4 py-2 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95 select-none"
+            style={{
+              background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+              border: '1px solid rgba(220, 235, 245, 0.3)',
+              color: '#e8f4f8',
+              boxShadow: '0 0 10px rgba(180, 220, 240, 0.2)'
+            }}
+          >
+            {t('common.clear')}
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleApply();
+            }}
+            disabled={!selectedFrom || !selectedTo}
+            className="flex-1 px-4 py-2 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 select-none"
+            style={!selectedFrom || !selectedTo ? {
+              background: 'rgba(148, 163, 184, 0.2)',
+              border: '1px solid rgba(148, 163, 184, 0.3)',
+              color: 'rgba(220, 235, 245, 0.5)'
+            } : {
+              background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
+              border: '1px solid rgba(180, 220, 240, 0.4)',
+              color: '#e8f4f8',
+              boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
+              textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+            }}
+          >
+            {t('common.apply')}
+          </button>
         </div>
+      </div>
     </BaseDialog>
   );
 };

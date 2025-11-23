@@ -76,8 +76,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 onClick={handleCancel}
                 className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
-                  backdropFilter: 'blur(10px)',
+                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+                  backdropFilter: 'none',
                   borderColor: 'rgba(220, 235, 245, 0.3)',
                   boxShadow: '0 0 15px rgba(180, 220, 240, 0.15)',
                   color: '#e8f4f8'
@@ -92,8 +92,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 onClick={handleConfirm}
                 className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
-                  backdropFilter: 'blur(10px)',
+                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+                  backdropFilter: 'none',
                   borderColor: 'rgba(180, 220, 240, 0.4)',
                   boxShadow: '0 0 20px rgba(180, 220, 240, 0.25)',
                   color: '#e8f4f8'

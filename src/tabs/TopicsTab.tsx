@@ -374,18 +374,18 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                           }}
                         ></div>
                         {/* Shimmer effect - всегда на всю ширину контейнера */}
-                        {expPercentage > 0 && (
-                          <div 
+                          {expPercentage > 0 && (
+                            <div 
                             className="absolute top-0 left-0 h-full rounded-full pointer-events-none"
-                            style={{
+                              style={{
                               width: '100%',
-                              background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%)',
-                              backgroundSize: '200% 100%',
-                              animation: 'shimmer 3s ease-in-out infinite',
-                              opacity: 0.5
-                            }}
-                          ></div>
-                        )}
+                                background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%)',
+                                backgroundSize: '200% 100%',
+                                animation: 'shimmer 3s ease-in-out infinite',
+                                opacity: 0.5
+                              }}
+                            ></div>
+                          )}
                       </div>
                     </div>
                   </div>

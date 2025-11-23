@@ -102,7 +102,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
             <div 
               className="relative overflow-hidden rounded-2xl p-4 mb-4"
               style={{
-                background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
                 border: '2px solid rgba(220, 235, 245, 0.2)',
                 boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
               }}
@@ -138,7 +138,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                   <div 
                     className="text-xl font-tech font-bold rounded-lg px-3 py-1"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
+                      background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
                       border: '2px solid rgba(220, 235, 245, 0.4)',
                       color: '#e8f4f8',
                       boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
@@ -153,7 +153,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                       <span 
                         className="text-[10px] font-tech font-bold px-1.5 py-0.5 rounded-full"
                         style={{
-                          background: 'rgba(10, 14, 39, 0.95)',
+                          background: 'rgba(10, 14, 39, 1)',
                           border: '1px solid rgba(34, 197, 94, 0.8)',
                           color: 'rgba(34, 197, 94, 0.9)',
                           boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)',
@@ -198,7 +198,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                       <span 
                         className="text-xs font-tech font-bold rounded-full px-2 py-1"
                         style={{
-                          background: 'rgba(10, 14, 39, 0.95)',
+                          background: 'rgba(10, 14, 39, 1)',
                           border: '1px solid rgba(34, 197, 94, 0.8)',
                           color: 'rgba(34, 197, 94, 0.9)',
                           boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)',
@@ -300,7 +300,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                             <span 
                               className="text-[10px] font-tech font-bold px-1.5 py-0.5 rounded-full flex items-center whitespace-nowrap"
                               style={{
-                                background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                                background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
                                 border: '1px solid rgba(220, 235, 245, 0.3)',
                                 color: '#e8f4f8'
                               }}
@@ -315,7 +315,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                                   <span 
                                     className="ml-2 rounded-full px-1.5 py-0.5"
                                     style={{
-                                      background: 'rgba(10, 14, 39, 0.95)',
+                                      background: 'rgba(10, 14, 39, 1)',
                                       border: '1px solid rgba(34, 197, 94, 0.8)',
                                       color: 'rgba(34, 197, 94, 0.9)',
                                       boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)',
@@ -394,7 +394,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
             <div 
               className="relative overflow-hidden rounded-2xl p-4 mb-4"
               style={{
-                background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
                 border: '2px solid rgba(220, 235, 245, 0.2)',
                 boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
               }}
@@ -440,13 +440,13 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                       <span 
                         className="text-xs font-tech font-bold px-2 py-1 rounded-full"
                         style={strengthChange > 0 ? {
-                          background: 'rgba(10, 14, 39, 0.95)',
+                          background: 'rgba(10, 14, 39, 1)',
                           border: '1px solid rgba(34, 197, 94, 0.8)',
                           color: 'rgba(34, 197, 94, 0.9)',
                           boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)',
                           textShadow: '0 0 6px rgba(34, 197, 94, 0.6)'
                         } : {
-                          background: 'rgba(10, 14, 39, 0.95)',
+                          background: 'rgba(10, 14, 39, 1)',
                           border: '1px solid rgba(220, 38, 38, 0.8)',
                           color: 'rgba(220, 38, 38, 0.9)',
                           boxShadow: '0 0 8px rgba(220, 38, 38, 0.5), inset 0 0 8px rgba(220, 38, 38, 0.2)',
@@ -502,13 +502,13 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                       <span 
                         className="text-xs font-tech font-bold px-2 py-1 rounded-full"
                         style={agilityChange > 0 ? {
-                          background: 'rgba(10, 14, 39, 0.95)',
+                          background: 'rgba(10, 14, 39, 1)',
                           border: '1px solid rgba(34, 197, 94, 0.8)',
                           color: 'rgba(34, 197, 94, 0.9)',
                           boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)',
                           textShadow: '0 0 6px rgba(34, 197, 94, 0.6)'
                         } : {
-                          background: 'rgba(10, 14, 39, 0.95)',
+                          background: 'rgba(10, 14, 39, 1)',
                           border: '1px solid rgba(220, 38, 38, 0.8)',
                           color: 'rgba(220, 38, 38, 0.9)',
                           boxShadow: '0 0 8px rgba(220, 38, 38, 0.5), inset 0 0 8px rgba(220, 38, 38, 0.2)',
@@ -564,13 +564,13 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                       <span 
                         className="text-xs font-tech font-bold px-2 py-1 rounded-full"
                         style={intelligenceChange > 0 ? {
-                          background: 'rgba(10, 14, 39, 0.95)',
+                          background: 'rgba(10, 14, 39, 1)',
                           border: '1px solid rgba(34, 197, 94, 0.8)',
                           color: 'rgba(34, 197, 94, 0.9)',
                           boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)',
                           textShadow: '0 0 6px rgba(34, 197, 94, 0.6)'
                         } : {
-                          background: 'rgba(10, 14, 39, 0.95)',
+                          background: 'rgba(10, 14, 39, 1)',
                           border: '1px solid rgba(220, 38, 38, 0.8)',
                           color: 'rgba(220, 38, 38, 0.9)',
                           boxShadow: '0 0 8px rgba(220, 38, 38, 0.5), inset 0 0 8px rgba(220, 38, 38, 0.2)',
@@ -617,7 +617,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
             <div 
               className="relative overflow-hidden rounded-2xl p-3 mb-3"
               style={{
-                background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
                 border: '2px solid rgba(220, 235, 245, 0.2)',
                 boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
               }}
@@ -680,10 +680,10 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 >
                   +{balanceChange} {t('taskCompletion.balanceGained')}
                 </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
     </BaseDialog>
     );
 };

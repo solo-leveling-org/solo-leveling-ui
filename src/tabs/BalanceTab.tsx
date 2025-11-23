@@ -290,7 +290,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
 
             {/* Фильтры - горизонтальная строка */}
             <div className="mb-6">
-              <div className="flex gap-3 overflow-x-auto pb-2 px-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+              <div className="flex gap-3 overflow-x-auto pb-2 px-1 filters-scrollbar">
                 {/* Date Range Filter */}
                 <DateFilter
                   from={dateFilters.from}

@@ -71,7 +71,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
 
   // Мемоизируем цветовую схему
   const colorScheme = useMemo(() => getStatusColorScheme(status || PlayerTaskStatus.IN_PROGRESS), [status]);
-  
+
   // Мемоизируем стили для карточки
   const cardStyle = useMemo(() => ({
     background: colorScheme.bg,

@@ -35,63 +35,63 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
         `}</style>
 
         <div className="flex flex-col h-full min-h-0">
-          {/* Header */}
+            {/* Header */}
           <div className="relative z-10 p-6 pb-4 border-b flex-shrink-0" style={{
-            borderColor: 'rgba(220, 235, 245, 0.1)'
-          }}>
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex-1 pr-4">
-                <h2 
-                  className="text-xl font-tech font-bold leading-tight mb-3"
-                  style={{
-                    color: '#e8f4f8',
-                    textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
-                  }}
-                >
-                  {task.title}
-                </h2>
-                
-                {/* Rarity indicator - integrated with title */}
-                <div className="flex items-center gap-2">
-                  <RarityIndicator 
-                    rarity={task.rarity || 'COMMON'} 
-                    size="sm"
-                    showLabel={false}
-                  />
-                  <span 
-                    className="text-xs font-tech font-semibold px-2 py-1 rounded-full border"
+              borderColor: 'rgba(220, 235, 245, 0.1)'
+            }}>
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1 pr-4">
+                  <h2 
+                    className="text-xl font-tech font-bold leading-tight mb-3"
                     style={{
-                      background: 'rgba(220, 235, 245, 0.1)',
-                      borderColor: 'rgba(220, 235, 245, 0.2)',
                       color: '#e8f4f8',
-                      textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+                      textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
                     }}
                   >
-                    {rarityText}
-                  </span>
+                    {task.title}
+                  </h2>
+                  
+                  {/* Rarity indicator - integrated with title */}
+                  <div className="flex items-center gap-2">
+                    <RarityIndicator 
+                      rarity={task.rarity || 'COMMON'} 
+                      size="sm"
+                      showLabel={false}
+                    />
+                    <span 
+                      className="text-xs font-tech font-semibold px-2 py-1 rounded-full border"
+                      style={{
+                        background: 'rgba(220, 235, 245, 0.1)',
+                        borderColor: 'rgba(220, 235, 245, 0.2)',
+                        color: '#e8f4f8',
+                        textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+                      }}
+                    >
+                      {rarityText}
+                    </span>
+                  </div>
                 </div>
+
+                {/* Close button */}
+                <button
+              onClick={onClose}
+                    className="flex items-center justify-center w-8 h-8 rounded-lg transition-opacity duration-200 group"
+                    style={{
+                      background: 'rgba(220, 235, 245, 0.05)',
+                      border: '1px solid rgba(220, 235, 245, 0.2)',
+                      color: '#e8f4f8'
+                    }}
+                >
+                  <svg className="w-4 h-4 transition-colors group-hover:text-white"
+                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
               </div>
-
-              {/* Close button */}
-              <button
-            onClick={onClose}
-                  className="flex items-center justify-center w-8 h-8 rounded-lg transition-opacity duration-200 group"
-                  style={{
-                    background: 'rgba(220, 235, 245, 0.05)',
-                    border: '1px solid rgba(220, 235, 245, 0.2)',
-                    color: '#e8f4f8'
-                  }}
-              >
-                <svg className="w-4 h-4 transition-colors group-hover:text-white"
-                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-              </button>
             </div>
-          </div>
 
-          {/* Scrollable content */}
+            {/* Scrollable content */}
           <div className="relative z-10 px-6 pb-6 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
               {/* Description */}
               <div
@@ -337,7 +337,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
                   </div>
               )}
           </div>
-        </div>
+            </div>
     </BaseDialog>
   );
 };

@@ -48,6 +48,34 @@ body::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
 
+/* Кастомный скроллбар для фильтров в стилистике приложения */
+.filters-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(180, 220, 240, 0.4) rgba(10, 14, 39, 0.3); /* Firefox */
+}
+
+.filters-scrollbar::-webkit-scrollbar {
+  display: block; /* Chrome, Safari, Opera */
+  height: 6px;
+}
+
+.filters-scrollbar::-webkit-scrollbar-track {
+  background: rgba(10, 14, 39, 0.3);
+  border-radius: 10px;
+}
+
+.filters-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(180, 220, 240, 0.4);
+  border-radius: 10px;
+  border: 1px solid rgba(180, 220, 240, 0.2);
+  box-shadow: 0 0 8px rgba(180, 220, 240, 0.3);
+}
+
+.filters-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(180, 220, 240, 0.6);
+  box-shadow: 0 0 12px rgba(180, 220, 240, 0.5);
+}
+
 html {
   width: 100%;
   max-width: 100vw;
