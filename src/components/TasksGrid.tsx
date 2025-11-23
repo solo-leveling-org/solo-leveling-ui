@@ -14,8 +14,8 @@ type TasksGridProps = {
 
 const TasksGrid: React.FC<TasksGridProps> = ({ tasks, loading, onTaskClick, onComplete, onReplace }) => {
   const visibleTasks = tasks.filter(
-    t => t.status === PlayerTaskStatus.PREPARING ||
-         t.status === PlayerTaskStatus.IN_PROGRESS ||
+      t => t.status === PlayerTaskStatus.PREPARING ||
+           t.status === PlayerTaskStatus.IN_PROGRESS ||
          t.status === PlayerTaskStatus.COMPLETED ||
          t.status === PlayerTaskStatus.SKIPPED
   );

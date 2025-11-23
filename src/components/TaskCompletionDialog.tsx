@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { CompleteTaskResponse, Task } from '../api';
 import { useLocalization } from '../hooks/useLocalization';
+import { useModal } from '../contexts/ModalContext';
+import { useScrollLock } from '../hooks/useScrollLock';
 import Icon from './Icon';
 import TopicIcon from './TopicIcons';
 
@@ -14,23 +17,21 @@ type TaskCompletionDialogProps = {
 const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, completedTask, onClose }) => {
   const { playerBefore, playerAfter } = response;
   const { t } = useLocalization();
+  const { openDialog, closeDialog } = useModal();
 
   // Блокируем скролл фонового контента при открытии диалога
   useEffect(() => {
-    const scrollY = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-
+    openDialog();
     return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      window.scrollTo(0, scrollY);
+      closeDialog();
     };
-  }, []);
+  }, [openDialog, closeDialog]);
+
+  // Используем хук для блокировки скролла
+  useScrollLock(true);
 
   const handleClose = () => {
+    closeDialog();
     onClose();
   };
 
@@ -64,7 +65,8 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
       .map(tp => [tp.taskTopic!, tp.level])
   );
 
-  return (
+  // Рендерим диалог через Portal на уровне body
+  const dialogContent = (
     <>
       <style>{`
         @keyframes taskCompletionDialogFadeIn {
@@ -773,6 +775,9 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
       </div>
       </>
     );
+
+  // Рендерим через Portal на уровне body
+  return createPortal(dialogContent, document.body);
 };
 
 export default TaskCompletionDialog;

@@ -17,6 +17,16 @@ type TaskCardProps = {
 const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, onReplace, index = 0 }) => {
   const { task, status } = playerTask;
   const { t } = useLocalization();
+  const [isTransitioning, setIsTransitioning] = React.useState(false);
+  
+  // Отслеживаем переход из PREPARING в IN_PROGRESS
+  React.useEffect(() => {
+    if (status === PlayerTaskStatus.IN_PROGRESS) {
+      setIsTransitioning(true);
+      const timer = setTimeout(() => setIsTransitioning(false), 600);
+      return () => clearTimeout(timer);
+    }
+  }, [status]);
 
   // Определяем цветовые схемы для разных статусов в стилистике Solo Leveling
   const getStatusColorScheme = (status: PlayerTaskStatus) => {
@@ -132,7 +142,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
                 color: 'rgba(220, 235, 245, 0.7)'
               }}
             >
-              {t('common.loading')}
+              {t('taskCard.generating')}
             </span>
           </div>
         </div>
@@ -142,8 +152,9 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
 
   return (
     <div 
-      className="group relative overflow-hidden cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] animate-fadeIn"
+      className={`group relative overflow-hidden cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] animate-fadeIn ${isTransitioning ? 'task-status-transition' : ''}`}
       onClick={onClick}
+      key={`${playerTask.id}-${status}`}
       style={{
         background: colorScheme.bg,
         backdropFilter: 'blur(20px)',

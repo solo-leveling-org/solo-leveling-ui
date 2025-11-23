@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLocalization } from '../hooks/useLocalization';
+import { useModal } from '../contexts/ModalContext';
 import Icon from './Icon';
 
 interface BottomBarProps {
@@ -12,6 +13,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useLocalization();
+  const { isDialogOpen, closeDialog } = useModal();
 
   const tabs = [
     {
@@ -47,7 +49,14 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
     }
   ];
 
-  const handleTabClick = (path: string) => {
+  const handleTabClick = (path: string, e?: React.MouseEvent) => {
+    // Если открыт Dialog, закрываем его вместо перехода
+    if (isDialogOpen) {
+      e?.preventDefault();
+      e?.stopPropagation();
+      closeDialog();
+      return;
+    }
     navigate(path);
   };
 
@@ -63,12 +72,16 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
         }
       `}</style>
       <div 
-        className="fixed bottom-0 left-0 right-0 z-40"
+        className={`fixed bottom-0 left-0 right-0 z-40 transition-all duration-300 ${isDialogOpen ? 'pointer-events-none' : ''}`}
         style={{
-          background: 'linear-gradient(135deg, rgba(5, 8, 18, 0.95) 0%, rgba(10, 14, 39, 0.98) 100%)',
-          backdropFilter: 'blur(20px)',
+          background: isDialogOpen 
+            ? 'linear-gradient(135deg, rgba(5, 8, 18, 0.98) 0%, rgba(10, 14, 39, 0.99) 100%)'
+            : 'linear-gradient(135deg, rgba(5, 8, 18, 0.95) 0%, rgba(10, 14, 39, 0.98) 100%)',
+          backdropFilter: isDialogOpen ? 'blur(8px)' : 'blur(20px)',
           borderTop: '1px solid rgba(220, 235, 245, 0.15)',
-          boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(220, 235, 245, 0.1)'
+          boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(220, 235, 245, 0.1)',
+          // Не затемняем календарь - он должен быть полностью видимым
+          filter: isDialogOpen ? 'brightness(0.7)' : 'brightness(1)',
         }}
       >
       {/* Subtle holographic grid overlay */}
@@ -90,7 +103,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
           return (
             <button
               key={tab.key}
-              onClick={() => handleTabClick(tab.path)}
+              onClick={(e) => handleTabClick(tab.path, e)}
               className={`group relative flex flex-col items-center justify-center py-2 px-2 md:px-3 min-w-0 flex-1 ${
                 isCenter ? 'relative' : ''
               }`}

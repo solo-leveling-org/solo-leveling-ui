@@ -15,6 +15,7 @@ import type {
   SkipTaskRequest,
   SearchRequest,
   LocalizedField,
+  PlayerTask,
 } from '../api';
 import {
   mockGetUserResponse,
@@ -27,6 +28,8 @@ import {
   mockTransactions,
   mockPlayerTopics,
 } from './mockData';
+import { PlayerTaskStatus, TaskRarity, TaskTopic } from '../api';
+import { createMockTask } from './mockData';
 import { CancelablePromise } from '../api';
 
 // Имитация задержки сети
@@ -37,8 +40,31 @@ class MockState {
   private tasks = [...mockTasks];
   private playerTopics = [...mockPlayerTopics];
   private completedTaskIds = new Set<string>();
+  private taskIdCounter = 1000; // Счетчик для новых задач
+  private preparingTaskTimers = new Map<string, NodeJS.Timeout>(); // Таймеры для задач в статусе PREPARING
+  private initialized = false; // Флаг инициализации таймеров
+
+  constructor() {
+    // Запускаем таймеры для всех задач в статусе PREPARING при инициализации
+    this.initializePreparingTasks();
+  }
+
+  private initializePreparingTasks(): void {
+    if (this.initialized) return;
+    this.initialized = true;
+    
+    // Запускаем таймеры для всех задач в статусе PREPARING
+    this.tasks.forEach(task => {
+      if (task.status === PlayerTaskStatus.PREPARING && task.id) {
+        this.scheduleTaskStatusChange(task.id);
+      }
+    });
+  }
 
   getTasks(): GetActiveTasksResponse {
+    // Убеждаемся, что таймеры запущены
+    this.initializePreparingTasks();
+    
     return {
       ...mockGetActiveTasksResponse,
       tasks: this.tasks.filter(t => t.status !== 'COMPLETED' && t.status !== 'SKIPPED'),
@@ -51,19 +77,137 @@ class MockState {
     };
   }
 
+  private generateNewTask(): PlayerTask {
+    const taskTitles = [
+      'Утренняя зарядка', 'Изучить новый язык', 'Пробежка 3 км', 'Медитация 15 минут',
+      'Прочитать статью', 'Написать код', 'Решить задачу по алгоритмам', 'Изучить React',
+      'Сделать 50 отжиманий', 'Изучить TypeScript', 'Написать тесты', 'Рефакторинг кода',
+      'Йога 30 минут', 'Плавание 1 км', 'Велосипед 10 км', 'Тренировка в зале',
+    ];
+    const taskDescriptions = [
+      'Выполните комплекс утренних упражнений',
+      'Потратьте 30 минут на изучение нового языка программирования',
+      'Пробегите 3 километра для улучшения физической формы',
+      'Проведите 15 минут в медитации для улучшения ментального здоровья',
+      'Прочитайте интересную статью по вашей специальности',
+      'Напишите новый компонент для проекта',
+      'Решите задачу по алгоритмам и структурам данных',
+      'Изучите новые возможности React',
+    ];
+    const rarities = [TaskRarity.COMMON, TaskRarity.UNCOMMON, TaskRarity.RARE, TaskRarity.EPIC, TaskRarity.LEGENDARY];
+    const topics = [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.EDUCATION, TaskTopic.MENTAL_HEALTH, TaskTopic.CREATIVITY];
+
+    const randomIndex = Math.floor(Math.random() * taskTitles.length);
+    const taskId = `task-${this.taskIdCounter++}`;
+    const maxOrder = Math.max(...this.tasks.map(t => t.order || 0), 0);
+
+    const newTask: PlayerTask = {
+      id: taskId,
+      version: 1,
+      order: maxOrder + 1,
+      status: PlayerTaskStatus.PREPARING,
+      createdAt: new Date().toISOString(),
+      task: createMockTask(
+        taskId,
+        taskTitles[randomIndex],
+        taskDescriptions[randomIndex % taskDescriptions.length],
+        rarities[randomIndex % rarities.length],
+        [topics[randomIndex % topics.length]],
+        80 + (randomIndex % 5) * 20,
+        40 + (randomIndex % 5) * 10
+      ),
+    };
+    return newTask;
+  }
+
+  private sendTaskNotification(message: string): void {
+    // Отправляем notification через window.dispatchEvent для моков
+    // Это будет обработано так же, как WebSocket сообщения
+    if (typeof window !== 'undefined') {
+      const notificationEvent = new CustomEvent('mock-notification', {
+        detail: {
+          payload: {
+            message,
+            type: 'INFO' as any,
+            source: 'TASKS' as any,
+            visible: true,
+          },
+          timestamp: new Date().toISOString(),
+        }
+      });
+      window.dispatchEvent(notificationEvent);
+    }
+  }
+
+  private scheduleTaskStatusChange(taskId: string): void {
+    // Отменяем предыдущий таймер, если есть
+    const existingTimer = this.preparingTaskTimers.get(taskId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    // Устанавливаем таймер на 3 секунды для перехода в IN_PROGRESS
+    const timer = setTimeout(() => {
+      const task = this.tasks.find(t => t.id === taskId);
+      if (task && task.status === PlayerTaskStatus.PREPARING) {
+        task.status = PlayerTaskStatus.IN_PROGRESS;
+        this.preparingTaskTimers.delete(taskId);
+        
+        // Отправляем notification о том, что задача готова
+        this.sendTaskNotification(`Новая задача "${task.task?.title || 'Задача'}" готова к выполнению!`);
+        
+        // Отправляем событие для обновления списка задач
+        const event = new CustomEvent('tasks-notification', {
+          detail: { source: 'tasks' }
+        });
+        window.dispatchEvent(event);
+      }
+    }, 3000);
+
+    this.preparingTaskTimers.set(taskId, timer);
+  }
+
   completeTask(taskId: string): CompleteTaskResponse {
-    const task = this.tasks.find(t => t.id === taskId);
-    if (task) {
-      task.status = 'COMPLETED' as any;
+    const taskIndex = this.tasks.findIndex(t => t.id === taskId);
+    if (taskIndex !== -1) {
+      const task = this.tasks[taskIndex];
       this.completedTaskIds.add(taskId);
+      
+      // СРАЗУ заменяем старую задачу на новую в статусе PREPARING
+      const newTask = this.generateNewTask();
+      this.tasks[taskIndex] = newTask;
+      
+      // Запускаем таймер для перехода в IN_PROGRESS
+      if (newTask.id) {
+        this.scheduleTaskStatusChange(newTask.id);
+      }
+      
+      // Отправляем событие для обновления списка задач
+      const event = new CustomEvent('tasks-notification', {
+        detail: { source: 'tasks' }
+      });
+      window.dispatchEvent(event);
     }
     return mockCompleteTaskResponse;
   }
 
   skipTask(taskId: string): void {
-    const task = this.tasks.find(t => t.id === taskId);
-    if (task) {
-      task.status = 'SKIPPED' as any;
+    const taskIndex = this.tasks.findIndex(t => t.id === taskId);
+    if (taskIndex !== -1) {
+      // СРАЗУ заменяем старую задачу на новую в статусе PREPARING
+      const newTask = this.generateNewTask();
+      this.tasks[taskIndex] = newTask;
+      
+      // Запускаем таймер для перехода в IN_PROGRESS
+      if (newTask.id) {
+        this.scheduleTaskStatusChange(newTask.id);
+      }
+      
+      // Отправляем событие для обновления списка задач
+      const event = new CustomEvent('tasks-notification', {
+        detail: { source: 'tasks' }
+      });
+      window.dispatchEvent(event);
     }
   }
 

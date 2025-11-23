@@ -1,5 +1,8 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocalization } from '../hooks/useLocalization';
+import { useModal } from '../contexts/ModalContext';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -19,35 +22,35 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   cancelText
 }) => {
   const { t } = useLocalization();
+  const { openDialog, closeDialog } = useModal();
 
   // Блокируем скролл при открытом диалоге
   useEffect(() => {
     if (isOpen) {
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-
+      openDialog();
       return () => {
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        window.scrollTo(0, scrollY);
+        closeDialog();
       };
     }
-  }, [isOpen]);
+  }, [isOpen, openDialog, closeDialog]);
+
+  // Используем хук для блокировки скролла
+  useScrollLock(isOpen);
 
   if (!isOpen) return null;
 
   const handleConfirm = () => {
+    closeDialog();
     onConfirm();
   };
 
   const handleCancel = () => {
+    closeDialog();
     onCancel();
   };
 
-  return (
+  // Рендерим диалог через Portal на уровне body
+  const dialogContent = (
     <>
       <style>{`
         @keyframes confirmDialogFadeIn {
@@ -179,6 +182,9 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       </div>
     </>
   );
+
+  // Рендерим через Portal на уровне body
+  return createPortal(dialogContent, document.body);
 };
 
 export default ConfirmDialog;

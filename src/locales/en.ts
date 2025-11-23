@@ -285,6 +285,7 @@ export const en = {
     replace: 'Replace',
     completed: 'Completed',
     skipped: 'Skipped',
+    generating: 'Generating...',
   },
 
   // Task completion dialog

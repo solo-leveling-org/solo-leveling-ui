@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocalization } from '../hooks/useLocalization';
+import { useModal } from '../contexts/ModalContext';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface CalendarProps {
   selectedFrom: string;
@@ -23,6 +26,7 @@ const Calendar: React.FC<CalendarProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const calendarRef = useRef<HTMLDivElement>(null);
   const { t } = useLocalization();
+  const { openDialog, closeDialog } = useModal();
 
   // Синхронизируем с внешними значениями
   useEffect(() => {
@@ -34,19 +38,19 @@ const Calendar: React.FC<CalendarProps> = ({
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
-      // Блокируем скролл body
-      document.body.style.overflow = 'hidden';
+      openDialog();
     } else {
       setIsVisible(false);
-      // Восстанавливаем скролл
-      document.body.style.overflow = 'unset';
+      closeDialog();
     }
 
-    // Cleanup при размонтировании компонента
     return () => {
-      document.body.style.overflow = 'unset';
+      closeDialog();
     };
-  }, [isOpen]);
+  }, [isOpen, openDialog, closeDialog]);
+
+  // Используем хук для блокировки скролла
+  useScrollLock(isOpen);
 
   // Закрытие при клике вне компонента
   useEffect(() => {
@@ -149,31 +153,41 @@ const Calendar: React.FC<CalendarProps> = ({
 
   if (!isOpen) return null;
 
-  return (
+  // Рендерим календарь через Portal на уровне body
+  const calendarContent = (
     <>
-      {/* Backdrop */}
+      {/* Backdrop - затемняет только фон, не календарь */}
       <div
         className={`fixed inset-0 bg-black/20 z-[9998] ${
           isVisible ? 'opacity-100' : 'opacity-0'
         }`}
         style={{
-          transition: 'opacity 0.3s ease-out'
+          transition: 'opacity 0.3s ease-out',
+          pointerEvents: 'auto'
         }}
         onClick={onClose}
       />
       
-      {/* Calendar Modal - Solo Leveling Style */}
+      {/* Calendar Modal - Solo Leveling Style - на переднем плане, полностью кликабельный и видимый */}
       <div 
         ref={calendarRef}
-        className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] rounded-2xl md:rounded-3xl p-3 w-[calc(100vw-2rem)] max-w-[450px] sm:min-w-[400px] sm:w-auto select-none ${
+        className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[10000] rounded-2xl md:rounded-3xl p-3 w-[calc(100vw-2rem)] max-w-[450px] sm:min-w-[400px] sm:w-auto select-none ${
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
         style={{
+          pointerEvents: 'auto',
           background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.98) 0%, rgba(5, 8, 18, 0.98) 100%)',
           backdropFilter: 'blur(20px)',
           border: '2px solid rgba(220, 235, 245, 0.2)',
           boxShadow: '0 0 30px rgba(180, 220, 240, 0.2), inset 0 0 30px rgba(200, 230, 245, 0.03)',
-          transition: 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out'
+          transition: 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out',
+          // Гарантируем, что календарь не затемняется - он на переднем плане
+          filter: 'none',
+          opacity: 1,
+          isolation: 'isolate', // Создаем новый stacking context, чтобы календарь был независим от backdrop
         }}
       >
         {/* Glowing orbs */}
@@ -374,6 +388,9 @@ const Calendar: React.FC<CalendarProps> = ({
       </div>
     </>
   );
+
+  // Рендерим через Portal на уровне body
+  return createPortal(calendarContent, document.body);
 };
 
 export default Calendar;

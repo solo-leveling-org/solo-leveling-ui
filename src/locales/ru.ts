@@ -285,6 +285,7 @@ export const ru = {
     replace: 'Заменить',
     completed: 'Завершено',
     skipped: 'Пропущено',
+    generating: 'Генерируется...',
   },
 
   // Диалог завершения задачи

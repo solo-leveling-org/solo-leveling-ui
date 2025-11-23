@@ -97,18 +97,18 @@ const WelcomeTab: React.FC = () => {
                   className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-tech font-bold uppercase tracking-wide"
                   textColors={['#e8f4f8']}
                 />
-                <style>{`
+              <style>{`
                   .text-2xl span,
-                  .text-4xl span,
-                  .text-6xl span,
-                  .text-7xl span {
+                .text-4xl span,
+                .text-6xl span,
+                .text-7xl span {
                     color: #e8f4f8 !important;
-                    text-shadow: 
+                  text-shadow: 
                       0 0 8px rgba(180, 220, 240, 0.3),
                       0 0 15px rgba(160, 210, 235, 0.15);
                     letter-spacing: 0.05em;
-                  }
-                `}</style>
+                }
+              `}</style>
               </div>
             </div>
 

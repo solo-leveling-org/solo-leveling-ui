@@ -1,9 +1,12 @@
 import React, {useEffect} from 'react';
+import { createPortal } from 'react-dom';
 import type {Task} from '../api';
 import TopicIcon from './TopicIcons';
 import Icon from './Icon';
 import RarityIndicator from './RarityIndicator';
 import { useLocalization } from '../hooks/useLocalization';
+import { useModal } from '../contexts/ModalContext';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { Card } from './ui/card';
 
 type TaskDialogProps = {
@@ -13,46 +16,60 @@ type TaskDialogProps = {
 
 const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
   const { t } = useLocalization();
+  const { openDialog, closeDialog } = useModal();
   
   // Блокируем скролл фонового контента при открытии диалога
   useEffect(() => {
-    // Сохраняем текущую позицию скролла
-    const scrollY = window.scrollY;
-
-    // Блокируем скролл
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-
-    // Cleanup при размонтировании
+    openDialog();
+    
+    // Сохраняем позицию скролла контейнера ДО блокировки скролла
+    // Это нужно для правильного позиционирования диалога
+    const scrollableContainer = document.querySelector('.fixed.inset-0.overflow-y-auto') as HTMLElement;
+    const containerScrollTop = scrollableContainer?.scrollTop || 0;
+    
     return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      window.scrollTo(0, scrollY);
+      closeDialog();
     };
-  }, []);
+  }, [openDialog, closeDialog]);
+
+  // Используем хук для блокировки скролла
+  useScrollLock(true);
 
   // Обработчик закрытия с восстановлением скролла
   const handleClose = () => {
+    closeDialog();
     onClose();
   };
 
 
 
 
-  return (
+  // Рендерим диалог через Portal на уровне body, чтобы он был вне скроллируемого контейнера
+  const dialogContent = (
       <>
         <style>{`
-          @keyframes taskDialogFadeIn {
+          @keyframes dialogBackdropFadeIn {
             from {
               opacity: 0;
-              transform: scale(0.9);
             }
             to {
               opacity: 1;
-              transform: scale(1);
             }
+          }
+          
+          @keyframes taskDialogFadeIn {
+            from {
+              opacity: 0;
+              transform: scale(0.95) translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1) translateY(0);
+            }
+          }
+          
+          .task-dialog-backdrop {
+            animation: dialogBackdropFadeIn 0.2s ease-out forwards;
           }
           
           .task-dialog-content {
@@ -66,13 +83,13 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
           }
         `}</style>
         <div
-            className="fixed inset-0 flex items-center justify-center p-4 z-[100]"
+            className="task-dialog-backdrop fixed inset-0 flex items-center justify-center p-4 z-[100]"
             onClick={handleClose}
             style={{ 
               background: 'rgba(0, 0, 0, 0.7)',
-              backdropFilter: 'blur(4px)',
+              backdropFilter: 'blur(8px)',
               paddingTop: 'env(safe-area-inset-top, 0px)',
-              paddingBottom: '5rem' // Отступ для BottomBar
+              paddingBottom: '5rem', // Отступ для BottomBar
             }}
         >
           <div
@@ -419,6 +436,9 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose}) => {
         </div>
       </>
   );
+
+  // Рендерим через Portal на уровне body
+  return createPortal(dialogContent, document.body);
 };
 
 export default TaskDialog;

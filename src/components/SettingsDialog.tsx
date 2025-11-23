@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { useLocalization } from '../hooks/useLocalization';
+import { useModal } from '../contexts/ModalContext';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { TelegramIcon } from './TelegramWidget';
 import Icon from './Icon';
 import {
@@ -21,14 +23,12 @@ type SettingsDialogProps = {
 const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
   const { settings, setLanguage, setIsManual } = useSettings();
   const { t } = useLocalization();
+  const { openDialog, closeDialog } = useModal();
 
   // Блокируем скролл при открытом диалоге и убираем фокус с кнопки закрытия
   useEffect(() => {
     if (isOpen) {
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
+      openDialog();
 
       // Убираем фокус с кнопки закрытия
       setTimeout(() => {
@@ -40,13 +40,13 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
       }, 0);
 
       return () => {
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        window.scrollTo(0, scrollY);
+        closeDialog();
       };
     }
-  }, [isOpen]);
+  }, [isOpen, openDialog, closeDialog]);
+
+  // Используем хук для блокировки скролла
+  useScrollLock(isOpen);
 
   return (
     <>
@@ -120,7 +120,12 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
           height: 18px !important;
         }
       `}</style>
-      <Dialog open={isOpen} onOpenChange={onClose}>
+      <Dialog open={isOpen} onOpenChange={(open) => {
+        if (!open) {
+          closeDialog();
+          onClose();
+        }
+      }}>
         <DialogContent
           className="settings-dialog-content border-0 shadow-none bg-transparent p-0 max-w-md"
           style={{

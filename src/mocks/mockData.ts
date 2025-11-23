@@ -108,7 +108,7 @@ export const mockPlayerTopics: PlayerTaskTopic[] = [
 ];
 
 // Моковые задачи
-const createMockTask = (
+export const createMockTask = (
   id: string,
   title: string,
   description: string,
