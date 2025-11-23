@@ -696,12 +696,12 @@ code {
 
 /* Позиционирование уведомлений для мобильных устройств */
 .mobile-version .notification-container {
-  top: calc(70px + 3rem) !important;
+  top: calc(60px + 3rem) !important;
 }
 
 @supports (padding: max(0px)) {
   .mobile-version .notification-container {
-    top: calc(max(70px, env(safe-area-inset-top)) + 3rem) !important;
+    top: calc(max(60px, env(safe-area-inset-top)) + 3rem) !important;
   }
 }
 
