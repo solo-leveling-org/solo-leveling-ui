@@ -306,30 +306,6 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                   background: colorScheme.accentColor
                 }}></div>
 
-                {/* Selection indicator */}
-                {isSelected && (
-                  <div className="absolute -top-2 -right-2 w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center shadow-lg border-2 z-20"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.95) 100%)',
-                      borderColor: colorScheme.borderColor,
-                      boxShadow: `0 0 15px ${colorScheme.accentColor}`
-                    }}
-                  >
-                    <svg
-                      className="w-3 h-3 md:w-4 md:h-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      style={{ color: colorScheme.accentColor }}
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                )}
-
                 {/* Content */}
                 <div className="relative z-10 text-center">
                   {/* Icon */}
@@ -396,19 +372,20 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                             boxShadow: `0 0 8px ${colorScheme.accentColor}`,
                             minWidth: expPercentage > 0 ? '4px' : '0px'
                           }}
-                        >
-                          {expPercentage > 0 && (
-                            <div 
-                              className="absolute inset-0 rounded-full"
-                              style={{
-                                background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%)',
-                                backgroundSize: '200% 100%',
-                                animation: 'shimmer 3s ease-in-out infinite',
-                                opacity: 0.5
-                              }}
-                            ></div>
-                          )}
-                        </div>
+                        ></div>
+                        {/* Shimmer effect - всегда на всю ширину контейнера */}
+                        {expPercentage > 0 && (
+                          <div 
+                            className="absolute top-0 left-0 h-full rounded-full pointer-events-none"
+                            style={{
+                              width: '100%',
+                              background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%)',
+                              backgroundSize: '200% 100%',
+                              animation: 'shimmer 3s ease-in-out infinite',
+                              opacity: 0.5
+                            }}
+                          ></div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -419,7 +396,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
         </div>
 
         {/* Info section */}
-        <div className="flex justify-center mb-8 md:mb-10 mt-20 md:mt-24">
+        <div className="flex justify-center mb-8 md:mb-10 mt-20 md:mt-24 pb-24 md:pb-28">
           <div 
             className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 max-w-2xl w-full"
             style={{
@@ -493,19 +470,16 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
           </div>
         </div>
 
-        {/* Spacer for fixed save button - only when save button is visible */}
-        {(hasChanges() || firstTime) && canSave && (
-          <div className="h-24 md:h-28"></div>
-        )}
       </div>
 
-      {/* Fixed Save Button - Only show when there are changes */}
+      {/* Sticky Save Button - Only show when there are changes */}
       {(hasChanges() || firstTime) && canSave && (
         <div 
-          className="fixed left-0 right-0 z-50 px-4 md:px-6 pointer-events-none"
+          className="sticky bottom-0 left-0 right-0 z-50 px-4 md:px-6 pointer-events-none"
           style={{
-            bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))', // Отступ от нижнего бара (80px высота + safe area)
-            paddingBottom: '1rem' // Дополнительный отступ от бара
+            paddingTop: '1rem',
+            paddingBottom: 'calc(80px + env(safe-area-inset-bottom, 0px) + 1rem)', // Отступ от нижнего бара (80px высота + safe area + дополнительный отступ)
+            background: 'linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%)'
           }}
         >
           <div className="max-w-2xl mx-auto flex justify-end">
@@ -516,9 +490,9 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                 disabled={saving || !canSave}
                 className="inline-flex items-center justify-center px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-tech font-semibold text-sm md:text-base transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.5) 0%, rgba(160, 210, 235, 0.4) 100%)',
-                  border: '2px solid rgba(180, 220, 240, 0.9)',
-                  color: '#e8f4f8',
+                  background: 'linear-gradient(135deg, rgba(180, 220, 240, 1) 0%, rgba(160, 210, 235, 0.95) 100%)',
+                  border: '2px solid rgba(180, 220, 240, 1)',
+                  color: '#0a0e1a',
                   boxShadow: '0 0 35px rgba(180, 220, 240, 0.7), 0 0 70px rgba(180, 220, 240, 0.4), inset 0 0 25px rgba(180, 220, 240, 0.15)',
                   textShadow: '0 0 12px rgba(180, 220, 240, 0.6)',
                   minWidth: '160px',
