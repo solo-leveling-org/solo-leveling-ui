@@ -142,6 +142,7 @@ export const ru = {
       completed: 'Завершенные',
     },
     noCompletedTasks: 'Нет завершенных задач',
+    noCompletedTasksDescription: 'Выполняйте задачи, чтобы увидеть их здесь!',
     filters: {
       reset: 'Сбросить фильтры',
     },

@@ -77,14 +77,21 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
       axis: 'y',
       filterTaps: true,
       bounds: { top: 0 },
-      // Настройки для лучшей работы на мобильных устройствах
+      // Настройки для лучшей работы на мобильных и desktop устройствах
       preventScroll: false,
       preventScrollAxis: undefined,
       // Оптимизации для производительности
       rubberband: false, // Отключаем резиновый эффект для лучшей производительности
-      threshold: 10, // Минимальное расстояние для начала drag
-      pointer: { capture: false }, // Отключаем capture для лучшей производительности
-      touch: { capture: false } // Отключаем capture для touch событий
+      threshold: 5, // Уменьшаем минимальное расстояние для начала drag (работает и на desktop)
+      pointer: { 
+        capture: false, // Отключаем capture для лучшей производительности
+        keys: true // Включаем поддержку мыши для desktop
+      },
+      touch: { 
+        capture: false // Отключаем capture для touch событий
+      },
+      mouse: true, // Явно включаем поддержку мыши
+      window: window // Указываем window для правильной работы на desktop
     }
   );
 
@@ -136,8 +143,13 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
           // Явно устанавливаем z-index и bottom, чтобы BottomSheet был поверх всего
           zIndex: 10000,
           bottom: 0,
+          cursor: dragY > 0 ? 'grabbing' : 'grab', // Курсор для drag
         }}
         {...bind()}
+        onMouseDown={(e) => {
+          // Предотвращаем закрытие при клике на сам BottomSheet
+          e.stopPropagation();
+        }}
       >
         {/* Glowing orbs */}
         <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl opacity-10" style={{
@@ -147,8 +159,11 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
           background: 'rgba(200, 230, 245, 0.6)'
         }}></div>
 
-        {/* Handle bar */}
-        <div className="relative z-10 flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing">
+        {/* Handle bar - область для drag на desktop */}
+        <div 
+          className="relative z-10 flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
           <div 
             className="w-10 h-1 rounded-full"
             style={{

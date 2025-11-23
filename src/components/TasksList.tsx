@@ -296,7 +296,7 @@ const TasksList: React.FC<TasksListProps> = ({
             color: 'rgba(220, 235, 245, 0.7)'
           }}
         >
-          Complete tasks to see them here!
+          {t('tasks.noCompletedTasksDescription')}
         </p>
       </div>
     );

@@ -142,6 +142,7 @@ export const en = {
       completed: 'Completed',
     },
     noCompletedTasks: 'No completed tasks',
+    noCompletedTasksDescription: 'Complete tasks to see them here!',
     filters: {
       reset: 'Reset Filters',
     },
