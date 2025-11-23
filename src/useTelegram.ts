@@ -38,6 +38,9 @@ export function useTelegram() {
       currentWebApp.disableVerticalSwipes();
     }
     
+    // Примечание: Управление полноэкранным режимом (expand) 
+    // вынесено в useTelegramAdaptive для централизации логики
+    
     // Устанавливаем начальные данные
     const newUser = currentWebApp.initDataUnsafe?.user;
     const newInitData = currentWebApp.initData || '';
