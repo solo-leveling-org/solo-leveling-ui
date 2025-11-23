@@ -170,7 +170,6 @@ class MockState {
   completeTask(taskId: string): CompleteTaskResponse {
     const taskIndex = this.tasks.findIndex(t => t.id === taskId);
     if (taskIndex !== -1) {
-      const task = this.tasks[taskIndex];
       this.completedTaskIds.add(taskId);
       
       // СРАЗУ заменяем старую задачу на новую в статусе PREPARING
