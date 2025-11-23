@@ -83,16 +83,16 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     }
   }, [isAuthenticated]);
 
-  const handleGoToTopics = () => {
+  const handleGoToTopics = useCallback(() => {
     navigate('/topics');
-  };
+  }, [navigate]);
 
-  const handleCompleteTask = async (task: PlayerTask) => {
+  const handleCompleteTask = useCallback(async (task: PlayerTask) => {
     setConfirmAction({ type: 'complete', task });
     setShowConfirmDialog(true);
-  };
+  }, []);
 
-  const completeTask = async (task: PlayerTask) => {
+  const completeTask = useCallback(async (task: PlayerTask) => {
     try {
       setLoading(true);
       const response = await taskActions.completeTask(task);
@@ -105,9 +105,9 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const skipTask = async (playerTask: PlayerTask) => {
+  const skipTask = useCallback(async (playerTask: PlayerTask) => {
     try {
       setLoading(true);
       await taskActions.skipTask(playerTask);
@@ -117,9 +117,9 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleConfirmAction = () => {
+  const handleConfirmAction = useCallback(() => {
     if (confirmAction) {
       if (confirmAction.type === 'complete') {
         completeTask(confirmAction.task);
@@ -129,12 +129,12 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
       setShowConfirmDialog(false);
       setConfirmAction(null);
     }
-  };
+  }, [confirmAction, completeTask, skipTask]);
 
-  const handleCancelConfirm = () => {
+  const handleCancelConfirm = useCallback(() => {
     setShowConfirmDialog(false);
     setConfirmAction(null);
-  };
+  }, []);
 
   // Обработчики фильтров
   const handleDateFilterChange = useCallback((from: string, to: string) => {
@@ -157,6 +157,17 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     setAvailableFilters(filters);
   }, []);
 
+  // Мемоизируем обработчики для TasksGrid и TasksList
+  const handleTaskClick = useCallback((playerTask: PlayerTask) => {
+    if (playerTask.task) setDialogTask(playerTask);
+  }, []);
+
+  const handleReplace = useCallback(async (playerTask: PlayerTask) => {
+    if (loading) return;
+    setConfirmAction({ type: 'replace', task: playerTask });
+    setShowConfirmDialog(true);
+  }, [loading]);
+
   // Показываем skeleton во время загрузки
   if (loading) {
     return (
@@ -167,26 +178,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           boxSizing: 'border-box'
         }}
       >
-        {/* Holographic grid background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `
-              linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px',
-            transform: 'perspective(500px) rotateX(60deg)',
-            transformOrigin: 'center center'
-          }}></div>
-        </div>
-
-        {/* Glowing orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
-          background: 'rgba(180, 216, 232, 0.8)'
-        }}></div>
-        <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
-          background: 'rgba(200, 230, 245, 0.6)'
-        }}></div>
+      {/* Simplified background - removed heavy effects for performance */}
 
         <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
           <div className="max-w-7xl mx-auto space-y-6">
@@ -233,26 +225,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
         }}
       >
-        {/* Holographic grid background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `
-              linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px',
-            transform: 'perspective(500px) rotateX(60deg)',
-            transformOrigin: 'center center'
-          }}></div>
-        </div>
-
-        {/* Glowing orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
-          background: 'rgba(180, 216, 232, 0.8)'
-        }}></div>
-        <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
-          background: 'rgba(200, 230, 245, 0.6)'
-        }}></div>
+      {/* Simplified background - removed heavy effects for performance */}
 
         <div className="relative z-10 min-h-screen flex items-center justify-center pt-16 md:pt-20 px-4 md:px-6 pb-24">
           <div className="max-w-2xl mx-auto text-center">
@@ -331,26 +304,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
         transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
       }}
     >
-      {/* Holographic grid background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-          transform: 'perspective(500px) rotateX(60deg)',
-          transformOrigin: 'center center'
-        }}></div>
-      </div>
-
-      {/* Glowing orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
-        background: 'rgba(180, 216, 232, 0.8)'
-      }}></div>
-      <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
-        background: 'rgba(200, 230, 245, 0.6)'
-      }}></div>
+      {/* Simplified background - removed heavy effects for performance */}
 
       <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
         <div className="max-w-7xl mx-auto space-y-6">
@@ -481,15 +435,9 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
       <TasksGrid
         tasks={tasks}
         loading={loading}
-        onTaskClick={(playerTask) => {
-          if (playerTask.task) setDialogTask(playerTask);
-        }}
+        onTaskClick={handleTaskClick}
         onComplete={handleCompleteTask}
-        onReplace={async (playerTask) => {
-          if (loading) return;
-          setConfirmAction({ type: 'replace', task: playerTask });
-          setShowConfirmDialog(true);
-        }}
+        onReplace={handleReplace}
       />
           ) : (
             <TasksList
@@ -497,9 +445,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
               dateFilters={dateFilters}
               enumFilters={enumFilters}
               onFiltersUpdate={handleFiltersUpdate}
-              onTaskClick={(playerTask) => {
-                if (playerTask.task) setDialogTask(playerTask);
-              }}
+              onTaskClick={handleTaskClick}
             />
           )}
 

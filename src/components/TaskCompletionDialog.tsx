@@ -688,4 +688,4 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
     );
 };
 
-export default TaskCompletionDialog;
+export default React.memo(TaskCompletionDialog);

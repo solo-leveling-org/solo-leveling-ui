@@ -92,23 +92,13 @@ const RarityIndicator: React.FC<RarityIndicatorProps> = ({
       <div className={`flex items-center space-x-3 ${className}`}>
         {/* Rarity circle */}
         <div className="relative">
-          {/* Неоновое свечение - внешний слой с пульсацией */}
+          {/* Простой неоновый круг */}
           <div 
-            className={`absolute inset-0 ${sizeClasses.circle} rounded-full rarity-neon-glow`}
+            className={`${sizeClasses.circle} rounded-full`}
             style={{
-              background: `radial-gradient(circle, ${colorScheme.neon} 0%, transparent 75%)`,
-              filter: `blur(${size === 'sm' ? '5px' : size === 'lg' ? '10px' : '7px'})`,
-              zIndex: -1,
-            }}
-          ></div>
-          
-          {/* Основной круг с неоновой границей */}
-          <div 
-            className={`${sizeClasses.circle} rounded-full relative z-10 rarity-circle`}
-            style={{
-              background: `radial-gradient(circle at 30% 30%, ${colorScheme.neon} 0%, ${colorScheme.glow} 50%, transparent 100%)`,
               border: `2px solid ${colorScheme.neon}`,
-              boxShadow: `0 0 ${size === 'sm' ? '8px' : size === 'lg' ? '16px' : '12px'} ${colorScheme.neon}, inset 0 0 ${size === 'sm' ? '4px' : size === 'lg' ? '8px' : '6px'} ${colorScheme.glow}`,
+              boxShadow: `0 0 ${size === 'sm' ? '8px' : size === 'lg' ? '12px' : '10px'} ${colorScheme.neon}`,
+              background: `radial-gradient(circle at 30% 30%, ${colorScheme.neon}40 0%, transparent 70%)`,
             }}
           ></div>
         </div>
@@ -120,8 +110,8 @@ const RarityIndicator: React.FC<RarityIndicatorProps> = ({
             color: colorScheme.neon,
             background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
             borderColor: colorScheme.neon,
-            boxShadow: `0 0 12px ${colorScheme.neon}`,
-            textShadow: `0 0 8px ${colorScheme.neon}`,
+            boxShadow: `0 0 8px ${colorScheme.neon}`,
+            textShadow: `0 0 4px ${colorScheme.neon}`,
           }}
         >
           {rarityLabel}
@@ -132,23 +122,13 @@ const RarityIndicator: React.FC<RarityIndicatorProps> = ({
 
   return (
     <div className={`relative ${className}`}>
-      {/* Неоновое свечение - внешний слой с пульсацией */}
+      {/* Простой неоновый круг */}
       <div 
-        className={`absolute inset-0 ${sizeClasses.circle} rounded-full rarity-neon-glow`}
+        className={`${sizeClasses.circle} rounded-full`}
         style={{
-          background: `radial-gradient(circle, ${colorScheme.neon} 0%, transparent 75%)`,
-          filter: `blur(${size === 'sm' ? '5px' : size === 'lg' ? '10px' : '7px'})`,
-          zIndex: -1,
-        }}
-      ></div>
-      
-      {/* Основной круг с неоновой границей */}
-      <div 
-        className={`${sizeClasses.circle} rounded-full relative z-10 rarity-circle`}
-        style={{
-          background: `radial-gradient(circle at 30% 30%, ${colorScheme.neon} 0%, ${colorScheme.glow} 50%, transparent 100%)`,
           border: `2px solid ${colorScheme.neon}`,
-          boxShadow: `0 0 ${size === 'sm' ? '8px' : size === 'lg' ? '16px' : '12px'} ${colorScheme.neon}, inset 0 0 ${size === 'sm' ? '4px' : size === 'lg' ? '8px' : '6px'} ${colorScheme.glow}`,
+          boxShadow: `0 0 ${size === 'sm' ? '8px' : size === 'lg' ? '12px' : '10px'} ${colorScheme.neon}`,
+          background: `radial-gradient(circle at 30% 30%, ${colorScheme.neon}40 0%, transparent 70%)`,
         }}
       ></div>
     </div>

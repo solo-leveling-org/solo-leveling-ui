@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { api } from '../services';
 import { useSettings } from '../hooks/useSettings';
 import { useLocalization } from '../hooks/useLocalization';
@@ -46,20 +46,20 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
     }
   }, [isAuthenticated]);
 
-  if (loading || !user || !isLoaded) {
-    return <ProfileSkeleton />;
-  }
-
-  const level = user.player?.level?.level || 1;
-  const currentExp = user.player?.level?.currentExperience || 0;
-  const maxExp = user.player?.level?.experienceToNextLevel || 100;
-  const expPercentage = Math.min(100, Math.round((currentExp / maxExp) * 100));
-  const assessment = user.player?.level?.assessment || 'F';
+  // Мемоизируем вычисления для оптимизации (до раннего возврата!)
+  const level = useMemo(() => user?.player?.level?.level || 1, [user?.player?.level?.level]);
+  const currentExp = useMemo(() => user?.player?.level?.currentExperience || 0, [user?.player?.level?.currentExperience]);
+  const maxExp = useMemo(() => user?.player?.level?.experienceToNextLevel || 100, [user?.player?.level?.experienceToNextLevel]);
+  const expPercentage = useMemo(() => {
+    if (!currentExp || !maxExp) return 0;
+    return Math.min(100, Math.round((currentExp / maxExp) * 100));
+  }, [currentExp, maxExp]);
+  const assessment = useMemo(() => user?.player?.level?.assessment || 'F', [user?.player?.level?.assessment]);
 
   // Получаем характеристики из полей сущности Player
-  const strength = user.player?.strength || 0;
-  const agility = user.player?.agility || 0;
-  const intelligence = user.player?.intelligence || 0;
+  const strength = useMemo(() => user?.player?.strength || 0, [user?.player?.strength]);
+  const agility = useMemo(() => user?.player?.agility || 0, [user?.player?.agility]);
+  const intelligence = useMemo(() => user?.player?.intelligence || 0, [user?.player?.intelligence]);
 
   const getAssessmentColor = (assessment: string) => {
     const colorMap: Record<string, { bg: string; border: string; text: string }> = {
@@ -97,7 +97,11 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
     return colorMap[assessment] || colorMap['E'];
   };
 
-  const assessmentStyle = getAssessmentColor(assessment);
+  const assessmentStyle = useMemo(() => getAssessmentColor(assessment), [assessment]);
+
+  if (loading || !user || !isLoaded) {
+    return <ProfileSkeleton />;
+  }
 
   return (
     <>

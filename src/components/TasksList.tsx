@@ -332,4 +332,4 @@ const TasksList: React.FC<TasksListProps> = ({
   );
 };
 
-export default TasksList;
+export default React.memo(TasksList);

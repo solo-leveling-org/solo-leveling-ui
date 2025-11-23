@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { PlayerTask } from '../api';
 import { PlayerTaskStatus } from '../api';
 import TopicIcon from './TopicIcons';
@@ -14,22 +14,8 @@ type TaskCardProps = {
   index?: number;
 };
 
-const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, onReplace, index = 0 }) => {
-  const { task, status } = playerTask;
-  const { t } = useLocalization();
-  const [isTransitioning, setIsTransitioning] = React.useState(false);
-  
-  // Отслеживаем переход из PREPARING в IN_PROGRESS
-  React.useEffect(() => {
-    if (status === PlayerTaskStatus.IN_PROGRESS) {
-      setIsTransitioning(true);
-      const timer = setTimeout(() => setIsTransitioning(false), 600);
-      return () => clearTimeout(timer);
-    }
-  }, [status]);
-
-  // Определяем цветовые схемы для разных статусов в стилистике Solo Leveling
-  const getStatusColorScheme = (status: PlayerTaskStatus) => {
+// Определяем цветовые схемы для разных статусов в стилистике Solo Leveling (вынесено наружу для оптимизации)
+const getStatusColorScheme = (status: PlayerTaskStatus) => {
     switch (status) {
       case PlayerTaskStatus.PREPARING:
         return {
@@ -69,24 +55,56 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
     }
   };
 
+const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, onReplace, index = 0 }) => {
+  const { task, status } = playerTask;
+  const { t } = useLocalization();
+  const [isTransitioning, setIsTransitioning] = React.useState(false);
+  
+  // Отслеживаем переход из PREPARING в IN_PROGRESS
+  React.useEffect(() => {
+    if (status === PlayerTaskStatus.IN_PROGRESS) {
+      setIsTransitioning(true);
+      const timer = setTimeout(() => setIsTransitioning(false), 600);
+      return () => clearTimeout(timer);
+    }
+  }, [status]);
 
-
-  const colorScheme = getStatusColorScheme(status || PlayerTaskStatus.IN_PROGRESS);
+  // Мемоизируем цветовую схему
+  const colorScheme = useMemo(() => getStatusColorScheme(status || PlayerTaskStatus.IN_PROGRESS), [status]);
+  
+  // Мемоизируем стили для карточки
+  const cardStyle = useMemo(() => ({
+    background: colorScheme.bg,
+    border: `2px solid ${colorScheme.border}`,
+    borderRadius: '24px',
+    boxShadow: status === PlayerTaskStatus.COMPLETED
+      ? `0 0 12px rgba(34, 197, 94, 0.2)`
+      : status === PlayerTaskStatus.SKIPPED
+      ? `0 0 12px rgba(220, 38, 38, 0.2)`
+      : `0 0 12px rgba(180, 220, 240, 0.15)`,
+    animationDelay: `${index * 150}ms`,
+  }), [colorScheme, status, index]);
+  
+  // Мемоизируем стили для текста
+  const titleStyle = useMemo(() => ({
+    color: colorScheme.textColor,
+    textShadow: status === PlayerTaskStatus.COMPLETED
+      ? '0 0 4px rgba(34, 197, 94, 0.2)'
+      : status === PlayerTaskStatus.SKIPPED
+      ? '0 0 4px rgba(220, 38, 38, 0.2)'
+      : '0 0 4px rgba(180, 220, 240, 0.2)'
+  }), [colorScheme.textColor, status]);
 
   if (status === PlayerTaskStatus.PREPARING) {
     return (
       <div 
-        className="group relative overflow-hidden cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] animate-fadeIn"
+        className="group relative overflow-hidden cursor-pointer transition-transform duration-300 ease-out hover:scale-[1.02] animate-fadeIn"
         onClick={onClick}
         style={{
           background: colorScheme.bg,
-          backdropFilter: 'blur(20px)',
           border: `2px solid ${colorScheme.border}`,
           borderRadius: '24px',
-          boxShadow: `
-            0 0 20px rgba(180, 220, 240, 0.15),
-            inset 0 0 20px rgba(200, 230, 245, 0.03)
-          `,
+          boxShadow: `0 0 12px rgba(180, 220, 240, 0.15)`,
           animationDelay: `${index * 150}ms`,
         }}
       >
@@ -152,47 +170,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
 
   return (
     <div 
-      className={`group relative overflow-hidden cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] animate-fadeIn ${isTransitioning ? 'task-status-transition' : ''}`}
+      className={`group relative overflow-hidden cursor-pointer transition-transform duration-500 ease-out hover:scale-[1.02] animate-fadeIn ${isTransitioning ? 'task-status-transition' : ''}`}
       onClick={onClick}
       key={`${playerTask.id}-${status}`}
-      style={{
-        background: colorScheme.bg,
-        backdropFilter: 'blur(20px)',
-        border: `2px solid ${colorScheme.border}`,
-        borderRadius: '24px',
-        boxShadow: status === PlayerTaskStatus.COMPLETED
-          ? `0 0 20px rgba(34, 197, 94, 0.2),
-             inset 0 0 20px rgba(200, 230, 245, 0.03)`
-          : status === PlayerTaskStatus.SKIPPED
-          ? `0 0 20px rgba(220, 38, 38, 0.2),
-             inset 0 0 20px rgba(200, 230, 245, 0.03)`
-          : `0 0 20px rgba(180, 220, 240, 0.15),
-             inset 0 0 20px rgba(200, 230, 245, 0.03)`,
-        animationDelay: `${index * 150}ms`,
-      }}
+      style={cardStyle}
     >
-      {/* Dynamic background with animated gradients */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <div className="absolute inset-0" style={{
-          background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.05) 0%, rgba(160, 210, 235, 0.02) 100%)'
-        }}></div>
-      </div>
-      
-      {/* Glowing orbs - different colors for completed/skipped */}
-      <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-xl opacity-10 animate-float" style={{
-        background: status === PlayerTaskStatus.COMPLETED 
-          ? 'rgba(34, 197, 94, 0.8)'
-          : status === PlayerTaskStatus.SKIPPED
-          ? 'rgba(220, 38, 38, 0.8)'
-          : 'rgba(180, 216, 232, 0.8)'
-      }}></div>
-      <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full blur-lg opacity-10 animate-float-delayed" style={{
-        background: status === PlayerTaskStatus.COMPLETED 
-          ? 'rgba(22, 163, 74, 0.6)'
-          : status === PlayerTaskStatus.SKIPPED
-          ? 'rgba(185, 28, 28, 0.6)'
-          : 'rgba(200, 230, 245, 0.6)'
-      }}></div>
+      {/* Simplified - removed heavy animated effects for performance */}
 
 
       {/* Rarity indicator */}
@@ -209,14 +192,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
           <h3 
             className="text-xl font-tech font-bold mb-3 leading-tight tracking-tight" 
             data-text="true"
-            style={{
-              color: colorScheme.textColor,
-              textShadow: status === PlayerTaskStatus.COMPLETED
-                ? '0 0 4px rgba(34, 197, 94, 0.2)'
-                : status === PlayerTaskStatus.SKIPPED
-                ? '0 0 4px rgba(220, 38, 38, 0.2)'
-                : '0 0 4px rgba(180, 220, 240, 0.2)'
-            }}
+            style={titleStyle}
           >
             {task?.title || ''}
           </h3>
@@ -281,7 +257,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
                   e.stopPropagation();
                   onComplete();
                 }}
-                className="group relative w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
+                className="group relative w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-transform duration-300 hover:scale-110 active:scale-95"
                 style={{
                   background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
                   backdropFilter: 'blur(20px)',
@@ -309,7 +285,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
                   e.stopPropagation();
                   onReplace();
                 }}
-                className="group relative w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
+                className="group relative w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-transform duration-300 hover:scale-110 active:scale-95"
                 style={{
                   background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
                   backdropFilter: 'blur(20px)',
@@ -338,4 +314,11 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
   );
 };
 
-export default TaskCard; 
+export default React.memo(TaskCard, (prevProps, nextProps) => {
+  // Кастомная функция сравнения для оптимизации
+  return (
+    prevProps.playerTask.id === nextProps.playerTask.id &&
+    prevProps.playerTask.status === nextProps.playerTask.status &&
+    prevProps.index === nextProps.index
+  );
+}); 

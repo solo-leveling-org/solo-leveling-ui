@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import type { PlayerTask } from '../api';
 import { PlayerTaskStatus } from '../api';
 import TaskCard from './TaskCard';
@@ -13,12 +13,29 @@ type TasksGridProps = {
 };
 
 const TasksGrid: React.FC<TasksGridProps> = ({ tasks, loading, onTaskClick, onComplete, onReplace }) => {
-  const visibleTasks = tasks.filter(
+  const visibleTasks = useMemo(() => tasks.filter(
       t => t.status === PlayerTaskStatus.PREPARING ||
            t.status === PlayerTaskStatus.IN_PROGRESS ||
          t.status === PlayerTaskStatus.COMPLETED ||
          t.status === PlayerTaskStatus.SKIPPED
-  );
+  ), [tasks]);
+
+  // Мемоизируем обработчики для каждой задачи
+  const taskHandlers = useMemo(() => {
+    const handlers = new Map();
+    visibleTasks.forEach((playerTask) => {
+      handlers.set(playerTask.id, {
+        onClick: () => onTaskClick(playerTask),
+        onComplete: playerTask.status === PlayerTaskStatus.IN_PROGRESS && onComplete 
+          ? () => onComplete(playerTask) 
+          : undefined,
+        onReplace: playerTask.status === PlayerTaskStatus.IN_PROGRESS && onReplace 
+          ? () => onReplace(playerTask) 
+          : undefined,
+      });
+    });
+    return handlers;
+  }, [visibleTasks, onTaskClick, onComplete, onReplace]);
 
   if (loading && visibleTasks.length === 0) {
     return (
@@ -32,16 +49,19 @@ const TasksGrid: React.FC<TasksGridProps> = ({ tasks, loading, onTaskClick, onCo
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6">
-      {visibleTasks.map((playerTask, index) => (
-        <TaskCard
-          key={playerTask.id}
-          playerTask={playerTask}
-          onClick={() => onTaskClick(playerTask)}
-          onComplete={playerTask.status === PlayerTaskStatus.IN_PROGRESS ? () => onComplete && onComplete(playerTask) : undefined}
-          onReplace={playerTask.status === PlayerTaskStatus.IN_PROGRESS ? () => onReplace && onReplace(playerTask) : undefined}
-          index={index}
-        />
-      ))}
+      {visibleTasks.map((playerTask, index) => {
+        const handlers = taskHandlers.get(playerTask.id);
+        return (
+          <TaskCard
+            key={playerTask.id}
+            playerTask={playerTask}
+            onClick={handlers.onClick}
+            onComplete={handlers.onComplete}
+            onReplace={handlers.onReplace}
+            index={index}
+          />
+        );
+      })}
       
       {loading && (
         <div 
@@ -131,4 +151,4 @@ const TasksGrid: React.FC<TasksGridProps> = ({ tasks, loading, onTaskClick, onCo
   );
 };
 
-export default TasksGrid; 
+export default React.memo(TasksGrid); 

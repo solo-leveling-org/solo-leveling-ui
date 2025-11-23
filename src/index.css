@@ -390,45 +390,6 @@ code {
   }
 }
 
-/* Неоновое пульсирующее свечение для редкости - живая цикличная анимация */
-@keyframes rarityNeonGlow {
-  0%, 100% {
-    opacity: 0.5;
-    transform: scale(1);
-  }
-  25% {
-    opacity: 0.8;
-    transform: scale(1.15);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.25);
-  }
-  75% {
-    opacity: 0.8;
-    transform: scale(1.15);
-  }
-}
-
-/* Цикличная анимация для основного круга редкости */
-@keyframes rarityCirclePulse {
-  0%, 100% {
-    opacity: 1;
-    filter: brightness(1);
-  }
-  50% {
-    opacity: 0.9;
-    filter: brightness(1.2);
-  }
-}
-
-.rarity-neon-glow {
-  animation: rarityNeonGlow 2.5s ease-in-out infinite;
-}
-
-.rarity-circle {
-  animation: rarityCirclePulse 3s ease-in-out infinite;
-}
 
 @keyframes dialogBackdropFade {
   from {
