@@ -37,14 +37,10 @@ export function useTelegramAdaptive() {
         // Включаем полноэкранный режим для mobile
         // ready() уже вызывается в useTelegram, поэтому здесь только expand()
         if (tg.expand) {
-          // Проверяем, не развернуто ли уже приложение
           if (!tg.isExpanded) {
-            // Небольшая задержка для гарантии, что ready() из useTelegram выполнился
-            setTimeout(() => {
-              if (tg.expand && !tg.isExpanded) {
-                tg.expand();
-              }
-            }, 150);
+            if (tg.expand && !tg.isExpanded) {
+              tg.expand();
+            }
           }
         }
       }

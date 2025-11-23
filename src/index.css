@@ -724,3 +724,50 @@ code {
     width: 0%;
   }
 }
+
+/* Адаптивные отступы для ProfileTab - desktop версия */
+/* Чем меньше разрешение экрана, тем меньше отступ сверху */
+.desktop-version .profile-content-container {
+  padding-top: 1rem; /* 16px для маленьких экранов */
+}
+
+@media (min-width: 640px) {
+  .desktop-version .profile-content-container {
+    padding-top: 1.5rem; /* 24px для sm */
+  }
+}
+
+@media (min-width: 768px) {
+  .desktop-version .profile-content-container {
+    padding-top: 2rem; /* 32px для md */
+  }
+}
+
+@media (min-width: 1024px) {
+  .desktop-version .profile-content-container {
+    padding-top: 3rem; /* 48px для lg */
+  }
+}
+
+@media (min-width: 1280px) {
+  .desktop-version .profile-content-container {
+    padding-top: 4rem; /* 64px для xl */
+  }
+}
+
+@media (min-width: 1536px) {
+  .desktop-version .profile-content-container {
+    padding-top: 5rem; /* 80px для 2xl */
+  }
+}
+
+/* Для мобильных устройств используем стандартные отступы */
+.mobile-version .profile-content-container {
+  padding-top: 4rem; /* 64px для мобильных */
+}
+
+@media (min-width: 768px) {
+  .mobile-version .profile-content-container {
+    padding-top: 5rem; /* 80px для мобильных md */
+  }
+}
