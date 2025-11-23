@@ -27,6 +27,7 @@ import {
   mockTasks,
   mockTransactions,
   mockPlayerTopics,
+  mockUser,
 } from './mockData';
 import { PlayerTaskStatus, TaskRarity, TaskTopic } from '../api';
 import { createMockTask } from './mockData';
@@ -43,6 +44,20 @@ class MockState {
   private taskIdCounter = 1000; // Счетчик для новых задач
   private preparingTaskTimers = new Map<string, NodeJS.Timeout>(); // Таймеры для задач в статусе PREPARING
   private initialized = false; // Флаг инициализации таймеров
+  private playerState = {
+    strength: mockUser.player.strength || 0,
+    agility: mockUser.player.agility || 0,
+    intelligence: mockUser.player.intelligence || 0,
+    level: {
+      level: mockUser.player.level?.level || 1,
+      currentExperience: mockUser.player.level?.currentExperience || 0,
+      totalExperience: mockUser.player.level?.totalExperience || 0,
+      experienceToNextLevel: mockUser.player.level?.experienceToNextLevel || 1000,
+    },
+    balance: {
+      amount: mockUser.player.balance?.balance?.amount || 0,
+    },
+  };
 
   constructor() {
     // Запускаем таймеры для всех задач в статусе PREPARING при инициализации
@@ -169,25 +184,183 @@ class MockState {
 
   completeTask(taskId: string): CompleteTaskResponse {
     const taskIndex = this.tasks.findIndex(t => t.id === taskId);
-    if (taskIndex !== -1) {
-      this.completedTaskIds.add(taskId);
-      
-      // СРАЗУ заменяем старую задачу на новую в статусе PREPARING
-      const newTask = this.generateNewTask();
-      this.tasks[taskIndex] = newTask;
-      
-      // Запускаем таймер для перехода в IN_PROGRESS
-      if (newTask.id) {
-        this.scheduleTaskStatusChange(newTask.id);
-      }
-      
-      // Отправляем событие для обновления списка задач
-      const event = new CustomEvent('tasks-notification', {
-        detail: { source: 'tasks' }
-      });
-      window.dispatchEvent(event);
+    if (taskIndex === -1) {
+      return mockCompleteTaskResponse;
     }
-    return mockCompleteTaskResponse;
+
+    const completedTask = this.tasks[taskIndex];
+    const task = completedTask.task;
+    if (!task) {
+      return mockCompleteTaskResponse;
+    }
+
+    this.completedTaskIds.add(taskId);
+    
+    // Получаем текущее состояние игрока
+    const playerBefore = {
+      ...mockUser.player,
+      strength: this.playerState.strength,
+      agility: this.playerState.agility,
+      intelligence: this.playerState.intelligence,
+      level: {
+        ...mockUser.player.level!,
+        level: this.playerState.level.level,
+        currentExperience: this.playerState.level.currentExperience,
+        totalExperience: this.playerState.level.totalExperience,
+        experienceToNextLevel: this.playerState.level.experienceToNextLevel,
+      },
+      balance: {
+        ...mockUser.player.balance!,
+        balance: {
+          ...mockUser.player.balance!.balance,
+          amount: this.playerState.balance.amount,
+        },
+      },
+      taskTopics: this.playerTopics.map(tp => ({
+        ...tp,
+        level: {
+          ...tp.level,
+          currentExperience: tp.level.currentExperience,
+          totalExperience: tp.level.totalExperience,
+        },
+      })),
+    };
+
+    // Обновляем атрибуты игрока
+    const newStrength = this.playerState.strength + (task.strength || 0);
+    const newAgility = this.playerState.agility + (task.agility || 0);
+    const newIntelligence = this.playerState.intelligence + (task.intelligence || 0);
+
+    // Обновляем опыт игрока
+    const expGain = task.experience || 0;
+    const newCurrentExp = this.playerState.level.currentExperience + expGain;
+    const newTotalExp = this.playerState.level.totalExperience + expGain;
+    
+    // Проверяем, нужно ли повысить уровень
+    let newLevel = this.playerState.level.level;
+    let finalCurrentExp = newCurrentExp;
+    const expToNextLevel = this.playerState.level.experienceToNextLevel;
+    
+    if (finalCurrentExp >= expToNextLevel) {
+      newLevel += 1;
+      finalCurrentExp = finalCurrentExp - expToNextLevel;
+    }
+
+    // Обновляем баланс
+    const currencyGain = task.currencyReward || 0;
+    const newBalanceAmount = this.playerState.balance.amount + currencyGain;
+
+    // Обновляем опыт топиков
+    const updatedTopics = [...this.playerTopics];
+    const perTopicExpGain = task.topics && task.topics.length > 0
+      ? Math.floor(expGain / task.topics.length)
+      : 0;
+
+    task.topics?.forEach(topic => {
+      const topicIndex = updatedTopics.findIndex(tp => tp.taskTopic === topic);
+      if (topicIndex >= 0) {
+        const topicData = updatedTopics[topicIndex];
+        const newTopicCurrentExp = (topicData.level.currentExperience || 0) + perTopicExpGain;
+        const newTopicTotalExp = (topicData.level.totalExperience || 0) + perTopicExpGain;
+        
+        let newTopicLevel = topicData.level.level || 1;
+        let finalTopicCurrentExp = newTopicCurrentExp;
+        const topicExpToNextLevel = topicData.level.experienceToNextLevel || 1000;
+        
+        if (finalTopicCurrentExp >= topicExpToNextLevel) {
+          newTopicLevel += 1;
+          finalTopicCurrentExp = finalTopicCurrentExp - topicExpToNextLevel;
+        }
+
+        updatedTopics[topicIndex] = {
+          ...topicData,
+          level: {
+            ...topicData.level,
+            level: newTopicLevel,
+            currentExperience: finalTopicCurrentExp,
+            totalExperience: newTopicTotalExp,
+          },
+        };
+      } else {
+        // Создаем новый топик, если его нет
+        updatedTopics.push({
+          id: `topic-${Date.now()}-${Math.random()}`,
+          version: 1,
+          isActive: true,
+          taskTopic: topic,
+          level: {
+            id: `level-${Date.now()}`,
+            version: 1,
+            level: 1,
+            totalExperience: perTopicExpGain,
+            currentExperience: perTopicExpGain,
+            experienceToNextLevel: 1000,
+            assessment: 'E' as any,
+          },
+        });
+      }
+    });
+
+    // Обновляем состояние топиков
+    this.playerTopics = updatedTopics;
+
+    // Создаем playerAfter
+    const playerAfter = {
+      ...playerBefore,
+      strength: newStrength,
+      agility: newAgility,
+      intelligence: newIntelligence,
+      level: {
+        ...playerBefore.level!,
+        level: newLevel,
+        currentExperience: finalCurrentExp,
+        totalExperience: newTotalExp,
+      },
+      balance: {
+        ...playerBefore.balance!,
+        balance: {
+          ...playerBefore.balance!.balance,
+          amount: newBalanceAmount,
+        },
+      },
+      taskTopics: updatedTopics,
+    };
+
+    // Обновляем состояние игрока для последующих запросов
+    this.playerState = {
+      strength: newStrength,
+      agility: newAgility,
+      intelligence: newIntelligence,
+      level: {
+        level: newLevel,
+        currentExperience: finalCurrentExp,
+        totalExperience: newTotalExp,
+        experienceToNextLevel: expToNextLevel,
+      },
+      balance: {
+        amount: newBalanceAmount,
+      },
+    };
+
+    // СРАЗУ заменяем старую задачу на новую в статусе PREPARING
+    const newTask = this.generateNewTask();
+    this.tasks[taskIndex] = newTask;
+    
+    // Запускаем таймер для перехода в IN_PROGRESS
+    if (newTask.id) {
+      this.scheduleTaskStatusChange(newTask.id);
+    }
+    
+    // Отправляем событие для обновления списка задач
+    const event = new CustomEvent('tasks-notification', {
+      detail: { source: 'tasks' }
+    });
+    window.dispatchEvent(event);
+
+    return {
+      playerBefore,
+      playerAfter,
+    };
   }
 
   skipTask(taskId: string): void {

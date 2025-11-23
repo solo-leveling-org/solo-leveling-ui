@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useDrag } from '@use-gesture/react';
 import { useModal } from '../contexts/ModalContext';
 import { useScrollLock } from '../hooks/useScrollLock';
@@ -97,7 +98,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
     perspective: '1000px' // Включает аппаратное ускорение
   };
 
-  return (
+  const bottomSheetContent = (
     <>
       {/* Backdrop - используем единообразный backdrop от BaseDialog */}
       <div
@@ -204,6 +205,9 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
       </div>
     </>
   );
+
+  // Рендерим через Portal на уровне body, чтобы fixed позиционирование работало относительно viewport
+  return createPortal(bottomSheetContent, document.body);
 };
 
 export default BottomSheet;

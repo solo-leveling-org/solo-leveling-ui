@@ -87,7 +87,12 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
       {/* Backdrop - единообразное затемнение без blur */}
       <div
         className={`base-dialog-backdrop fixed inset-0 z-[9999] ${className}`}
-        onClick={handleBackdropClick}
+        onClick={(e) => {
+          // Закрываем только если клик был именно на backdrop, а не на дочерних элементах
+          if (e.target === e.currentTarget) {
+            handleBackdropClick();
+          }
+        }}
         style={{
           background: 'rgba(0, 0, 0, 0.5)',
           backdropFilter: 'none', // Явно убираем blur
@@ -100,6 +105,7 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
       <div
         className={`base-dialog-content fixed left-1/2 top-1/2 z-[10000] w-full ${maxWidth} ${maxHeight} overflow-hidden rounded-2xl md:rounded-3xl ${contentClassName}`}
         onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
         style={{
           transform: 'translate(-50%, -50%)',
           background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',

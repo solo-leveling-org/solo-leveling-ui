@@ -30,6 +30,7 @@ export const useScrollLock = (isLocked: boolean) => {
     const isContainerScrolling = containerScrollTop > 0;
 
     // Находим все элементы с overflow-y-auto (контейнеры табов) и сохраняем их позицию скролла
+    // НО исключаем элементы внутри диалогов (BaseDialog, BottomSheet), чтобы скролл внутри них работал
     const scrollableContainers: Array<{ 
       element: HTMLElement; 
       originalOverflow: string;
@@ -38,6 +39,11 @@ export const useScrollLock = (isLocked: boolean) => {
     const allElements = document.querySelectorAll('*');
     allElements.forEach(el => {
       const htmlEl = el as HTMLElement;
+      // Проверяем, не находится ли элемент внутри диалога
+      const isInsideDialog = htmlEl.closest('.base-dialog-content, .bottom-sheet') !== null;
+      if (isInsideDialog) {
+        return; // Пропускаем элементы внутри диалогов
+      }
       const computedStyle = window.getComputedStyle(htmlEl);
       if (computedStyle.overflowY === 'auto' || computedStyle.overflowY === 'scroll') {
         scrollableContainers.push({

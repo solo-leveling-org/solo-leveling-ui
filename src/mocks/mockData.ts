@@ -282,6 +282,51 @@ export const mockTasks: PlayerTask[] = [
       100
     ),
   },
+  {
+    id: 'task-5',
+    version: 1,
+    order: 5,
+    status: PlayerTaskStatus.IN_PROGRESS,
+    task: createMockTask(
+      'task-5',
+      'Тренировка и изучение',
+      'Проведите тренировку и изучите новую технику',
+      TaskRarity.UNCOMMON,
+      [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.EDUCATION],
+      180,
+      90
+    ),
+  },
+  {
+    id: 'task-6',
+    version: 1,
+    order: 6,
+    status: PlayerTaskStatus.IN_PROGRESS,
+    task: createMockTask(
+      'task-6',
+      'Медитация и творчество',
+      'Проведите медитацию и создайте что-то новое',
+      TaskRarity.RARE,
+      [TaskTopic.MENTAL_HEALTH, TaskTopic.CREATIVITY],
+      160,
+      80
+    ),
+  },
+  {
+    id: 'task-7',
+    version: 1,
+    order: 7,
+    status: PlayerTaskStatus.IN_PROGRESS,
+    task: createMockTask(
+      'task-7',
+      'Йога и обучение',
+      'Выполните комплекс йоги и изучите новую тему',
+      TaskRarity.COMMON,
+      [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.MENTAL_HEALTH],
+      120,
+      60
+    ),
+  },
   // Добавляем сгенерированные завершенные задачи
   ...generateCompletedTasks(),
 ];

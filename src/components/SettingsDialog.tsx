@@ -75,32 +75,32 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
           height: 18px !important;
         }
       `}</style>
-      
-      <div className="relative z-10">
-        {/* Header */}
+
+        <div className="relative z-10">
+          {/* Header */}
         <div className="p-6 pb-4 border-b relative" style={{
-          borderColor: 'rgba(220, 235, 245, 0.1)',
-          zIndex: 10
-        }}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div
-                className="profile-icon-wrapper"
-                style={{
-                  color: '#e8f4f8',
-                  filter: 'drop-shadow(0 0 8px rgba(180, 220, 240, 0.4))'
-                }}
-              >
-                <Icon type="settings" size={28} />
-              </div>
+            borderColor: 'rgba(220, 235, 245, 0.1)',
+            zIndex: 10
+          }}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div
+                  className="profile-icon-wrapper"
+                  style={{
+                    color: '#e8f4f8',
+                    filter: 'drop-shadow(0 0 8px rgba(180, 220, 240, 0.4))'
+                  }}
+                >
+                  <Icon type="settings" size={28} />
+                </div>
               <h2 
-                className="font-tech text-xl font-bold m-0"
-                style={{
-                  color: '#e8f4f8',
-                  textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
-                }}
-              >
-                {t('profile.settings.title')}
+                  className="font-tech text-xl font-bold m-0"
+                  style={{
+                    color: '#e8f4f8',
+                    textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+                  }}
+                >
+                  {t('profile.settings.title')}
               </h2>
             </div>
             <button
@@ -114,7 +114,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
           </div>
         </div>
 
-        {/* Content */}
+          {/* Content */}
         <div className="p-6 space-y-6 overflow-y-auto" style={{ maxHeight: 'calc(70vh - 100px)' }}>
             {/* Language Source Setting */}
             <div>
@@ -342,7 +342,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
           </div>
-      </div>
+        </div>
     </BaseDialog>
   );
 };

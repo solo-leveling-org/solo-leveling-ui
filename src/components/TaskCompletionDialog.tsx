@@ -51,7 +51,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
     <BaseDialog
       isOpen={isOpen}
       onClose={onClose}
-      maxWidth="max-w-2xl"
+      maxWidth="max-w-md"
       maxHeight="max-h-[calc(95vh-env(safe-area-inset-top,0px)-5rem)]"
     >
       <style>{`
@@ -62,45 +62,48 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
         }
       `}</style>
 
-      {/* Header */}
-      <div className="relative z-10 p-4 md:p-6 pb-4">
-        <div className="flex items-center justify-between">
-          <h2 
-            className="text-xl md:text-2xl font-tech font-bold"
-            style={{
-              color: '#e8f4f8',
-              textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
-            }}
-          >
-            {t('taskCompletion.title')}
-          </h2>
-          {/* Close button */}
-          <button
+          {/* Header */}
+          <div className="relative z-10 p-6 pb-4 border-b" style={{
+            borderColor: 'rgba(220, 235, 245, 0.1)'
+          }}>
+            <div className="flex items-center justify-between">
+              <h2 
+                className="text-xl font-tech font-bold"
+                style={{
+                  color: '#e8f4f8',
+                  textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+                }}
+              >
+                {t('taskCompletion.title')}
+              </h2>
+              {/* Close button */}
+              <button
             onClick={onClose}
-            className="flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 hover:scale-110 active:scale-95"
-            style={{
-              background: 'rgba(220, 235, 245, 0.1)',
-              border: '1px solid rgba(220, 235, 245, 0.2)',
-              color: '#e8f4f8'
-            }}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
-        </div>
-      </div>
+                className="flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 hover:scale-110 active:scale-95"
+                style={{
+                  background: 'rgba(220, 235, 245, 0.1)',
+                  border: '1px solid rgba(220, 235, 245, 0.2)',
+                  color: '#e8f4f8'
+                }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+          </div>
 
-      {/* Content */}
-      <div className="relative z-10 px-4 md:px-6 pb-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
+          {/* Content */}
+          <div className="relative z-10 px-6 pb-4 overflow-y-auto overflow-x-hidden" style={{ 
+            maxHeight: 'calc(90vh - 200px)'
+          }}>
             
             {/* Level Progress - Solo Leveling Style */}
             <div 
-              className="relative overflow-hidden rounded-2xl md:rounded-3xl p-4 md:p-6 mb-6"
+              className="relative overflow-hidden rounded-2xl p-4 mb-4"
               style={{
                 background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
-                backdropFilter: 'blur(20px)',
                 border: '2px solid rgba(220, 235, 245, 0.2)',
                 boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
               }}
@@ -113,9 +116,9 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 background: 'rgba(234, 179, 8, 0.6)'
               }}></div>
 
-              <div className="relative z-10 flex items-center justify-between mb-4">
+              <div className="relative z-10 flex items-center justify-between mb-3">
                 <h3 
-                  className="text-lg md:text-xl font-tech font-bold flex items-center"
+                  className="text-base font-tech font-bold flex items-center"
                   style={{
                     color: '#e8f4f8',
                     textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
@@ -124,18 +127,17 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                   <div
                     className="mr-2"
                     style={{
-                      color: 'rgba(234, 179, 8, 0.9)',
-                      filter: 'drop-shadow(0 0 8px rgba(234, 179, 8, 0.6))'
+                      color: 'rgba(180, 220, 240, 0.8)'
                     }}
                   >
-                    <Icon type="star" size={24} />
+                    <Icon type="star" size={20} />
                   </div>
                   {t('taskCompletion.level')}
                 </h3>
                 {/* Level Display */}
                 <div className="relative">
                   <div 
-                    className="text-2xl md:text-3xl font-tech font-bold rounded-lg px-3 py-1"
+                    className="text-xl font-tech font-bold rounded-lg px-3 py-1"
                     style={{
                       background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
                       border: '2px solid rgba(220, 235, 245, 0.4)',
@@ -148,15 +150,15 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                   </div>
                   {/* Изменение уровня пользователя если повысился */}
                   {(playerAfter.level?.level || 1) > (playerBefore.level?.level || 1) && (
-                    <div className="absolute -top-2 -right-2 z-10">
+                    <div className="absolute -top-2.5 -right-1.5 z-10">
                       <span 
-                        className="text-xs font-tech font-bold px-2 py-1 rounded-full"
+                        className="text-[10px] font-tech font-bold px-1.5 py-0.5 rounded-full"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(22, 163, 74, 0.7) 100%)',
-                          border: '1px solid rgba(34, 197, 94, 0.6)',
-                          color: '#e8f4f8',
-                          boxShadow: '0 0 10px rgba(34, 197, 94, 0.4)',
-                          textShadow: '0 0 4px rgba(34, 197, 94, 0.3)'
+                          background: 'rgba(10, 14, 39, 0.95)',
+                          border: '1px solid rgba(34, 197, 94, 0.8)',
+                          color: 'rgba(34, 197, 94, 0.9)',
+                          boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)',
+                          textShadow: '0 0 6px rgba(34, 197, 94, 0.6)'
                         }}
                       >
                         +{(playerAfter.level?.level || 1) - (playerBefore.level?.level || 1)}
@@ -168,15 +170,15 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
             
               {/* Experience Progress */}
               <div 
-                className="rounded-xl p-3 md:p-4"
+                className="rounded-xl p-3"
                 style={{
                   background: 'rgba(220, 235, 245, 0.05)',
                   border: '1px solid rgba(220, 235, 245, 0.1)'
                 }}
               >
-                <div className="flex justify-between items-center mb-3">
+                <div className="flex justify-between items-center mb-2">
                   <span 
-                    className="text-sm md:text-base font-tech font-medium"
+                    className="text-xs font-tech font-medium"
                     style={{
                       color: 'rgba(220, 235, 245, 0.8)'
                     }}
@@ -185,7 +187,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                   </span>
                   <div className="flex items-center gap-2">
                     <span 
-                      className="text-sm md:text-base font-tech font-bold"
+                      className="text-xs font-tech font-bold"
                       style={{
                         color: '#e8f4f8',
                         textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
@@ -197,11 +199,11 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                       <span 
                         className="text-xs font-tech font-bold rounded-full px-2 py-1"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(22, 163, 74, 0.7) 100%)',
-                          border: '1px solid rgba(34, 197, 94, 0.6)',
-                          color: '#e8f4f8',
-                          boxShadow: '0 0 8px rgba(34, 197, 94, 0.4)',
-                          textShadow: '0 0 4px rgba(34, 197, 94, 0.3)'
+                          background: 'rgba(10, 14, 39, 0.95)',
+                          border: '1px solid rgba(34, 197, 94, 0.8)',
+                          color: 'rgba(34, 197, 94, 0.9)',
+                          boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)',
+                          textShadow: '0 0 6px rgba(34, 197, 94, 0.6)'
                         }}
                       >
                         +{expChange}
@@ -211,7 +213,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 </div>
                 
                 <div 
-                  className="relative w-full rounded-full h-2 md:h-2.5 overflow-hidden"
+                  className="relative w-full rounded-full h-2 overflow-hidden"
                   style={{
                     background: 'rgba(220, 235, 245, 0.1)',
                     border: '1px solid rgba(220, 235, 245, 0.2)'
@@ -241,13 +243,13 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
               {/* Topics Progress */}
               {filteredTopicProgress.length > 0 && (
                 <div 
-                  className="mt-4 pt-4"
+                  className="mt-3 pt-3"
                   style={{
                     borderTop: '1px solid rgba(220, 235, 245, 0.1)'
                   }}
                 >
                   <h4 
-                    className="text-sm md:text-base font-tech font-semibold mb-3 flex items-center"
+                    className="text-xs font-tech font-semibold mb-2 flex items-center"
                     style={{
                       color: '#e8f4f8',
                       textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
@@ -256,15 +258,14 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     <div
                       className="mr-2"
                       style={{
-                        color: 'rgba(249, 115, 22, 0.9)',
-                        filter: 'drop-shadow(0 0 6px rgba(249, 115, 22, 0.5))'
+                        color: 'rgba(180, 220, 240, 0.8)'
                       }}
                     >
-                      <Icon type="target" size={20} />
+                      <Icon type="target" size={16} />
                     </div>
                     {t('taskCompletion.topicsProgress')}
                   </h4>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {filteredTopicProgress.map((topicData) => {
                       if (!topicData.taskTopic || !topicData.level) return null;
                       
@@ -277,19 +278,19 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                       return (
                         <div 
                           key={topic} 
-                          className="rounded-xl p-3"
+                          className="rounded-lg p-2"
                           style={{
                             background: 'rgba(220, 235, 245, 0.05)',
                             border: '1px solid rgba(220, 235, 245, 0.1)'
                           }}
                         >
-                          <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center justify-between mb-1">
                             <div className="flex items-center">
-                              <div className="mr-2">
-                                <TopicIcon topic={topic} size={16} />
+                              <div className="mr-1.5">
+                                <TopicIcon topic={topic} size={14} />
                               </div>
                               <span 
-                                className="text-sm font-tech font-medium"
+                                className="text-xs font-tech font-medium"
                                 style={{
                                   color: 'rgba(220, 235, 245, 0.9)'
                                 }}
@@ -298,7 +299,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                               </span>
                             </div>
                             <span 
-                              className="text-xs font-tech font-bold px-2 py-1 rounded-full flex items-center whitespace-nowrap"
+                              className="text-[10px] font-tech font-bold px-1.5 py-0.5 rounded-full flex items-center whitespace-nowrap"
                               style={{
                                 background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
                                 border: '1px solid rgba(220, 235, 245, 0.3)',
@@ -315,11 +316,11 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                                   <span 
                                     className="ml-2 rounded-full px-1.5 py-0.5"
                                     style={{
-                                      background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(22, 163, 74, 0.7) 100%)',
-                                      border: '1px solid rgba(34, 197, 94, 0.6)',
-                                      color: '#e8f4f8',
-                                      boxShadow: '0 0 8px rgba(34, 197, 94, 0.4)',
-                                      textShadow: '0 0 4px rgba(34, 197, 94, 0.3)'
+                                      background: 'rgba(10, 14, 39, 0.95)',
+                                      border: '1px solid rgba(34, 197, 94, 0.8)',
+                                      color: 'rgba(34, 197, 94, 0.9)',
+                                      boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)',
+                                      textShadow: '0 0 6px rgba(34, 197, 94, 0.6)'
                                     }}
                                   >
                                     +{delta}
@@ -329,9 +330,9 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                             </span>
                           </div>
                           
-                          <div className="space-y-2">
+                          <div className="space-y-1">
                             <div 
-                              className="flex justify-between text-xs font-tech"
+                              className="flex justify-between text-[10px] font-tech"
                               style={{
                                 color: 'rgba(220, 235, 245, 0.7)'
                               }}
@@ -342,10 +343,10 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                                 {/* Изменение опыта топика пропорционально количеству топиков задачи */}
                                 {perTopicExpGain > 0 && (
                                   <span 
-                                    className="ml-2 font-bold"
+                                    className="ml-1.5 font-bold"
                                     style={{
                                       color: 'rgba(34, 197, 94, 0.9)',
-                                      textShadow: '0 0 4px rgba(34, 197, 94, 0.4)'
+                                      textShadow: '0 0 6px rgba(34, 197, 94, 0.6)'
                                     }}
                                   >
                                     +{perTopicExpGain}
@@ -354,7 +355,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                               </span>
                             </div>
                             <div 
-                              className="relative w-full rounded-full h-2 overflow-hidden"
+                              className="relative w-full rounded-full h-1.5 overflow-hidden"
                               style={{
                                 background: 'rgba(220, 235, 245, 0.1)',
                                 border: '1px solid rgba(220, 235, 245, 0.2)'
@@ -392,10 +393,9 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
 
             {/* Stats Changes - Solo Leveling Style */}
             <div 
-              className="relative overflow-hidden rounded-2xl md:rounded-3xl p-4 md:p-6 mb-6"
+              className="relative overflow-hidden rounded-2xl p-4 mb-4"
               style={{
                 background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
-                backdropFilter: 'blur(20px)',
                 border: '2px solid rgba(220, 235, 245, 0.2)',
                 boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
               }}
@@ -409,51 +409,49 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
               }}></div>
 
               <h3 
-                className="relative z-10 text-lg md:text-xl font-tech font-bold mb-4 flex items-center justify-center"
+                className="relative z-10 text-sm font-tech font-semibold mb-3 flex items-center"
                 style={{
                   color: '#e8f4f8',
                   textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
                 }}
               >
                 <div
-                  className="mr-3"
+                  className="mr-2"
                   style={{
-                    color: 'rgba(59, 130, 246, 0.9)',
-                    filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.6))'
+                    color: 'rgba(180, 220, 240, 0.8)'
                   }}
                 >
-                  <Icon type="trending-up" size={32} />
+                  <Icon type="trending-up" size={16} />
                 </div>
                 {t('taskCompletion.stats')}
               </h3>
-              <div className="relative z-10 grid grid-cols-3 gap-3">
+              <div className="relative z-10 grid grid-cols-3 gap-2">
                 {/* Strength */}
                 <div 
-                  className="relative rounded-xl p-3 text-center transition-all duration-300 hover:scale-105 active:scale-95"
+                  className="relative rounded-xl p-4 text-center"
                   style={{
                     background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.05) 100%)',
-                    backdropFilter: 'blur(10px)',
                     border: '1px solid rgba(220, 38, 38, 0.2)',
                     boxShadow: '0 0 15px rgba(220, 38, 38, 0.1)'
                   }}
                 >
                   {/* Badge overlay */}
                   {strengthChange !== 0 && (
-                    <div className="absolute -top-1 -right-1 z-10">
+                    <div className="absolute -top-2 -right-1 z-10">
                       <span 
                         className="text-xs font-tech font-bold px-2 py-1 rounded-full"
                         style={strengthChange > 0 ? {
-                          background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(22, 163, 74, 0.7) 100%)',
-                          border: '1px solid rgba(34, 197, 94, 0.6)',
-                          color: '#e8f4f8',
-                          boxShadow: '0 0 10px rgba(34, 197, 94, 0.4)',
-                          textShadow: '0 0 4px rgba(34, 197, 94, 0.3)'
+                          background: 'rgba(10, 14, 39, 0.95)',
+                          border: '1px solid rgba(34, 197, 94, 0.8)',
+                          color: 'rgba(34, 197, 94, 0.9)',
+                          boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)',
+                          textShadow: '0 0 6px rgba(34, 197, 94, 0.6)'
                         } : {
-                          background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.9) 0%, rgba(185, 28, 28, 0.7) 100%)',
-                          border: '1px solid rgba(220, 38, 38, 0.6)',
-                          color: '#e8f4f8',
-                          boxShadow: '0 0 10px rgba(220, 38, 38, 0.4)',
-                          textShadow: '0 0 4px rgba(220, 38, 38, 0.3)'
+                          background: 'rgba(10, 14, 39, 0.95)',
+                          border: '1px solid rgba(220, 38, 38, 0.8)',
+                          color: 'rgba(220, 38, 38, 0.9)',
+                          boxShadow: '0 0 8px rgba(220, 38, 38, 0.5), inset 0 0 8px rgba(220, 38, 38, 0.2)',
+                          textShadow: '0 0 6px rgba(220, 38, 38, 0.6)'
                         }}
                       >
                         {strengthChange > 0 ? '+' : ''}{strengthChange}
@@ -472,7 +470,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     </div>
                   </div>
                   <div 
-                    className="text-xl md:text-2xl font-tech font-bold mb-1"
+                    className="text-lg font-tech font-bold mb-1"
                     style={{
                       color: '#e8f4f8',
                       textShadow: '0 0 8px rgba(220, 38, 38, 0.4)'
@@ -481,7 +479,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     {playerAfter.strength || 0}
                   </div>
                   <div 
-                    className="text-[10px] md:text-xs font-tech"
+                    className="text-[10px] font-tech"
                     style={{
                       color: 'rgba(220, 235, 245, 0.7)'
                     }}
@@ -492,31 +490,30 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
 
                 {/* Agility */}
                 <div 
-                  className="relative rounded-xl p-3 text-center transition-all duration-300 hover:scale-105 active:scale-95"
+                  className="relative rounded-xl p-4 text-center"
                   style={{
                     background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%)',
-                    backdropFilter: 'blur(10px)',
                     border: '1px solid rgba(34, 197, 94, 0.2)',
                     boxShadow: '0 0 15px rgba(34, 197, 94, 0.1)'
                   }}
                 >
                   {/* Badge overlay */}
                   {agilityChange !== 0 && (
-                    <div className="absolute -top-1 -right-1 z-10">
+                    <div className="absolute -top-2 -right-1 z-10">
                       <span 
                         className="text-xs font-tech font-bold px-2 py-1 rounded-full"
                         style={agilityChange > 0 ? {
-                          background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(22, 163, 74, 0.7) 100%)',
-                          border: '1px solid rgba(34, 197, 94, 0.6)',
-                          color: '#e8f4f8',
-                          boxShadow: '0 0 10px rgba(34, 197, 94, 0.4)',
-                          textShadow: '0 0 4px rgba(34, 197, 94, 0.3)'
+                          background: 'rgba(10, 14, 39, 0.95)',
+                          border: '1px solid rgba(34, 197, 94, 0.8)',
+                          color: 'rgba(34, 197, 94, 0.9)',
+                          boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)',
+                          textShadow: '0 0 6px rgba(34, 197, 94, 0.6)'
                         } : {
-                          background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.9) 0%, rgba(185, 28, 28, 0.7) 100%)',
-                          border: '1px solid rgba(220, 38, 38, 0.6)',
-                          color: '#e8f4f8',
-                          boxShadow: '0 0 10px rgba(220, 38, 38, 0.4)',
-                          textShadow: '0 0 4px rgba(220, 38, 38, 0.3)'
+                          background: 'rgba(10, 14, 39, 0.95)',
+                          border: '1px solid rgba(220, 38, 38, 0.8)',
+                          color: 'rgba(220, 38, 38, 0.9)',
+                          boxShadow: '0 0 8px rgba(220, 38, 38, 0.5), inset 0 0 8px rgba(220, 38, 38, 0.2)',
+                          textShadow: '0 0 6px rgba(220, 38, 38, 0.6)'
                         }}
                       >
                         {agilityChange > 0 ? '+' : ''}{agilityChange}
@@ -535,7 +532,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     </div>
                   </div>
                   <div 
-                    className="text-xl md:text-2xl font-tech font-bold mb-1"
+                    className="text-lg font-tech font-bold mb-1"
                     style={{
                       color: '#e8f4f8',
                       textShadow: '0 0 8px rgba(34, 197, 94, 0.4)'
@@ -544,7 +541,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     {playerAfter.agility || 0}
                   </div>
                   <div 
-                    className="text-[10px] md:text-xs font-tech"
+                    className="text-[10px] font-tech"
                     style={{
                       color: 'rgba(220, 235, 245, 0.7)'
                     }}
@@ -555,31 +552,30 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
 
                 {/* Intelligence */}
                 <div 
-                  className="relative rounded-xl p-3 text-center transition-all duration-300 hover:scale-105 active:scale-95"
+                  className="relative rounded-xl p-4 text-center"
                   style={{
                     background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
-                    backdropFilter: 'blur(10px)',
                     border: '1px solid rgba(168, 85, 247, 0.2)',
                     boxShadow: '0 0 15px rgba(168, 85, 247, 0.1)'
                   }}
                 >
                   {/* Badge overlay */}
                   {intelligenceChange !== 0 && (
-                    <div className="absolute -top-1 -right-1 z-10">
+                    <div className="absolute -top-2 -right-1 z-10">
                       <span 
                         className="text-xs font-tech font-bold px-2 py-1 rounded-full"
                         style={intelligenceChange > 0 ? {
-                          background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(22, 163, 74, 0.7) 100%)',
-                          border: '1px solid rgba(34, 197, 94, 0.6)',
-                          color: '#e8f4f8',
-                          boxShadow: '0 0 10px rgba(34, 197, 94, 0.4)',
-                          textShadow: '0 0 4px rgba(34, 197, 94, 0.3)'
+                          background: 'rgba(10, 14, 39, 0.95)',
+                          border: '1px solid rgba(34, 197, 94, 0.8)',
+                          color: 'rgba(34, 197, 94, 0.9)',
+                          boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)',
+                          textShadow: '0 0 6px rgba(34, 197, 94, 0.6)'
                         } : {
-                          background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.9) 0%, rgba(185, 28, 28, 0.7) 100%)',
-                          border: '1px solid rgba(220, 38, 38, 0.6)',
-                          color: '#e8f4f8',
-                          boxShadow: '0 0 10px rgba(220, 38, 38, 0.4)',
-                          textShadow: '0 0 4px rgba(220, 38, 38, 0.3)'
+                          background: 'rgba(10, 14, 39, 0.95)',
+                          border: '1px solid rgba(220, 38, 38, 0.8)',
+                          color: 'rgba(220, 38, 38, 0.9)',
+                          boxShadow: '0 0 8px rgba(220, 38, 38, 0.5), inset 0 0 8px rgba(220, 38, 38, 0.2)',
+                          textShadow: '0 0 6px rgba(220, 38, 38, 0.6)'
                         }}
                       >
                         {intelligenceChange > 0 ? '+' : ''}{intelligenceChange}
@@ -598,7 +594,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     </div>
                   </div>
                   <div 
-                    className="text-xl md:text-2xl font-tech font-bold mb-1"
+                    className="text-lg font-tech font-bold mb-1"
                     style={{
                       color: '#e8f4f8',
                       textShadow: '0 0 8px rgba(168, 85, 247, 0.4)'
@@ -607,7 +603,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     {playerAfter.intelligence || 0}
                   </div>
                   <div 
-                    className="text-[10px] md:text-xs font-tech"
+                    className="text-[10px] font-tech"
                     style={{
                       color: 'rgba(220, 235, 245, 0.7)'
                     }}
@@ -620,40 +616,27 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
 
             {/* Balance Change - Solo Leveling Style */}
             <div 
-              className="relative overflow-hidden rounded-2xl md:rounded-3xl mb-6 group"
+              className="relative overflow-hidden rounded-2xl p-3 mb-3"
               style={{
                 background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
-                backdropFilter: 'blur(20px)',
                 border: '2px solid rgba(220, 235, 245, 0.2)',
                 boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
               }}
             >
-              {/* Glowing orbs */}
-              <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full blur-2xl opacity-10 animate-float" style={{
-                background: 'rgba(234, 179, 8, 0.8)'
-              }}></div>
-              <div className="absolute -bottom-4 -left-4 w-24 h-24 rounded-full blur-xl opacity-10 animate-float-delayed" style={{
-                background: 'rgba(234, 179, 8, 0.6)'
-              }}></div>
-              
-              {/* Shimmer effect on hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
-              
               {/* Content */}
-              <div className="relative z-10 p-6 text-center">
+              <div className="relative z-10 text-center">
                 {/* Header */}
-                <div className="flex justify-center items-center mb-4">
+                <div className="flex justify-center items-center mb-2">
                   <div
                     className="mr-2"
                     style={{
-                      color: 'rgba(234, 179, 8, 0.9)',
-                      filter: 'drop-shadow(0 0 8px rgba(234, 179, 8, 0.6))'
+                      color: 'rgba(180, 220, 240, 0.8)'
                     }}
                   >
-                    <Icon type="coins" size={28} />
+                    <Icon type="coins" size={20} />
                   </div>
                   <span 
-                    className="text-sm font-tech font-medium"
+                    className="text-xs font-tech font-medium"
                     style={{
                       color: 'rgba(220, 235, 245, 0.7)',
                       textShadow: '0 0 2px rgba(180, 220, 240, 0.2)'
@@ -664,9 +647,9 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 </div>
                 
                 {/* Balance amount */}
-                <div className="mb-4">
+                <div className="mb-2">
                   <div 
-                    className="text-3xl md:text-4xl font-tech font-bold mb-2"
+                    className="text-2xl font-tech font-bold mb-1"
                     style={{
                       color: '#e8f4f8',
                       textShadow: '0 0 12px rgba(234, 179, 8, 0.4)'
@@ -675,7 +658,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                     {playerAfter.balance?.balance?.amount || 0}
                   </div>
                   <div 
-                    className="text-sm md:text-base font-tech font-semibold"
+                    className="text-xs font-tech font-semibold"
                     style={{
                       color: 'rgba(234, 179, 8, 0.8)',
                       textShadow: '0 0 6px rgba(234, 179, 8, 0.3)'
@@ -687,7 +670,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 
                 {/* Reward info */}
                 <div 
-                  className="rounded-xl py-2 px-4 font-tech font-semibold text-sm"
+                  className="rounded-xl py-1 px-2.5 font-tech font-semibold text-xs"
                   style={{
                     background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.1) 100%)',
                     border: '1px solid rgba(34, 197, 94, 0.3)',
@@ -700,9 +683,9 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                 </div>
               </div>
             </div>
-      </div>
+          </div>
     </BaseDialog>
-  );
+    );
 };
 
 export default TaskCompletionDialog;

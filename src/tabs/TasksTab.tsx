@@ -518,7 +518,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           onClose={() => {
             setCompletionResponse(null);
             setCompletedTask(null);
-          }}
+          }} 
           isOpen={!!completionResponse}
         />
       )}

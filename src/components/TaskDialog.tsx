@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type {Task} from '../api';
 import TopicIcon from './TopicIcons';
 import Icon from './Icon';
@@ -16,6 +16,9 @@ type TaskDialogProps = {
 const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
   const { t } = useLocalization();
 
+  // Мемоизируем стили для оптимизации
+  const rarityText = useMemo(() => t(`rarity.${task.rarity || 'COMMON'}`), [t, task.rarity]);
+
   return (
     <BaseDialog
       isOpen={isOpen}
@@ -23,79 +26,78 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
       maxWidth="max-w-md"
       maxHeight="max-h-[calc(95vh-env(safe-area-inset-top,0px)-5rem)] mobile-version:max-h-[calc(85vh-env(safe-area-inset-top,0px)-5rem)]"
     >
-      <style>{`
-        .profile-icon-wrapper svg {
-          color: inherit;
-          fill: none;
-          stroke: currentColor;
-        }
-      `}</style>
+        <style>{`
+          .profile-icon-wrapper svg {
+            color: inherit;
+            fill: none;
+            stroke: currentColor;
+          }
+        `}</style>
 
-      {/* Header */}
-      <div className="relative z-10 p-6 pb-4 border-b" style={{
-        borderColor: 'rgba(220, 235, 245, 0.1)'
-      }}>
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1 pr-4">
-            <h2 
-              className="text-xl font-tech font-bold leading-tight mb-3"
-              style={{
-                color: '#e8f4f8',
-                textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
-              }}
-            >
-              {task.title}
-            </h2>
-            
-            {/* Rarity indicator - integrated with title */}
-            <div className="flex items-center gap-2">
-              <RarityIndicator 
-                rarity={task.rarity || 'COMMON'} 
-                size="sm"
-                showLabel={false}
-              />
-              <span 
-                className="text-xs font-tech font-semibold px-2 py-1 rounded-full border"
-                style={{
-                  background: 'rgba(220, 235, 245, 0.1)',
-                  borderColor: 'rgba(220, 235, 245, 0.2)',
-                  color: '#e8f4f8',
-                  textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
-                }}
-              >
-                {t(`rarity.${task.rarity || 'COMMON'}`)}
-              </span>
-            </div>
-          </div>
+            {/* Header */}
+            <div className="relative z-10 p-6 pb-4 border-b" style={{
+              borderColor: 'rgba(220, 235, 245, 0.1)'
+            }}>
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1 pr-4">
+                  <h2 
+                    className="text-xl font-tech font-bold leading-tight mb-3"
+                    style={{
+                      color: '#e8f4f8',
+                      textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+                    }}
+                  >
+                    {task.title}
+                  </h2>
+                  
+                  {/* Rarity indicator - integrated with title */}
+                  <div className="flex items-center gap-2">
+                    <RarityIndicator 
+                      rarity={task.rarity || 'COMMON'} 
+                      size="sm"
+                      showLabel={false}
+                    />
+                    <span 
+                      className="text-xs font-tech font-semibold px-2 py-1 rounded-full border"
+                      style={{
+                        background: 'rgba(220, 235, 245, 0.1)',
+                        borderColor: 'rgba(220, 235, 245, 0.2)',
+                        color: '#e8f4f8',
+                        textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+                      }}
+                    >
+                      {rarityText}
+                    </span>
+                  </div>
+                </div>
 
-          {/* Close button */}
-          <button
+                {/* Close button */}
+                <button
               onClick={onClose}
-              className="flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 hover:scale-110 group"
-              style={{
-                background: 'rgba(220, 235, 245, 0.05)',
-                border: '1px solid rgba(220, 235, 245, 0.2)',
-                color: '#e8f4f8'
-              }}
-          >
-            <svg className="w-4 h-4 transition-colors group-hover:text-white"
-                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
-        </div>
-      </div>
+                    className="flex items-center justify-center w-8 h-8 rounded-lg transition-opacity duration-200 group"
+                    style={{
+                      background: 'rgba(220, 235, 245, 0.05)',
+                      border: '1px solid rgba(220, 235, 245, 0.2)',
+                      color: '#e8f4f8'
+                    }}
+                >
+                  <svg className="w-4 h-4 transition-colors group-hover:text-white"
+                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
 
-      {/* Scrollable content */}
+            {/* Scrollable content */}
       <div className="relative z-10 px-6 pb-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
               {/* Description */}
               <div
                   className="rounded-2xl p-4 mb-6 border"
                   style={{
                     background: 'rgba(220, 235, 245, 0.05)',
-                    borderColor: 'rgba(220, 235, 245, 0.15)',
-                    backdropFilter: 'blur(10px)'
+                    borderColor: 'rgba(220, 235, 245, 0.15)'
                   }}
               >
                 <p 
@@ -124,11 +126,10 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div
-                      className="rounded-xl p-3 border text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                      className="rounded-xl p-3 border text-center"
                       style={{
                         background: 'rgba(220, 235, 245, 0.05)',
-                        borderColor: 'rgba(220, 235, 245, 0.2)',
-                        backdropFilter: 'blur(10px)'
+                        borderColor: 'rgba(220, 235, 245, 0.2)'
                       }}
                   >
                     <div className="flex justify-center items-center mb-2" style={{ color: 'rgba(180, 220, 240, 0.8)' }}>
@@ -148,11 +149,10 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
                     </div>
                   </div>
                   <div
-                      className="rounded-xl p-3 border text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                      className="rounded-xl p-3 border text-center"
                       style={{
                         background: 'rgba(220, 235, 245, 0.05)',
-                        borderColor: 'rgba(220, 235, 245, 0.2)',
-                        backdropFilter: 'blur(10px)'
+                        borderColor: 'rgba(220, 235, 245, 0.2)'
                       }}
                   >
                     <div className="flex justify-center items-center mb-2" style={{ color: 'rgba(180, 220, 240, 0.8)' }}>
@@ -191,10 +191,9 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
                 <div className="grid grid-cols-3 gap-3 md:gap-4">
                   {/* Strength */}
                   <Card 
-                    className="border-0 shadow-none bg-transparent text-center p-4 transition-all duration-300 hover:scale-105"
+                    className="border-0 shadow-none bg-transparent text-center p-4"
                     style={{
                       background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.05) 100%)',
-                      backdropFilter: 'blur(10px)',
                       border: '1px solid rgba(220, 38, 38, 0.2)',
                       boxShadow: '0 0 15px rgba(220, 38, 38, 0.1)'
                     }}
@@ -229,10 +228,9 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
 
                   {/* Agility */}
                   <Card 
-                    className="border-0 shadow-none bg-transparent text-center p-4 transition-all duration-300 hover:scale-105"
+                    className="border-0 shadow-none bg-transparent text-center p-4"
                     style={{
                       background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%)',
-                      backdropFilter: 'blur(10px)',
                       border: '1px solid rgba(34, 197, 94, 0.2)',
                       boxShadow: '0 0 15px rgba(34, 197, 94, 0.1)'
                     }}
@@ -267,10 +265,9 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
 
                   {/* Intelligence */}
                   <Card 
-                    className="border-0 shadow-none bg-transparent text-center p-4 transition-all duration-300 hover:scale-105"
+                    className="border-0 shadow-none bg-transparent text-center p-4"
                     style={{
                       background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
-                      backdropFilter: 'blur(10px)',
                       border: '1px solid rgba(168, 85, 247, 0.2)',
                       boxShadow: '0 0 15px rgba(168, 85, 247, 0.1)'
                     }}
@@ -324,7 +321,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
                       {task.topics.map((topic, index) => (
                           <div
                               key={topic}
-                              className="inline-flex items-center px-3 py-2 rounded-full text-xs font-tech font-medium border hover:shadow-md transition-all duration-200 hover:scale-105"
+                              className="inline-flex items-center px-3 py-2 rounded-full text-xs font-tech font-medium border"
                               style={{
                                 background: 'rgba(220, 235, 245, 0.1)',
                                 borderColor: 'rgba(220, 235, 245, 0.2)',
@@ -338,9 +335,10 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, onClose, isOpen}) => {
                     </div>
                   </div>
               )}
-      </div>
+            </div>
     </BaseDialog>
   );
 };
 
-export default TaskDialog;
+// Мемоизируем компонент для оптимизации рендеринга
+export default React.memo(TaskDialog);
