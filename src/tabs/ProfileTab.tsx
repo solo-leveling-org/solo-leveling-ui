@@ -144,7 +144,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
         }}></div>
 
         {/* Content container */}
-        <div className="relative z-10 min-h-screen profile-content-container px-4 md:px-6 pb-24">
+        <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
           <div className="max-w-2xl mx-auto space-y-6">
             
             {/* Profile Card */}

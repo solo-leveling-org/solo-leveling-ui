@@ -26,6 +26,23 @@ export function useTelegram() {
     // Уведомляем Telegram, что приложение готово
     if (currentWebApp.ready) {
       currentWebApp.ready();
+      
+      // Best Practice: expand() должен вызываться сразу после ready() для мобильных устройств
+      // Это критически важно для корректной работы expand() на iOS и Android
+      // Проверяем платформу и вызываем expand() только для мобильных
+      const platform = currentWebApp.platform;
+      const isMobile = platform === 'ios' || platform === 'android';
+      
+      if (isMobile && currentWebApp.expand && !currentWebApp.isExpanded) {
+        // Вызываем expand() сразу после ready() для мобильных устройств
+        // Это лучшая практика согласно документации Telegram WebApp API
+        try {
+          currentWebApp.expand();
+          console.log('[Telegram] expand() called immediately after ready() for mobile platform:', platform);
+        } catch (error) {
+          console.warn('[Telegram] Failed to expand after ready():', error);
+        }
+      }
     }
     
     // Отключаем возможность закрытия свайпом вниз
@@ -38,8 +55,8 @@ export function useTelegram() {
       currentWebApp.disableVerticalSwipes();
     }
     
-    // Примечание: Управление полноэкранным режимом (expand) 
-    // вынесено в useTelegramAdaptive для централизации логики
+    // Примечание: Дополнительное управление полноэкранным режимом (expand) 
+    // также есть в useTelegramAdaptive для дополнительных попыток и fallback логики
     
     // Устанавливаем начальные данные
     const newUser = currentWebApp.initDataUnsafe?.user;
