@@ -45,7 +45,7 @@ const TasksList: React.FC<TasksListProps> = ({
   const dateFilters = useMemo(() => propDateFilters || { from: '', to: '' }, [propDateFilters]);
   const enumFilters = useMemo(() => propEnumFilters || {}, [propEnumFilters]);
   const sorts: {field: string, mode: OrderMode}[] = useMemo(() => [{
-    field: 'createdAt',
+    field: 'updatedAt',
     mode: OrderModeEnum.DESC
   }], []);
   
