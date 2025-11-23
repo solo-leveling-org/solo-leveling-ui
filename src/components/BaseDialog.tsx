@@ -76,12 +76,29 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
           }
         }
         
+        @keyframes baseDialogContentFadeInMobile {
+          from {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.98);
+          }
+          to {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+          }
+        }
+        
         .base-dialog-backdrop {
-          animation: baseDialogBackdropFadeIn 0.2s ease-out forwards;
+          animation: baseDialogBackdropFadeIn 0.3s ease-out forwards;
         }
         
         .base-dialog-content {
           animation: baseDialogContentFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        @media (max-width: 768px) {
+          .base-dialog-content {
+            animation: baseDialogContentFadeInMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          }
         }
       `}</style>
       {/* Backdrop - единообразное затемнение без blur */}
@@ -103,7 +120,7 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
       
       {/* Dialog Content */}
       <div
-        className={`base-dialog-content fixed left-1/2 top-1/2 z-[10000] w-full ${maxWidth} ${maxHeight} overflow-hidden rounded-2xl md:rounded-3xl ${contentClassName}`}
+        className={`base-dialog-content fixed left-1/2 top-1/2 z-[10000] w-[calc(100%-2rem)] sm:w-full ${maxWidth} ${maxHeight} flex flex-col rounded-2xl md:rounded-3xl ${contentClassName}`}
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
         style={{
@@ -145,8 +162,8 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
           }}
         />
 
-        {/* Children content */}
-        <div className="relative z-10">{children}</div>
+        {/* Children content - с поддержкой скролла */}
+        <div className="relative z-10 flex-1 flex flex-col min-h-0">{children}</div>
       </div>
     </>
   );

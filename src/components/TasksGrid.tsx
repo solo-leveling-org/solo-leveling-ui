@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import type { PlayerTask } from '../api';
 import { PlayerTaskStatus } from '../api';
 import TaskCard from './TaskCard';
@@ -13,12 +13,20 @@ type TasksGridProps = {
 };
 
 const TasksGrid: React.FC<TasksGridProps> = ({ tasks, loading, onTaskClick, onComplete, onReplace }) => {
-  const visibleTasks = useMemo(() => tasks.filter(
+  const visibleTasks = useMemo(() => {
+    const filtered = tasks.filter(
       t => t.status === PlayerTaskStatus.PREPARING ||
            t.status === PlayerTaskStatus.IN_PROGRESS ||
          t.status === PlayerTaskStatus.COMPLETED ||
          t.status === PlayerTaskStatus.SKIPPED
-  ), [tasks]);
+    );
+    // Сортируем по order (по возрастанию)
+    return filtered.sort((a, b) => {
+      const orderA = a.order ?? 0;
+      const orderB = b.order ?? 0;
+      return orderA - orderB;
+    });
+  }, [tasks]);
 
   // Мемоизируем обработчики для каждой задачи
   const taskHandlers = useMemo(() => {

@@ -199,6 +199,8 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
           style={{ 
           transition: isVisible ? 'transform 0.3s ease-out 0.15s, opacity 0.3s ease-out 0.15s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
           }}
+          onClick={(e) => e.stopPropagation()} // Предотвращаем закрытие при клике внутри контента
+          onMouseDown={(e) => e.stopPropagation()} // Предотвращаем закрытие при mousedown внутри контента
         >
           {children}
         </div>

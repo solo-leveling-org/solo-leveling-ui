@@ -110,7 +110,8 @@ const TasksList: React.FC<TasksListProps> = ({
             }] : undefined,
             enumFilters: allEnumFilters.length > 0 ? allEnumFilters : undefined
           },
-          sorts: sorts.length > 0 ? sorts : undefined
+          // Всегда отправляем сортировку по createdAt (как в списке транзакций)
+          sorts: sorts
         }
       };
 

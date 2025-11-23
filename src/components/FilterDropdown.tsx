@@ -25,12 +25,18 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useLocalization();
 
-  const handleOptionClick = (optionName: string) => {
+  const handleOptionClick = (e: React.MouseEvent, optionName: string) => {
+    e.stopPropagation(); // Предотвращаем всплытие события
+    e.preventDefault(); // Предотвращаем стандартное поведение
     const isSelected = selectedValues.includes(optionName);
     const newValues = isSelected
       ? selectedValues.filter(v => v !== optionName)
       : [...selectedValues, optionName];
     onSelectionChange(newValues);
+  };
+  
+  const handleOptionMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Предотвращаем всплытие mousedown события
   };
 
   const getDisplayText = () => {
@@ -69,13 +75,18 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
       hasValue={hasValue}
       onClear={handleClear}
     >
-      <div className="space-y-2 p-2">
+      <div 
+        className="space-y-2 p-2"
+        onClick={(e) => e.stopPropagation()} // Предотвращаем всплытие всех кликов внутри контейнера
+        onMouseDown={(e) => e.stopPropagation()} // Предотвращаем всплытие mousedown событий
+      >
         {options.map((option, index) => {
           const isSelected = selectedValues.includes(option.name);
           return (
             <button
               key={option.name}
-              onClick={() => handleOptionClick(option.name)}
+              onClick={(e) => handleOptionClick(e, option.name)}
+              onMouseDown={handleOptionMouseDown}
               className="w-full flex items-center justify-between px-4 py-3 text-left rounded-xl transition-all duration-300 select-none group hover:scale-[1.02] active:scale-[0.98]"
               style={{
                 background: isSelected

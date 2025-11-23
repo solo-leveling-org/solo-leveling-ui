@@ -62,8 +62,9 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
         }
       `}</style>
 
+        <div className="flex flex-col h-full min-h-0">
           {/* Header */}
-          <div className="relative z-10 p-6 pb-4 border-b" style={{
+          <div className="relative z-10 p-6 pb-4 border-b flex-shrink-0" style={{
             borderColor: 'rgba(220, 235, 245, 0.1)'
           }}>
             <div className="flex items-center justify-between">
@@ -95,9 +96,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
           </div>
 
           {/* Content */}
-          <div className="relative z-10 px-6 pb-4 overflow-y-auto overflow-x-hidden" style={{ 
-            maxHeight: 'calc(90vh - 200px)'
-          }}>
+          <div className="relative z-10 px-6 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
             
             {/* Level Progress - Solo Leveling Style */}
             <div 
@@ -684,6 +683,7 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
               </div>
             </div>
           </div>
+        </div>
     </BaseDialog>
     );
 };
