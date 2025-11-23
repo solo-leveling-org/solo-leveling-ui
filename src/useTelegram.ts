@@ -24,60 +24,60 @@ export function useTelegram() {
     setWebApp(currentWebApp);
     
     // Уведомляем Telegram, что приложение готово
-    if (currentWebApp.ready) {
+    if (typeof currentWebApp.ready === 'function') {
       currentWebApp.ready();
-      
-      // Используем новый API для управления полноэкранным режимом
-      // web_app_request_fullscreen для мобильных устройств
-      // web_app_exit_fullscreen для desktop устройств
-      const platform = currentWebApp.platform;
-      const isDesktop = platform === 'macos' || platform === 'windows' || platform === 'linux' || platform === 'web';
-      const isMobile = platform === 'ios' || platform === 'android';
-      
-      // Функция для отправки события через postEvent
-      const postEvent = (eventType: string, eventData?: any) => {
-        try {
-          // Проверяем наличие метода postEvent в WebApp
-          if (typeof (currentWebApp as any).postEvent === 'function') {
-            (currentWebApp as any).postEvent(eventType, eventData);
-            console.log(`[Telegram] postEvent called: ${eventType}`, eventData);
-          } else if (typeof (window as any).Telegram?.WebApp?.postEvent === 'function') {
-            (window as any).Telegram.WebApp.postEvent(eventType, eventData);
-            console.log(`[Telegram] postEvent called via window: ${eventType}`, eventData);
-          } else {
-            // Fallback: используем expand() для мобильных, если postEvent недоступен
-            if (isMobile && currentWebApp.expand && !currentWebApp.isExpanded) {
-              currentWebApp.expand();
-              console.log('[Telegram] Fallback: expand() called for mobile platform:', platform);
-            }
-          }
-        } catch (error) {
-          console.warn(`[Telegram] Failed to postEvent ${eventType}:`, error);
-          // Fallback: используем expand() для мобильных
+    }
+    
+    // Используем новый API для управления полноэкранным режимом
+    // web_app_request_fullscreen для мобильных устройств (fullscreen mode)
+    // web_app_request_fullscreen для desktop устройств (fullsize mode)
+    const platform = currentWebApp.platform;
+    const isDesktop = platform === 'macos' || platform === 'windows' || platform === 'linux' || platform === 'web';
+    const isMobile = platform === 'ios' || platform === 'android';
+    
+    // Функция для отправки события через postEvent
+    const postEvent = (eventType: string, eventData?: any) => {
+      try {
+        // Проверяем наличие метода postEvent в WebApp
+        if (typeof (currentWebApp as any).postEvent === 'function') {
+          (currentWebApp as any).postEvent(eventType, eventData);
+          console.log(`[Telegram] postEvent called: ${eventType}`, eventData || '');
+        } else if (typeof (window as any).Telegram?.WebApp?.postEvent === 'function') {
+          (window as any).Telegram.WebApp.postEvent(eventType, eventData);
+          console.log(`[Telegram] postEvent called via window: ${eventType}`, eventData || '');
+        } else {
+          // Fallback: используем expand() для мобильных, если postEvent недоступен
           if (isMobile && currentWebApp.expand && !currentWebApp.isExpanded) {
-            try {
-              currentWebApp.expand();
-              console.log('[Telegram] Fallback: expand() called after postEvent error');
-            } catch (expandError) {
-              console.warn('[Telegram] Failed to expand after postEvent error:', expandError);
-            }
+            currentWebApp.expand();
+            console.log('[Telegram] Fallback: expand() called for mobile platform:', platform);
           }
         }
-      };
-      
-      if (isMobile) {
-        // Для мобильных устройств запрашиваем полноэкранный режим
-        setTimeout(() => {
-          postEvent('web_app_request_fullscreen');
-        }, 100);
-      } else if (isDesktop) {
-        // Для desktop устройств выходим из полноэкранного режима (если был включен)
-        // Это работает только если в BotFather установлен режим "fullscreen" по умолчанию
-        setTimeout(() => {
-          postEvent('web_app_exit_fullscreen');
-        }, 100);
+      } catch (error) {
+        console.warn(`[Telegram] Failed to postEvent ${eventType}:`, error);
+        // Fallback: используем expand() для мобильных
+        if (isMobile && currentWebApp.expand && !currentWebApp.isExpanded) {
+          try {
+            currentWebApp.expand();
+            console.log('[Telegram] Fallback: expand() called after postEvent error');
+          } catch (expandError) {
+            console.warn('[Telegram] Failed to expand after postEvent error:', expandError);
+          }
+        }
       }
-    }
+    };
+    
+    // Вызываем postEvent после небольшой задержки, чтобы WebApp успел инициализироваться
+    setTimeout(() => {
+      if (isMobile) {
+        // Для мобильных устройств запрашиваем полноэкранный режим (fullscreen)
+        postEvent('web_app_request_fullscreen');
+      } else if (isDesktop) {
+        // Для desktop устройств запрашиваем fullsize режим
+        // В Telegram Mini Apps для desktop fullsize - это режим по умолчанию,
+        // но мы явно запрашиваем его через web_app_request_fullscreen
+        postEvent('web_app_request_fullscreen');
+      }
+    }, 100);
     
     // Отключаем возможность закрытия свайпом вниз
     if (currentWebApp.enableClosingConfirmation) {
