@@ -50,7 +50,7 @@ export function useTelegramAdaptive() {
             } else if (typeof (window as any).Telegram?.WebApp?.postEvent === 'function') {
               (window as any).Telegram.WebApp.postEvent(eventType, eventData);
             } else if (tg.expand && !tg.isExpanded) {
-              tg.expand();
+                tg.expand();
             }
           } catch (error) {
             if (tg.expand && !tg.isExpanded) {

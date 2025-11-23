@@ -47,7 +47,7 @@ export function useTelegram() {
           } else if (typeof (window as any).Telegram?.WebApp?.postEvent === 'function') {
             (window as any).Telegram.WebApp.postEvent(eventType, eventData);
           } else if (isMobile && currentWebApp.expand && !currentWebApp.isExpanded) {
-            currentWebApp.expand();
+              currentWebApp.expand();
           }
         } catch (error) {
           if (isMobile && currentWebApp.expand && !currentWebApp.isExpanded) {
@@ -71,12 +71,7 @@ export function useTelegram() {
           }
         }, 100);
       }
-    }
-    
-    // Отключаем возможность закрытия свайпом вниз
-    if (currentWebApp.enableClosingConfirmation) {
-      currentWebApp.enableClosingConfirmation();
-    }
+      }
     
     // Отключаем возможность закрытия свайпом
     if (currentWebApp.disableVerticalSwipes) {
