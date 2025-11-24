@@ -408,7 +408,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
 
                   {/* Intelligence */}
                   <Card 
-                    className="border-0 shadow-none bg-transparent text-center p-4 transition-all duration-300 hover:scale-105"
+                    className="border-0 shadow-none bg-transparent text-center p-4 transition-all duration-300 hover:scale-105 flex flex-col items-center justify-center"
                     style={{
                       background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
                       backdropFilter: 'blur(10px)',
@@ -437,7 +437,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ isAuthenticated }) => {
                       {intelligence}
                     </div>
                     <div 
-                      className="text-[10px] md:text-xs font-tech"
+                      className="text-[10px] md:text-xs font-tech text-center"
                       style={{ color: 'rgba(220, 235, 245, 0.7)' }}
                     >
                       {t('profile.stats.intelligence')}
