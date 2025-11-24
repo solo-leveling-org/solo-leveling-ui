@@ -11,15 +11,55 @@ export function useTelegramAdaptive() {
   const { webApp } = useTelegram();
 
   useEffect(() => {
-    // Определяем платформу через Telegram WebApp API
     const tg = webApp || (window as any).Telegram?.WebApp;
+    
+    // Функция для определения desktop по дополнительным признакам
+    const detectDesktopByFallback = (): boolean => {
+      // Проверяем userAgent для определения desktop
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isDesktopUA = /macintosh|mac os x|windows|linux/.test(userAgent) && !/mobile|android|iphone|ipad/.test(userAgent);
+      
+      // Проверяем размер экрана (desktop обычно шире)
+      const isWideScreen = window.innerWidth >= 768;
+      
+      // Проверяем наличие мыши (touch devices обычно не имеют мыши)
+      const hasMouse = window.matchMedia('(pointer: fine)').matches;
+      
+      return isDesktopUA || (isWideScreen && hasMouse);
+    };
     
     if (tg) {
       const platform = tg.platform;
-      const isDesktop = platform === 'macos' || platform === 'windows' || platform === 'linux' || platform === 'web';
-      const isMobile = platform === 'ios' || platform === 'android';
       
-      if (isDesktop) {
+      // Определяем desktop: явно указанные платформы
+      const isDesktopByPlatform = platform === 'macos' || platform === 'windows' || platform === 'linux' || platform === 'web';
+      const isMobileByPlatform = platform === 'ios' || platform === 'android';
+      
+      // Если platform не определен, пустая строка, или не распознан - используем fallback
+      const platformIsValid = platform && typeof platform === 'string' && platform.trim() !== '';
+      
+      let finalIsDesktop: boolean;
+      let finalIsMobile: boolean;
+      
+      if (isDesktopByPlatform) {
+        finalIsDesktop = true;
+        finalIsMobile = false;
+      } else if (isMobileByPlatform) {
+        finalIsDesktop = false;
+        finalIsMobile = true;
+      } else if (!platformIsValid) {
+        // Platform не определен или пустой - используем fallback
+        const fallbackIsDesktop = detectDesktopByFallback();
+        finalIsDesktop = fallbackIsDesktop;
+        finalIsMobile = !fallbackIsDesktop;
+      } else {
+        // Platform определен, но не распознан - используем fallback
+        const fallbackIsDesktop = detectDesktopByFallback();
+        finalIsDesktop = fallbackIsDesktop;
+        finalIsMobile = !fallbackIsDesktop;
+      }
+      
+      if (finalIsDesktop) {
         document.body.classList.add('desktop-version');
         document.body.classList.remove('mobile-version');
         
@@ -30,7 +70,7 @@ export function useTelegramAdaptive() {
             }
           }, 500);
         }
-      } else if (isMobile) {
+      } else if (finalIsMobile) {
         document.body.classList.add('mobile-version');
         document.body.classList.remove('desktop-version');
         
@@ -77,8 +117,15 @@ export function useTelegramAdaptive() {
           }, 1000);
         }
       } else {
-        document.body.classList.add('mobile-version');
-        document.body.classList.remove('desktop-version');
+        // Fallback: если ничего не определилось, считаем desktop по размеру экрана
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+          document.body.classList.add('mobile-version');
+          document.body.classList.remove('desktop-version');
+        } else {
+          document.body.classList.add('desktop-version');
+          document.body.classList.remove('mobile-version');
+        }
       }
     } else {
       const isMobile = window.innerWidth <= 768;
