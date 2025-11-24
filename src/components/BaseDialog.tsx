@@ -80,6 +80,16 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
       <style>{`
         .base-dialog-content-animated {
           will-change: transform, opacity;
+          /* Убираем размытие на desktop - четкий рендеринг текста и элементов */
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          text-rendering: optimizeLegibility;
+          image-rendering: -webkit-optimize-contrast;
+          image-rendering: crisp-edges;
+          /* Принудительное использование GPU без размытия */
+          transform: translateZ(0);
+          backface-visibility: hidden;
+          perspective: 1000px;
         }
         
         @media (max-width: 768px) {
@@ -105,6 +115,22 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
           .base-dialog-content-animated {
             /* Увеличиваем максимальную высоту на мобильных, оставляя минимальный отступ (6rem для безопасности) */
             max-height: calc(100vh - 80px - env(safe-area-inset-bottom, 0px) - 6rem) !important;
+          }
+        }
+        
+        /* Четкий рендеринг всех элементов внутри диалога на desktop */
+        @media (min-width: 769px) {
+          .base-dialog-content-animated * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+          }
+          
+          .base-dialog-content-animated svg,
+          .base-dialog-content-animated img,
+          .base-dialog-content-animated canvas {
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
           }
         }
       `}</style>
@@ -134,8 +160,8 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
         onMouseDown={(e) => e.stopPropagation()}
         style={{
           transform: isVisible 
-            ? 'translate(-50%, -50%) scale(1)' 
-            : `translate(-50%, -50%) scale(${isMobile ? 0.96 : 0.92})`,
+            ? (isMobile ? 'translate(-50%, -50%) scale(1)' : 'translate3d(-50%, -50%, 0) scale(1)')
+            : (isMobile ? `translate(-50%, -50%) scale(0.96)` : `translate3d(-50%, -50%, 0) scale(0.92)`),
           opacity: isVisible ? 1 : 0,
           transition: isVisible 
             ? `transform ${isMobile ? '0.4s' : '0.35s'} cubic-bezier(0.16, 1, 0.3, 1), opacity ${isMobile ? '0.4s' : '0.35s'} ease-out`
@@ -147,6 +173,9 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
             0 0 30px rgba(180, 220, 240, 0.2),
             inset 0 0 30px rgba(200, 230, 245, 0.03)
           `,
+          // Дополнительные свойства для четкого рендеринга на desktop
+          WebkitFontSmoothing: 'antialiased',
+          MozOsxFontSmoothing: 'grayscale',
         }}
       >
         {/* Holographic grid overlay */}
