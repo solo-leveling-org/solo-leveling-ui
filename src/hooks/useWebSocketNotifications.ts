@@ -1,11 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { Client, IMessage } from '@stomp/stompjs';
-import { OpenAPI } from '../api';
-import type { Message, LoginResponse } from '../api';
+import type { LoginResponse } from '../api';
 import { useNotification } from '../components/NotificationSystem';
 import { useSettings } from './useSettings';
 import { fetchAndUpdateUserLocale } from '../utils/localeUtils';
 import { useMocks } from '../config/environment';
+import { websocketManager } from '../services/websocketManager';
 
 interface UseWebSocketNotificationsProps {
   enabled: boolean;
@@ -13,10 +12,10 @@ interface UseWebSocketNotificationsProps {
 }
 
 export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocketNotificationsProps) {
-  const clientRef = useRef<Client | null>(null);
   const { show } = useNotification();
   const { updateSettings } = useSettings();
   const isMockMode = useMocks;
+  const handlersRegisteredRef = useRef(false);
 
   useEffect(() => {
     // В мок режиме слушаем события mock-notification вместо WebSocket
@@ -57,46 +56,6 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
       };
     }
 
-    if (!enabled) {
-      // Отключаем WebSocket если не авторизован
-      if (clientRef.current) {
-        try {
-          clientRef.current.deactivate();
-        } catch (e) {
-          console.warn('[WS] error during deactivate', e);
-        }
-        clientRef.current = null;
-      }
-      return;
-    }
-
-    // Проверяем, что WebSocket еще не подключен
-    if (clientRef.current && clientRef.current.connected) {
-      console.log('[WS] Already connected, skipping');
-      return;
-    }
-
-    // Если есть промис авторизации, ждем его завершения и подключаемся к WebSocket
-    if (authPromise) {
-      authPromise
-        .then((response) => {
-          const token = response?.accessToken?.token;
-          if (token && !clientRef.current?.connected) {
-            connectWebSocket(token);
-          }
-        })
-        .catch((error) => {
-          console.error('[WS] Authentication failed:', error);
-        });
-    } else {
-      // Если промиса нет, но enabled = true, значит пользователь уже авторизован
-      // Получаем токен из localStorage
-      const token = localStorage.getItem('accessToken');
-      if (token && !clientRef.current?.connected) {
-        connectWebSocket(token);
-      }
-    }
-
     // Функция для обработки обновления локализации
     const handleLocaleUpdate = async () => {
       try {
@@ -107,91 +66,83 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
       }
     };
 
-    function connectWebSocket(token: string) {
-      if (!token) {
-        return;
-      }
-
-      // Проверяем, что WebSocket еще не подключен
-      if (clientRef.current && clientRef.current.connected) {
-        console.log('[WS] Already connected, skipping connection');
-        return;
-      }
-
-      const base = OpenAPI.BASE || '';
-      const url = new URL(base);
-      const isSecure = url.protocol === 'https:';
-      const wsProtocol = isSecure ? 'wss:' : 'ws:';
-      const brokerURL = `${wsProtocol}//${url.host}/ws?token=${encodeURIComponent(token)}`;
-
-      const client = new Client({
-        brokerURL,
-        reconnectDelay: 5000,
-        heartbeatIncoming: 10000,
-        heartbeatOutgoing: 10000,
-        onConnect: () => {
-          console.log('[WS] Connected successfully');
-          client.subscribe(`/user/queue/notifications`, (message: IMessage) => {
-            try {
-              const body: Message = JSON.parse(message.body);
-              const notification = body.payload;
-
-              // Если visible = true, показываем уведомление пользователю
-              if (notification.visible && notification.message) {
-                show({
-                  message: notification.message,
-                  type: notification.type,
-                  duration: 3000,
-                });
-              }
-
-              // Обрабатываем действия в зависимости от source
-              switch (notification.source) {
-                case 'tasks':
-                  // Отправляем кастомное событие для уведомлений с source = 'tasks'
-                  const event = new CustomEvent('tasks-notification', {
-                    detail: { source: notification.source }
-                  });
-                  window.dispatchEvent(event);
-                  break;
-
-                case 'locale':
-                  // Получаем текущую локализацию пользователя и обновляем UI
-                  handleLocaleUpdate();
-                  break;
-
-                default:
-                  console.log('[WS][Notification] Unknown source:', notification.source);
-              }
-            } catch (e) {
-              console.warn('[WS][Notification] Failed to parse message', e, message.body);
-            }
+    // Регистрируем обработчики уведомлений (только один раз)
+    if (!handlersRegisteredRef.current) {
+      // Обработчик уведомлений
+      const removeNotificationHandler = websocketManager.addNotificationHandler((notification) => {
+        // Если visible = true, показываем уведомление пользователю
+        if (notification.visible && notification.message) {
+          show({
+            message: notification.message,
+            type: notification.type,
+            duration: 3000,
           });
-        },
-        onStompError: (frame: any) => {
-          console.error('[WS][STOMP ERROR]', frame.headers['message'], frame.body);
-        },
-        onWebSocketError: (event: Event) => {
-          console.error('[WS][SOCKET ERROR]', event);
-        },
-        onWebSocketClose: (event: CloseEvent) => {
-          console.warn('[WS][CLOSED]', event.code, event.reason);
-        },
+        }
+
+        // Обрабатываем действия в зависимости от source
+        switch (notification.source) {
+          case 'tasks':
+            // Отправляем кастомное событие для уведомлений с source = 'tasks'
+            const event = new CustomEvent('tasks-notification', {
+              detail: { source: notification.source }
+            });
+            window.dispatchEvent(event);
+            break;
+
+          default:
+            // locale обрабатывается отдельным обработчиком
+            break;
+        }
       });
 
-      clientRef.current = client;
-      client.activate();
+      // Обработчик обновления локализации
+      const removeLocaleHandler = websocketManager.addLocaleUpdateHandler(handleLocaleUpdate);
+
+      handlersRegisteredRef.current = true;
+
+      // Очистка обработчиков при размонтировании
+      return () => {
+        removeNotificationHandler();
+        removeLocaleHandler();
+        handlersRegisteredRef.current = false;
+      };
+    }
+  }, [show, updateSettings, isMockMode]);
+
+  // Отдельный эффект для управления подключением
+  useEffect(() => {
+    if (isMockMode) {
+      return;
+    }
+
+    if (!enabled) {
+      // Отключаем WebSocket если не авторизован
+      websocketManager.disable();
+      return;
+    }
+
+    // Если есть промис авторизации, ждем его завершения перед включением менеджера
+    if (authPromise) {
+      authPromise
+        .then(() => {
+          // После успешной авторизации включаем менеджер
+          // Менеджер сам получит токен из localStorage через auth.getAccessToken()
+          websocketManager.enable();
+        })
+        .catch((error) => {
+          console.error('[WS] Authentication failed:', error);
+          websocketManager.disable();
+        });
+    } else {
+      // Если промиса нет, но enabled = true, значит пользователь уже авторизован
+      // Включаем менеджер, он сам получит токен из localStorage
+      websocketManager.enable();
     }
 
     return () => {
-      try {
-        if (clientRef.current) {
-          clientRef.current.deactivate();
-        }
-      } catch (e) {
-        console.warn('[WS] error during deactivate', e);
-      }
-      clientRef.current = null;
+      // Не отключаем менеджер при размонтировании компонента,
+      // так как он может использоваться другими компонентами
+      // Менеджер будет отключен только если enabled станет false
     };
-  }, [enabled, authPromise, show, updateSettings, isMockMode]);
+  }, [enabled, authPromise, isMockMode]);
 }
