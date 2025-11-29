@@ -14,10 +14,8 @@ import {
 } from 'react-router-dom';
 import TopicsTab from './tabs/TopicsTab';
 import WelcomeTab from './tabs/WelcomeTab';
-import {useSettings} from './hooks/useSettings';
 import {useAuth} from './hooks/useAuth';
 import {useLocaleSync} from './hooks/useLocaleSync';
-import WelcomeTabSkeleton from './components/WelcomeTabSkeleton';
 import {useWebSocketNotifications} from './hooks/useWebSocketNotifications';
 import {NotificationProvider} from './components/NotificationSystem';
 import {useTelegram} from './useTelegram';
@@ -44,20 +42,11 @@ function AppRoutes() {
     isAuthLoading,
     authPromise
   } = useAuth();
-  const {localeLoaded, setLocaleLoaded} = useSettings();
-
   // Синхронизация локализации
   useLocaleSync(isAuthenticated);
 
   // Подключение к WebSocket после успешной авторизации
   useWebSocketNotifications({enabled: isAuthenticated, authPromise});
-
-  // Устанавливаем localeLoaded для случаев без авторизации
-  useEffect(() => {
-    if (isTelegramChecked && (!isAuthenticated || showNoTelegramError || authError)) {
-      setLocaleLoaded(true);
-    }
-  }, [isTelegramChecked, isAuthenticated, showNoTelegramError, authError, setLocaleLoaded]);
 
   // Автоматический скролл наверх при смене маршрута
   useEffect(() => {
@@ -66,11 +55,6 @@ function AppRoutes() {
     }
   }, [location.pathname]);
 
-
-  // Показываем skeleton до загрузки локализации
-  if (!localeLoaded) {
-    return <WelcomeTabSkeleton/>;
-  }
 
   return (
       <div className="App">
