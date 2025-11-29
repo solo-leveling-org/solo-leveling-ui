@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLocalization } from '../hooks/useLocalization';
+import { ReactComponent as StarIcon } from '../assets/icons/star.svg';
 
 export interface RarityIndicatorProps {
   rarity: string;
@@ -109,24 +110,17 @@ const RarityIndicator: React.FC<RarityIndicatorProps> = ({
         {/* Звездочки для обозначения редкости */}
         <div className="flex items-center gap-0.5">
           {Array.from({ length: starCount }).map((_, index) => (
-            <svg
+            <StarIcon
               key={index}
               width={starSize}
               height={starSize}
-              viewBox="0 0 24 24"
-              fill="none"
               style={{
+                fill: colorScheme.neon,
+                stroke: colorScheme.neon,
                 filter: `drop-shadow(0 0 ${size === 'sm' ? '4px' : size === 'lg' ? '6px' : '5px'} ${colorScheme.neon})`,
+                opacity: 0.9,
               }}
-            >
-              <path
-                d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
-                fill={colorScheme.neon}
-                stroke={colorScheme.neon}
-                strokeWidth="0.5"
-                opacity="0.9"
-              />
-            </svg>
+            />
           ))}
         </div>
         
@@ -152,24 +146,17 @@ const RarityIndicator: React.FC<RarityIndicatorProps> = ({
       {/* Звездочки для обозначения редкости */}
       <div className="flex items-center gap-0.5">
         {Array.from({ length: starCount }).map((_, index) => (
-          <svg
+          <StarIcon
             key={index}
             width={starSize}
             height={starSize}
-            viewBox="0 0 24 24"
-            fill="none"
             style={{
+              fill: colorScheme.neon,
+              stroke: colorScheme.neon,
               filter: `drop-shadow(0 0 ${size === 'sm' ? '3px' : size === 'lg' ? '5px' : '4px'} ${colorScheme.neon})`,
+              opacity: 0.9,
             }}
-          >
-            <path
-              d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
-              fill={colorScheme.neon}
-              stroke={colorScheme.neon}
-              strokeWidth="0.5"
-              opacity="0.9"
-            />
-          </svg>
+          />
         ))}
       </div>
     </div>
