@@ -306,6 +306,39 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
                   background: colorScheme.accentColor
                 }}></div>
 
+                {/* Checkmark indicator for selected topic */}
+                {isSelected && (
+                  <div 
+                    className="absolute top-2 right-2 z-20 flex items-center justify-center rounded-full transition-all duration-300"
+                    style={{
+                      width: '28px',
+                      height: '28px',
+                      background: `linear-gradient(135deg, ${colorScheme.accentColor} 0%, ${colorScheme.accentColor.replace('0.6', '0.4')} 100%)`,
+                      border: `2px solid ${colorScheme.borderColor}`,
+                      boxShadow: `0 0 12px ${colorScheme.accentColor}, inset 0 0 8px rgba(255, 255, 255, 0.2)`,
+                      animation: 'checkmarkPulse 2s ease-in-out infinite'
+                    }}
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      style={{ 
+                        color: '#ffffff',
+                        filter: 'drop-shadow(0 0 2px rgba(255, 255, 255, 0.8))'
+                      }}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={3}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                )}
+
                 {/* Content */}
                 <div className="relative z-10 text-center">
                   {/* Icon */}
@@ -549,6 +582,16 @@ const TopicsTab: React.FC<TopicsTabProps> = ({ isAuthenticated }) => {
           50% { 
             opacity: 0.7;
             transform: scale(1.2);
+          }
+        }
+        @keyframes checkmarkPulse {
+          0%, 100% { 
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% { 
+            opacity: 0.9;
+            transform: scale(1.05);
           }
         }
       `}</style>
