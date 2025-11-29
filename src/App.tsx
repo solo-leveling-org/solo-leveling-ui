@@ -23,6 +23,7 @@ import {NotificationProvider} from './components/NotificationSystem';
 import {useTelegram} from './useTelegram';
 import {ModalProvider, useModal} from './contexts/ModalContext';
 import {useTelegramAdaptive} from './hooks/useTelegramAdaptive';
+import AuthLoadingScreen from './components/AuthLoadingScreen';
 
 function AppRoutes() {
   const location = useLocation();
@@ -40,6 +41,7 @@ function AppRoutes() {
     showNoTelegramError,
     isTelegramChecked,
     authError,
+    isAuthLoading,
     authPromise
   } = useAuth();
   const {localeLoaded, setLocaleLoaded} = useSettings();
@@ -72,6 +74,9 @@ function AppRoutes() {
 
   return (
       <div className="App">
+        {/* Экран загрузки авторизации */}
+        <AuthLoadingScreen isLoading={isAuthLoading} />
+        
         {!isTelegramChecked ? null : (
             <>
               {showNoTelegramError && (
