@@ -170,7 +170,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
 
   return (
     <div 
-      className={`group relative overflow-hidden cursor-pointer transition-transform duration-500 ease-out hover:scale-[1.02] animate-fadeIn ${isTransitioning ? 'task-status-transition' : ''}`}
+      className={`group relative overflow-hidden cursor-pointer transition-transform duration-500 ease-out hover:scale-[1.02] animate-fadeIn h-full flex flex-col ${isTransitioning ? 'task-status-transition' : ''}`}
       onClick={onClick}
       key={`${playerTask.id}-${status}`}
       style={cardStyle}
@@ -186,16 +186,32 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
         />
       </div>
 
-      <div className="relative z-10 p-6 min-h-[280px] flex flex-col">
+      <div className="relative z-10 p-6 min-h-[280px] h-full flex flex-col">
         {/* Header section with proper spacing */}
-        <div className="mb-6 pr-10 flex-grow">
-          <h3 
-            className="text-xl font-tech font-bold mb-3 leading-tight tracking-tight" 
-            data-text="true"
-            style={titleStyle}
-          >
-            {task?.title || ''}
-          </h3>
+        <div className="mb-6 flex-grow">
+          {/* Title with smart padding - only first 2 lines have right padding */}
+          <div className="mb-3" style={{ position: 'relative' }}>
+            {/* Floating element that creates space only for first 2 lines */}
+            <div 
+              style={{
+                float: 'right',
+                width: '120px',
+                height: 'calc(1.25rem * 2.5)',
+                shapeOutside: 'inset(0)',
+              }}
+            ></div>
+            <h3 
+              className="text-xl font-tech font-bold leading-tight tracking-tight" 
+              data-text="true"
+              style={{
+                ...titleStyle,
+                wordBreak: 'break-word',
+              }}
+            >
+              {task?.title || ''}
+            </h3>
+            <div style={{ clear: 'both' }}></div>
+          </div>
           <p 
             className="leading-relaxed line-clamp-3 text-sm font-medium" 
             data-text="true"
