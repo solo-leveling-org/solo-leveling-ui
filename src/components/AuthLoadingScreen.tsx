@@ -102,7 +102,7 @@ const AuthLoadingScreen: React.FC<AuthLoadingScreenProps> = ({
           <div 
             className="absolute inset-0 rounded-full blur-2xl pointer-events-none"
             style={{
-              background: 'radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%)',
+              background: 'radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%)',
               transform: 'scale(1.8)',
               animation: 'logoGlow 1.8s ease-in-out infinite'
             }}
@@ -135,52 +135,52 @@ const AuthLoadingScreen: React.FC<AuthLoadingScreenProps> = ({
         
         @keyframes logoGlow {
           0%, 100% {
-            opacity: 0.6;
+            opacity: 0.4;
             transform: scale(1.6);
           }
           50% {
-            opacity: 1;
+            opacity: 0.7;
             transform: scale(2);
           }
         }
         
         .logo-loading {
-          filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 40px rgba(255, 255, 255, 0.4));
+          filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.25));
         }
         
         .logo-loading path {
-          fill: #ffffff;
+          fill: #e8e8e8;
           animation: rainbowPlasma 3s ease-in-out infinite;
         }
         
         @keyframes rainbowPlasma {
           0% {
-            fill: #ffffff;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 20px rgba(255, 180, 255, 0.5)) drop-shadow(0 0 30px rgba(255, 200, 255, 0.3));
+            fill: #e8e8e8;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 15px rgba(255, 180, 255, 0.3)) drop-shadow(0 0 25px rgba(255, 200, 255, 0.2));
           }
           16.66% {
-            fill: #fff5ff;
-            filter: drop-shadow(0 0 10px rgba(255, 200, 255, 0.9)) drop-shadow(0 0 20px rgba(200, 180, 255, 0.5)) drop-shadow(0 0 30px rgba(200, 200, 255, 0.3));
+            fill: #e8e3e8;
+            filter: drop-shadow(0 0 8px rgba(255, 200, 255, 0.6)) drop-shadow(0 0 15px rgba(200, 180, 255, 0.3)) drop-shadow(0 0 25px rgba(200, 200, 255, 0.2));
           }
           33.33% {
-            fill: #f5f5ff;
-            filter: drop-shadow(0 0 10px rgba(200, 200, 255, 0.9)) drop-shadow(0 0 20px rgba(180, 220, 255, 0.5)) drop-shadow(0 0 30px rgba(200, 255, 255, 0.3));
+            fill: #e3e3e8;
+            filter: drop-shadow(0 0 8px rgba(200, 200, 255, 0.6)) drop-shadow(0 0 15px rgba(180, 220, 255, 0.3)) drop-shadow(0 0 25px rgba(200, 255, 255, 0.2));
           }
           50% {
-            fill: #f5ffff;
-            filter: drop-shadow(0 0 10px rgba(200, 255, 255, 0.9)) drop-shadow(0 0 20px rgba(180, 255, 220, 0.5)) drop-shadow(0 0 30px rgba(200, 255, 200, 0.3));
+            fill: #e3e8e8;
+            filter: drop-shadow(0 0 8px rgba(200, 255, 255, 0.6)) drop-shadow(0 0 15px rgba(180, 255, 220, 0.3)) drop-shadow(0 0 25px rgba(200, 255, 200, 0.2));
           }
           66.66% {
-            fill: #fffff5;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 200, 0.9)) drop-shadow(0 0 20px rgba(255, 220, 180, 0.5)) drop-shadow(0 0 30px rgba(255, 200, 200, 0.3));
+            fill: #e8e8e3;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 200, 0.6)) drop-shadow(0 0 15px rgba(255, 220, 180, 0.3)) drop-shadow(0 0 25px rgba(255, 200, 200, 0.2));
           }
           83.33% {
-            fill: #fff5f5;
-            filter: drop-shadow(0 0 10px rgba(255, 200, 200, 0.9)) drop-shadow(0 0 20px rgba(255, 180, 220, 0.5)) drop-shadow(0 0 30px rgba(255, 200, 255, 0.3));
+            fill: #e8e3e3;
+            filter: drop-shadow(0 0 8px rgba(255, 200, 200, 0.6)) drop-shadow(0 0 15px rgba(255, 180, 220, 0.3)) drop-shadow(0 0 25px rgba(255, 200, 255, 0.2));
           }
           100% {
-            fill: #ffffff;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 20px rgba(255, 180, 255, 0.5)) drop-shadow(0 0 30px rgba(255, 200, 255, 0.3));
+            fill: #e8e8e8;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 15px rgba(255, 180, 255, 0.3)) drop-shadow(0 0 25px rgba(255, 200, 255, 0.2));
           }
         }
       `}</style>
