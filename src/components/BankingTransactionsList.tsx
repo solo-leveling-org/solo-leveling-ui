@@ -181,7 +181,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       
       const newTransactions = response.transactions || [];
       // Если получили 0 записей, значит больше нет данных, даже если API вернул hasMore: true
-      const hasMoreData = newTransactions.length > 0 && (response.options?.hasMore || false);
+      const hasMoreData = newTransactions.length > 0 && (response.paging?.hasMore || false);
       
       if (reset) {
         setTransactions(newTransactions);

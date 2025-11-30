@@ -10,5 +10,6 @@ export type PlayerTaskTopic = {
     isActive: boolean;
     taskTopic: TaskTopic;
     level: Level;
+    isDisabled: boolean;
 };
 

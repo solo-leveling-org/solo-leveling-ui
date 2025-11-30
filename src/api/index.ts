@@ -38,12 +38,13 @@ export { PlayerBalanceTransactionType } from './models/PlayerBalanceTransactionT
 export type { PlayerTask } from './models/PlayerTask';
 export { PlayerTaskStatus } from './models/PlayerTaskStatus';
 export type { PlayerTaskTopic } from './models/PlayerTaskTopic';
-export type { QueryableResponse } from './models/QueryableResponse';
 export type { RefreshRequest } from './models/RefreshRequest';
 export type { RefreshResponse } from './models/RefreshResponse';
 export type { RequestQueryOptions } from './models/RequestQueryOptions';
+export type { ResponsePaging } from './models/ResponsePaging';
 export type { ResponseQueryOptions } from './models/ResponseQueryOptions';
 export type { SavePlayerTopicsRequest } from './models/SavePlayerTopicsRequest';
+export type { SearchEntitiesResponse } from './models/SearchEntitiesResponse';
 export type { SearchPlayerBalanceTransactionsResponse } from './models/SearchPlayerBalanceTransactionsResponse';
 export type { SearchPlayerTasksResponse } from './models/SearchPlayerTasksResponse';
 export type { SearchRequest } from './models/SearchRequest';

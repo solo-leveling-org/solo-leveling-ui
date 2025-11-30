@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { PlayerTask } from './PlayerTask';
-import type { QueryableResponse } from './QueryableResponse';
-export type SearchPlayerTasksResponse = (QueryableResponse & {
+import type { SearchEntitiesResponse } from './SearchEntitiesResponse';
+export type SearchPlayerTasksResponse = (SearchEntitiesResponse & {
     tasks: Array<PlayerTask>;
 });
 

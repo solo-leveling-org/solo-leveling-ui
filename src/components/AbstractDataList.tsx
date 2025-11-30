@@ -6,7 +6,8 @@ import type {
   Filter,
   Sort,
   LocalizedField,
-  ResponseQueryOptions
+  ResponseQueryOptions,
+  ResponsePaging
 } from '../api';
 import { OrderMode } from '../api';
 
@@ -24,6 +25,7 @@ export interface DataListProps<T extends DataItem> {
   loadData: (page: number, pageSize: number, filters?: Filter, sorts?: Sort[]) => Promise<{
     data: T[];
     options: ResponseQueryOptions;
+    paging?: ResponsePaging;
   }>;
   // Методы для рендеринга
   renderItem: (item: T, index: number, getLocalizedValue: (field: string, value: string) => string) => React.ReactNode;
@@ -107,7 +109,7 @@ export function AbstractDataList<T extends DataItem>({
       
       // Плавно обновляем данные без резких перемещений
       setData(result.data);
-      setTotalPages(result.options.totalPageCount || 1);
+      setTotalPages(result.paging?.totalPageCount || 1);
       setAvailableFilters(result.options.filters || []);
       setAvailableSorts(result.options.sorts || []);
       

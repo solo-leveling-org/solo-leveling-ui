@@ -52,7 +52,8 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
     
     return {
       data: response.transactions as TransactionItem[],
-      options: response.options
+      options: response.options,
+      paging: response.paging
     };
   };
 

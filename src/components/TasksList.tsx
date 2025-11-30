@@ -123,7 +123,7 @@ const TasksList: React.FC<TasksListProps> = ({
       
       const newTasks = response.tasks || [];
       // Если получили 0 записей, значит больше нет данных, даже если API вернул hasMore: true
-      const hasMoreData = newTasks.length > 0 && (response.options?.hasMore || false);
+      const hasMoreData = newTasks.length > 0 && (response.paging?.hasMore || false);
       
       if (reset) {
         setTasks(newTasks);

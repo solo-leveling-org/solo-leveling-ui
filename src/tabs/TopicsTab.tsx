@@ -22,15 +22,31 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
   const navigate = useNavigate();
   const {t} = useLocalization();
 
+  // Определяем заблокированные топики
+  const getIsDisabled = (topic: TaskTopic): boolean => {
+    const disabledTopics = [
+      TaskTopic.CYBERSPORT,
+      TaskTopic.DEVELOPMENT,
+      TaskTopic.READING,
+      TaskTopic.LANGUAGE_LEARNING
+    ];
+    return disabledTopics.includes(topic);
+  };
+
   // Загружаем топики пользователя только при монтировании компонента и если авторизованы
   useEffect(() => {
     if (isAuthenticated) {
       setLoading(true);
       api.getUserTopics()
           .then((res: GetPlayerTopicsResponse) => {
-            setPlayerTopics(res.playerTaskTopics);
+            // Устанавливаем isDisabled для заблокированных топиков
+            const topicsWithDisabled = res.playerTaskTopics.map(pt => ({
+              ...pt,
+              isDisabled: pt.isDisabled ?? getIsDisabled(pt.taskTopic)
+            }));
+            setPlayerTopics(topicsWithDisabled);
             // Сохраняем только активные топики как исходные для сравнения
-            const activeTopics = res.playerTaskTopics.filter(pt => pt.isActive);
+            const activeTopics = topicsWithDisabled.filter(pt => pt.isActive);
             setOriginalTopics(activeTopics);
             // firstTime определяется по пустоте списка активных топиков
             setFirstTime(activeTopics.length === 0);
@@ -64,7 +80,17 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
 
   const canSave = playerTopics.some(pt => pt.isActive) && (firstTime || hasChanges());
 
+  // Получаем isDisabled для топика (из данных или из функции)
+  const getTopicDisabled = (topic: TaskTopic): boolean => {
+    const playerTopic = playerTopics.find(pt => pt.taskTopic === topic);
+    return playerTopic?.isDisabled ?? getIsDisabled(topic);
+  };
+
   const handleToggle = (topic: TaskTopic) => {
+    // Не позволяем переключать заблокированные топики
+    if (getTopicDisabled(topic)) {
+      return;
+    }
     setPlayerTopics((prev) => {
       const existingTopic = prev.find(pt => pt.taskTopic === topic);
       if (existingTopic) {
@@ -76,11 +102,14 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
         );
       } else {
         // Если топика нет, добавляем его как активный с базовым уровнем
+        // Устанавливаем isDisabled для определенных топиков
+        const isDisabled = getIsDisabled(topic);
         return [...prev, {
           id: `temp-${topic}-${Date.now()}`, // Временный ID для новых топиков
           version: 1,
           taskTopic: topic,
           isActive: true,
+          isDisabled: isDisabled,
           level: {
             id: `temp-level-${topic}-${Date.now()}`,
             version: 1,
@@ -99,10 +128,16 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
     setSaving(true);
 
     // Отправляем только измененные топики
-    const changedTopics = playerTopics.filter(pt => {
-      const originalTopic = originalTopics.find(opt => opt.taskTopic === pt.taskTopic);
-      return !originalTopic || originalTopic.isActive !== pt.isActive;
-    });
+    // Убеждаемся, что isDisabled установлен для заблокированных топиков
+    const changedTopics = playerTopics
+      .filter(pt => {
+        const originalTopic = originalTopics.find(opt => opt.taskTopic === pt.taskTopic);
+        return !originalTopic || originalTopic.isActive !== pt.isActive;
+      })
+      .map(pt => ({
+        ...pt,
+        isDisabled: pt.isDisabled ?? getIsDisabled(pt.taskTopic)
+      }));
 
     if (changedTopics.length > 0) {
       await api.saveUserTopics(changedTopics);
@@ -118,9 +153,14 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
     }
 
     const updatedTopics = await api.getUserTopics();
-    setPlayerTopics(updatedTopics.playerTaskTopics || []);
+    // Устанавливаем isDisabled для заблокированных топиков при загрузке
+    const topicsWithDisabled = (updatedTopics.playerTaskTopics || []).map(pt => ({
+      ...pt,
+      isDisabled: pt.isDisabled ?? getIsDisabled(pt.taskTopic)
+    }));
+    setPlayerTopics(topicsWithDisabled);
     // В originalTopics сохраняем только активные топики
-    const activeTopics = (updatedTopics.playerTaskTopics || []).filter(pt => pt.isActive);
+    const activeTopics = topicsWithDisabled.filter(pt => pt.isActive);
     setOriginalTopics(activeTopics);
   };
 
@@ -134,20 +174,6 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
         bgGradient: 'linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.08) 100%)',
         selectedBgGradient: 'linear-gradient(135deg, rgba(220, 38, 38, 0.25) 0%, rgba(185, 28, 28, 0.15) 100%)',
         glow: '0 0 20px rgba(220, 38, 38, 0.3)',
-      },
-      MENTAL_HEALTH: {
-        accentColor: 'rgba(168, 85, 247, 0.6)',
-        borderColor: 'rgba(168, 85, 247, 0.3)',
-        bgGradient: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(147, 51, 234, 0.08) 100%)',
-        selectedBgGradient: 'linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(147, 51, 234, 0.15) 100%)',
-        glow: '0 0 20px rgba(168, 85, 247, 0.3)',
-      },
-      EDUCATION: {
-        accentColor: 'rgba(59, 130, 246, 0.6)',
-        borderColor: 'rgba(59, 130, 246, 0.3)',
-        bgGradient: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.08) 100%)',
-        selectedBgGradient: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(37, 99, 235, 0.15) 100%)',
-        glow: '0 0 20px rgba(59, 130, 246, 0.3)',
       },
       CREATIVITY: {
         accentColor: 'rgba(236, 72, 153, 0.6)',
@@ -163,7 +189,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
         selectedBgGradient: 'linear-gradient(135deg, rgba(234, 179, 8, 0.25) 0%, rgba(202, 138, 4, 0.15) 100%)',
         glow: '0 0 20px rgba(234, 179, 8, 0.3)',
       },
-      HEALTHY_EATING: {
+      NUTRITION: {
         accentColor: 'rgba(34, 197, 94, 0.6)',
         borderColor: 'rgba(34, 197, 94, 0.3)',
         bgGradient: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.08) 100%)',
@@ -177,29 +203,57 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
         selectedBgGradient: 'linear-gradient(135deg, rgba(249, 115, 22, 0.25) 0%, rgba(234, 88, 12, 0.15) 100%)',
         glow: '0 0 20px rgba(249, 115, 22, 0.3)',
       },
-      EXPERIMENTS: {
-        accentColor: 'rgba(6, 182, 212, 0.6)',
-        borderColor: 'rgba(6, 182, 212, 0.3)',
-        bgGradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(8, 145, 178, 0.08) 100%)',
-        selectedBgGradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.25) 0%, rgba(8, 145, 178, 0.15) 100%)',
-        glow: '0 0 20px rgba(6, 182, 212, 0.3)',
+      ADVENTURE: {
+        accentColor: 'rgba(245, 158, 11, 0.6)',
+        borderColor: 'rgba(245, 158, 11, 0.3)',
+        bgGradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.08) 100%)',
+        selectedBgGradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.15) 100%)',
+        glow: '0 0 20px rgba(245, 158, 11, 0.3)',
       },
-      ECOLOGY: {
-        accentColor: 'rgba(132, 204, 22, 0.6)',
-        borderColor: 'rgba(132, 204, 22, 0.3)',
-        bgGradient: 'linear-gradient(135deg, rgba(132, 204, 22, 0.15) 0%, rgba(101, 163, 13, 0.08) 100%)',
-        selectedBgGradient: 'linear-gradient(135deg, rgba(132, 204, 22, 0.25) 0%, rgba(101, 163, 13, 0.15) 100%)',
-        glow: '0 0 20px rgba(132, 204, 22, 0.3)',
+      MUSIC: {
+        accentColor: 'rgba(139, 92, 246, 0.6)',
+        borderColor: 'rgba(139, 92, 246, 0.3)',
+        bgGradient: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(124, 58, 237, 0.08) 100%)',
+        selectedBgGradient: 'linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(124, 58, 237, 0.15) 100%)',
+        glow: '0 0 20px rgba(139, 92, 246, 0.3)',
       },
-      TEAMWORK: {
+      BRAIN: {
+        accentColor: 'rgba(168, 85, 247, 0.6)',
+        borderColor: 'rgba(168, 85, 247, 0.3)',
+        bgGradient: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(147, 51, 234, 0.08) 100%)',
+        selectedBgGradient: 'linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(147, 51, 234, 0.15) 100%)',
+        glow: '0 0 20px rgba(168, 85, 247, 0.3)',
+      },
+      CYBERSPORT: {
+        accentColor: 'rgba(34, 197, 94, 0.6)',
+        borderColor: 'rgba(34, 197, 94, 0.3)',
+        bgGradient: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.08) 100%)',
+        selectedBgGradient: 'linear-gradient(135deg, rgba(34, 197, 94, 0.25) 0%, rgba(22, 163, 74, 0.15) 100%)',
+        glow: '0 0 20px rgba(34, 197, 94, 0.3)',
+      },
+      DEVELOPMENT: {
+        accentColor: 'rgba(59, 130, 246, 0.6)',
+        borderColor: 'rgba(59, 130, 246, 0.3)',
+        bgGradient: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.08) 100%)',
+        selectedBgGradient: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(37, 99, 235, 0.15) 100%)',
+        glow: '0 0 20px rgba(59, 130, 246, 0.3)',
+      },
+      READING: {
         accentColor: 'rgba(99, 102, 241, 0.6)',
         borderColor: 'rgba(99, 102, 241, 0.3)',
         bgGradient: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(79, 70, 229, 0.08) 100%)',
         selectedBgGradient: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(79, 70, 229, 0.15) 100%)',
         glow: '0 0 20px rgba(99, 102, 241, 0.3)',
       },
+      LANGUAGE_LEARNING: {
+        accentColor: 'rgba(6, 182, 212, 0.6)',
+        borderColor: 'rgba(6, 182, 212, 0.3)',
+        bgGradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(8, 145, 178, 0.08) 100%)',
+        selectedBgGradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.25) 0%, rgba(8, 145, 178, 0.15) 100%)',
+        glow: '0 0 20px rgba(6, 182, 212, 0.3)',
+      },
     };
-    return colorSchemes[topic] || colorSchemes.EDUCATION;
+    return colorSchemes[topic] || colorSchemes.DEVELOPMENT;
   };
 
   if (loading) {
@@ -276,6 +330,7 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
             {allTopics.map((topic, index) => {
               const playerTopic = playerTopics.find(pt => pt.taskTopic === topic);
               const isSelected = playerTopic?.isActive || false;
+              const isDisabled = getTopicDisabled(topic);
               const colorScheme = getTopicColorScheme(topic);
               // Always calculate exp percentage, default to 0 if no level data
               const currentExp = playerTopic?.level?.currentExperience || 0;
@@ -286,19 +341,28 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
                       key={topic}
                       type="button"
                       onClick={() => handleToggle(topic)}
-                      className="group relative p-4 sm:p-6 rounded-2xl md:rounded-3xl transition-all duration-300 hover:scale-105 active:scale-95"
+                      disabled={isDisabled}
+                      className={`group relative p-4 sm:p-6 rounded-2xl md:rounded-3xl transition-all duration-300 ${
+                        isDisabled 
+                          ? 'cursor-not-allowed opacity-50' 
+                          : 'hover:scale-105 active:scale-95'
+                      }`}
                       style={{
-                        background: isSelected
+                        background: isSelected && !isDisabled
                             ? colorScheme.selectedBgGradient
                             : 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
                         backdropFilter: 'blur(20px)',
-                        border: isSelected
+                        border: isSelected && !isDisabled
                             ? `2px solid ${colorScheme.borderColor}`
                             : '2px solid rgba(220, 235, 245, 0.2)',
-                        boxShadow: isSelected
+                        boxShadow: isSelected && !isDisabled
                             ? `${colorScheme.glow}, inset 0 0 20px rgba(200, 230, 245, 0.03)`
                             : '0 0 15px rgba(180, 220, 240, 0.1), inset 0 0 20px rgba(200, 230, 245, 0.02)',
                         animationDelay: `${index * 50}ms`,
+                        ...(isDisabled && {
+                          filter: 'grayscale(0.5)',
+                          pointerEvents: 'none',
+                        }),
                       }}
                   >
                     {/* Glowing orbs */}
@@ -313,8 +377,40 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
                           background: colorScheme.accentColor
                         }}></div>
 
+                    {/* Lock indicator for disabled topic */}
+                    {isDisabled && (
+                        <div
+                            className="absolute top-2 right-2 z-20 flex items-center justify-center rounded-full transition-all duration-300"
+                            style={{
+                              width: '28px',
+                              height: '28px',
+                              background: 'linear-gradient(135deg, rgba(148, 163, 184, 0.6) 0%, rgba(100, 116, 139, 0.4) 100%)',
+                              border: '2px solid rgba(148, 163, 184, 0.3)',
+                              boxShadow: '0 0 12px rgba(148, 163, 184, 0.3), inset 0 0 8px rgba(255, 255, 255, 0.1)',
+                            }}
+                        >
+                          <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              style={{
+                                color: '#ffffff',
+                                filter: 'drop-shadow(0 0 2px rgba(255, 255, 255, 0.8))'
+                              }}
+                          >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                            />
+                          </svg>
+                        </div>
+                    )}
+
                     {/* Checkmark indicator for selected topic */}
-                    {isSelected && (
+                    {isSelected && !isDisabled && (
                         <div
                             className="absolute top-2 right-2 z-20 flex items-center justify-center rounded-full transition-all duration-300"
                             style={{
@@ -352,9 +448,11 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
                       <div
                           className="mb-3 sm:mb-4 transition-transform duration-200 flex justify-center items-center"
                           style={{
-                            transform: isSelected ? 'scale(1.1)' : 'scale(1)',
-                            filter: isSelected ? `drop-shadow(0 0 8px ${colorScheme.accentColor})` : 'none',
-                            color: isSelected ? colorScheme.accentColor : 'rgba(220, 235, 245, 0.8)'
+                            transform: isSelected && !isDisabled ? 'scale(1.1)' : 'scale(1)',
+                            filter: isSelected && !isDisabled ? `drop-shadow(0 0 8px ${colorScheme.accentColor})` : 'none',
+                            color: isDisabled 
+                              ? 'rgba(148, 163, 184, 0.5)' 
+                              : (isSelected ? colorScheme.accentColor : 'rgba(220, 235, 245, 0.8)')
                           }}
                       >
                         <TopicIcon
@@ -368,8 +466,12 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
                       <div
                           className="text-xs sm:text-sm font-tech font-semibold leading-tight mb-2 transition-colors duration-200"
                           style={{
-                            color: isSelected ? '#e8f4f8' : 'rgba(220, 235, 245, 0.8)',
-                            textShadow: isSelected ? `0 0 4px ${colorScheme.accentColor}` : '0 0 2px rgba(180, 220, 240, 0.2)'
+                            color: isDisabled 
+                              ? 'rgba(148, 163, 184, 0.6)' 
+                              : (isSelected ? '#e8f4f8' : 'rgba(220, 235, 245, 0.8)'),
+                            textShadow: isSelected && !isDisabled 
+                              ? `0 0 4px ${colorScheme.accentColor}` 
+                              : '0 0 2px rgba(180, 220, 240, 0.2)'
                           }}
                       >
                         {t(`topics.labels.${topic}`)}

@@ -110,7 +110,7 @@ class MockState {
       'Изучите новые возможности React',
     ];
     const rarities = [TaskRarity.COMMON, TaskRarity.UNCOMMON, TaskRarity.RARE, TaskRarity.EPIC, TaskRarity.LEGENDARY];
-    const topics = [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.EDUCATION, TaskTopic.MENTAL_HEALTH, TaskTopic.CREATIVITY];
+    const topics = [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.READING, TaskTopic.BRAIN, TaskTopic.CREATIVITY];
 
     const randomIndex = Math.floor(Math.random() * taskTitles.length);
     const taskId = `task-${this.taskIdCounter++}`;
@@ -287,6 +287,7 @@ class MockState {
           id: `topic-${Date.now()}-${Math.random()}`,
           version: 1,
           isActive: true,
+          isDisabled: false,
           taskTopic: topic,
           level: {
             id: `level-${Date.now()}`,
@@ -597,11 +598,13 @@ export const mockPlayerService = {
       
       const response: SearchPlayerBalanceTransactionsResponse = {
         transactions: paginatedTransactions,
-        options: {
+        paging: {
           totalRowCount: filteredTransactions.length,
           totalPageCount: Math.ceil(filteredTransactions.length / pageSize),
           currentPage: currentPage,
           hasMore: hasMore,
+        },
+        options: {
           filters: mockFilters,
         },
       };
@@ -696,20 +699,30 @@ export const mockPlayerService = {
           localization: 'Тема',
           items: [
             { name: 'PHYSICAL_ACTIVITY', localization: 'Физическая активность' },
-            { name: 'EDUCATION', localization: 'Образование' },
-            { name: 'MENTAL_HEALTH', localization: 'Ментальное здоровье' },
             { name: 'CREATIVITY', localization: 'Креативность' },
+            { name: 'SOCIAL_SKILLS', localization: 'Социальные навыки' },
+            { name: 'NUTRITION', localization: 'Питание' },
+            { name: 'PRODUCTIVITY', localization: 'Продуктивность' },
+            { name: 'ADVENTURE', localization: 'Приключения' },
+            { name: 'MUSIC', localization: 'Музыка' },
+            { name: 'BRAIN', localization: 'Мозг' },
+            { name: 'CYBERSPORT', localization: 'Киберспорт' },
+            { name: 'DEVELOPMENT', localization: 'Разработка' },
+            { name: 'READING', localization: 'Чтение' },
+            { name: 'LANGUAGE_LEARNING', localization: 'Изучение языков' },
           ]
         }
       ];
       
       const response: SearchPlayerTasksResponse = {
         tasks: paginatedTasks,
-        options: {
+        paging: {
           totalRowCount: filteredTasks.length,
           totalPageCount: Math.ceil(filteredTasks.length / pageSize),
           currentPage: currentPage,
           hasMore: hasMore,
+        },
+        options: {
           filters: mockFilters,
           sorts: ['createdAt', 'updatedAt', 'order']
         },
