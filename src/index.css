@@ -76,6 +76,16 @@ body::-webkit-scrollbar {
   box-shadow: 0 0 12px rgba(180, 220, 240, 0.5);
 }
 
+/* Скрытие скроллбара фильтров на мобильных устройствах */
+.mobile-version .filters-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.mobile-version .filters-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
 html {
   width: 100%;
   max-width: 100vw;

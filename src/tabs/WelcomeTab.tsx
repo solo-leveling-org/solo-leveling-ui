@@ -56,7 +56,7 @@ const WelcomeTab: React.FC = () => {
 
       {/* Main holographic container */}
       <div className={cn(
-        "relative w-full max-w-4xl mx-4 md:mx-6 transition-all duration-1000 ease-out",
+        "relative w-full max-w-2xl lg:max-w-3xl mx-4 md:mx-6 transition-all duration-1000 ease-out",
         isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
       )}>
         {/* Outer holographic border frame */}
@@ -94,14 +94,14 @@ const WelcomeTab: React.FC = () => {
                   pauseDuration={2000}
                   showCursor={true}
                   cursorCharacter="_"
-                  className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-tech font-bold uppercase tracking-wide"
+                  className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-tech font-bold uppercase tracking-wide"
                   textColors={['#e8f4f8']}
                 />
               <style>{`
                   .text-2xl span,
                 .text-4xl span,
-                .text-6xl span,
-                .text-7xl span {
+                .text-5xl span,
+                .text-6xl span {
                     color: #e8f4f8 !important;
                   text-shadow: 
                       0 0 8px rgba(180, 220, 240, 0.3),

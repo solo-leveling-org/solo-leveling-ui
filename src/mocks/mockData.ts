@@ -223,6 +223,21 @@ const generateCompletedTasks = (): PlayerTask[] => {
 
 export const mockTasks: PlayerTask[] = [
   {
+    id: 'task-legendary-long',
+    version: 1,
+    order: 0,
+    status: PlayerTaskStatus.IN_PROGRESS,
+    task: createMockTask(
+      'task-legendary-long',
+      'Очень длинное название задачи для проверки наложения элементов интерфейса друг на друга при максимальной редкости',
+      'Это тестовая задача с легендарной редкостью и очень длинным названием, чтобы проверить, не накладываются ли звезды редкости на название задачи',
+      TaskRarity.LEGENDARY,
+      [TaskTopic.EDUCATION, TaskTopic.MENTAL_HEALTH],
+      500,
+      250
+    ),
+  },
+  {
     id: 'task-1',
     version: 1,
     order: 1,

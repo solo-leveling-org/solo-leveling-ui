@@ -11,6 +11,7 @@ export const useAuth = () => {
   const [showNoTelegramError, setShowNoTelegramError] = useState(false);
   const [isTelegramChecked, setIsTelegramChecked] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
   const authPromiseRef = useRef<Promise<LoginResponse> | null>(null);
 
   const {initData, tgWebAppData} = useTelegram();
@@ -21,10 +22,10 @@ export const useAuth = () => {
       if (initData && tgWebAppData) {
         // Используем глобальный кэш для предотвращения множественных авторизаций
         if (!globalAuthPromise) {
-          console.log('[Auth] Starting new authentication...');
+          setIsAuthLoading(true);
           globalAuthPromise = auth.loginWithTelegram(initData, tgWebAppData);
         } else {
-          console.log('[Auth] Using cached authentication promise...');
+          setIsAuthLoading(true);
         }
         
         authPromiseRef.current = globalAuthPromise;
@@ -33,11 +34,12 @@ export const useAuth = () => {
         .then(() => {
           setAuthError(null);
           setIsAuthenticated(true);
-          console.log('[Auth] Authentication successful');
+          setIsAuthLoading(false);
         })
         .catch((e) => {
           setAuthError(e.message || 'Ошибка авторизации');
           setIsAuthenticated(false);
+          setIsAuthLoading(false);
           globalAuthPromise = null; // Сбрасываем кэш при ошибке
           console.error('[Auth] Authentication failed:', e);
         });
@@ -46,6 +48,7 @@ export const useAuth = () => {
         setShowNoTelegramError(true);
         setAuthError(null);
         setIsAuthenticated(false);
+        setIsAuthLoading(false);
       }
       setIsTelegramChecked(true);
     }
@@ -64,6 +67,7 @@ export const useAuth = () => {
     showNoTelegramError,
     isTelegramChecked,
     authError,
+    isAuthLoading,
     authPromise: authPromiseRef.current,
   };
 };

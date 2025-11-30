@@ -80,7 +80,6 @@ if (typeof window !== 'undefined') {
       if (!hasTelegram) {
         // Telegram недоступен, используем моки
         (config as any).useMocks = true;
-        console.log('[Config] Telegram WebApp not available, enabling mocks');
         // Инициализируем моки синхронно
         const { setupMockTelegram } = require('../mocks/mockTelegram');
         setupMockTelegram();
@@ -96,15 +95,6 @@ if (typeof window !== 'undefined') {
   
   // Если моки уже включены через переменную окружения, инициализируем их синхронно
   // Но лучше инициализировать в index.tsx до рендеринга React
-  if (config.useMocks) {
-    // Инициализация будет выполнена в index.tsx
-    console.log('[Config] Mocks enabled, will be initialized in index.tsx');
-  }
-  
-  console.log('[Config] Environment:', config.env);
-  console.log('[Config] API URL:', config.apiBaseUrl);
-  console.log('[Config] WebSocket URL:', config.wsUrl);
-  console.log('[Config] Use Mocks:', config.useMocks);
 }
 
 // Экспортируем отдельные значения для удобства

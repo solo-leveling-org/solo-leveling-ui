@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLocalization } from '../hooks/useLocalization';
+import { ReactComponent as StarIcon } from '../assets/icons/star.svg';
 
 export interface RarityIndicatorProps {
   rarity: string;
@@ -87,20 +88,40 @@ const RarityIndicator: React.FC<RarityIndicatorProps> = ({
   const sizeClasses = getSizeClasses(size);
   const rarityLabel = getRarityLabel(rarity, t);
 
+  // Определяем количество звезд в зависимости от редкости
+  const getStarCount = (rarity: string): number => {
+    switch (rarity) {
+      case 'COMMON': return 1;
+      case 'UNCOMMON': return 2;
+      case 'RARE': return 3;
+      case 'EPIC': return 4;
+      case 'LEGENDARY': return 5;
+      default: return 1;
+    }
+  };
+
+  const starCount = getStarCount(rarity);
+  // Увеличиваем размер звезд, чтобы они соответствовали размеру плашки с названием редкости
+  const starSize = size === 'sm' ? 20 : size === 'lg' ? 28 : 24;
+
   if (showLabel) {
     return (
-      <div className={`flex items-center space-x-3 ${className}`}>
-        {/* Rarity circle */}
-        <div className="relative">
-          {/* Простой неоновый круг */}
-          <div 
-            className={`${sizeClasses.circle} rounded-full`}
-            style={{
-              border: `2px solid ${colorScheme.neon}`,
-              boxShadow: `0 0 ${size === 'sm' ? '8px' : size === 'lg' ? '12px' : '10px'} ${colorScheme.neon}`,
-              background: `radial-gradient(circle at 30% 30%, ${colorScheme.neon}40 0%, transparent 70%)`,
-            }}
-          ></div>
+      <div className={`flex items-center space-x-3 ${className}`} style={{ pointerEvents: 'none' }}>
+        {/* Звездочки для обозначения редкости */}
+        <div className="flex items-center gap-0.5">
+          {Array.from({ length: starCount }).map((_, index) => (
+            <StarIcon
+              key={index}
+              width={starSize}
+              height={starSize}
+              style={{
+                fill: colorScheme.neon,
+                stroke: colorScheme.neon,
+                filter: `drop-shadow(0 0 ${size === 'sm' ? '4px' : size === 'lg' ? '6px' : '5px'} ${colorScheme.neon})`,
+                opacity: 0.9,
+              }}
+            />
+          ))}
         </div>
         
         {/* Rarity text */}
@@ -121,16 +142,23 @@ const RarityIndicator: React.FC<RarityIndicatorProps> = ({
   }
 
   return (
-    <div className={`relative ${className}`}>
-      {/* Простой неоновый круг */}
-      <div 
-        className={`${sizeClasses.circle} rounded-full`}
-        style={{
-          border: `2px solid ${colorScheme.neon}`,
-          boxShadow: `0 0 ${size === 'sm' ? '8px' : size === 'lg' ? '12px' : '10px'} ${colorScheme.neon}`,
-          background: `radial-gradient(circle at 30% 30%, ${colorScheme.neon}40 0%, transparent 70%)`,
-        }}
-      ></div>
+    <div className={`relative flex items-center ${className}`} style={{ pointerEvents: 'none' }}>
+      {/* Звездочки для обозначения редкости */}
+      <div className="flex items-center gap-0.5">
+        {Array.from({ length: starCount }).map((_, index) => (
+          <StarIcon
+            key={index}
+            width={starSize}
+            height={starSize}
+            style={{
+              fill: colorScheme.neon,
+              stroke: colorScheme.neon,
+              filter: `drop-shadow(0 0 ${size === 'sm' ? '3px' : size === 'lg' ? '5px' : '4px'} ${colorScheme.neon})`,
+              opacity: 0.9,
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 };
