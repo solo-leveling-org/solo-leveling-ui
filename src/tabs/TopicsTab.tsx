@@ -45,10 +45,10 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
               isDisabled: pt.isDisabled ?? getIsDisabled(pt.taskTopic)
             }));
             setPlayerTopics(topicsWithDisabled);
-            // Сохраняем только активные топики как исходные для сравнения
-            const activeTopics = topicsWithDisabled.filter(pt => pt.isActive);
-            setOriginalTopics(activeTopics);
+            // Сохраняем все топики как исходные для сравнения (не только активные)
+            setOriginalTopics(topicsWithDisabled);
             // firstTime определяется по пустоте списка активных топиков
+            const activeTopics = topicsWithDisabled.filter(pt => pt.isActive);
             setFirstTime(activeTopics.length === 0);
             setLoading(false);
             // Запускаем анимацию появления контента
@@ -72,9 +72,10 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
   // Проверяем, изменились ли активные топики
   const hasChanges = () => {
     const currentActiveTopics = playerTopics.filter(pt => pt.isActive);
-    if (currentActiveTopics.length !== originalTopics.length) return true;
+    const originalActiveTopics = originalTopics.filter(pt => pt.isActive);
+    if (currentActiveTopics.length !== originalActiveTopics.length) return true;
     return !currentActiveTopics.every((pt) =>
-        originalTopics.some(opt => opt.taskTopic === pt.taskTopic)
+        originalActiveTopics.some(opt => opt.taskTopic === pt.taskTopic)
     );
   };
 
@@ -127,12 +128,17 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
   const handleSave = async () => {
     setSaving(true);
 
-    // Отправляем только измененные топики
-    // Убеждаемся, что isDisabled установлен для заблокированных топиков
+    // Отправляем только измененные топики (где изменился isActive)
+    // Сравниваем с исходными данными и отправляем только те, где isActive действительно изменился
     const changedTopics = playerTopics
       .filter(pt => {
         const originalTopic = originalTopics.find(opt => opt.taskTopic === pt.taskTopic);
-        return !originalTopic || originalTopic.isActive !== pt.isActive;
+        // Если топика не было в исходных данных, но он активен - это изменение
+        if (!originalTopic) {
+          return pt.isActive;
+        }
+        // Если топик был в исходных данных, проверяем, изменился ли isActive
+        return originalTopic.isActive !== pt.isActive;
       })
       .map(pt => ({
         ...pt,
@@ -159,9 +165,8 @@ const TopicsTab: React.FC<TopicsTabProps> = ({isAuthenticated}) => {
       isDisabled: pt.isDisabled ?? getIsDisabled(pt.taskTopic)
     }));
     setPlayerTopics(topicsWithDisabled);
-    // В originalTopics сохраняем только активные топики
-    const activeTopics = topicsWithDisabled.filter(pt => pt.isActive);
-    setOriginalTopics(activeTopics);
+    // Сохраняем все топики как исходные для сравнения (не только активные)
+    setOriginalTopics(topicsWithDisabled);
   };
 
 
