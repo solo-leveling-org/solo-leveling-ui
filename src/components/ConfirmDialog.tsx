@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useLocalization } from '../hooks/useLocalization';
 import BaseDialog from './BaseDialog';
 
@@ -20,19 +20,46 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   cancelText
 }) => {
   const { t } = useLocalization();
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  const confirmButtonRef = useRef<HTMLButtonElement>(null);
 
-  const handleConfirm = () => {
+  // Убираем фокус с кнопок при открытии диалога
+  useEffect(() => {
+    if (isOpen) {
+      // Небольшая задержка для гарантии, что диалог полностью отрендерился
+      const timer = setTimeout(() => {
+        if (cancelButtonRef.current) {
+          cancelButtonRef.current.blur();
+        }
+        if (confirmButtonRef.current) {
+          confirmButtonRef.current.blur();
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  const handleConfirm = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     onConfirm();
   };
 
-  const handleCancel = () => {
+  const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onCancel();
+  };
+
+  // Отдельная функция для onClose (без параметров)
+  const handleClose = () => {
     onCancel();
   };
 
   return (
     <BaseDialog
       isOpen={isOpen}
-      onClose={handleCancel}
+      onClose={handleClose}
       maxWidth="max-w-md"
     >
 
@@ -73,36 +100,46 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-3">
               <button
+                ref={cancelButtonRef}
+                type="button"
                 onClick={handleCancel}
-                className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2"
+                onMouseDown={(e) => e.stopPropagation()}
+                className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 relative"
                 style={{
                   background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
                   backdropFilter: 'none',
                   borderColor: 'rgba(220, 235, 245, 0.3)',
                   boxShadow: '0 0 15px rgba(180, 220, 240, 0.15)',
-                  color: '#e8f4f8'
+                  color: '#e8f4f8',
+                  outline: 'none'
                 }}
+                tabIndex={0}
               >
                 <span className="relative z-10 transition-colors duration-300 hover:text-white">
                   {cancelText || t('common.cancel')}
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"></div>
               </button>
               <button
+                ref={confirmButtonRef}
+                type="button"
                 onClick={handleConfirm}
-                className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2"
+                onMouseDown={(e) => e.stopPropagation()}
+                className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 relative"
                 style={{
                   background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
                   backdropFilter: 'none',
                   borderColor: 'rgba(180, 220, 240, 0.4)',
                   boxShadow: '0 0 20px rgba(180, 220, 240, 0.25)',
-                  color: '#e8f4f8'
+                  color: '#e8f4f8',
+                  outline: 'none'
                 }}
+                tabIndex={0}
               >
                 <span className="relative z-10 transition-colors duration-300 hover:text-white">
                   {confirmText || t('common.confirm')}
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"></div>
               </button>
             </div>
           </div>

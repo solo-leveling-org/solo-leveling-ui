@@ -115,11 +115,15 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
                 <div 
                   className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.8) 0%, rgba(22, 163, 74, 0.6) 100%)',
-                    boxShadow: '0 0 8px rgba(34, 197, 94, 0.4)'
+                    background: 'rgba(10, 14, 39, 1)',
+                    border: '1px solid rgba(34, 197, 94, 0.8)',
+                    boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)'
                   }}
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#e8f4f8' }}>
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ 
+                    color: 'rgba(34, 197, 94, 0.9)',
+                    filter: 'drop-shadow(0 0 4px rgba(34, 197, 94, 0.8))'
+                  }}>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>

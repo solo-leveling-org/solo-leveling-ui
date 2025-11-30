@@ -82,7 +82,7 @@ export const ru = {
   // Приветственная страница
   welcome: {
     title: 'Solo Leveling',
-    subtitle: 'Погрузитесь в мир одиночного развития и станьте сильнее с каждым заданием',
+    subtitle: 'Погрузитесь в мир одиночного развития и становитесь сильнее с каждым заданием',
     startButton: 'К задачам',
     stats: {
       activePlayers: 'Активных игроков',
@@ -175,15 +175,17 @@ export const ru = {
     },
     labels: {
       PHYSICAL_ACTIVITY: 'Физическая активность',
-      MENTAL_HEALTH: 'Ментальное здоровье',
-      EDUCATION: 'Образование',
       CREATIVITY: 'Креативность',
       SOCIAL_SKILLS: 'Социальные навыки',
-      HEALTHY_EATING: 'Здоровое питание',
+      NUTRITION: 'Питание',
       PRODUCTIVITY: 'Продуктивность',
-      EXPERIMENTS: 'Эксперименты',
-      ECOLOGY: 'Экология',
-      TEAMWORK: 'Командная работа',
+      ADVENTURE: 'Приключения',
+      MUSIC: 'Музыка',
+      BRAIN: 'Когнитивные навыки',
+      CYBERSPORT: 'Киберспорт',
+      DEVELOPMENT: 'Разработка',
+      READING: 'Чтение',
+      LANGUAGE_LEARNING: 'Изучение языков',
     },
   },
 

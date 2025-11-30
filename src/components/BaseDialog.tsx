@@ -31,6 +31,7 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
   const { openDialog, closeDialog } = useModal();
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [animationComplete, setAnimationComplete] = useState(false);
 
   // Определяем размер экрана
   useEffect(() => {
@@ -46,21 +47,29 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
   useEffect(() => {
     if (isOpen) {
       openDialog();
-      setIsVisible(false); // Сбрасываем видимость перед анимацией
+      setIsVisible(false);
+      setAnimationComplete(false);
       // Запускаем анимацию после монтирования (двойной RAF для гарантии)
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           setIsVisible(true);
+          // Убираем will-change после завершения анимации для четкого рендеринга
+          const animationDuration = isMobile ? 400 : 350;
+          setTimeout(() => {
+            setAnimationComplete(true);
+          }, animationDuration);
         });
       });
       return () => {
         closeDialog();
         setIsVisible(false);
+        setAnimationComplete(false);
       };
     } else {
       setIsVisible(false);
+      setAnimationComplete(false);
     }
-  }, [isOpen, openDialog, closeDialog]);
+  }, [isOpen, openDialog, closeDialog, isMobile]);
 
   // Блокировка скролла при открытом диалоге
   useScrollLock(isOpen);
@@ -79,7 +88,24 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
     <>
       <style>{`
         .base-dialog-content-animated {
+          /* Убираем размытие - четкий рендеринг текста и элементов везде */
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          text-rendering: optimizeLegibility;
+          /* Принудительное использование GPU без размытия */
+          transform: translateZ(0);
+          backface-visibility: hidden;
+          perspective: 1000px;
+        }
+        
+        /* will-change только во время анимации */
+        .base-dialog-content-animated.animating {
           will-change: transform, opacity;
+        }
+        
+        /* После завершения анимации убираем will-change для четкого рендеринга */
+        .base-dialog-content-animated.animation-complete {
+          will-change: auto;
         }
         
         @media (max-width: 768px) {
@@ -107,6 +133,29 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
             max-height: calc(100vh - 80px - env(safe-area-inset-bottom, 0px) - 6rem) !important;
           }
         }
+        
+        /* Четкий рендеринг всех элементов внутри диалога везде */
+        .base-dialog-content-animated * {
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          text-rendering: optimizeLegibility;
+        }
+        
+        .base-dialog-content-animated svg,
+        .base-dialog-content-animated img,
+        .base-dialog-content-animated canvas {
+          image-rendering: -webkit-optimize-contrast;
+          image-rendering: crisp-edges;
+        }
+        
+        /* Дополнительные оптимизации для мобильных устройств */
+        @media (max-width: 768px) {
+          .base-dialog-content-animated {
+            /* Принудительный четкий рендеринг на мобильных */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+          }
+        }
       `}</style>
       {/* Backdrop - единообразное затемнение без blur */}
       <div
@@ -129,13 +178,15 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
       
       {/* Dialog Content */}
       <div
-        className={`base-dialog-content-animated fixed left-1/2 top-1/2 z-[10000] w-[calc(100%-2rem)] sm:w-full ${maxWidth} flex flex-col rounded-2xl md:rounded-3xl ${contentClassName}`}
+        className={`base-dialog-content-animated fixed left-1/2 top-1/2 z-[10000] w-[calc(100%-2rem)] sm:w-full ${maxWidth} flex flex-col rounded-2xl md:rounded-3xl ${contentClassName} ${isVisible && !animationComplete ? 'animating' : ''} ${animationComplete ? 'animation-complete' : ''}`}
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
         style={{
           transform: isVisible 
-            ? 'translate(-50%, -50%) scale(1)' 
-            : `translate(-50%, -50%) scale(${isMobile ? 0.96 : 0.92})`,
+            ? 'translate3d(-50%, -50%, 0)'
+            : (isMobile 
+              ? 'translate3d(-50%, -50%, 0)' // На мобильных без scale для четкости
+              : 'translate3d(-50%, -50%, 0) scale(0.95)'), // На desktop используем scale
           opacity: isVisible ? 1 : 0,
           transition: isVisible 
             ? `transform ${isMobile ? '0.4s' : '0.35s'} cubic-bezier(0.16, 1, 0.3, 1), opacity ${isMobile ? '0.4s' : '0.35s'} ease-out`
@@ -147,6 +198,15 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
             0 0 30px rgba(180, 220, 240, 0.2),
             inset 0 0 30px rgba(200, 230, 245, 0.03)
           `,
+          // Дополнительные свойства для четкого рендеринга
+          WebkitFontSmoothing: 'antialiased',
+          MozOsxFontSmoothing: 'grayscale',
+          // Принудительный четкий рендеринг
+          WebkitTransform: isVisible 
+            ? 'translate3d(-50%, -50%, 0)'
+            : (isMobile 
+              ? 'translate3d(-50%, -50%, 0)'
+              : 'translate3d(-50%, -50%, 0) scale(0.95)'),
         }}
       >
         {/* Holographic grid overlay */}

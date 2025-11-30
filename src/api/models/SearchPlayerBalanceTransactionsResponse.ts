@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { PlayerBalanceTransaction } from './PlayerBalanceTransaction';
-import type { QueryableResponse } from './QueryableResponse';
-export type SearchPlayerBalanceTransactionsResponse = (QueryableResponse & {
+import type { SearchEntitiesResponse } from './SearchEntitiesResponse';
+export type SearchPlayerBalanceTransactionsResponse = (SearchEntitiesResponse & {
     transactions: Array<PlayerBalanceTransaction>;
 });
 

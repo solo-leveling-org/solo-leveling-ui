@@ -14,7 +14,6 @@ import { useMocks } from './config/environment';
 if (useMocks && typeof window !== 'undefined') {
   const { setupMockTelegram } = require('./mocks/mockTelegram');
   setupMockTelegram();
-  console.log('[Index] Mock Telegram initialized before React render');
 }
 
 const root = ReactDOM.createRoot(

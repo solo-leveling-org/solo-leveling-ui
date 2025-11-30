@@ -81,20 +81,23 @@ export const mockPlayerTopics: PlayerTaskTopic[] = [
     id: 'topic-1',
     version: 1,
     isActive: true,
+    isDisabled: false,
     taskTopic: TaskTopic.PHYSICAL_ACTIVITY,
     level: createMockLevel(3, Assessment.B),
   },
   {
     id: 'topic-2',
     version: 1,
-    isActive: true,
-    taskTopic: TaskTopic.EDUCATION,
+    isActive: false,
+    isDisabled: true,
+    taskTopic: TaskTopic.READING,
     level: createMockLevel(5, Assessment.A),
   },
   {
     id: 'topic-3',
     version: 1,
     isActive: false,
+    isDisabled: false,
     taskTopic: TaskTopic.CREATIVITY,
     level: createMockLevel(1, Assessment.E),
   },
@@ -102,7 +105,8 @@ export const mockPlayerTopics: PlayerTaskTopic[] = [
     id: 'topic-4',
     version: 1,
     isActive: true,
-    taskTopic: TaskTopic.MENTAL_HEALTH,
+    isDisabled: false,
+    taskTopic: TaskTopic.BRAIN,
     level: createMockLevel(2, Assessment.C),
   },
 ];
@@ -161,7 +165,7 @@ const generateCompletedTasks = (): PlayerTask[] => {
     'Проведите рефакторинг существующего кода',
   ];
   const rarities = [TaskRarity.COMMON, TaskRarity.UNCOMMON, TaskRarity.RARE, TaskRarity.EPIC, TaskRarity.LEGENDARY];
-  const topics = [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.EDUCATION, TaskTopic.MENTAL_HEALTH, TaskTopic.CREATIVITY];
+  const topics = [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.READING, TaskTopic.BRAIN, TaskTopic.CREATIVITY];
   
   // Генерируем 60 завершенных/пропущенных задач
   // Создаем задачи в порядке номеров (1, 2, 3...), но с перемешанными статусами
@@ -223,6 +227,21 @@ const generateCompletedTasks = (): PlayerTask[] => {
 
 export const mockTasks: PlayerTask[] = [
   {
+    id: 'task-legendary-long',
+    version: 1,
+    order: 0,
+    status: PlayerTaskStatus.IN_PROGRESS,
+    task: createMockTask(
+      'task-legendary-long',
+      'Очень длинное название задачи для проверки наложения элементов интерфейса друг на друга при максимальной редкости',
+      'Это тестовая задача с легендарной редкостью и очень длинным названием, чтобы проверить, не накладываются ли звезды редкости на название задачи',
+      TaskRarity.LEGENDARY,
+      [TaskTopic.READING, TaskTopic.BRAIN],
+      500,
+      250
+    ),
+  },
+  {
     id: 'task-1',
     version: 1,
     order: 1,
@@ -247,7 +266,7 @@ export const mockTasks: PlayerTask[] = [
       'Прочитать главу книги',
       'Прочитайте одну главу из книги по программированию',
       TaskRarity.UNCOMMON,
-      [TaskTopic.EDUCATION],
+      [TaskTopic.READING],
       150,
       75
     ),
@@ -262,7 +281,7 @@ export const mockTasks: PlayerTask[] = [
       'Медитация 10 минут',
       'Проведите 10 минут в медитации для улучшения ментального здоровья',
       TaskRarity.COMMON,
-      [TaskTopic.MENTAL_HEALTH],
+      [TaskTopic.BRAIN],
       80,
       40
     ),
@@ -277,7 +296,7 @@ export const mockTasks: PlayerTask[] = [
       'Написать код',
       'Напишите новый компонент для проекта',
       TaskRarity.RARE,
-      [TaskTopic.CREATIVITY, TaskTopic.EDUCATION],
+      [TaskTopic.CREATIVITY, TaskTopic.READING],
       200,
       100
     ),
@@ -292,7 +311,7 @@ export const mockTasks: PlayerTask[] = [
       'Тренировка и изучение',
       'Проведите тренировку и изучите новую технику',
       TaskRarity.UNCOMMON,
-      [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.EDUCATION],
+      [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.READING],
       180,
       90
     ),
@@ -307,7 +326,7 @@ export const mockTasks: PlayerTask[] = [
       'Медитация и творчество',
       'Проведите медитацию и создайте что-то новое',
       TaskRarity.RARE,
-      [TaskTopic.MENTAL_HEALTH, TaskTopic.CREATIVITY],
+      [TaskTopic.BRAIN, TaskTopic.CREATIVITY],
       160,
       80
     ),
@@ -322,7 +341,7 @@ export const mockTasks: PlayerTask[] = [
       'Йога и обучение',
       'Выполните комплекс йоги и изучите новую тему',
       TaskRarity.COMMON,
-      [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.MENTAL_HEALTH],
+      [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.BRAIN],
       120,
       60
     ),
@@ -439,22 +458,24 @@ export const mockCompleteTaskResponse: CompleteTaskResponse = {
 
 export const mockSearchPlayerTasksResponse: SearchPlayerTasksResponse = {
   tasks: mockTasks.filter(t => t.status === PlayerTaskStatus.COMPLETED || t.status === PlayerTaskStatus.SKIPPED),
-  options: {
+  paging: {
     totalRowCount: 2,
     totalPageCount: 1,
     currentPage: 0,
     hasMore: false,
   },
+  options: {},
 };
 
 export const mockSearchPlayerBalanceTransactionsResponse: SearchPlayerBalanceTransactionsResponse = {
   transactions: mockTransactions,
-  options: {
+  paging: {
     totalRowCount: mockTransactions.length,
     totalPageCount: 1,
     currentPage: 0,
     hasMore: false,
   },
+  options: {},
 };
 
 // Моковые данные для Telegram WebApp

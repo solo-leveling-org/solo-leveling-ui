@@ -463,17 +463,20 @@ components:
       required:
         - balance
 
-    QueryableResponse:
+    SearchEntitiesResponse:
       type: object
       properties:
+        paging:
+          $ref: '#/components/schemas/ResponsePaging'
         options:
           $ref: '#/components/schemas/ResponseQueryOptions'
       required:
         - options
+        - paging
 
     SearchPlayerBalanceTransactionsResponse:
       allOf:
-        - $ref: '#/components/schemas/QueryableResponse'
+        - $ref: '#/components/schemas/SearchEntitiesResponse'
         - type: object
           properties:
             transactions:
@@ -485,7 +488,7 @@ components:
 
     SearchPlayerTasksResponse:
       allOf:
-        - $ref: '#/components/schemas/QueryableResponse'
+        - $ref: '#/components/schemas/SearchEntitiesResponse'
         - type: object
           properties:
             tasks:
@@ -508,15 +511,17 @@ components:
       type: string
       enum:
         - PHYSICAL_ACTIVITY
-        - MENTAL_HEALTH
-        - EDUCATION
         - CREATIVITY
         - SOCIAL_SKILLS
-        - HEALTHY_EATING
+        - NUTRITION
         - PRODUCTIVITY
-        - EXPERIMENTS
-        - ECOLOGY
-        - TEAMWORK
+        - ADVENTURE
+        - MUSIC
+        - BRAIN
+        - CYBERSPORT
+        - DEVELOPMENT
+        - READING
+        - LANGUAGE_LEARNING
 
     Assessment:
       type: string
@@ -638,12 +643,15 @@ components:
           $ref: '#/components/schemas/TaskTopic'
         level:
           $ref: '#/components/schemas/Level'
+        isDisabled:
+          type: boolean
       required:
         - id
         - version
         - isActive
         - taskTopic
         - level
+        - isDisabled
 
     Money:
       type: object
@@ -798,7 +806,7 @@ components:
           items:
             $ref: '#/components/schemas/Sort'
 
-    ResponseQueryOptions:
+    ResponsePaging:
       type: object
       properties:
         totalRowCount:
@@ -820,6 +828,10 @@ components:
           type: boolean
           description: Has more pages flag
           example: true
+
+    ResponseQueryOptions:
+      type: object
+      properties:
         filters:
           type: array
           items:
@@ -832,10 +844,7 @@ components:
           description: Available sort fields
           example: [ "createdAt", "updatedAt", "name" ]
       required:
-        - totalRowCount
-        - totalPageCount
-        - currentPage
-        - hasMore
+        - paging
 
     Filter:
       type: object

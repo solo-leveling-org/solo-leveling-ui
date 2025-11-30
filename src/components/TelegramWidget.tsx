@@ -124,7 +124,7 @@ export const TelegramWidget: React.FC<TelegramWidgetProps> = ({ type, errorMessa
 
           {/* CTA Button */}
           <a
-            href="https://t.me/solo_leveling_app_bot/solo_leveling"
+            href="https://t.me/solo_level_bot/app"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center px-8 py-4 font-tech font-semibold rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 group"
@@ -157,7 +157,7 @@ export const TelegramWidget: React.FC<TelegramWidgetProps> = ({ type, errorMessa
               color: 'rgba(220, 235, 245, 0.5)'
             }}
           >
-            @solo_leveling_app_bot
+            @solo_level_bot
           </div>
         </div>
       </div>

@@ -1,0 +1,351 @@
+import { Client, IMessage } from '@stomp/stompjs';
+import { OpenAPI } from '../api';
+import type { Message } from '../api';
+import { auth } from '../auth';
+
+type NotificationHandler = (notification: Message['payload']) => void;
+type LocaleUpdateHandler = () => Promise<void>;
+
+class WebSocketManager {
+  private static instance: WebSocketManager | null = null;
+  private client: Client | null = null;
+  private isConnecting = false;
+  private reconnectTimer: NodeJS.Timeout | null = null;
+  private reconnectInterval = 10000; // 10 секунд
+  private notificationHandlers: Set<NotificationHandler> = new Set();
+  private localeUpdateHandlers: Set<LocaleUpdateHandler> = new Set();
+  private isEnabled = false;
+  private lastUsedToken: string | null = null;
+  private tokenCheckInterval: NodeJS.Timeout | null = null;
+
+  private constructor() {
+    // Приватный конструктор для singleton
+  }
+
+  static getInstance(): WebSocketManager {
+    if (!WebSocketManager.instance) {
+      WebSocketManager.instance = new WebSocketManager();
+    }
+    return WebSocketManager.instance;
+  }
+
+  /**
+   * Регистрирует обработчик уведомлений
+   */
+  addNotificationHandler(handler: NotificationHandler): () => void {
+    this.notificationHandlers.add(handler);
+    // Возвращаем функцию для удаления обработчика
+    return () => {
+      this.notificationHandlers.delete(handler);
+    };
+  }
+
+  /**
+   * Регистрирует обработчик обновления локализации
+   */
+  addLocaleUpdateHandler(handler: LocaleUpdateHandler): () => void {
+    this.localeUpdateHandlers.add(handler);
+    // Возвращаем функцию для удаления обработчика
+    return () => {
+      this.localeUpdateHandlers.delete(handler);
+    };
+  }
+
+  /**
+   * Проверяет, активно ли соединение
+   */
+  isConnected(): boolean {
+    return this.client !== null && this.client.connected;
+  }
+
+  /**
+   * Проверяет, идет ли процесс подключения
+   */
+  isConnectingNow(): boolean {
+    return this.isConnecting;
+  }
+
+  /**
+   * Включает WebSocket менеджер и начинает попытки подключения
+   */
+  enable(): void {
+    if (this.isEnabled) {
+      // Если уже включен, проверяем токен и соединение
+      const currentToken = auth.getAccessToken();
+      if (this.isConnected()) {
+        if (currentToken !== this.lastUsedToken) {
+          console.log('[WS Manager] Token changed, reconnecting...');
+          this.reconnect();
+        } else {
+          console.log('[WS Manager] Already enabled and connected with same token');
+        }
+      } else {
+        // Если включен, но не подключен, пытаемся подключиться
+        console.log('[WS Manager] Already enabled but not connected, attempting connection...');
+        this.attemptConnection();
+      }
+      return;
+    }
+
+    this.isEnabled = true;
+    console.log('[WS Manager] Enabled, starting connection attempts');
+    
+    // Начинаем попытки подключения
+    this.attemptConnection();
+
+    // Запускаем периодическую проверку токена
+    this.startTokenCheck();
+  }
+
+  /**
+   * Отключает WebSocket менеджер и закрывает соединение
+   */
+  disable(): void {
+    if (!this.isEnabled) {
+      return;
+    }
+
+    this.isEnabled = false;
+    console.log('[WS Manager] Disabled, closing connection');
+
+    // Останавливаем таймер переподключения
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+
+    // Останавливаем проверку токена
+    this.stopTokenCheck();
+
+    // Закрываем соединение
+    this.disconnect();
+  }
+
+  /**
+   * Попытка подключения к WebSocket
+   */
+  private async attemptConnection(): Promise<void> {
+    // Если уже подключены или идет подключение, не делаем ничего
+    if (this.isConnected() || this.isConnecting) {
+      return;
+    }
+
+    // Если менеджер отключен, не пытаемся подключаться
+    if (!this.isEnabled) {
+      return;
+    }
+
+    // Получаем токен
+    const token = auth.getAccessToken();
+    if (!token) {
+      console.warn('[WS Manager] No access token available, will retry in 10s');
+      this.scheduleReconnect();
+      return;
+    }
+
+    this.isConnecting = true;
+    console.log('[WS Manager] Attempting to connect...');
+
+    try {
+      await this.connect(token);
+    } catch (error) {
+      console.error('[WS Manager] Connection failed:', error);
+      this.isConnecting = false;
+      this.scheduleReconnect();
+    }
+  }
+
+  /**
+   * Подключается к WebSocket с указанным токеном
+   */
+  private connect(token: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // Если уже есть активное соединение, закрываем его
+      if (this.client && this.client.connected) {
+        console.log('[WS Manager] Closing existing connection before creating new one');
+        this.disconnect();
+      }
+
+      // Если есть клиент, но он не подключен, очищаем его
+      if (this.client) {
+        try {
+          this.client.deactivate();
+        } catch (e) {
+          console.warn('[WS Manager] Error deactivating old client:', e);
+        }
+        this.client = null;
+      }
+
+      const base = OpenAPI.BASE || '';
+      const url = new URL(base);
+      const isSecure = url.protocol === 'https:';
+      const wsProtocol = isSecure ? 'wss:' : 'ws:';
+      const brokerURL = `${wsProtocol}//${url.host}/ws?token=${encodeURIComponent(token)}`;
+
+      const client = new Client({
+        brokerURL,
+        reconnectDelay: 0, // Отключаем автоматическое переподключение STOMP, управляем сами
+        heartbeatIncoming: 10000,
+        heartbeatOutgoing: 10000,
+        onConnect: () => {
+          console.log('[WS Manager] Connected successfully');
+          this.isConnecting = false;
+          this.lastUsedToken = token; // Сохраняем использованный токен
+
+          // Подписываемся на уведомления
+          client.subscribe(`/user/queue/notifications`, (message: IMessage) => {
+            try {
+              const body: Message = JSON.parse(message.body);
+              const notification = body.payload;
+
+              // Вызываем все зарегистрированные обработчики
+              this.notificationHandlers.forEach(handler => {
+                try {
+                  handler(notification);
+                } catch (e) {
+                  console.error('[WS Manager] Error in notification handler:', e);
+                }
+              });
+
+              // Обрабатываем специальные типы уведомлений
+              if (notification.source === 'locale') {
+                this.localeUpdateHandlers.forEach(handler => {
+                  handler().catch(e => {
+                    console.error('[WS Manager] Error in locale update handler:', e);
+                  });
+                });
+              }
+            } catch (e) {
+              console.warn('[WS Manager] Failed to parse message', e, message.body);
+            }
+          });
+
+          resolve();
+        },
+        onStompError: (frame: any) => {
+          console.error('[WS Manager][STOMP ERROR]', frame.headers['message'], frame.body);
+          this.isConnecting = false;
+          this.scheduleReconnect();
+          reject(new Error(frame.headers['message'] || 'STOMP error'));
+        },
+        onWebSocketError: (event: Event) => {
+          console.error('[WS Manager][SOCKET ERROR]', event);
+          this.isConnecting = false;
+          this.scheduleReconnect();
+          reject(new Error('WebSocket error'));
+        },
+        onWebSocketClose: (event: CloseEvent) => {
+          console.warn('[WS Manager][CLOSED]', event.code, event.reason);
+          this.isConnecting = false;
+          this.client = null;
+          // Не сбрасываем lastUsedToken, чтобы при переподключении использовать тот же токен
+
+          // Если менеджер включен, планируем переподключение
+          if (this.isEnabled) {
+            this.scheduleReconnect();
+          }
+        },
+      });
+
+      this.client = client;
+      client.activate();
+    });
+  }
+
+  /**
+   * Отключается от WebSocket
+   */
+  private disconnect(): void {
+    if (this.client) {
+      try {
+        if (this.client.connected) {
+          this.client.deactivate();
+        }
+      } catch (e) {
+        console.warn('[WS Manager] Error during disconnect:', e);
+      }
+      this.client = null;
+    }
+    this.isConnecting = false;
+  }
+
+  /**
+   * Планирует переподключение через заданный интервал
+   */
+  private scheduleReconnect(): void {
+    // Очищаем предыдущий таймер, если есть
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+    }
+
+    // Если менеджер отключен, не планируем переподключение
+    if (!this.isEnabled) {
+      return;
+    }
+
+    // Если уже подключены, не планируем переподключение
+    if (this.isConnected()) {
+      return;
+    }
+
+    console.log(`[WS Manager] Scheduling reconnect in ${this.reconnectInterval / 1000}s`);
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      this.attemptConnection();
+    }, this.reconnectInterval);
+  }
+
+  /**
+   * Принудительно переподключается (например, при смене токена)
+   */
+  async reconnect(): Promise<void> {
+    console.log('[WS Manager] Forcing reconnect...');
+    this.disconnect();
+    this.lastUsedToken = null; // Сбрасываем токен, чтобы использовать новый
+    
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+
+    if (this.isEnabled) {
+      await this.attemptConnection();
+    }
+  }
+
+  /**
+   * Запускает периодическую проверку токена
+   */
+  private startTokenCheck(): void {
+    // Останавливаем предыдущую проверку, если есть
+    this.stopTokenCheck();
+
+    // Проверяем токен каждые 5 секунд
+    this.tokenCheckInterval = setInterval(() => {
+      if (!this.isEnabled) {
+        this.stopTokenCheck();
+        return;
+      }
+
+      const currentToken = auth.getAccessToken();
+      
+      // Если токен изменился и мы подключены, переподключаемся
+      if (currentToken && currentToken !== this.lastUsedToken && this.isConnected()) {
+        console.log('[WS Manager] Token changed, reconnecting...');
+        this.reconnect();
+      }
+    }, 5000); // Проверяем каждые 5 секунд
+  }
+
+  /**
+   * Останавливает периодическую проверку токена
+   */
+  private stopTokenCheck(): void {
+    if (this.tokenCheckInterval) {
+      clearInterval(this.tokenCheckInterval);
+      this.tokenCheckInterval = null;
+    }
+  }
+}
+
+export const websocketManager = WebSocketManager.getInstance();

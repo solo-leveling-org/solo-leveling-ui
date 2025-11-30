@@ -110,7 +110,7 @@ class MockState {
       'Изучите новые возможности React',
     ];
     const rarities = [TaskRarity.COMMON, TaskRarity.UNCOMMON, TaskRarity.RARE, TaskRarity.EPIC, TaskRarity.LEGENDARY];
-    const topics = [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.EDUCATION, TaskTopic.MENTAL_HEALTH, TaskTopic.CREATIVITY];
+    const topics = [TaskTopic.PHYSICAL_ACTIVITY, TaskTopic.READING, TaskTopic.BRAIN, TaskTopic.CREATIVITY];
 
     const randomIndex = Math.floor(Math.random() * taskTitles.length);
     const taskId = `task-${this.taskIdCounter++}`;
@@ -287,6 +287,7 @@ class MockState {
           id: `topic-${Date.now()}-${Math.random()}`,
           version: 1,
           isActive: true,
+          isDisabled: false,
           taskTopic: topic,
           level: {
             id: `level-${Date.now()}`,
@@ -412,8 +413,9 @@ const mockState = new MockState();
 export const mockAuthService = {
   login: (requestBody: TgAuthData): CancelablePromise<LoginResponse> => {
     return new CancelablePromise(async (resolve) => {
-      await delay(500);
-      console.log('[Mock API] Login request:', requestBody);
+      // Имитация сетевой задержки для тестирования анимации загрузки
+      // В реальном приложении задержка будет зависеть от сети пользователя
+      await delay(3000);
       resolve(mockLoginResponse);
     });
   },
@@ -421,7 +423,6 @@ export const mockAuthService = {
   refresh: (requestBody: RefreshRequest): CancelablePromise<RefreshResponse> => {
     return new CancelablePromise(async (resolve) => {
       await delay(300);
-      console.log('[Mock API] Refresh token request');
       resolve(mockRefreshResponse);
     });
   },
@@ -431,7 +432,6 @@ export const mockUserService = {
   getCurrentUser: (): CancelablePromise<GetUserResponse> => {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
-      console.log('[Mock API] Get current user');
       resolve(mockGetUserResponse);
     });
   },
@@ -439,7 +439,6 @@ export const mockUserService = {
   getUser: (userId: number): CancelablePromise<GetUserResponse> => {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
-      console.log('[Mock API] Get user:', userId);
       resolve(mockGetUserResponse);
     });
   },
@@ -447,7 +446,6 @@ export const mockUserService = {
   getUserLocale: (): CancelablePromise<any> => {
     return new CancelablePromise(async (resolve) => {
       await delay(200);
-      console.log('[Mock API] Get user locale');
       resolve({ locale: 'ru' });
     });
   },
@@ -455,7 +453,6 @@ export const mockUserService = {
   updateUserLocale: (requestBody: any): CancelablePromise<any> => {
     return new CancelablePromise(async (resolve) => {
       await delay(300);
-      console.log('[Mock API] Update user locale:', requestBody);
       resolve({ locale: requestBody.locale || 'ru' });
     });
   },
@@ -465,7 +462,6 @@ export const mockPlayerService = {
   getCurrentPlayerTopics: (): CancelablePromise<GetPlayerTopicsResponse> => {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
-      console.log('[Mock API] Get current player topics');
       resolve(mockState.getPlayerTopics());
     });
   },
@@ -473,7 +469,6 @@ export const mockPlayerService = {
   getPlayerTopics: (playerId: number): CancelablePromise<GetPlayerTopicsResponse> => {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
-      console.log('[Mock API] Get player topics:', playerId);
       resolve(mockState.getPlayerTopics());
     });
   },
@@ -481,7 +476,6 @@ export const mockPlayerService = {
   savePlayerTopics: (requestBody: SavePlayerTopicsRequest): CancelablePromise<void> => {
     return new CancelablePromise(async (resolve) => {
       await delay(500);
-      console.log('[Mock API] Save player topics:', requestBody);
       mockState.savePlayerTopics(requestBody);
       resolve(undefined);
     });
@@ -490,7 +484,6 @@ export const mockPlayerService = {
   getActiveTasks: (): CancelablePromise<GetActiveTasksResponse> => {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
-      console.log('[Mock API] Get active tasks');
       resolve(mockState.getTasks());
     });
   },
@@ -498,7 +491,6 @@ export const mockPlayerService = {
   generateTasks: (): CancelablePromise<void> => {
     return new CancelablePromise(async (resolve) => {
       await delay(600);
-      console.log('[Mock API] Generate tasks');
       mockState.generateTasks();
       resolve(undefined);
     });
@@ -508,7 +500,6 @@ export const mockPlayerService = {
     return new CancelablePromise(async (resolve) => {
       await delay(500);
       const taskId = requestBody.playerTask?.id || '';
-      console.log('[Mock API] Complete task:', taskId);
       const response = mockState.completeTask(taskId);
       resolve(response);
     });
@@ -518,7 +509,6 @@ export const mockPlayerService = {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
       const taskId = requestBody.playerTask?.id || '';
-      console.log('[Mock API] Skip task:', taskId);
       mockState.skipTask(taskId);
       resolve(undefined);
     });
@@ -527,7 +517,6 @@ export const mockPlayerService = {
   getPlayerBalance: (): CancelablePromise<GetPlayerBalanceResponse> => {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
-      console.log('[Mock API] Get player balance');
       resolve(mockGetPlayerBalanceResponse);
     });
   },
@@ -539,7 +528,6 @@ export const mockPlayerService = {
   ): CancelablePromise<SearchPlayerBalanceTransactionsResponse> => {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
-      console.log('[Mock API] Search player balance transactions:', { requestBody, page, pageSize });
       
       let filteredTransactions = [...mockTransactions];
       
@@ -610,11 +598,13 @@ export const mockPlayerService = {
       
       const response: SearchPlayerBalanceTransactionsResponse = {
         transactions: paginatedTransactions,
-        options: {
+        paging: {
           totalRowCount: filteredTransactions.length,
           totalPageCount: Math.ceil(filteredTransactions.length / pageSize),
           currentPage: currentPage,
           hasMore: hasMore,
+        },
+        options: {
           filters: mockFilters,
         },
       };
@@ -630,7 +620,6 @@ export const mockPlayerService = {
   ): CancelablePromise<SearchPlayerTasksResponse> => {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
-      console.log('[Mock API] Search player tasks:', { requestBody, page, pageSize });
       
       // Фильтруем задачи по статусам из запроса
       let filteredTasks = [...mockTasks];
@@ -691,13 +680,6 @@ export const mockPlayerService = {
       const paginatedTasks = filteredTasks.slice(startIndex, endIndex);
       const hasMore = endIndex < filteredTasks.length;
       
-      // Логируем статусы задач на первой странице для отладки
-      if (currentPage === 0) {
-        const statuses = paginatedTasks.map(t => t.status);
-        const completedCount = statuses.filter(s => s === 'COMPLETED').length;
-        const skippedCount = statuses.filter(s => s === 'SKIPPED').length;
-        console.log('[Mock API] First page statuses:', { completed: completedCount, skipped: skippedCount, total: paginatedTasks.length, statuses: statuses.slice(0, 10) });
-      }
       
       // Моковые доступные фильтры (можно расширить)
       const mockFilters: LocalizedField[] = [
@@ -717,20 +699,30 @@ export const mockPlayerService = {
           localization: 'Тема',
           items: [
             { name: 'PHYSICAL_ACTIVITY', localization: 'Физическая активность' },
-            { name: 'EDUCATION', localization: 'Образование' },
-            { name: 'MENTAL_HEALTH', localization: 'Ментальное здоровье' },
             { name: 'CREATIVITY', localization: 'Креативность' },
+            { name: 'SOCIAL_SKILLS', localization: 'Социальные навыки' },
+            { name: 'NUTRITION', localization: 'Питание' },
+            { name: 'PRODUCTIVITY', localization: 'Продуктивность' },
+            { name: 'ADVENTURE', localization: 'Приключения' },
+            { name: 'MUSIC', localization: 'Музыка' },
+            { name: 'BRAIN', localization: 'Мозг' },
+            { name: 'CYBERSPORT', localization: 'Киберспорт' },
+            { name: 'DEVELOPMENT', localization: 'Разработка' },
+            { name: 'READING', localization: 'Чтение' },
+            { name: 'LANGUAGE_LEARNING', localization: 'Изучение языков' },
           ]
         }
       ];
       
       const response: SearchPlayerTasksResponse = {
         tasks: paginatedTasks,
-        options: {
+        paging: {
           totalRowCount: filteredTasks.length,
           totalPageCount: Math.ceil(filteredTasks.length / pageSize),
           currentPage: currentPage,
           hasMore: hasMore,
+        },
+        options: {
           filters: mockFilters,
           sorts: ['createdAt', 'updatedAt', 'order']
         },

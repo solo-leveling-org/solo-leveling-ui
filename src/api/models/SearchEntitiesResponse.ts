@@ -2,8 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { ResponsePaging } from './ResponsePaging';
 import type { ResponseQueryOptions } from './ResponseQueryOptions';
-export type QueryableResponse = {
+export type SearchEntitiesResponse = {
+    paging: ResponsePaging;
     options: ResponseQueryOptions;
 };
 
