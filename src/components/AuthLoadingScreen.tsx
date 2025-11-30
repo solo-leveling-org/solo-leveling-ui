@@ -7,6 +7,8 @@ interface AuthLoadingScreenProps {
   onTransitionEnd?: () => void;
 }
 
+const MIN_DISPLAY_TIME = 2000; // Минимум 2 секунды показа
+
 const AuthLoadingScreen: React.FC<AuthLoadingScreenProps> = ({ 
   isLoading, 
   onTransitionEnd 
@@ -14,7 +16,6 @@ const AuthLoadingScreen: React.FC<AuthLoadingScreenProps> = ({
   const [isVisible, setIsVisible] = useState(isLoading);
   const [shouldRender, setShouldRender] = useState(isLoading);
   const startTimeRef = useRef<number | null>(null);
-  const minDisplayTime = 2000; // Минимум 2 секунды показа
 
   useEffect(() => {
     if (isLoading) {
@@ -27,7 +28,7 @@ const AuthLoadingScreen: React.FC<AuthLoadingScreenProps> = ({
     } else {
       // Проверяем, прошло ли минимум 2 секунды
       const elapsed = startTimeRef.current ? Date.now() - startTimeRef.current : 0;
-      const remainingTime = Math.max(0, minDisplayTime - elapsed);
+      const remainingTime = Math.max(0, MIN_DISPLAY_TIME - elapsed);
 
       const timer = setTimeout(() => {
         // Плавное исчезновение

@@ -42,8 +42,8 @@ function AppRoutes() {
     isAuthLoading,
     authPromise
   } = useAuth();
-  // Синхронизация локализации
-  useLocaleSync(isAuthenticated);
+  // Синхронизация локализации (загружается только после успешной авторизации)
+  const { isLocaleLoading, localeLoaded } = useLocaleSync(isAuthenticated);
 
   // Подключение к WebSocket после успешной авторизации
   useWebSocketNotifications({enabled: isAuthenticated, authPromise});
@@ -56,10 +56,15 @@ function AppRoutes() {
   }, [location.pathname]);
 
 
+  // Показываем экран загрузки пока идет авторизация ИЛИ (после авторизации) загрузка локализации
+  // Локализация загружается только после успешной авторизации
+  // Если пользователь авторизован, показываем загрузку пока локализация не загружена
+  const shouldShowLoading = isAuthLoading || (isAuthenticated && (isLocaleLoading || !localeLoaded));
+
   return (
       <div className="App">
-        {/* Экран загрузки авторизации */}
-        <AuthLoadingScreen isLoading={isAuthLoading} />
+        {/* Экран загрузки авторизации и локализации */}
+        <AuthLoadingScreen isLoading={shouldShowLoading} />
         
         {!isTelegramChecked ? null : (
             <>
