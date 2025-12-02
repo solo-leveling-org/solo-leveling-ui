@@ -157,9 +157,13 @@ export const getHeaders = async (config: OpenAPIConfig, options: ApiRequestOptio
 
   const formHeaders = typeof formData?.getHeaders === 'function' && formData?.getHeaders() || {}
 
+  // Получаем временную зону браузера
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   const headers = Object.entries({
     Accept: 'application/json',
     'Accept-Language': getLanguageFromStorage(),
+    'X-TimeZone': timeZone,
     ...additionalHeaders,
     ...options.headers,
     ...formHeaders,
