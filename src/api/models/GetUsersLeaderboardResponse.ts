@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { ResponsePaging } from './ResponsePaging';
-import type { ResponseQueryOptions } from './ResponseQueryOptions';
-export type SearchEntitiesResponse = {
+import type { User } from './User';
+export type GetUsersLeaderboardResponse = {
+    users: Array<User>;
     paging: ResponsePaging;
-    options?: ResponseQueryOptions;
 };
 

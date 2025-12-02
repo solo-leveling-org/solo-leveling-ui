@@ -88,8 +88,10 @@ export function AbstractDataList<T extends DataItem>({
       if (dateFilters.from && dateFilters.to) {
         currentFilters.dateFilters?.push({
           field: 'createdAt', // Хардкод как указано в требованиях
-          from: dateFilters.from,
-          to: dateFilters.to,
+          range: {
+            from: dateFilters.from,
+            to: dateFilters.to,
+          },
         });
       }
 

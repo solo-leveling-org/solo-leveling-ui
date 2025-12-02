@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { JwtToken } from './JwtToken';
-export type RefreshResponse = {
-    accessToken: JwtToken;
-};
-
+export enum LeaderboardType {
+    TASKS = 'TASKS',
+    BALANCE = 'BALANCE',
+    LEVEL = 'LEVEL',
+}

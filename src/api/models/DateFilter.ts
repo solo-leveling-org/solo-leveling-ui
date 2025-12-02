@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { DayRange } from './DayRange';
 export type DateFilter = {
     field: string;
-    from: string;
-    to: string;
+    range: DayRange;
 };
 

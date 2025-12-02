@@ -17,6 +17,11 @@ class WebSocketManager {
   private isEnabled = false;
   private lastUsedToken: string | null = null;
   private tokenCheckInterval: NodeJS.Timeout | null = null;
+  private unloadHandlers: {
+    beforeunload?: () => void;
+    pagehide?: (event: PageTransitionEvent) => void;
+    visibilitychange?: () => void;
+  } = {};
 
   private constructor() {
     // Приватный конструктор для singleton
@@ -95,6 +100,9 @@ class WebSocketManager {
 
     // Запускаем периодическую проверку токена
     this.startTokenCheck();
+
+    // Регистрируем обработчики закрытия страницы
+    this.registerUnloadHandlers();
   }
 
   /**
@@ -116,6 +124,9 @@ class WebSocketManager {
 
     // Останавливаем проверку токена
     this.stopTokenCheck();
+
+    // Удаляем обработчики закрытия страницы
+    this.unregisterUnloadHandlers();
 
     // Закрываем соединение
     this.disconnect();
@@ -345,6 +356,107 @@ class WebSocketManager {
       clearInterval(this.tokenCheckInterval);
       this.tokenCheckInterval = null;
     }
+  }
+
+  /**
+   * Регистрирует обработчики событий закрытия страницы
+   */
+  private registerUnloadHandlers(): void {
+    // Удаляем старые обработчики, если они есть
+    this.unregisterUnloadHandlers();
+
+    // Обработчик beforeunload - срабатывает перед закрытием страницы
+    this.unloadHandlers.beforeunload = () => {
+      console.log('[WS Manager] beforeunload event, disconnecting...');
+      this.disconnectGracefully();
+    };
+
+    // Обработчик pagehide - более надежен для мобильных браузеров
+    this.unloadHandlers.pagehide = (event: PageTransitionEvent) => {
+      // Если страница выгружается (не просто скрывается), отключаемся
+      if (!event.persisted) {
+        console.log('[WS Manager] pagehide event (page unloading), disconnecting...');
+        this.disconnectGracefully();
+      }
+    };
+
+    // Обработчик visibilitychange - когда вкладка становится скрытой
+    // Отключаемся только если страница полностью выгружается
+    this.unloadHandlers.visibilitychange = () => {
+      if (document.visibilityState === 'hidden') {
+        // Используем небольшую задержку, чтобы отличить простое скрытие от закрытия
+        // Если страница вернется в visible, таймер будет очищен
+        const timeoutId = setTimeout(() => {
+          // Если страница все еще скрыта через 1 секунду, вероятно она закрывается
+          if (document.visibilityState === 'hidden') {
+            console.log('[WS Manager] visibilitychange: page hidden for too long, disconnecting...');
+            this.disconnectGracefully();
+          }
+        }, 1000);
+
+        // Очищаем таймер, если страница снова стала видимой
+        const checkVisibility = () => {
+          if (document.visibilityState === 'visible') {
+            clearTimeout(timeoutId);
+            document.removeEventListener('visibilitychange', checkVisibility);
+          }
+        };
+        document.addEventListener('visibilitychange', checkVisibility, { once: true });
+      }
+    };
+
+    // Регистрируем обработчики
+    if (typeof window !== 'undefined') {
+      window.addEventListener('beforeunload', this.unloadHandlers.beforeunload);
+      window.addEventListener('pagehide', this.unloadHandlers.pagehide);
+      document.addEventListener('visibilitychange', this.unloadHandlers.visibilitychange);
+    }
+  }
+
+  /**
+   * Удаляет обработчики событий закрытия страницы
+   */
+  private unregisterUnloadHandlers(): void {
+    if (typeof window !== 'undefined') {
+      if (this.unloadHandlers.beforeunload) {
+        window.removeEventListener('beforeunload', this.unloadHandlers.beforeunload);
+      }
+      if (this.unloadHandlers.pagehide) {
+        window.removeEventListener('pagehide', this.unloadHandlers.pagehide);
+      }
+      if (this.unloadHandlers.visibilitychange) {
+        document.removeEventListener('visibilitychange', this.unloadHandlers.visibilitychange);
+      }
+    }
+    this.unloadHandlers = {};
+  }
+
+  /**
+   * Корректно отключается от WebSocket при закрытии страницы
+   */
+  private disconnectGracefully(): void {
+    // Отключаем менеджер, чтобы предотвратить переподключение
+    this.isEnabled = false;
+
+    // Останавливаем таймеры
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    this.stopTokenCheck();
+
+    // Явно отключаемся от WebSocket
+    if (this.client && this.client.connected) {
+      try {
+        // Используем синхронное отключение для надежности
+        this.client.deactivate();
+        console.log('[WS Manager] Gracefully disconnected on page unload');
+      } catch (e) {
+        console.warn('[WS Manager] Error during graceful disconnect:', e);
+      }
+    }
+    this.client = null;
+    this.isConnecting = false;
   }
 }
 

@@ -123,34 +123,56 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserLocaleResponse'
 
-  # =============== PLAYER ===============
-  /api/v1/player/{playerId}/topics:
-    get:
+  /api/v1/user/leaderboard/{type}:
+    post:
       tags:
-        - player
-      summary: Get player's topics with levels by player ID
-      operationId: getPlayerTopics
+        - user
+      summary: Get leaderboard for users
+      operationId: getUsersLeaderboard
       parameters:
-        - name: playerId
+        - name: type
           in: path
           required: true
           schema:
+            $ref: '#/components/schemas/LeaderboardType'
+        - name: page
+          in: query
+          required: false
+          schema:
             type: integer
-            format: int64
+            format: int32
+            default: 0
+            minimum: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+            minimum: 1
+            maximum: 100
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetUsersLeaderboardRequest'
       responses:
         '200':
-          description: Player's topic levels
+          description: Users leaderboard
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetPlayerTopicsResponse'
+                $ref: '#/components/schemas/GetUsersLeaderboardResponse'
 
+  # =============== PLAYER ===============
   /api/v1/player/topics:
     get:
       tags:
         - player
       summary: Get current player's topics with levels
-      operationId: getCurrentPlayerTopics
+      operationId: getPlayerTopics
       responses:
         '200':
           description: Current player's topic levels
@@ -198,18 +220,19 @@ paths:
         '204':
           description: Tasks generated successfully
 
-  /api/v1/player/tasks/complete:
+  /api/v1/player/tasks/{id}/complete:
     post:
       tags:
         - player
       summary: Complete a task
       operationId: completeTask
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CompleteTaskRequest'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Task completed successfully
@@ -218,18 +241,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/CompleteTaskResponse'
 
-  /api/v1/player/tasks/skip:
+  /api/v1/player/tasks/{id}/skip:
     post:
       tags:
         - player
       summary: Skip a task
       operationId: skipTask
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SkipTaskRequest'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '204':
           description: Task skipped successfully
@@ -358,84 +382,69 @@ components:
           items:
             $ref: '#/components/schemas/PlayerTaskTopic'
 
-    CompleteTaskRequest:
-      type: object
-      required:
-        - playerTask
-      properties:
-        playerTask:
-          $ref: '#/components/schemas/PlayerTask'
-
-    SkipTaskRequest:
-      type: object
-      required:
-        - playerTask
-      properties:
-        playerTask:
-          $ref: '#/components/schemas/PlayerTask'
-
     SearchRequest:
       type: object
       properties:
         options:
           $ref: '#/components/schemas/RequestQueryOptions'
 
+    GetUsersLeaderboardRequest:
+      type: object
+      properties:
+        range:
+          $ref: '#/components/schemas/DayRange'
+
     # --- RESPONSES ---
     LoginResponse:
       type: object
-      required:
-        - accessToken
-        - refreshToken
       properties:
         accessToken:
           $ref: '#/components/schemas/JwtToken'
         refreshToken:
           $ref: '#/components/schemas/JwtToken'
-      description: Response containing JWT tokens after successful authentication
+      required:
+        - accessToken
+        - refreshToken
 
     RefreshResponse:
       type: object
-      required:
-        - accessToken
       properties:
         accessToken:
           $ref: '#/components/schemas/JwtToken'
-      description: Response containing a new access token after refresh
+      required:
+        - accessToken
 
     GetUserResponse:
       type: object
-      required:
-        - user
       properties:
         user:
           $ref: '#/components/schemas/User'
+      required:
+        - user
 
     UserLocaleResponse:
       type: object
-      required:
-        - locale
-        - isManual
       properties:
         locale:
           type: string
         isManual:
           type: boolean
+      required:
+        - locale
+        - isManual
 
     GetPlayerTopicsResponse:
       type: object
-      required:
-        - playerTaskTopics
       properties:
         playerTaskTopics:
           type: array
           items:
             $ref: '#/components/schemas/PlayerTaskTopic'
+      required:
+        - playerTaskTopics
 
     GetActiveTasksResponse:
       type: object
-      required:
-        - tasks
-        - firstTime
       properties:
         tasks:
           type: array
@@ -443,6 +452,9 @@ components:
             $ref: '#/components/schemas/PlayerTask'
         firstTime:
           type: boolean
+      required:
+        - tasks
+        - firstTime
 
     CompleteTaskResponse:
       type: object
@@ -471,7 +483,6 @@ components:
         options:
           $ref: '#/components/schemas/ResponseQueryOptions'
       required:
-        - options
         - paging
 
     SearchPlayerBalanceTransactionsResponse:
@@ -497,6 +508,19 @@ components:
                 $ref: '#/components/schemas/PlayerTask'
           required:
             - tasks
+
+    GetUsersLeaderboardResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        paging:
+          $ref: '#/components/schemas/ResponsePaging'
+      required:
+        - users
+        - paging
 
     # --- Enums ---
     UserRole:
@@ -550,6 +574,13 @@ components:
       enum:
         - ASC
         - DESC
+
+    LeaderboardType:
+      type: string
+      enum:
+        - TASKS
+        - BALANCE
+        - LEVEL
 
     JwtTokenType:
       type: string
@@ -843,8 +874,6 @@ components:
             type: string
           description: Available sort fields
           example: [ "createdAt", "updatedAt", "name" ]
-      required:
-        - paging
 
     Filter:
       type: object
@@ -858,11 +887,9 @@ components:
           items:
             $ref: '#/components/schemas/EnumFilter'
 
-    DateFilter:
+    DayRange:
       type: object
       properties:
-        field:
-          type: string
         from:
           type: string
           format: date
@@ -870,9 +897,19 @@ components:
           type: string
           format: date
       required:
-        - field
         - from
         - to
+
+    DateFilter:
+      type: object
+      properties:
+        field:
+          type: string
+        range:
+          $ref: '#/components/schemas/DayRange'
+      required:
+        - field
+        - range
 
     EnumFilter:
       type: object

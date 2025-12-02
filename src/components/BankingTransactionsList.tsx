@@ -160,8 +160,10 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
           filter: {
             dateFilters: dateFilters.from && dateFilters.to ? [{
               field: 'createdAt',
-              from: dateFilters.from,
-              to: dateFilters.to
+              range: {
+                from: dateFilters.from,
+                to: dateFilters.to
+              }
             }] : undefined,
             enumFilters: Object.keys(enumFilters).length > 0 ? 
               Object.entries(enumFilters).map(([field, values]) => ({

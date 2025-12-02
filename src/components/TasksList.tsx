@@ -105,8 +105,10 @@ const TasksList: React.FC<TasksListProps> = ({
           filter: {
             dateFilters: dateFilters.from && dateFilters.to ? [{
               field: 'createdAt',
-              from: dateFilters.from,
-              to: dateFilters.to
+              range: {
+                from: dateFilters.from,
+                to: dateFilters.to
+              }
             }] : undefined,
             enumFilters: allEnumFilters.length > 0 ? allEnumFilters : undefined
           },

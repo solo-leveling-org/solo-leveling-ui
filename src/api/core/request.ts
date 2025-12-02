@@ -300,11 +300,13 @@ const handleMockRequest = async <T>(options: ApiRequestOptions): Promise<T | nul
     if (options.url === '/api/v1/player/tasks/generate' && options.method === 'POST') {
       return await mockPlayerService.generateTasks() as any;
     }
-    if (options.url === '/api/v1/player/tasks/complete' && options.method === 'POST') {
-      return await mockPlayerService.completeTask(options.body as any) as any;
+    if (options.url?.includes('/api/v1/player/tasks/') && options.url?.includes('/complete') && options.method === 'POST') {
+      const taskId = options.path?.id as string || '';
+      return await mockPlayerService.completeTask(taskId) as any;
     }
-    if (options.url === '/api/v1/player/tasks/skip' && options.method === 'POST') {
-      return await mockPlayerService.skipTask(options.body as any) as any;
+    if (options.url?.includes('/api/v1/player/tasks/') && options.url?.includes('/skip') && options.method === 'POST') {
+      const taskId = options.path?.id as string || '';
+      return await mockPlayerService.skipTask(taskId) as any;
     }
     if (options.url === '/api/v1/player/balance' && options.method === 'GET') {
       return await mockPlayerService.getPlayerBalance() as any;

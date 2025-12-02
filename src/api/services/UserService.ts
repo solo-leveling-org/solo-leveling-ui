@@ -3,6 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { GetUserResponse } from '../models/GetUserResponse';
+import type { GetUsersLeaderboardRequest } from '../models/GetUsersLeaderboardRequest';
+import type { GetUsersLeaderboardResponse } from '../models/GetUsersLeaderboardResponse';
+import type { LeaderboardType } from '../models/LeaderboardType';
 import type { UpdateUserLocaleRequest } from '../models/UpdateUserLocaleRequest';
 import type { UserLocaleResponse } from '../models/UserLocaleResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -60,6 +63,35 @@ export class UserService {
         return __request(OpenAPI, {
             method: 'PUT',
             url: '/api/v1/user/locale',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
+     * Get leaderboard for users
+     * @param type
+     * @param requestBody
+     * @param page
+     * @param pageSize
+     * @returns GetUsersLeaderboardResponse Users leaderboard
+     * @throws ApiError
+     */
+    public static getUsersLeaderboard(
+        type: LeaderboardType,
+        requestBody: GetUsersLeaderboardRequest,
+        page?: number,
+        pageSize: number = 20,
+    ): CancelablePromise<GetUsersLeaderboardResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/user/leaderboard/{type}',
+            path: {
+                'type': type,
+            },
+            query: {
+                'page': page,
+                'pageSize': pageSize,
+            },
             body: requestBody,
             mediaType: 'application/json',
         });

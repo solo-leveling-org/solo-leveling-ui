@@ -11,8 +11,6 @@ import type {
   TgAuthData,
   RefreshRequest,
   SavePlayerTopicsRequest,
-  CompleteTaskRequest,
-  SkipTaskRequest,
   SearchRequest,
   LocalizedField,
   PlayerTask,
@@ -496,20 +494,18 @@ export const mockPlayerService = {
     });
   },
 
-  completeTask: (requestBody: CompleteTaskRequest): CancelablePromise<CompleteTaskResponse> => {
+  completeTask: (id: string): CancelablePromise<CompleteTaskResponse> => {
     return new CancelablePromise(async (resolve) => {
       await delay(500);
-      const taskId = requestBody.playerTask?.id || '';
-      const response = mockState.completeTask(taskId);
+      const response = mockState.completeTask(id);
       resolve(response);
     });
   },
 
-  skipTask: (requestBody: SkipTaskRequest): CancelablePromise<void> => {
+  skipTask: (id: string): CancelablePromise<void> => {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
-      const taskId = requestBody.playerTask?.id || '';
-      mockState.skipTask(taskId);
+      mockState.skipTask(id);
       resolve(undefined);
     });
   },
@@ -534,9 +530,9 @@ export const mockPlayerService = {
       // Применяем фильтры по датам
       if (requestBody.options?.filter?.dateFilters) {
         requestBody.options.filter.dateFilters.forEach(dateFilter => {
-          if (dateFilter.field === 'createdAt' && dateFilter.from && dateFilter.to) {
-            const fromDate = new Date(dateFilter.from);
-            const toDate = new Date(dateFilter.to);
+          if (dateFilter.field === 'createdAt' && dateFilter.range?.from && dateFilter.range?.to) {
+            const fromDate = new Date(dateFilter.range.from);
+            const toDate = new Date(dateFilter.range.to);
             filteredTransactions = filteredTransactions.filter(transaction => {
               const transactionDate = new Date(transaction.createdAt);
               return transactionDate >= fromDate && transactionDate <= toDate;
@@ -627,9 +623,9 @@ export const mockPlayerService = {
       // Применяем фильтры по датам
       if (requestBody.options?.filter?.dateFilters) {
         requestBody.options.filter.dateFilters.forEach(dateFilter => {
-          if (dateFilter.field === 'createdAt' && dateFilter.from && dateFilter.to) {
-            const fromDate = new Date(dateFilter.from);
-            const toDate = new Date(dateFilter.to);
+          if (dateFilter.field === 'createdAt' && dateFilter.range?.from && dateFilter.range?.to) {
+            const fromDate = new Date(dateFilter.range.from);
+            const toDate = new Date(dateFilter.range.to);
             filteredTasks = filteredTasks.filter(task => {
               if (!task.createdAt) return false;
               const taskDate = new Date(task.createdAt);
