@@ -11,6 +11,7 @@ import BaseDialog from './BaseDialog';
 type TaskDialogProps = {
   task: Task;
   status?: PlayerTaskStatus;
+  createdAt?: string;
   onClose: () => void;
   isOpen: boolean;
 };
@@ -49,8 +50,55 @@ const getStatusColorScheme = (status?: PlayerTaskStatus) => {
   }
 };
 
-const TaskDialog: React.FC<TaskDialogProps> = ({task, status, onClose, isOpen}) => {
+const TaskDialog: React.FC<TaskDialogProps> = ({task, status, createdAt, onClose, isOpen}) => {
   const { t } = useLocalization();
+
+  // Форматирование даты создания
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const taskDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    
+    // Сегодня
+    if (taskDate.getTime() === today.getTime()) {
+      return t('common.today');
+    }
+    
+    // Вчера
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (taskDate.getTime() === yesterday.getTime()) {
+      return t('common.yesterday');
+    }
+    
+    // Форматируем дату
+    const day = date.getDate();
+    const monthNames = [
+      t('common.months.january'), t('common.months.february'), t('common.months.march'),
+      t('common.months.april'), t('common.months.may'), t('common.months.june'),
+      t('common.months.july'), t('common.months.august'), t('common.months.september'),
+      t('common.months.october'), t('common.months.november'), t('common.months.december')
+    ];
+    const year = date.getFullYear();
+    const currentYear = now.getFullYear();
+    
+    if (year === currentYear) {
+      return `${day} ${monthNames[date.getMonth()]}`;
+    }
+    
+    return `${day} ${monthNames[date.getMonth()]} ${year}`;
+  };
+
+  // Форматирование времени
+  const formatTime = (dateString?: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
 
   // Мемоизируем стили для оптимизации
   const rarityText = useMemo(() => t(`rarity.${task.rarity || 'COMMON'}`), [t, task.rarity]);
@@ -390,6 +438,29 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, status, onClose, isOpen}) 
                       ))}
                     </div>
                   </div>
+              )}
+
+              {/* Created date section */}
+              {createdAt && (
+                <div className="mb-4 flex items-center gap-2">
+                  <div style={{ color: 'rgba(180, 220, 240, 0.8)' }}>
+                    <Icon type="clock" size={16} />
+                  </div>
+                  <div>
+                    <div 
+                      className="text-xs font-tech font-medium mb-1"
+                      style={{ color: 'rgba(220, 235, 245, 0.7)' }}
+                    >
+                      {t('dialogs.task.createdAt')}
+                    </div>
+                    <div 
+                      className="text-sm font-tech font-semibold"
+                      style={{ color: '#e8f4f8' }}
+                    >
+                      {formatDate(createdAt)} {formatTime(createdAt)}
+                    </div>
+                  </div>
+                </div>
               )}
           </div>
             </div>

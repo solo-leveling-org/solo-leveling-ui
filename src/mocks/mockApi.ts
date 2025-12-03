@@ -120,12 +120,13 @@ class MockState {
     const taskId = `task-${this.taskIdCounter++}`;
     const maxOrder = Math.max(...this.tasks.map(t => t.order || 0), 0);
 
+    const now = new Date();
     const newTask: PlayerTask = {
       id: taskId,
       version: 1,
       order: maxOrder + 1,
       status: PlayerTaskStatus.PREPARING,
-      createdAt: new Date().toISOString(),
+      createdAt: now.toISOString(),
       task: createMockTask(
         taskId,
         taskTitles[randomIndex],

@@ -206,12 +206,17 @@ const generateCompletedTasks = (): PlayerTask[] => {
     date.setDate(date.getDate() - daysAgo);
     date.setHours(hoursOffset, minutesOffset, 0, 0);
     
+    // Создаем дату создания (раньше на несколько часов)
+    const createdAtDate = new Date(date);
+    createdAtDate.setHours(createdAtDate.getHours() - 2);
+    
     tasks.push({
       id: `task-completed-${i + 1}`,
       version: 1,
       order: i + 1,
       status: taskStatus,
-      createdAt: date.toISOString(),
+      createdAt: createdAtDate.toISOString(),
+      updatedAt: date.toISOString(), // Дата завершения/пропуска
       task: createMockTask(
         `task-completed-${i + 1}`,
         `${title} #${i + 1}`,
@@ -227,12 +232,21 @@ const generateCompletedTasks = (): PlayerTask[] => {
   return tasks;
 };
 
+// Генерируем дату создания для активных задач
+const getCreatedAtForActiveTask = (daysAgo: number, hoursAgo: number = 0) => {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+  date.setHours(date.getHours() - hoursAgo);
+  return date.toISOString();
+};
+
 export const mockTasks: PlayerTask[] = [
   {
     id: 'task-legendary-long',
     version: 1,
     order: 0,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(1, 3),
     task: createMockTask(
       'task-legendary-long',
       'Очень длинное название задачи для проверки наложения элементов интерфейса друг на друга при максимальной редкости',
@@ -248,6 +262,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 1,
     status: PlayerTaskStatus.PREPARING,
+    createdAt: getCreatedAtForActiveTask(0, 1),
     task: createMockTask(
       'task-1',
       'Пробежка 5 км',
@@ -263,6 +278,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 2,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(0, 5),
     task: createMockTask(
       'task-2',
       'Прочитать главу книги',
@@ -278,6 +294,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 3,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(0, 8),
     task: createMockTask(
       'task-3',
       'Медитация 10 минут',
@@ -293,6 +310,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 4,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(1, 2),
     task: createMockTask(
       'task-4',
       'Написать код',
@@ -308,6 +326,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 5,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(1, 6),
     task: createMockTask(
       'task-5',
       'Тренировка и изучение',
@@ -323,6 +342,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 6,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(2, 1),
     task: createMockTask(
       'task-6',
       'Медитация и творчество',
@@ -338,6 +358,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 7,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(2, 4),
     task: createMockTask(
       'task-7',
       'Йога и обучение',

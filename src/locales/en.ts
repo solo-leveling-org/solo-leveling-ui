@@ -266,6 +266,7 @@ export const en = {
       coins: 'Coins',
       statsTitle: 'Stats',
       categoriesTitle: 'Categories',
+      createdAt: 'Created',
     },
   },
 

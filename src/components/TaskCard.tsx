@@ -59,6 +59,49 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
   const { task, status } = playerTask;
   const { t } = useLocalization();
   const [isTransitioning, setIsTransitioning] = React.useState(false);
+
+  // Форматирование даты завершения задачи
+  const formatTaskDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const taskDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    
+    // Сегодня
+    if (taskDate.getTime() === today.getTime()) {
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${t('common.today')}, ${hours}:${minutes}`;
+    }
+    
+    // Вчера
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (taskDate.getTime() === yesterday.getTime()) {
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${t('common.yesterday')}, ${hours}:${minutes}`;
+    }
+    
+    // Форматируем дату
+    const day = date.getDate();
+    const monthNames = [
+      t('common.months.january'), t('common.months.february'), t('common.months.march'),
+      t('common.months.april'), t('common.months.may'), t('common.months.june'),
+      t('common.months.july'), t('common.months.august'), t('common.months.september'),
+      t('common.months.october'), t('common.months.november'), t('common.months.december')
+    ];
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const year = date.getFullYear();
+    const currentYear = now.getFullYear();
+    
+    if (year === currentYear) {
+      return `${day} ${monthNames[date.getMonth()]}, ${hours}:${minutes}`;
+    }
+    
+    return `${day} ${monthNames[date.getMonth()]} ${year}, ${hours}:${minutes}`;
+  };
   
   // Отслеживаем переход из PREPARING в IN_PROGRESS
   React.useEffect(() => {
@@ -263,6 +306,21 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
               boxShadow: `0 0 8px ${colorScheme.accentColor}`
             }}
           ></div>
+
+          {/* Completion date for completed/skipped tasks */}
+          {(status === PlayerTaskStatus.COMPLETED || status === PlayerTaskStatus.SKIPPED) && playerTask.updatedAt && (
+            <div className="mb-3 flex items-center gap-2">
+              <div style={{ color: 'rgba(180, 220, 240, 0.6)' }}>
+                <Icon type="clock" size={14} />
+              </div>
+              <div 
+                className="text-xs font-tech"
+                style={{ color: 'rgba(220, 235, 245, 0.6)' }}
+              >
+                {formatTaskDate(playerTask.updatedAt)}
+              </div>
+            </div>
+          )}
 
           {/* Action buttons - fixed at bottom */}
           {status === PlayerTaskStatus.IN_PROGRESS && onComplete && onReplace && (
