@@ -48,6 +48,10 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           setTasks(res.tasks);
           setFirstTime(res.firstTime);
           setLoading(false);
+          // Если firstTime, перенаправляем в топики
+          if (res.firstTime) {
+            setTabMode('topics');
+          }
           // Запускаем анимацию появления контента
           setTimeout(() => {
             setContentLoaded(true);
@@ -194,7 +198,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
               >
                 <button
                   onClick={handleBackToTasks}
-                  className={`relative px-5 md:px-7 py-2 rounded-full font-tech font-medium text-sm md:text-base transition-all duration-200 ${
+                  className={`relative px-5 md:px-7 py-2 rounded-full font-tech font-medium text-sm md:text-base transition-all duration-200 flex items-center gap-2 ${
                     tabMode === 'tasks' ? '' : 'opacity-60 hover:opacity-80'
                   }`}
                   style={tabMode === 'tasks' ? {
@@ -206,7 +210,11 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                     color: 'rgba(220, 235, 245, 0.7)'
                   }}
                 >
-                  {t('navigation.tasks')}
+                  <Icon 
+                    type="clipboard" 
+                    size={16}
+                  />
+                  <span>{t('navigation.tasks')}</span>
                 </button>
                 <button
                   onClick={handleGoToTopics}
@@ -231,52 +239,61 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
               </div>
             </div>
 
-            {/* Task View Mode Toggle - Pill Style (More Expressive) */}
+            {/* Task View Mode Toggle - Same style as leaderboard */}
             {tabMode === 'tasks' && (
               <div className="flex justify-center mb-6">
-                <div className="inline-flex gap-2">
-                  <button
-                    onClick={() => setTaskViewMode('active')}
-                    className={`px-6 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-sm md:text-base transition-all duration-300 ${
-                      taskViewMode === 'active' ? '' : 'opacity-50 hover:opacity-70'
-                    }`}
-                    style={taskViewMode === 'active' ? {
-                      background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.25) 0%, rgba(160, 210, 235, 0.15) 100%)',
-                      border: '2px solid rgba(180, 220, 240, 0.4)',
-                      color: '#e8f4f8',
-                      boxShadow: '0 0 20px rgba(180, 220, 240, 0.3), inset 0 0 20px rgba(200, 230, 245, 0.05)',
-                      textShadow: '0 0 4px rgba(180, 220, 240, 0.3)',
-                      backdropFilter: 'blur(20px)'
-                    } : {
-                      background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.4) 0%, rgba(5, 8, 18, 0.6) 100%)',
-                      border: '1px solid rgba(220, 235, 245, 0.2)',
-                      color: 'rgba(220, 235, 245, 0.6)',
-                      backdropFilter: 'blur(10px)'
-                    }}
-                  >
-                    {t('tasks.viewMode.active')}
-                  </button>
-                  <button
-                    onClick={() => setTaskViewMode('completed')}
-                    className={`px-6 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-sm md:text-base transition-all duration-300 ${
-                      taskViewMode === 'completed' ? '' : 'opacity-50 hover:opacity-70'
-                    }`}
-                    style={taskViewMode === 'completed' ? {
-                      background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.25) 0%, rgba(160, 210, 235, 0.15) 100%)',
-                      border: '2px solid rgba(180, 220, 240, 0.4)',
-                      color: '#e8f4f8',
-                      boxShadow: '0 0 20px rgba(180, 220, 240, 0.3), inset 0 0 20px rgba(200, 230, 245, 0.05)',
-                      textShadow: '0 0 4px rgba(180, 220, 240, 0.3)',
-                      backdropFilter: 'blur(20px)'
-                    } : {
-                      background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.4) 0%, rgba(5, 8, 18, 0.6) 100%)',
-                      border: '1px solid rgba(220, 235, 245, 0.2)',
-                      color: 'rgba(220, 235, 245, 0.6)',
-                      backdropFilter: 'blur(10px)'
-                    }}
-                  >
-                    {t('tasks.viewMode.completed')}
-                  </button>
+                <div
+                  className="inline-flex rounded-full p-1"
+                  style={{
+                    background: 'rgba(220, 235, 245, 0.08)',
+                    border: '1px solid rgba(220, 235, 245, 0.12)',
+                    backdropFilter: 'blur(10px)'
+                  }}
+                >
+                  <div className="inline-flex gap-2">
+                    <button
+                      onClick={() => setTaskViewMode('active')}
+                      className={`px-6 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-sm md:text-base transition-all duration-150 ease-in-out ${
+                        taskViewMode === 'active' ? '' : 'opacity-50 hover:opacity-70'
+                      }`}
+                      style={taskViewMode === 'active' ? {
+                        background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.25) 0%, rgba(160, 210, 235, 0.15) 100%)',
+                        border: '2px solid rgba(180, 220, 240, 0.4)',
+                        color: '#e8f4f8',
+                        boxShadow: '0 0 20px rgba(180, 220, 240, 0.3), inset 0 0 20px rgba(200, 230, 245, 0.05)',
+                        textShadow: '0 0 4px rgba(180, 220, 240, 0.3)',
+                        backdropFilter: 'blur(20px)'
+                      } : {
+                        background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.4) 0%, rgba(5, 8, 18, 0.6) 100%)',
+                        border: '1px solid rgba(220, 235, 245, 0.2)',
+                        color: 'rgba(220, 235, 245, 0.6)',
+                        backdropFilter: 'blur(10px)'
+                      }}
+                    >
+                      {t('tasks.viewMode.active')}
+                    </button>
+                    <button
+                      onClick={() => setTaskViewMode('completed')}
+                      className={`px-6 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-sm md:text-base transition-all duration-150 ease-in-out ${
+                        taskViewMode === 'completed' ? '' : 'opacity-50 hover:opacity-70'
+                      }`}
+                      style={taskViewMode === 'completed' ? {
+                        background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.25) 0%, rgba(160, 210, 235, 0.15) 100%)',
+                        border: '2px solid rgba(180, 220, 240, 0.4)',
+                        color: '#e8f4f8',
+                        boxShadow: '0 0 20px rgba(180, 220, 240, 0.3), inset 0 0 20px rgba(200, 230, 245, 0.05)',
+                        textShadow: '0 0 4px rgba(180, 220, 240, 0.3)',
+                        backdropFilter: 'blur(20px)'
+                      } : {
+                        background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.4) 0%, rgba(5, 8, 18, 0.6) 100%)',
+                        border: '1px solid rgba(220, 235, 245, 0.2)',
+                        color: 'rgba(220, 235, 245, 0.6)',
+                        backdropFilter: 'blur(10px)'
+                      }}
+                    >
+                      {t('tasks.viewMode.completed')}
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

@@ -17,6 +17,7 @@ import type {
   SearchRequest,
   LocalizedField,
   PlayerTask,
+  User,
 } from '../api';
 import {
   mockGetUserResponse,
@@ -28,10 +29,11 @@ import {
   mockTasks,
   mockTransactions,
   mockPlayerTopics,
+  generateMockLeaderboardUsers,
   mockUser,
   createMockLeaderboardResponse,
 } from './mockData';
-import { PlayerTaskStatus, TaskRarity, TaskTopic } from '../api';
+import { PlayerTaskStatus, TaskRarity, TaskTopic, Assessment } from '../api';
 import { createMockTask } from './mockData';
 import { CancelablePromise } from '../api';
 
@@ -441,7 +443,47 @@ export const mockUserService = {
   getUser: (userId: number): CancelablePromise<GetUserResponse> => {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
-      resolve(mockGetUserResponse);
+      // Создаем моковые данные для пользователя на основе его ID
+      // Генерируем пользователей из лидерборда
+      const allUsers = generateMockLeaderboardUsers(200);
+      const leaderboardUser = allUsers.find(u => u.id === userId);
+      const mockUserData: User = leaderboardUser ? {
+        id: leaderboardUser.id,
+        version: 1,
+        username: `user_${leaderboardUser.id}`,
+        firstName: leaderboardUser.firstName,
+        lastName: leaderboardUser.lastName,
+        photoUrl: leaderboardUser.photoUrl,
+        locale: 'ru',
+        roles: [],
+        player: {
+          id: leaderboardUser.id,
+          version: 1,
+          maxTasks: 5,
+          agility: 10 + (leaderboardUser.id % 10),
+          strength: 15 + (leaderboardUser.id % 10),
+          intelligence: 12 + (leaderboardUser.id % 10),
+          level: {
+            id: `level-${leaderboardUser.id}`,
+            version: 1,
+            level: Math.floor(leaderboardUser.score / 100) || 1,
+            totalExperience: leaderboardUser.score * 10,
+            currentExperience: (leaderboardUser.score * 10) % 1000,
+            experienceToNextLevel: 1000,
+            assessment: leaderboardUser.id <= 3 ? Assessment.A : Assessment.B,
+          },
+          balance: {
+            id: `balance-${leaderboardUser.id}`,
+            version: 1,
+            balance: {
+              currencyCode: 'GOLD',
+              amount: leaderboardUser.score || 0,
+            },
+          },
+          taskTopics: [],
+        },
+      } : mockUser;
+      resolve({ user: mockUserData });
     });
   },
 

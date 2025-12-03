@@ -24,6 +24,16 @@ export const api = {
     }
   },
 
+  getUserById: async (userId: number): Promise<ApiUser> => {
+    try {
+      const response: GetUserResponse = await UserService.getUser(userId);
+      return response.user;
+    } catch (error) {
+      console.error('Error getting user by ID:', error);
+      throw error;
+    }
+  },
+
   generateTasks: async (): Promise<ApiPlayerTask[]> => {
     try {
       await PlayerService.generateTasks();

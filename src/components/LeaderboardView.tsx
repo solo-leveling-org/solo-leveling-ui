@@ -10,12 +10,14 @@ type LeaderboardViewProps = {
   isAuthenticated: boolean;
   leaderboardType: LeaderboardType;
   onTypeChange: (type: LeaderboardType) => void;
+  onUserClick?: (userId: number) => void;
 };
 
 const LeaderboardView: React.FC<LeaderboardViewProps> = ({ 
   isAuthenticated, 
   leaderboardType,
-  onTypeChange 
+  onTypeChange,
+  onUserClick
 }) => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
   const [loading, setLoading] = useState(false);
@@ -266,9 +268,10 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
               const isTopThree = index < 3;
               const position = user.position;
               return (
-                <div
+                <button
                   key={user.id}
-                  className="rounded-xl p-4 transition-all duration-300 hover:scale-[1.02]"
+                  onClick={() => onUserClick?.(user.id)}
+                  className="w-full rounded-xl p-4 transition-all duration-300 hover:scale-[1.02] text-left"
                   style={{
                     background: isTopThree
                       ? 'linear-gradient(135deg, rgba(180, 220, 240, 0.2) 0%, rgba(160, 210, 235, 0.12) 100%)'
@@ -381,7 +384,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                       </div>
                     )}
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>

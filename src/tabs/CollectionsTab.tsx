@@ -4,18 +4,20 @@ import { useTelegramWebApp } from '../useTelegram';
 import { LeaderboardType } from '../api';
 import Icon from '../components/Icon';
 import LeaderboardView from '../components/LeaderboardView';
+import UserProfileView from '../components/UserProfileView';
 import { cn } from '../utils';
 
 type CollectionsTabProps = {
   isAuthenticated: boolean;
 };
 
-type TabMode = 'main' | 'leaderboard' | 'lootboxes' | 'inventory';
+type TabMode = 'main' | 'leaderboard' | 'lootboxes' | 'inventory' | 'userProfile';
 
 const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
   const [tabMode, setTabMode] = useState<TabMode>('main');
   const [leaderboardType, setLeaderboardType] = useState<LeaderboardType>(LeaderboardType.LEVEL);
   const [contentLoaded, setContentLoaded] = useState(false);
+  const [viewedUserId, setViewedUserId] = useState<number | null>(null);
   const { t } = useLocalization();
   const { backButton } = useTelegramWebApp();
 
@@ -28,7 +30,14 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
     }
     
     const handleBack = () => {
-      setTabMode('main');
+      if (tabMode === 'userProfile') {
+        // Возвращаемся в лидерборд
+        setTabMode('leaderboard');
+        setViewedUserId(null);
+      } else {
+        // Возвращаемся на главную
+        setTabMode('main');
+      }
     };
     
     backButton.onClick(handleBack);
@@ -316,10 +325,25 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
               isAuthenticated={isAuthenticated}
               leaderboardType={leaderboardType}
               onTypeChange={setLeaderboardType}
+              onUserClick={(userId) => {
+                setViewedUserId(userId);
+                setTabMode('userProfile');
+                setContentLoaded(false);
+              }}
             />
           </div>
         </div>
       </div>
+    );
+  }
+
+  // Профиль пользователя
+  if (tabMode === 'userProfile' && viewedUserId) {
+    return (
+      <UserProfileView
+        userId={viewedUserId}
+        isAuthenticated={isAuthenticated}
+      />
     );
   }
 
