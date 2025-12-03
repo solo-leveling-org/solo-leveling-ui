@@ -103,6 +103,20 @@ export const api = {
       throw error;
     }
   },
+
+  getUsersLeaderboard: async (
+    type: import('./api').LeaderboardType,
+    request: import('./api').GetUsersLeaderboardRequest,
+    page?: number,
+    pageSize: number = 20
+  ): Promise<import('./api').GetUsersLeaderboardResponse> => {
+    try {
+      return await UserService.getUsersLeaderboard(type, request, page, pageSize);
+    } catch (error) {
+      console.error('Error getting users leaderboard:', error);
+      throw error;
+    }
+  },
 };
 
 export const taskActions = {

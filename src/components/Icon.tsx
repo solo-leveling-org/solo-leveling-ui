@@ -25,6 +25,9 @@ import { ReactComponent as SparklesIcon } from '../assets/icons/sparkles.svg';
 import { ReactComponent as GlobeIcon } from '../assets/icons/globe.svg';
 import { ReactComponent as RefreshIcon } from '../assets/icons/refresh.svg';
 import { ReactComponent as ArrowLeftRightIcon } from '../assets/icons/arrow-left-right.svg';
+import { ReactComponent as GiftIcon } from '../assets/icons/gift.svg';
+import { ReactComponent as BagIcon } from '../assets/icons/bag.svg';
+import { ReactComponent as Gamepad2Icon } from '../assets/icons/gamepad-2.svg';
 
 export type IconType = 
   | 'brain' 
@@ -53,7 +56,10 @@ export type IconType =
   | 'clock'
   | 'globe'
   | 'refresh'
-  | 'arrow-left-right';
+  | 'arrow-left-right'
+  | 'gift'
+  | 'bag'
+  | 'gamepad-2';
 
 interface IconProps {
   type: IconType;
@@ -122,6 +128,12 @@ const Icon: React.FC<IconProps> = ({ type, className = '', size = 24 }) => {
       return <RefreshIcon {...iconProps} />;
     case 'arrow-left-right':
       return <ArrowLeftRightIcon {...iconProps} />;
+    case 'gift':
+      return <GiftIcon {...iconProps} />;
+    case 'bag':
+      return <BagIcon {...iconProps} />;
+    case 'gamepad-2':
+      return <Gamepad2Icon {...iconProps} />;
     default:
       return <div className={className} style={{ width: size, height: size }}>❓</div>;
   }

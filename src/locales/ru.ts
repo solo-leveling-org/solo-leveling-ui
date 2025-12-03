@@ -77,6 +77,7 @@ export const ru = {
     tasks: 'Задачи',
     topics: 'Темы',
     welcome: 'Главная',
+    games: 'Коллекции',
   },
 
   // Приветственная страница
@@ -303,5 +304,36 @@ export const ru = {
     balance: 'Баланс',
     balanceGained: 'за выполнение задачи',
     continue: 'Продолжить',
+  },
+
+  // Коллекции
+  collections: {
+    tabs: {
+      leaderboard: 'ТАБЛИЦА ЛИДЕРОВ',
+      lootboxes: 'ЛУТ БОКСЫ',
+      inventory: 'ИНВЕНТАРЬ',
+    },
+    leaderboard: {
+      title: 'Таблица лидеров',
+      subtitle: 'Соревнуйся с другими игроками и поднимайся в рейтинге',
+    },
+    types: {
+      level: 'По уровню',
+      tasks: 'По задачам',
+      balance: 'По балансу',
+    },
+    score: {
+      level: 'Уровень',
+      tasks: 'Выполнено задач',
+      balance: 'Баланс',
+    },
+    lootboxes: {
+      comingSoon: 'Скоро',
+      description: 'Лут боксы будут доступны в ближайшее время',
+    },
+    inventory: {
+      comingSoon: 'Скоро',
+      description: 'Инвентарь будет доступен в ближайшее время',
+    },
   },
 };

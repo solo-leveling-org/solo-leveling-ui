@@ -8,6 +8,9 @@ import type {
   CompleteTaskResponse,
   SearchPlayerBalanceTransactionsResponse,
   SearchPlayerTasksResponse,
+  GetUsersLeaderboardResponse,
+  GetUsersLeaderboardRequest,
+  LeaderboardType,
   TgAuthData,
   RefreshRequest,
   SavePlayerTopicsRequest,
@@ -26,6 +29,7 @@ import {
   mockTransactions,
   mockPlayerTopics,
   mockUser,
+  createMockLeaderboardResponse,
 } from './mockData';
 import { PlayerTaskStatus, TaskRarity, TaskTopic } from '../api';
 import { createMockTask } from './mockData';
@@ -452,6 +456,20 @@ export const mockUserService = {
     return new CancelablePromise(async (resolve) => {
       await delay(300);
       resolve({ locale: requestBody.locale || 'ru' });
+    });
+  },
+
+  getUsersLeaderboard: (
+    type: LeaderboardType,
+    requestBody: GetUsersLeaderboardRequest,
+    page?: number,
+    pageSize: number = 20
+  ): CancelablePromise<GetUsersLeaderboardResponse> => {
+    return new CancelablePromise(async (resolve) => {
+      await delay(400);
+      const currentPage = page || 0;
+      const response = createMockLeaderboardResponse(currentPage, pageSize, 200);
+      resolve(response);
     });
   },
 };

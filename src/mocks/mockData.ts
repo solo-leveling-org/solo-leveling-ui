@@ -15,6 +15,8 @@ import type {
   PlayerBalanceTransaction,
   Level,
   JwtToken,
+  LeaderboardUser,
+  GetUsersLeaderboardResponse,
 } from '../api';
 import {
   TaskTopic,
@@ -476,6 +478,51 @@ export const mockSearchPlayerBalanceTransactionsResponse: SearchPlayerBalanceTra
     hasMore: false,
   },
   options: {},
+};
+
+// Моковые данные для лидерборда
+export const generateMockLeaderboardUsers = (count: number, offset: number = 0): LeaderboardUser[] => {
+  const users: LeaderboardUser[] = [];
+  const firstNames = ['Александр', 'Дмитрий', 'Максим', 'Иван', 'Сергей', 'Андрей', 'Алексей', 'Владимир', 'Николай', 'Павел'];
+  const lastNames = ['Иванов', 'Петров', 'Сидоров', 'Смирнов', 'Кузнецов', 'Попов', 'Соколов', 'Лебедев', 'Козлов', 'Новиков'];
+  
+  for (let i = 0; i < count; i++) {
+    const position = offset + i + 1;
+    const firstName = firstNames[(offset + i) % firstNames.length];
+    const lastName = lastNames[(offset + i) % lastNames.length];
+    
+    users.push({
+      id: 1000 + offset + i,
+      firstName,
+      lastName,
+      photoUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${firstName}${lastName}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`,
+      score: 10000 - (offset + i) * 50 - Math.floor(Math.random() * 100),
+      position,
+    });
+  }
+  
+  return users;
+};
+
+export const createMockLeaderboardResponse = (
+  page: number,
+  pageSize: number = 20,
+  totalUsers: number = 200
+): GetUsersLeaderboardResponse => {
+  const offset = page * pageSize;
+  const users = generateMockLeaderboardUsers(Math.min(pageSize, totalUsers - offset), offset);
+  const totalPages = Math.ceil(totalUsers / pageSize);
+  const hasMore = offset + pageSize < totalUsers;
+  
+  return {
+    users,
+    paging: {
+      totalRowCount: totalUsers,
+      totalPageCount: totalPages,
+      currentPage: page,
+      hasMore,
+    },
+  };
 };
 
 // Моковые данные для Telegram WebApp

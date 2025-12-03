@@ -334,6 +334,20 @@ const handleMockRequest = async <T>(options: ApiRequestOptions): Promise<T | nul
       ) as any;
     }
     
+    // Обработка leaderboard запросов
+    if (options.url?.includes('/api/v1/user/leaderboard/') && options.method === 'POST') {
+      const { mockUserService } = await import('../../mocks/mockApi');
+      const type = options.path?.type as string;
+      const page = options.query?.page as number | undefined;
+      const pageSize = (options.query?.pageSize as number) || 20;
+      return await mockUserService.getUsersLeaderboard(
+        type as any,
+        options.body as any,
+        page,
+        pageSize
+      ) as any;
+    }
+    
     // Если запрос не обработан, возвращаем null (будет использован реальный запрос)
     return null;
   } catch (error) {

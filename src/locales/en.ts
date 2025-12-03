@@ -77,6 +77,7 @@ export const en = {
     tasks: 'Tasks',
     topics: 'Topics',
     welcome: 'Home',
+    games: 'Collections',
   },
 
   // Welcome page
@@ -303,5 +304,36 @@ export const en = {
     balance: 'Balance',
     balanceGained: 'for task completion',
     continue: 'Continue',
+  },
+
+  // Collections
+  collections: {
+    tabs: {
+      leaderboard: 'LEADERBOARD',
+      lootboxes: 'LOOT BOXES',
+      inventory: 'INVENTORY',
+    },
+    leaderboard: {
+      title: 'Leaderboard',
+      subtitle: 'Compete with other players and climb the rankings',
+    },
+    types: {
+      level: 'By Level',
+      tasks: 'By Tasks',
+      balance: 'By Balance',
+    },
+    score: {
+      level: 'Level',
+      tasks: 'Completed Tasks',
+      balance: 'Balance',
+    },
+    lootboxes: {
+      comingSoon: 'Coming Soon',
+      description: 'Loot boxes will be available soon',
+    },
+    inventory: {
+      comingSoon: 'Coming Soon',
+      description: 'Inventory will be available soon',
+    },
   },
 };

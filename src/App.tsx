@@ -3,6 +3,7 @@ import './App.css';
 import TasksTab from './tabs/TasksTab';
 import ProfileTab from './tabs/ProfileTab';
 import BalanceTab from './tabs/BalanceTab';
+import CollectionsTab from './tabs/CollectionsTab';
 import BottomBar from './components/BottomBar';
 import {TelegramWidget} from './components/TelegramWidget';
 import {
@@ -83,6 +84,10 @@ function AppRoutes() {
                                element={<TasksTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="/profile"
                                element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
+                        <Route path="/games"
+                               element={<CollectionsTab isAuthenticated={isAuthenticated}/>}/>
+                        <Route path="/leaderboard"
+                               element={<CollectionsTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="/balance"
                                element={<BalanceTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="*" element={<Navigate to="/profile" replace/>}/>
