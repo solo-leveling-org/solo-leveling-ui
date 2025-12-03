@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { LeaderboardUser } from './LeaderboardUser';
 import type { ResponsePaging } from './ResponsePaging';
-import type { User } from './User';
 export type GetUsersLeaderboardResponse = {
-    users: Array<User>;
+    users: Array<LeaderboardUser>;
     paging: ResponsePaging;
 };
 

@@ -12,7 +12,6 @@ import {
   Navigate,
   useLocation
 } from 'react-router-dom';
-import TopicsTab from './tabs/TopicsTab';
 import WelcomeTab from './tabs/WelcomeTab';
 import {useAuth} from './hooks/useAuth';
 import {useLocaleSync} from './hooks/useLocaleSync';
@@ -82,8 +81,6 @@ function AppRoutes() {
                         <Route path="/welcome" element={<WelcomeTab/>}/>
                         <Route path="/tasks"
                                element={<TasksTab isAuthenticated={isAuthenticated}/>}/>
-                        <Route path="/topics"
-                               element={<TopicsTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="/profile"
                                element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="/balance"

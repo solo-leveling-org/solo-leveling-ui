@@ -22,6 +22,7 @@ export type { GetUsersLeaderboardResponse } from './models/GetUsersLeaderboardRe
 export type { JwtToken } from './models/JwtToken';
 export { JwtTokenType } from './models/JwtTokenType';
 export { LeaderboardType } from './models/LeaderboardType';
+export type { LeaderboardUser } from './models/LeaderboardUser';
 export type { Level } from './models/Level';
 export type { LocalizedField } from './models/LocalizedField';
 export type { LocalizedItem } from './models/LocalizedItem';

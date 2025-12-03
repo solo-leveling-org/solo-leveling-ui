@@ -515,7 +515,7 @@ components:
         users:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: '#/components/schemas/LeaderboardUser'
         paging:
           $ref: '#/components/schemas/ResponsePaging'
       required:
@@ -965,6 +965,30 @@ components:
         - version
         - roles
         - player
+
+    LeaderboardUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        firstName:
+          type: string
+        lastName:
+          type: string
+        photoUrl:
+          type: string
+        score:
+          type: number
+          format: decimal
+        position:
+          type: integer
+          format: int64
+      required:
+        - id
+        - firstName
+        - score
+        - position
 
     JwtToken:
       type: object
