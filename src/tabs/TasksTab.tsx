@@ -152,7 +152,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
         transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
       }}
     >
-      <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+      <div className={`relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 ${tabMode === 'topics' ? '' : 'pb-24'}`}>
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
           <div className="mb-8">

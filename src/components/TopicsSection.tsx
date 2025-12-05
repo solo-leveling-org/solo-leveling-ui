@@ -442,7 +442,7 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
       </div>
 
       {/* Info section */}
-      <div className="flex justify-center mb-8 md:mb-10 mt-20 md:mt-24 pb-24 md:pb-28">
+      <div className={`flex justify-center ${(hasChanges() || firstTime) && canSave ? 'mb-4 md:mb-6' : 'mb-8 md:mb-10'} mt-20 md:mt-24 ${(hasChanges() || firstTime) && canSave ? '' : 'pb-24 md:pb-28'}`}>
         <div
           className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 max-w-2xl w-full"
           style={{
@@ -523,9 +523,10 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
         <div
           className="sticky bottom-0 left-0 right-0 z-50 px-4 md:px-6 pointer-events-none"
           style={{
-            paddingTop: '1rem',
+            paddingTop: '0.5rem',
             paddingBottom: 'calc(80px + env(safe-area-inset-bottom, 0px) + 1rem)',
-            background: 'linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%)'
+            background: 'linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%)',
+            marginTop: '-0.5rem'
           }}
         >
           <div className="flex justify-end">
