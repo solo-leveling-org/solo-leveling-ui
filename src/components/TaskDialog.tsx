@@ -13,6 +13,7 @@ type TaskDialogProps = {
   task: Task;
   status?: PlayerTaskStatus;
   createdAt?: string;
+  updatedAt?: string;
   onClose: () => void;
   isOpen: boolean;
 };
@@ -51,7 +52,7 @@ const getStatusColorScheme = (status?: PlayerTaskStatus) => {
   }
 };
 
-const TaskDialog: React.FC<TaskDialogProps> = ({task, status, createdAt, onClose, isOpen}) => {
+const TaskDialog: React.FC<TaskDialogProps> = ({task, status, createdAt, updatedAt, onClose, isOpen}) => {
   const { t, currentLanguage } = useLocalization();
 
   // Форматирование даты создания
@@ -437,24 +438,35 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, status, createdAt, onClose
                   </div>
               )}
 
-              {/* Created date section */}
+              {/* Date section - объединенная дата создания и завершения/пропуска */}
               {createdAt && (
                 <div className="mb-4 flex items-center gap-2">
                   <div style={{ color: 'rgba(180, 220, 240, 0.8)' }}>
                     <Icon type="clock" size={16} />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <div 
                       className="text-xs font-tech font-medium mb-1"
                       style={{ color: 'rgba(220, 235, 245, 0.7)' }}
                     >
-                      {t('dialogs.task.createdAt')}
+                      {updatedAt && (status === TaskStatus.COMPLETED || status === TaskStatus.SKIPPED)
+                        ? `${t('dialogs.task.createdAt')} • ${status === TaskStatus.COMPLETED 
+                            ? t('dialogs.task.completedAt')
+                            : t('dialogs.task.skippedAt')
+                          }`
+                        : t('dialogs.task.createdAt')
+                      }
                     </div>
                     <div 
                       className="text-sm font-tech font-semibold"
-                      style={{ color: '#e8f4f8' }}
+                      style={{ color: 'rgba(220, 235, 245, 0.8)' }}
                     >
                       {formatDate(createdAt)} {formatTime(createdAt)}
+                      {updatedAt && (status === TaskStatus.COMPLETED || status === TaskStatus.SKIPPED) && (
+                        <span className="ml-2">
+                          • {formatDate(updatedAt)} {formatTime(updatedAt)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

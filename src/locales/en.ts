@@ -281,6 +281,8 @@ export const en = {
       statsTitle: 'Stats',
       categoriesTitle: 'Categories',
       createdAt: 'Created',
+      completedAt: 'Completed',
+      skippedAt: 'Skipped',
     },
   },
 

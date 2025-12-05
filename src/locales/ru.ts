@@ -280,7 +280,9 @@ export const ru = {
       coins: 'Монеты',
       statsTitle: 'Характеристики',
       categoriesTitle: 'Категории',
-      createdAt: 'Создано',
+      createdAt: 'Создана',
+      completedAt: 'Завершена',
+      skippedAt: 'Пропущена',
     },
   },
 

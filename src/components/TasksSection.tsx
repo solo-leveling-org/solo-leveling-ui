@@ -257,6 +257,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
           task={dialogTask.task}
           status={dialogTask.status}
           createdAt={dialogTask.createdAt}
+          updatedAt={dialogTask.updatedAt}
           onClose={() => setDialogTask(null)}
           isOpen={!!dialogTask}
         />
