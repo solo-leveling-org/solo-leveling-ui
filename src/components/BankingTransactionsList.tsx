@@ -555,7 +555,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
                       {getTransactionIcon(transaction.type, transaction.cause)}
                     </div>
                   </div>
-                  <div className="flex-1 min-w-0 pr-2 flex flex-col justify-end" style={{ minHeight: '48px' }}>
+                  <div className="flex-1 min-w-0 pr-1 flex flex-col justify-end" style={{ minHeight: '48px' }}>
                     <div 
                       className="font-tech font-medium select-text truncate" 
                       data-text="true"
@@ -582,7 +582,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0 ml-4 self-center">
+                <div className="text-right flex-shrink-0 ml-2 self-center">
                   <div 
                     className="text-base font-tech font-semibold select-text" 
                     data-text="true"
