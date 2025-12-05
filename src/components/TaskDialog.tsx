@@ -440,34 +440,47 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, status, createdAt, updated
 
               {/* Date section - объединенная дата создания и завершения/пропуска */}
               {createdAt && (
-                <div className="mb-4 flex items-center gap-2">
+                <div className="mb-4 flex items-start gap-2">
                   <div style={{ color: 'rgba(180, 220, 240, 0.8)' }}>
                     <Icon type="clock" size={16} />
                   </div>
                   <div className="flex-1">
-                    <div 
-                      className="text-xs font-tech font-medium mb-1"
-                      style={{ color: 'rgba(220, 235, 245, 0.7)' }}
-                    >
-                      {updatedAt && (status === TaskStatus.COMPLETED || status === TaskStatus.SKIPPED)
-                        ? `${t('dialogs.task.createdAt')} • ${status === TaskStatus.COMPLETED 
+                    {/* Created date */}
+                    <div className="mb-3">
+                      <div 
+                        className="text-xs font-tech font-medium mb-1"
+                        style={{ color: 'rgba(220, 235, 245, 0.7)' }}
+                      >
+                        {t('dialogs.task.createdAt')}
+                      </div>
+                      <div 
+                        className="text-sm font-tech font-semibold"
+                        style={{ color: 'rgba(220, 235, 245, 0.8)' }}
+                      >
+                        {formatDate(createdAt)} {formatTime(createdAt)}
+                      </div>
+                    </div>
+
+                    {/* Updated date for completed/skipped tasks */}
+                    {updatedAt && (status === TaskStatus.COMPLETED || status === TaskStatus.SKIPPED) && (
+                      <div>
+                        <div 
+                          className="text-xs font-tech font-medium mb-1"
+                          style={{ color: 'rgba(220, 235, 245, 0.7)' }}
+                        >
+                          {status === TaskStatus.COMPLETED 
                             ? t('dialogs.task.completedAt')
                             : t('dialogs.task.skippedAt')
-                          }`
-                        : t('dialogs.task.createdAt')
-                      }
-                    </div>
-                    <div 
-                      className="text-sm font-tech font-semibold"
-                      style={{ color: 'rgba(220, 235, 245, 0.8)' }}
-                    >
-                      {formatDate(createdAt)} {formatTime(createdAt)}
-                      {updatedAt && (status === TaskStatus.COMPLETED || status === TaskStatus.SKIPPED) && (
-                        <span className="ml-2">
-                          • {formatDate(updatedAt)} {formatTime(updatedAt)}
-                        </span>
-                      )}
-                    </div>
+                          }
+                        </div>
+                        <div 
+                          className="text-sm font-tech font-semibold"
+                          style={{ color: 'rgba(220, 235, 245, 0.8)' }}
+                        >
+                          {formatDate(updatedAt)} {formatTime(updatedAt)}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
