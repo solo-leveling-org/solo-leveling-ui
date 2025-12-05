@@ -5,6 +5,7 @@ import TopicIcon from './TopicIcons';
 import RarityIndicator from './RarityIndicator';
 import Icon from './Icon';
 import { useLocalization } from '../hooks/useLocalization';
+import { getMonthGenitive } from '../utils';
 
 type TaskCardProps = {
   playerTask: PlayerTask;
@@ -57,7 +58,7 @@ const getStatusColorScheme = (status: PlayerTaskStatus) => {
 
 const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, onReplace, index = 0 }) => {
   const { task, status } = playerTask;
-  const { t } = useLocalization();
+  const { t, currentLanguage } = useLocalization();
   const [isTransitioning, setIsTransitioning] = React.useState(false);
 
   // Форматирование даты завершения задачи
@@ -85,22 +86,17 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
     
     // Форматируем дату
     const day = date.getDate();
-    const monthNames = [
-      t('common.months.january'), t('common.months.february'), t('common.months.march'),
-      t('common.months.april'), t('common.months.may'), t('common.months.june'),
-      t('common.months.july'), t('common.months.august'), t('common.months.september'),
-      t('common.months.october'), t('common.months.november'), t('common.months.december')
-    ];
+    const monthName = getMonthGenitive(date.getMonth(), t, currentLanguage || 'ru');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const year = date.getFullYear();
     const currentYear = now.getFullYear();
     
     if (year === currentYear) {
-      return `${day} ${monthNames[date.getMonth()]}, ${hours}:${minutes}`;
+      return `${day} ${monthName}, ${hours}:${minutes}`;
     }
     
-    return `${day} ${monthNames[date.getMonth()]} ${year}, ${hours}:${minutes}`;
+    return `${day} ${monthName} ${year}, ${hours}:${minutes}`;
   };
   
   // Отслеживаем переход из PREPARING в IN_PROGRESS

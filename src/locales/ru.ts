@@ -58,6 +58,20 @@ export const ru = {
       november: 'Ноябрь',
       december: 'Декабрь'
     },
+    monthsGenitive: {
+      january: 'января',
+      february: 'февраля',
+      march: 'марта',
+      april: 'апреля',
+      may: 'мая',
+      june: 'июня',
+      july: 'июля',
+      august: 'августа',
+      september: 'сентября',
+      october: 'октября',
+      november: 'ноября',
+      december: 'декабря'
+    },
     days: {
       monday: 'Понедельник',
       tuesday: 'Вторник',

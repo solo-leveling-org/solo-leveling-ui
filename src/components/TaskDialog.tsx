@@ -7,6 +7,7 @@ import RarityIndicator from './RarityIndicator';
 import { useLocalization } from '../hooks/useLocalization';
 import { Card } from './ui/card';
 import BaseDialog from './BaseDialog';
+import { getMonthGenitive } from '../utils';
 
 type TaskDialogProps = {
   task: Task;
@@ -51,7 +52,7 @@ const getStatusColorScheme = (status?: PlayerTaskStatus) => {
 };
 
 const TaskDialog: React.FC<TaskDialogProps> = ({task, status, createdAt, onClose, isOpen}) => {
-  const { t } = useLocalization();
+  const { t, currentLanguage } = useLocalization();
 
   // Форматирование даты создания
   const formatDate = (dateString?: string) => {
@@ -75,20 +76,15 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, status, createdAt, onClose
     
     // Форматируем дату
     const day = date.getDate();
-    const monthNames = [
-      t('common.months.january'), t('common.months.february'), t('common.months.march'),
-      t('common.months.april'), t('common.months.may'), t('common.months.june'),
-      t('common.months.july'), t('common.months.august'), t('common.months.september'),
-      t('common.months.october'), t('common.months.november'), t('common.months.december')
-    ];
+    const monthName = getMonthGenitive(date.getMonth(), t, currentLanguage || 'ru');
     const year = date.getFullYear();
     const currentYear = now.getFullYear();
     
     if (year === currentYear) {
-      return `${day} ${monthNames[date.getMonth()]}`;
+      return `${day} ${monthName}`;
     }
     
-    return `${day} ${monthNames[date.getMonth()]} ${year}`;
+    return `${day} ${monthName} ${year}`;
   };
 
   // Форматирование времени

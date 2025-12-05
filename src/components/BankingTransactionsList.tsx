@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { useLocalization } from '../hooks/useLocalization';
 import { api } from '../services';
 import Icon from './Icon';
+import { getMonthGenitive } from '../utils';
 import type { 
   PlayerBalanceTransaction, 
   SearchRequest,
@@ -57,7 +58,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   const loadTransactionsRef = useRef<typeof loadTransactions | undefined>(undefined);
   const hasInitialLoadRef = useRef(false);
   
-  const { t } = useLocalization();
+  const { t, currentLanguage } = useLocalization();
 
   // Форматирование даты для группировки
   const formatDateForGroup = useCallback((dateString: string): string => {
@@ -86,32 +87,22 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     if (transactionDate > twoMonthsAgo) {
       // Формат "15 октября"
       const day = date.getDate();
-      const monthNames = [
-        t('common.months.january'), t('common.months.february'), t('common.months.march'),
-        t('common.months.april'), t('common.months.may'), t('common.months.june'),
-        t('common.months.july'), t('common.months.august'), t('common.months.september'),
-        t('common.months.october'), t('common.months.november'), t('common.months.december')
-      ];
-      return `${day} ${monthNames[date.getMonth()]}`;
+      const monthName = getMonthGenitive(date.getMonth(), t, currentLanguage || 'ru');
+      return `${day} ${monthName}`;
     }
     
     // Старые месяцы - только месяц и год
-    const monthNames = [
-      t('common.months.january'), t('common.months.february'), t('common.months.march'),
-      t('common.months.april'), t('common.months.may'), t('common.months.june'),
-      t('common.months.july'), t('common.months.august'), t('common.months.september'),
-      t('common.months.october'), t('common.months.november'), t('common.months.december')
-    ];
+    const monthName = getMonthGenitive(date.getMonth(), t, currentLanguage || 'ru');
     
     const currentYear = now.getFullYear();
     const transactionYear = date.getFullYear();
     
     if (transactionYear === currentYear) {
-      return monthNames[date.getMonth()];
+      return monthName;
     } else {
-      return `${monthNames[date.getMonth()]} ${transactionYear}`;
+      return `${monthName} ${transactionYear}`;
     }
-  }, [t]);
+  }, [t, currentLanguage]);
 
   // Группировка транзакций по датам
   const groupTransactionsByDate = useCallback((transactions: TransactionItem[]): TransactionGroup[] => {
