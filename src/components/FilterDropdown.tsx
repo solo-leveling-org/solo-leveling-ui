@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import BaseFilter from './BaseFilter';
 import { useLocalization } from '../hooks/useLocalization';
 
@@ -25,7 +25,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useLocalization();
 
-  const handleOptionClick = (e: React.MouseEvent, optionName: string) => {
+  const handleOptionClick = useCallback((e: React.MouseEvent, optionName: string) => {
     e.stopPropagation(); // Предотвращаем всплытие события
     e.preventDefault(); // Предотвращаем стандартное поведение
     const isSelected = selectedValues.includes(optionName);
@@ -33,13 +33,13 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
       ? selectedValues.filter(v => v !== optionName)
       : [...selectedValues, optionName];
     onSelectionChange(newValues);
-  };
+  }, [selectedValues, onSelectionChange]);
   
-  const handleOptionMouseDown = (e: React.MouseEvent) => {
+  const handleOptionMouseDown = useCallback((e: React.MouseEvent) => {
     e.stopPropagation(); // Предотвращаем всплытие mousedown события
-  };
+  }, []);
 
-  const getDisplayText = () => {
+  const displayText = useMemo(() => {
     if (selectedValues.length === 0) {
       return label;
     }
@@ -48,26 +48,26 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
       return option?.localization || selectedValues[0];
     }
     return `${selectedValues.length} ${t('balance.filters.selected')}`;
-  };
+  }, [selectedValues, options, label, t]);
 
-  const hasValue = selectedValues.length > 0;
+  const hasValue = useMemo(() => selectedValues.length > 0, [selectedValues.length]);
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     onSelectionChange([]);
-  };
+  }, [onSelectionChange]);
 
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-  };
+  const handleToggle = useCallback(() => {
+    setIsOpen(prev => !prev);
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsOpen(false);
-  };
+  }, []);
 
   return (
     <BaseFilter
       label={label}
-      displayText={getDisplayText()}
+      displayText={displayText}
       isOpen={isOpen}
       onToggle={handleToggle}
       onClose={handleClose}
@@ -136,4 +136,5 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   );
 };
 
-export default FilterDropdown;
+// Мемоизируем компонент для предотвращения лишних ре-рендеров
+export default React.memo(FilterDropdown);

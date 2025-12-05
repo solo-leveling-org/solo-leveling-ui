@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { TaskTopic, Assessment } from '../api';
 import type { GetPlayerTopicsResponse, PlayerTaskTopic } from '../api';
 import { api } from '../services';
@@ -59,25 +59,28 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
     }
   }, [isAuthenticated]);
 
-  // Проверяем, изменились ли активные топики
-  const hasChanges = () => {
+  // Мемоизируем проверку изменений
+  const hasChanges = useMemo(() => {
     const currentActiveTopics = playerTopics.filter(pt => pt.isActive);
     const originalActiveTopics = originalTopics.filter(pt => pt.isActive);
     if (currentActiveTopics.length !== originalActiveTopics.length) return true;
     return !currentActiveTopics.every((pt) =>
       originalActiveTopics.some(opt => opt.taskTopic === pt.taskTopic)
     );
-  };
+  }, [playerTopics, originalTopics]);
 
-  const canSave = playerTopics.some(pt => pt.isActive) && (firstTime || hasChanges());
+  const canSave = useMemo(() => 
+    playerTopics.some(pt => pt.isActive) && (firstTime || hasChanges),
+    [playerTopics, firstTime, hasChanges]
+  );
 
   // Получаем isDisabled для топика (из данных или из функции)
-  const getTopicDisabled = (topic: TaskTopic): boolean => {
+  const getTopicDisabled = useCallback((topic: TaskTopic): boolean => {
     const playerTopic = playerTopics.find(pt => pt.taskTopic === topic);
     return playerTopic?.isDisabled ?? getIsDisabled(topic);
-  };
+  }, [playerTopics]);
 
-  const handleToggle = (topic: TaskTopic) => {
+  const handleToggle = useCallback((topic: TaskTopic) => {
     // Не позволяем переключать заблокированные топики
     if (getTopicDisabled(topic)) {
       return;
@@ -113,9 +116,9 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
         }];
       }
     });
-  };
+  }, [getTopicDisabled]);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     setSaving(true);
 
     // Отправляем только измененные топики (где изменился isActive)
@@ -158,11 +161,10 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
     setPlayerTopics(topicsWithDisabled);
     // Сохраняем все топики как исходные для сравнения (не только активные)
     setOriginalTopics(topicsWithDisabled);
-  };
+  }, [firstTime, onSave, playerTopics, originalTopics]);
 
-  // Определяем цветовые схемы для разных топиков в стиле Solo Leveling
-  const getTopicColorScheme = (topic: TaskTopic) => {
-    const colorSchemes = {
+  // Мемоизируем цветовые схемы для разных топиков в стиле Solo Leveling
+  const topicColorSchemes = useMemo(() => ({
       PHYSICAL_ACTIVITY: {
         accentColor: 'rgba(220, 38, 38, 0.6)',
         borderColor: 'rgba(220, 38, 38, 0.3)',
@@ -247,9 +249,11 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
         selectedBgGradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.25) 0%, rgba(8, 145, 178, 0.15) 100%)',
         glow: '0 0 20px rgba(6, 182, 212, 0.3)',
       },
-    };
-    return colorSchemes[topic] || colorSchemes.DEVELOPMENT;
-  };
+    }), []);
+
+  const getTopicColorScheme = useCallback((topic: TaskTopic) => {
+    return topicColorSchemes[topic] || topicColorSchemes.DEVELOPMENT;
+  }, [topicColorSchemes]);
 
   if (loading) {
     return <TopicsSectionSkeleton />;
@@ -442,7 +446,7 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
       </div>
 
       {/* Info section */}
-      <div className={`flex justify-center ${(hasChanges() || firstTime) && canSave ? 'mb-4 md:mb-6' : 'mb-8 md:mb-10'} mt-20 md:mt-24 ${(hasChanges() || firstTime) && canSave ? '' : 'pb-24 md:pb-28'}`}>
+      <div className={`flex justify-center ${(hasChanges || firstTime) && canSave ? 'mb-4 md:mb-6' : 'mb-8 md:mb-10'} mt-20 md:mt-24 ${(hasChanges || firstTime) && canSave ? '' : 'pb-24 md:pb-28'}`}>
         <div
           className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 max-w-2xl w-full"
           style={{
@@ -519,7 +523,7 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
       </div>
 
       {/* Sticky Save Button */}
-      {(hasChanges() || firstTime) && canSave && (
+      {(hasChanges || firstTime) && canSave && (
         <div
           className="sticky bottom-0 left-0 right-0 z-50 px-4 md:px-6 pointer-events-none"
           style={{
@@ -660,4 +664,5 @@ const TopicsSectionSkeleton: React.FC = () => {
   );
 };
 
-export default TopicsSection;
+// Мемоизируем компонент для предотвращения лишних ре-рендеров
+export default React.memo(TopicsSection);

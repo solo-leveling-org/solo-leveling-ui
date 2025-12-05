@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useLocalization } from '../hooks/useLocalization';
 import Calendar from './Calendar';
 
@@ -40,24 +40,24 @@ const DateFilter: React.FC<DateFilterProps> = ({
     };
   }, []);
 
-  const getDisplayText = () => {
+  const displayText = useMemo(() => {
     if (from && to) {
       const fromDate = new Date(from);
       const toDate = new Date(to);
       return `${fromDate.toLocaleDateString('ru-RU')} - ${toDate.toLocaleDateString('ru-RU')}`;
     }
     return t('balance.filters.period');
-  };
+  }, [from, to, t]);
 
-  const hasValue = !!(from && to);
+  const hasValue = useMemo(() => !!(from && to), [from, to]);
 
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-  };
+  const handleToggle = useCallback(() => {
+    setIsOpen(prev => !prev);
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsOpen(false);
-  };
+  }, []);
 
 
   return (
@@ -82,7 +82,7 @@ const DateFilter: React.FC<DateFilterProps> = ({
         }}
       >
         <span className="truncate select-none" data-text="true">
-          {getDisplayText()}
+          {displayText}
         </span>
         <div className="ml-2 flex-shrink-0">
           {hasValue ? (
@@ -141,4 +141,5 @@ const DateFilter: React.FC<DateFilterProps> = ({
   );
 };
 
-export default DateFilter;
+// Мемоизируем компонент для предотвращения лишних ре-рендеров
+export default React.memo(DateFilter);

@@ -34,7 +34,6 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   onFiltersUpdate
 }) => {
   const [transactions, setTransactions] = useState<TransactionItem[]>([]);
-  const [groups, setGroups] = useState<TransactionGroup[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -287,9 +286,9 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateFilters.from, dateFilters.to, JSON.stringify(enumFilters)]);
 
-  // Обновление групп при изменении транзакций
-  useEffect(() => {
-    setGroups(groupTransactionsByDate(transactions));
+  // Мемоизируем группы транзакций для предотвращения лишних пересчетов
+  const groups = useMemo(() => {
+    return groupTransactionsByDate(transactions);
   }, [transactions, groupTransactionsByDate]);
 
   // Обновление доступных фильтров
@@ -299,8 +298,8 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     }
   }, [availableFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Получение иконки для транзакции
-  const getTransactionIcon = (type: string, cause: string) => {
+  // Мемоизируем функцию получения иконки для транзакции
+  const getTransactionIcon = useCallback((type: string, cause: string) => {
     if (type === 'IN') {
       switch (cause) {
         case 'TASK_COMPLETION':
@@ -315,19 +314,16 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     } else {
       return <Icon type="minus" size={20} />;
     }
-  };
+  }, []);
 
-  // Получение цвета для транзакции (удалено, теперь используется inline стиль)
-
-
-  // Форматирование времени
-  const formatTime = (dateString: string) => {
+  // Мемоизируем функцию форматирования времени
+  const formatTime = useCallback((dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString('ru-RU', { 
       hour: '2-digit', 
       minute: '2-digit' 
     });
-  };
+  }, []);
 
   // Получение локализованного значения
   const getLocalizedValue = (field: string, value: string): string => {
@@ -625,4 +621,5 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   );
 };
 
-export default BankingTransactionsList;
+// Мемоизируем компонент для предотвращения лишних ре-рендеров
+export default React.memo(BankingTransactionsList);

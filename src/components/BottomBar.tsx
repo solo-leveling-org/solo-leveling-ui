@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLocalization } from '../hooks/useLocalization';
 import { useModal } from '../contexts/ModalContext';
@@ -15,7 +15,8 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
   const { t } = useLocalization();
   const { isDialogOpen, closeDialog } = useModal();
 
-  const tabs = [
+  // Мемоизируем табы для предотвращения пересоздания при каждом рендере
+  const tabs = useMemo(() => [
     {
       key: 'profile',
       path: '/profile',
@@ -47,9 +48,9 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
       icon: 'coins',
       label: t('navigation.balance')
     }
-  ];
+  ], [t]);
 
-  const handleTabClick = (path: string, e?: React.MouseEvent) => {
+  const handleTabClick = useCallback((path: string, e?: React.MouseEvent) => {
     // Если открыт Dialog, закрываем его вместо перехода
     if (isDialogOpen) {
       e?.preventDefault();
@@ -58,7 +59,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
       return;
     }
     navigate(path);
-  };
+  }, [isDialogOpen, closeDialog, navigate]);
 
   if (!isVisible) return null;
 
@@ -210,4 +211,5 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
   );
 };
 
-export default BottomBar;
+// Мемоизируем компонент для предотвращения лишних ре-рендеров
+export default React.memo(BottomBar);

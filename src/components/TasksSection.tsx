@@ -293,5 +293,6 @@ const TasksSection: React.FC<TasksSectionProps> = ({
   );
 };
 
-export default TasksSection;
+// Мемоизируем компонент для предотвращения лишних ре-рендеров
+export default React.memo(TasksSection);
 
