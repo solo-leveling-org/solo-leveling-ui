@@ -118,6 +118,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, status, createdAt, onClose
 
   return (
     <BaseDialog
+      isTaskDialog={true}
       isOpen={isOpen}
       onClose={onClose}
       maxWidth="max-w-md"

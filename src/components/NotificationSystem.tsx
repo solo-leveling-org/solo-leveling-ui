@@ -32,7 +32,7 @@ const NotificationItem: React.FC<{
 }> = ({ notification, onRemove }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
-  const { isDialogOpen } = useModal();
+  const { isTaskDialogOpen } = useModal();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const elapsedTimeRef = useRef(0);
   const startTimeRef = useRef(Date.now());
@@ -63,8 +63,8 @@ const NotificationItem: React.FC<{
       return;
     }
 
-    // Если dialog открыт, останавливаем обновление прогресс-бара
-    if (isDialogOpen) {
+    // Если TaskDialog или TaskCompletionDialog открыт, останавливаем обновление прогресс-бара
+    if (isTaskDialogOpen) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -109,13 +109,13 @@ const NotificationItem: React.FC<{
         startTimeRef.current = Date.now();
       }
     };
-  }, [notification.duration, isDialogOpen]);
+  }, [notification.duration, isTaskDialogOpen]);
 
   useEffect(() => {
     if (!notification.duration || notification.duration <= 0) return;
 
-    // Если dialog открыт, останавливаем таймер и сохраняем прошедшее время
-    if (isDialogOpen) {
+    // Если TaskDialog или TaskCompletionDialog открыт, останавливаем таймер и сохраняем прошедшее время
+    if (isTaskDialogOpen) {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
@@ -145,7 +145,7 @@ const NotificationItem: React.FC<{
         timerRef.current = null;
       }
     };
-  }, [notification.duration, handleRemove, isDialogOpen]);
+  }, [notification.duration, handleRemove, isTaskDialogOpen]);
 
   const getNotificationStyles = () => {
     const baseStyles = "relative overflow-hidden rounded-2xl md:rounded-3xl shadow-lg backdrop-blur-md border transition-all duration-300 ease-out transform";

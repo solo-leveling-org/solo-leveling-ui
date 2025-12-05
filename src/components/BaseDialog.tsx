@@ -12,6 +12,7 @@ export interface BaseDialogProps {
   maxWidth?: string;
   maxHeight?: string;
   onClickBackdrop?: () => void;
+  isTaskDialog?: boolean; // Флаг для TaskDialog и TaskCompletionDialog
 }
 
 /**
@@ -27,8 +28,9 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
   maxWidth = 'max-w-md',
   maxHeight = 'max-h-[calc(95vh-env(safe-area-inset-top,0px)-5rem)]',
   onClickBackdrop,
+  isTaskDialog = false,
 }) => {
-  const { openDialog, closeDialog } = useModal();
+  const { openDialog, closeDialog, openTaskDialog, closeTaskDialog } = useModal();
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [animationComplete, setAnimationComplete] = useState(false);
@@ -47,6 +49,9 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
   useEffect(() => {
     if (isOpen) {
       openDialog();
+      if (isTaskDialog) {
+        openTaskDialog();
+      }
       setIsVisible(false);
       setAnimationComplete(false);
       // Запускаем анимацию после монтирования (двойной RAF для гарантии)
@@ -62,6 +67,9 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
       });
       return () => {
         closeDialog();
+        if (isTaskDialog) {
+          closeTaskDialog();
+        }
         setIsVisible(false);
         setAnimationComplete(false);
       };
@@ -69,7 +77,7 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
       setIsVisible(false);
       setAnimationComplete(false);
     }
-  }, [isOpen, openDialog, closeDialog, isMobile]);
+  }, [isOpen, openDialog, closeDialog, openTaskDialog, closeTaskDialog, isTaskDialog, isMobile]);
 
   // Блокировка скролла при открытом диалоге
   useScrollLock(isOpen);
