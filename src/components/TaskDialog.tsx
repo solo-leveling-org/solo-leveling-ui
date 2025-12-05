@@ -447,17 +447,17 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, status, createdAt, updated
                   <div className="flex-1">
                     {/* Created date */}
                     <div className="mb-3">
-                      <div 
-                        className="text-xs font-tech font-medium mb-1"
-                        style={{ color: 'rgba(220, 235, 245, 0.7)' }}
-                      >
-                        {t('dialogs.task.createdAt')}
-                      </div>
-                      <div 
-                        className="text-sm font-tech font-semibold"
+                    <div 
+                      className="text-xs font-tech font-medium mb-1"
+                      style={{ color: 'rgba(220, 235, 245, 0.7)' }}
+                    >
+                      {t('dialogs.task.createdAt')}
+                    </div>
+                    <div 
+                      className="text-sm font-tech font-semibold"
                         style={{ color: 'rgba(220, 235, 245, 0.8)' }}
-                      >
-                        {formatDate(createdAt)} {formatTime(createdAt)}
+                    >
+                      {formatDate(createdAt)} {formatTime(createdAt)}
                       </div>
                     </div>
 
