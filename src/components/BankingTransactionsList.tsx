@@ -530,13 +530,13 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
             {group.transactions.map((transaction, index) => (
               <div
                 key={transaction.id}
-                className={`flex items-center py-5 px-6 transition-all duration-200 select-none hover:bg-opacity-10 ${index < group.transactions.length - 1 ? 'border-b' : ''}`}
+                className={`flex items-start py-5 px-6 transition-all duration-200 select-none hover:bg-opacity-10 ${index < group.transactions.length - 1 ? 'border-b' : ''}`}
                 style={{
                   background: index % 2 === 0 ? 'transparent' : 'rgba(220, 235, 245, 0.02)',
                   borderColor: 'rgba(220, 235, 245, 0.1)'
                 }}
               >
-                <div className="flex items-center space-x-4 flex-1 min-w-0">
+                <div className="flex items-start space-x-4 flex-1 min-w-0">
                   <div 
                     className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
                     style={{
@@ -555,13 +555,16 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
                       {getTransactionIcon(transaction.type, transaction.cause)}
                     </div>
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 pr-2 flex flex-col justify-end" style={{ minHeight: '48px' }}>
                     <div 
-                      className="text-base font-tech font-medium truncate select-text" 
+                      className="font-tech font-medium select-text truncate" 
                       data-text="true"
                       style={{
                         color: '#e8f4f8',
-                        textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+                        textShadow: '0 0 4px rgba(180, 220, 240, 0.2)',
+                        fontSize: 'clamp(0.75rem, 2.5vw, 1rem)',
+                        lineHeight: '1.25',
+                        marginBottom: '0.25rem'
                       }}
                     >
                       {getLocalizedValue('cause', transaction.cause)}
@@ -570,14 +573,16 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
                       className="text-sm font-tech select-text" 
                       data-text="true"
                       style={{
-                        color: 'rgba(220, 235, 245, 0.7)'
+                        color: 'rgba(220, 235, 245, 0.7)',
+                        lineHeight: '1.25',
+                        height: '1.25rem'
                       }}
                     >
                       {formatTime(transaction.createdAt)}
                     </div>
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0 ml-4">
+                <div className="text-right flex-shrink-0 ml-4 self-center">
                   <div 
                     className="text-base font-tech font-semibold select-text" 
                     data-text="true"
