@@ -69,6 +69,11 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
           color: inherit;
           fill: none;
           stroke: currentColor;
+          stroke-width: 2;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          paint-order: stroke;
+          shape-rendering: geometricPrecision;
         }
       `}</style>
       <div 
@@ -144,7 +149,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
                     top: '50%',
                     left: '50%',
                     transform: `translate(-50%, -50%) ${isActive ? 'scale(1.1)' : 'scale(1)'}`,
-                    color: isActive ? '#e8f4f8' : 'rgba(220, 235, 245, 0.6)',
+                    color: isActive ? '#e8f4f8' : '#8ca3b8',
                     filter: isActive 
                       ? 'drop-shadow(0 0 8px rgba(180, 220, 240, 0.4)) drop-shadow(0 0 15px rgba(160, 210, 235, 0.2))'
                       : 'drop-shadow(0 0 4px rgba(200, 230, 245, 0.2))',
@@ -161,7 +166,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
                   <div 
                     className="bottom-bar-icon relative z-10 mb-1"
                     style={{
-                      color: isActive ? '#e8f4f8' : 'rgba(220, 235, 245, 0.6)',
+                      color: isActive ? '#e8f4f8' : '#8ca3b8',
                       filter: isActive 
                         ? 'drop-shadow(0 0 8px rgba(180, 220, 240, 0.4)) drop-shadow(0 0 15px rgba(160, 210, 235, 0.2))'
                         : 'drop-shadow(0 0 4px rgba(200, 230, 245, 0.2))',
@@ -177,7 +182,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
                   <span 
                     className="relative z-10 text-[10px] md:text-xs font-tech tracking-wider truncate"
                     style={{
-                      color: isActive ? '#e8f4f8' : 'rgba(220, 235, 245, 0.6)',
+                      color: isActive ? '#e8f4f8' : '#8ca3b8',
                       textShadow: isActive
                         ? '0 0 6px rgba(180, 220, 240, 0.3), 0 0 12px rgba(160, 210, 235, 0.15)'
                         : '0 0 3px rgba(200, 230, 245, 0.2)',
