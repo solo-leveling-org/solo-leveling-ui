@@ -37,11 +37,16 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
   const hasMoreRef = useRef(true);
   const isLoadingRef = useRef(false);
   const loadLeaderboardRef = useRef<typeof loadLeaderboard | undefined>(undefined);
+  const isLoadingCurrentUserRef = useRef(false);
 
   // Загрузка данных текущего пользователя
   const loadCurrentUser = useCallback(async () => {
     if (!isAuthenticated) return;
     
+    // Защита от дублирования запросов
+    if (isLoadingCurrentUserRef.current) return;
+    
+    isLoadingCurrentUserRef.current = true;
     setLoadingCurrentUser(true);
     setCurrentUserNotFound(false);
     try {
@@ -71,6 +76,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       }
     } finally {
       setLoadingCurrentUser(false);
+      isLoadingCurrentUserRef.current = false;
     }
   }, [isAuthenticated, leaderboardType]);
 
@@ -183,11 +189,6 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       loadCurrentUser();
     }
   }, [isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Загрузка данных текущего пользователя при изменении типа
-  useEffect(() => {
-    loadCurrentUser();
-  }, [loadCurrentUser]);
 
   // Загрузка при изменении типа с плавным переходом
   useEffect(() => {
