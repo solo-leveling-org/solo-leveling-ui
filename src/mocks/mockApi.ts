@@ -523,8 +523,8 @@ export const mockUserService = {
     return new CancelablePromise(async (resolve, reject) => {
       await delay(400);
       
-      // Для тестирования 404: раскомментируйте следующую строку
-      // reject({ status: 404, message: 'User not found in leaderboard' });
+      // Для тестирования 404: возвращаем 404 статус
+      reject({ status: 404, message: 'User not found in leaderboard' });
       
       // Генерируем моковые данные для текущего пользователя
       // Позиция может быть далеко в списке (например, 12345 для проверки отображения больших чисел)

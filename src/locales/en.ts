@@ -334,7 +334,6 @@ export const en = {
       title: 'Leaderboard',
       subtitle: 'Compete with other players and climb the rankings',
       yourPosition: 'Your Position',
-      noPosition: 'Complete a task to get on the leaderboard',
     },
     types: {
       level: 'By Level',

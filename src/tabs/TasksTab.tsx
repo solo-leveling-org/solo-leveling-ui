@@ -111,22 +111,70 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
         <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header skeleton */}
-            <div className="text-center mb-8">
-              <div className="h-8 md:h-10 rounded-lg w-48 sm:w-64 mx-auto mb-3 animate-pulse" style={{
-                background: 'rgba(220, 235, 245, 0.1)'
-              }}></div>
-              <div className="space-y-2 mb-6">
-                <div className="h-4 rounded-lg w-full max-w-2xl mx-auto animate-pulse" style={{
+            <div className="mb-8">
+              <div className="text-center mb-6">
+                <div className="h-8 md:h-10 rounded-lg w-48 sm:w-64 mx-auto mb-3 animate-pulse" style={{
                   background: 'rgba(220, 235, 245, 0.1)'
                 }}></div>
-                <div className="h-4 rounded-lg w-3/4 max-w-xl mx-auto animate-pulse" style={{
-                  background: 'rgba(220, 235, 245, 0.1)'
+                <div className="space-y-2 mb-6">
+                  <div className="h-4 rounded-lg w-full max-w-2xl mx-auto animate-pulse" style={{
+                    background: 'rgba(220, 235, 245, 0.1)'
+                  }}></div>
+                  <div className="h-4 rounded-lg w-3/4 max-w-xl mx-auto animate-pulse" style={{
+                    background: 'rgba(220, 235, 245, 0.1)'
+                  }}></div>
+                </div>
+                <div className="w-24 sm:w-32 md:w-40 h-1 rounded-full mx-auto animate-pulse" style={{
+                  background: 'rgba(180, 220, 240, 0.6)',
+                  boxShadow: '0 0 8px rgba(180, 220, 240, 0.4)'
                 }}></div>
               </div>
-              <div className="w-24 sm:w-32 md:w-40 h-1 rounded-full mx-auto animate-pulse" style={{
-                background: 'rgba(180, 220, 240, 0.6)',
-                boxShadow: '0 0 8px rgba(180, 220, 240, 0.4)'
-              }}></div>
+
+              {/* Main Navigation skeleton */}
+              <div className="flex justify-center mb-6">
+                <div 
+                  className="inline-flex rounded-full p-1"
+                  style={{
+                    background: 'rgba(220, 235, 245, 0.08)',
+                    border: '1px solid rgba(220, 235, 245, 0.12)',
+                    backdropFilter: 'blur(10px)'
+                  }}
+                >
+                  <div className="inline-flex gap-2">
+                    <div className="px-5 md:px-7 py-2 rounded-full animate-pulse" style={{
+                      background: 'rgba(220, 235, 245, 0.15)',
+                      width: '120px'
+                    }}></div>
+                    <div className="px-5 md:px-7 py-2 rounded-full animate-pulse" style={{
+                      background: 'rgba(220, 235, 245, 0.1)',
+                      width: '120px'
+                    }}></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Task View Mode Toggle skeleton */}
+              <div className="flex justify-center mb-6">
+                <div
+                  className="inline-flex rounded-full p-1"
+                  style={{
+                    background: 'rgba(220, 235, 245, 0.08)',
+                    border: '1px solid rgba(220, 235, 245, 0.12)',
+                    backdropFilter: 'blur(10px)'
+                  }}
+                >
+                  <div className="inline-flex gap-2">
+                    <div className="px-6 md:px-8 py-2.5 md:py-3 rounded-full animate-pulse" style={{
+                      background: 'rgba(220, 235, 245, 0.15)',
+                      width: '100px'
+                    }}></div>
+                    <div className="px-6 md:px-8 py-2.5 md:py-3 rounded-full animate-pulse" style={{
+                      background: 'rgba(220, 235, 245, 0.1)',
+                      width: '120px'
+                    }}></div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Tasks grid skeleton */}

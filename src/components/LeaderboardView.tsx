@@ -21,7 +21,6 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
 }) => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
   const [currentUser, setCurrentUser] = useState<LeaderboardUser | null>(null);
-  const [currentUserNotFound, setCurrentUserNotFound] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadingCurrentUser, setLoadingCurrentUser] = useState(false);
@@ -48,7 +47,6 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
     
     isLoadingCurrentUserRef.current = true;
     setLoadingCurrentUser(true);
-    setCurrentUserNotFound(false);
     try {
       const response = await api.getUserLeaderboard(
         leaderboardType,
@@ -57,7 +55,6 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       
       if (response.user) {
         setCurrentUser(response.user);
-        setCurrentUserNotFound(false);
         // Сбрасываем анимацию после загрузки данных
         setTimeout(() => {
           setIsCurrentUserTransitioning(false);
@@ -65,15 +62,11 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       }
     } catch (error: any) {
       console.error('Error loading current user leaderboard:', error);
-      // Проверяем, является ли ошибка 404
-      if (error?.status === 404 || error?.response?.status === 404) {
-        setCurrentUserNotFound(true);
-        setCurrentUser(null);
-        // Сбрасываем анимацию даже при ошибке
-        setTimeout(() => {
-          setIsCurrentUserTransitioning(false);
-        }, 25);
-      }
+      setCurrentUser(null);
+      // Сбрасываем анимацию даже при ошибке
+      setTimeout(() => {
+        setIsCurrentUserTransitioning(false);
+      }, 25);
     } finally {
       setLoadingCurrentUser(false);
       isLoadingCurrentUserRef.current = false;
@@ -667,42 +660,8 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
         );
       })()}
 
-      {/* 404 Message */}
-      {currentUserNotFound && !loadingCurrentUser && (
-        <div className="mb-3">
-          <div
-            className="text-xs font-tech mb-2 px-1"
-            style={{
-              color: 'rgba(180, 220, 240, 0.9)',
-              textShadow: '0 0 8px rgba(180, 220, 240, 0.5)',
-              letterSpacing: '0.05em'
-            }}
-          >
-            {t('collections.leaderboard.yourPosition')}
-          </div>
-          <div
-            className="w-full rounded-xl p-6 text-center"
-            style={{
-              background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(220, 235, 245, 0.2)',
-              boxShadow: '0 0 15px rgba(180, 220, 240, 0.1), inset 0 0 20px rgba(200, 230, 245, 0.02)'
-            }}
-          >
-            <div
-              className="font-tech text-base"
-              style={{
-                color: 'rgba(220, 235, 245, 0.8)'
-              }}
-            >
-              {t('collections.leaderboard.noPosition')}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Loading indicator for current user */}
-      {loadingCurrentUser && !currentUser && !currentUserNotFound && (
+      {loadingCurrentUser && !currentUser && (
         <div className="mb-3">
           <div
             className="text-xs font-tech mb-2 px-1"
