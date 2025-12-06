@@ -105,8 +105,10 @@ const TasksList: React.FC<TasksListProps> = ({
           filter: {
             dateFilters: dateFilters.from && dateFilters.to ? [{
               field: 'createdAt',
-              from: dateFilters.from,
-              to: dateFilters.to
+              range: {
+                from: dateFilters.from,
+                to: dateFilters.to
+              }
             }] : undefined,
             enumFilters: allEnumFilters.length > 0 ? allEnumFilters : undefined
           },
@@ -325,7 +327,7 @@ const TasksList: React.FC<TasksListProps> = ({
       {hasMoreRef.current && !loadingMore && (
         <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
           <div className="text-xs font-tech" style={{ color: 'rgba(220, 235, 245, 0.5)' }}>
-            Загрузка...
+            {t('common.loading')}
           </div>
         </div>
       )}

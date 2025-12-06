@@ -5,6 +5,7 @@ import TopicIcon from './TopicIcons';
 import RarityIndicator from './RarityIndicator';
 import Icon from './Icon';
 import { useLocalization } from '../hooks/useLocalization';
+import { getMonthGenitive } from '../utils';
 
 type TaskCardProps = {
   playerTask: PlayerTask;
@@ -57,8 +58,46 @@ const getStatusColorScheme = (status: PlayerTaskStatus) => {
 
 const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, onReplace, index = 0 }) => {
   const { task, status } = playerTask;
-  const { t } = useLocalization();
+  const { t, currentLanguage } = useLocalization();
   const [isTransitioning, setIsTransitioning] = React.useState(false);
+
+  // Форматирование даты завершения задачи
+  const formatTaskDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const taskDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    
+    // Сегодня
+    if (taskDate.getTime() === today.getTime()) {
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${t('common.today')}, ${hours}:${minutes}`;
+    }
+    
+    // Вчера
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (taskDate.getTime() === yesterday.getTime()) {
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${t('common.yesterday')}, ${hours}:${minutes}`;
+    }
+    
+    // Форматируем дату
+    const day = date.getDate();
+    const monthName = getMonthGenitive(date.getMonth(), t, currentLanguage || 'ru');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const year = date.getFullYear();
+    const currentYear = now.getFullYear();
+    
+    if (year === currentYear) {
+      return `${day} ${monthName}, ${hours}:${minutes}`;
+    }
+    
+    return `${day} ${monthName} ${year}, ${hours}:${minutes}`;
+  };
   
   // Отслеживаем переход из PREPARING в IN_PROGRESS
   React.useEffect(() => {
@@ -94,6 +133,34 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
       ? '0 0 4px rgba(220, 38, 38, 0.2)'
       : '0 0 4px rgba(180, 220, 240, 0.2)'
   }), [colorScheme.textColor, status]);
+
+  // Вычисляем ширину индикатора редкости на основе количества звезд
+  const getRarityIndicatorWidth = (rarity: string): number => {
+    const getStarCount = (rarity: string): number => {
+      switch (rarity) {
+        case 'COMMON': return 1;
+        case 'UNCOMMON': return 2;
+        case 'RARE': return 3;
+        case 'EPIC': return 4;
+        case 'LEGENDARY': return 5;
+        default: return 1;
+      }
+    };
+    
+    const starCount = getStarCount(rarity);
+    const starSize = 20; // размер звезды для 'sm' размера
+    const gap = 2; // gap-0.5 в Tailwind = 2px
+    const rightPadding = 16; // right-4 = 1rem = 16px
+    
+    // Ширина = (количество звезд * размер звезды) + (количество промежутков * размер промежутка) + отступ справа
+    const width = (starCount * starSize) + ((starCount - 1) * gap) + rightPadding;
+    return width;
+  };
+
+  const rarityIndicatorWidth = useMemo(() => 
+    getRarityIndicatorWidth(task?.rarity || 'COMMON'), 
+    [task?.rarity]
+  );
 
   if (status === PlayerTaskStatus.PREPARING) {
     return (
@@ -195,7 +262,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
             <div 
               style={{
                 float: 'right',
-                width: '120px',
+                width: `${rarityIndicatorWidth}px`,
                 height: 'calc(1.25rem * 2.5)',
                 shapeOutside: 'inset(0)',
               }}
@@ -263,6 +330,21 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
               boxShadow: `0 0 8px ${colorScheme.accentColor}`
             }}
           ></div>
+
+          {/* Completion date for completed/skipped tasks */}
+          {(status === PlayerTaskStatus.COMPLETED || status === PlayerTaskStatus.SKIPPED) && playerTask.updatedAt && (
+            <div className="mb-3 flex items-center gap-2">
+              <div style={{ color: 'rgba(180, 220, 240, 0.6)' }}>
+                <Icon type="clock" size={14} />
+              </div>
+              <div 
+                className="text-xs font-tech"
+                style={{ color: 'rgba(220, 235, 245, 0.6)' }}
+              >
+                {formatTaskDate(playerTask.updatedAt)}
+              </div>
+            </div>
+          )}
 
           {/* Action buttons - fixed at bottom */}
           {status === PlayerTaskStatus.IN_PROGRESS && onComplete && onReplace && (

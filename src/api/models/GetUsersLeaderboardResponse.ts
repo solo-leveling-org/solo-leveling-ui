@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { LeaderboardUser } from './LeaderboardUser';
 import type { ResponsePaging } from './ResponsePaging';
-import type { ResponseQueryOptions } from './ResponseQueryOptions';
-export type SearchEntitiesResponse = {
+export type GetUsersLeaderboardResponse = {
+    users: Array<LeaderboardUser>;
     paging: ResponsePaging;
-    options?: ResponseQueryOptions;
 };
 

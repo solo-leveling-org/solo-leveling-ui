@@ -15,6 +15,8 @@ import type {
   PlayerBalanceTransaction,
   Level,
   JwtToken,
+  LeaderboardUser,
+  GetUsersLeaderboardResponse,
 } from '../api';
 import {
   TaskTopic,
@@ -204,12 +206,17 @@ const generateCompletedTasks = (): PlayerTask[] => {
     date.setDate(date.getDate() - daysAgo);
     date.setHours(hoursOffset, minutesOffset, 0, 0);
     
+    // Создаем дату создания (раньше на несколько часов)
+    const createdAtDate = new Date(date);
+    createdAtDate.setHours(createdAtDate.getHours() - 2);
+    
     tasks.push({
       id: `task-completed-${i + 1}`,
       version: 1,
       order: i + 1,
       status: taskStatus,
-      createdAt: date.toISOString(),
+      createdAt: createdAtDate.toISOString(),
+      updatedAt: date.toISOString(), // Дата завершения/пропуска
       task: createMockTask(
         `task-completed-${i + 1}`,
         `${title} #${i + 1}`,
@@ -225,12 +232,21 @@ const generateCompletedTasks = (): PlayerTask[] => {
   return tasks;
 };
 
+// Генерируем дату создания для активных задач
+const getCreatedAtForActiveTask = (daysAgo: number, hoursAgo: number = 0) => {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+  date.setHours(date.getHours() - hoursAgo);
+  return date.toISOString();
+};
+
 export const mockTasks: PlayerTask[] = [
   {
     id: 'task-legendary-long',
     version: 1,
     order: 0,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(1, 3),
     task: createMockTask(
       'task-legendary-long',
       'Очень длинное название задачи для проверки наложения элементов интерфейса друг на друга при максимальной редкости',
@@ -246,6 +262,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 1,
     status: PlayerTaskStatus.PREPARING,
+    createdAt: getCreatedAtForActiveTask(0, 1),
     task: createMockTask(
       'task-1',
       'Пробежка 5 км',
@@ -261,6 +278,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 2,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(0, 5),
     task: createMockTask(
       'task-2',
       'Прочитать главу книги',
@@ -276,6 +294,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 3,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(0, 8),
     task: createMockTask(
       'task-3',
       'Медитация 10 минут',
@@ -291,6 +310,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 4,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(1, 2),
     task: createMockTask(
       'task-4',
       'Написать код',
@@ -306,6 +326,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 5,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(1, 6),
     task: createMockTask(
       'task-5',
       'Тренировка и изучение',
@@ -321,6 +342,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 6,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(2, 1),
     task: createMockTask(
       'task-6',
       'Медитация и творчество',
@@ -336,6 +358,7 @@ export const mockTasks: PlayerTask[] = [
     version: 1,
     order: 7,
     status: PlayerTaskStatus.IN_PROGRESS,
+    createdAt: getCreatedAtForActiveTask(2, 4),
     task: createMockTask(
       'task-7',
       'Йога и обучение',
@@ -476,6 +499,51 @@ export const mockSearchPlayerBalanceTransactionsResponse: SearchPlayerBalanceTra
     hasMore: false,
   },
   options: {},
+};
+
+// Моковые данные для лидерборда
+export const generateMockLeaderboardUsers = (count: number, offset: number = 0): LeaderboardUser[] => {
+  const users: LeaderboardUser[] = [];
+  const firstNames = ['Александр', 'Дмитрий', 'Максим', 'Иван', 'Сергей', 'Андрей', 'Алексей', 'Владимир', 'Николай', 'Павел'];
+  const lastNames = ['Иванов', 'Петров', 'Сидоров', 'Смирнов', 'Кузнецов', 'Попов', 'Соколов', 'Лебедев', 'Козлов', 'Новиков'];
+  
+  for (let i = 0; i < count; i++) {
+    const position = offset + i + 1;
+    const firstName = firstNames[(offset + i) % firstNames.length];
+    const lastName = lastNames[(offset + i) % lastNames.length];
+    
+    users.push({
+      id: 1000 + offset + i,
+      firstName,
+      lastName,
+      photoUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${firstName}${lastName}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`,
+      score: 10000 - (offset + i) * 50 - Math.floor(Math.random() * 100),
+      position,
+    });
+  }
+  
+  return users;
+};
+
+export const createMockLeaderboardResponse = (
+  page: number,
+  pageSize: number = 20,
+  totalUsers: number = 200
+): GetUsersLeaderboardResponse => {
+  const offset = page * pageSize;
+  const users = generateMockLeaderboardUsers(Math.min(pageSize, totalUsers - offset), offset);
+  const totalPages = Math.ceil(totalUsers / pageSize);
+  const hasMore = offset + pageSize < totalUsers;
+  
+  return {
+    users,
+    paging: {
+      totalRowCount: totalUsers,
+      totalPageCount: totalPages,
+      currentPage: page,
+      hasMore,
+    },
+  };
 };
 
 // Моковые данные для Telegram WebApp

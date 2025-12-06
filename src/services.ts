@@ -7,7 +7,8 @@ import type {
   GetPlayerBalanceResponse,
   SearchRequest,
   SearchPlayerBalanceTransactionsResponse,
-  SearchPlayerTasksResponse
+  SearchPlayerTasksResponse,
+  GetUserLeaderboardResponse,
 } from './api';
 import {PlayerService, PlayerTask, UserService} from './api';
 import type {User as ApiUser} from './api/models/User';
@@ -20,6 +21,16 @@ export const api = {
       return response.user;
     } catch (error) {
       console.error('Error getting user:', error);
+      throw error;
+    }
+  },
+
+  getUserById: async (userId: number): Promise<ApiUser> => {
+    try {
+      const response: GetUserResponse = await UserService.getUser(userId);
+      return response.user;
+    } catch (error) {
+      console.error('Error getting user by ID:', error);
       throw error;
     }
   },
@@ -48,7 +59,7 @@ export const api = {
 
   getUserTopics: async (): Promise<GetPlayerTopicsResponse> => {
     try {
-      return await PlayerService.getCurrentPlayerTopics();
+      return await PlayerService.getPlayerTopics();
     } catch (error) {
       console.error('Error getting user topics:', error);
       // Возвращаем пустой список топиков при ошибке
@@ -103,15 +114,42 @@ export const api = {
       throw error;
     }
   },
+
+  getUsersLeaderboard: async (
+    type: import('./api').LeaderboardType,
+    request: import('./api').GetUsersLeaderboardRequest,
+    page?: number,
+    pageSize: number = 20
+  ): Promise<import('./api').GetUsersLeaderboardResponse> => {
+    try {
+      return await UserService.getUsersLeaderboard(type, request, page, pageSize);
+    } catch (error) {
+      console.error('Error getting users leaderboard:', error);
+      throw error;
+    }
+  },
+
+  getUserLeaderboard: async (
+    type: import('./api').LeaderboardType,
+    request: import('./api').GetUsersLeaderboardRequest,
+  ): Promise<GetUserLeaderboardResponse> => {
+    try {
+      return await UserService.getUserLeaderboard(type, request);
+    } catch (error) {
+      console.error('Error getting user leaderboard:', error);
+      throw error;
+    }
+  },
 };
 
 export const taskActions = {
   completeTask: async (playerTask: PlayerTask): Promise<CompleteTaskResponse> => {
     try {
+      if (!playerTask.id) {
+        throw new Error('Task ID is required');
+      }
       // WebSocket уведомления автоматически обновят список задач
-      return await PlayerService.completeTask({
-        playerTask: playerTask
-      });
+      return await PlayerService.completeTask(playerTask.id);
     } catch (error) {
       console.error('Error completing task:', error);
       throw error;
@@ -120,9 +158,10 @@ export const taskActions = {
 
   skipTask: async (playerTask: PlayerTask): Promise<void> => {
     try {
-      await PlayerService.skipTask({
-        playerTask: playerTask
-      });
+      if (!playerTask.id) {
+        throw new Error('Task ID is required');
+      }
+      await PlayerService.skipTask(playerTask.id);
 
       // WebSocket уведомления автоматически обновят список задач
     } catch (error) {

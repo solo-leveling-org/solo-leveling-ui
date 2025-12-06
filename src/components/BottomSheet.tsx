@@ -55,14 +55,44 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
   }, [isOpen, onClose]);
 
   // Используем готовую библиотеку для свайпов
+  // Обрабатываем свайп только если он начался в области handle bar или header
+  const dragStartRef = useRef<HTMLElement | null>(null);
   const bind = useDrag(
-    ({ down, movement: [, my], velocity: [, vy], direction: [, dy] }) => {
+    ({ down, movement: [, my], velocity: [, vy], direction: [, dy], first, event }) => {
+      // При первом событии сохраняем элемент, с которого начался свайп
+      if (first && event?.target) {
+        const target = event.target as HTMLElement;
+        dragStartRef.current = target;
+        
+        // Проверяем, начался ли свайп в области контента или его дочерних элементах
+        const contentArea = sheetRef.current?.querySelector('.bottom-sheet-content');
+        if (contentArea) {
+          // Проверяем, является ли target или его родитель частью области контента
+          let currentElement: HTMLElement | null = target;
+          while (currentElement && currentElement !== sheetRef.current) {
+            if (currentElement === contentArea || currentElement.classList.contains('bottom-sheet-content')) {
+              // Свайп начался в области контента - игнорируем его
+              dragStartRef.current = null;
+              return;
+            }
+            currentElement = currentElement.parentElement;
+          }
+        }
+      }
+
+      // Если свайп не был начат в допустимой области, игнорируем его
+      if (!dragStartRef.current) {
+        return;
+      }
+
       if (down) {
         // Во время перетаскивания - только вниз
         if (my > 0) {
           setDragY(my);
         }
       } else {
+        // При отпускании сбрасываем ссылку
+        dragStartRef.current = null;
         // При отпускании
         if (my > 150 || (vy > 0.8 && dy > 0)) {
           // Закрываем если свайпнули достаточно далеко или быстро
@@ -143,7 +173,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
           // Явно устанавливаем z-index и bottom, чтобы BottomSheet был поверх всего
           zIndex: 10000,
           bottom: 0,
-          cursor: dragY > 0 ? 'grabbing' : 'grab', // Курсор для drag
+          cursor: dragY > 0 ? 'grabbing' : 'default',
         }}
         {...bind()}
         onMouseDown={(e) => {
@@ -179,7 +209,8 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
           }`} 
           style={{ 
             transition: isVisible ? 'transform 0.3s ease-out 0.1s, opacity 0.3s ease-out 0.1s' : 'transform 0.2s ease-in, opacity 0.2s ease-in',
-            borderBottom: '1px solid rgba(220, 235, 245, 0.1)'
+            borderBottom: '1px solid rgba(220, 235, 245, 0.1)',
+            cursor: 'grab'
           }}
         >
           <div className="flex items-center justify-between">
@@ -208,7 +239,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
         
         {/* Content */}
         <div 
-          className={`relative z-10 px-6 py-4 overflow-y-auto max-h-[60vh] ${
+          className={`relative z-10 px-6 py-4 overflow-y-auto max-h-[60vh] bottom-sheet-content ${
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
           }`} 
           style={{ 
@@ -216,6 +247,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
           }}
           onClick={(e) => e.stopPropagation()} // Предотвращаем закрытие при клике внутри контента
           onMouseDown={(e) => e.stopPropagation()} // Предотвращаем закрытие при mousedown внутри контента
+          onTouchStart={(e) => e.stopPropagation()} // Предотвращаем обработку touch событий для свайпа
         >
           {children}
         </div>

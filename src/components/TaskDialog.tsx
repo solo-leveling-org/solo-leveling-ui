@@ -7,10 +7,13 @@ import RarityIndicator from './RarityIndicator';
 import { useLocalization } from '../hooks/useLocalization';
 import { Card } from './ui/card';
 import BaseDialog from './BaseDialog';
+import { getMonthGenitive } from '../utils';
 
 type TaskDialogProps = {
   task: Task;
   status?: PlayerTaskStatus;
+  createdAt?: string;
+  updatedAt?: string;
   onClose: () => void;
   isOpen: boolean;
 };
@@ -49,8 +52,50 @@ const getStatusColorScheme = (status?: PlayerTaskStatus) => {
   }
 };
 
-const TaskDialog: React.FC<TaskDialogProps> = ({task, status, onClose, isOpen}) => {
-  const { t } = useLocalization();
+const TaskDialog: React.FC<TaskDialogProps> = ({task, status, createdAt, updatedAt, onClose, isOpen}) => {
+  const { t, currentLanguage } = useLocalization();
+
+  // Форматирование даты создания
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const taskDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    
+    // Сегодня
+    if (taskDate.getTime() === today.getTime()) {
+      return t('common.today');
+    }
+    
+    // Вчера
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (taskDate.getTime() === yesterday.getTime()) {
+      return t('common.yesterday');
+    }
+    
+    // Форматируем дату
+    const day = date.getDate();
+    const monthName = getMonthGenitive(date.getMonth(), t, currentLanguage || 'ru');
+    const year = date.getFullYear();
+    const currentYear = now.getFullYear();
+    
+    if (year === currentYear) {
+      return `${day} ${monthName}`;
+    }
+    
+    return `${day} ${monthName} ${year}`;
+  };
+
+  // Форматирование времени
+  const formatTime = (dateString?: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
 
   // Мемоизируем стили для оптимизации
   const rarityText = useMemo(() => t(`rarity.${task.rarity || 'COMMON'}`), [t, task.rarity]);
@@ -70,6 +115,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, status, onClose, isOpen}) 
 
   return (
     <BaseDialog
+      isTaskDialog={true}
       isOpen={isOpen}
       onClose={onClose}
       maxWidth="max-w-md"
@@ -390,6 +436,53 @@ const TaskDialog: React.FC<TaskDialogProps> = ({task, status, onClose, isOpen}) 
                       ))}
                     </div>
                   </div>
+              )}
+
+              {/* Date section - объединенная дата создания и завершения/пропуска */}
+              {createdAt && (
+                <div className="mb-4 flex items-start gap-2">
+                  <div style={{ color: 'rgba(180, 220, 240, 0.8)' }}>
+                    <Icon type="clock" size={16} />
+                  </div>
+                  <div className="flex-1">
+                    {/* Created date */}
+                    <div className="mb-3">
+                    <div 
+                      className="text-xs font-tech font-medium mb-1"
+                      style={{ color: 'rgba(220, 235, 245, 0.7)' }}
+                    >
+                      {t('dialogs.task.createdAt')}
+                    </div>
+                    <div 
+                      className="text-sm font-tech font-semibold"
+                        style={{ color: 'rgba(220, 235, 245, 0.8)' }}
+                    >
+                      {formatDate(createdAt)} {formatTime(createdAt)}
+                      </div>
+                    </div>
+
+                    {/* Updated date for completed/skipped tasks */}
+                    {updatedAt && (status === TaskStatus.COMPLETED || status === TaskStatus.SKIPPED) && (
+                      <div>
+                        <div 
+                          className="text-xs font-tech font-medium mb-1"
+                          style={{ color: 'rgba(220, 235, 245, 0.7)' }}
+                        >
+                          {status === TaskStatus.COMPLETED 
+                            ? t('dialogs.task.completedAt')
+                            : t('dialogs.task.skippedAt')
+                          }
+                        </div>
+                        <div 
+                          className="text-sm font-tech font-semibold"
+                          style={{ color: 'rgba(220, 235, 245, 0.8)' }}
+                        >
+                          {formatDate(updatedAt)} {formatTime(updatedAt)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
           </div>
             </div>

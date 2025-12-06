@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CompleteTaskRequest } from '../models/CompleteTaskRequest';
 import type { CompleteTaskResponse } from '../models/CompleteTaskResponse';
 import type { GetActiveTasksResponse } from '../models/GetActiveTasksResponse';
 import type { GetPlayerBalanceResponse } from '../models/GetPlayerBalanceResponse';
@@ -11,34 +10,16 @@ import type { SavePlayerTopicsRequest } from '../models/SavePlayerTopicsRequest'
 import type { SearchPlayerBalanceTransactionsResponse } from '../models/SearchPlayerBalanceTransactionsResponse';
 import type { SearchPlayerTasksResponse } from '../models/SearchPlayerTasksResponse';
 import type { SearchRequest } from '../models/SearchRequest';
-import type { SkipTaskRequest } from '../models/SkipTaskRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class PlayerService {
     /**
-     * Get player's topics with levels by player ID
-     * @param playerId
-     * @returns GetPlayerTopicsResponse Player's topic levels
-     * @throws ApiError
-     */
-    public static getPlayerTopics(
-        playerId: number,
-    ): CancelablePromise<GetPlayerTopicsResponse> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/v1/player/{playerId}/topics',
-            path: {
-                'playerId': playerId,
-            },
-        });
-    }
-    /**
      * Get current player's topics with levels
      * @returns GetPlayerTopicsResponse Current player's topic levels
      * @throws ApiError
      */
-    public static getCurrentPlayerTopics(): CancelablePromise<GetPlayerTopicsResponse> {
+    public static getPlayerTopics(): CancelablePromise<GetPlayerTopicsResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/v1/player/topics',
@@ -84,34 +65,36 @@ export class PlayerService {
     }
     /**
      * Complete a task
-     * @param requestBody
+     * @param id
      * @returns CompleteTaskResponse Task completed successfully
      * @throws ApiError
      */
     public static completeTask(
-        requestBody: CompleteTaskRequest,
+        id: string,
     ): CancelablePromise<CompleteTaskResponse> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/v1/player/tasks/complete',
-            body: requestBody,
-            mediaType: 'application/json',
+            url: '/api/v1/player/tasks/{id}/complete',
+            path: {
+                'id': id,
+            },
         });
     }
     /**
      * Skip a task
-     * @param requestBody
+     * @param id
      * @returns void
      * @throws ApiError
      */
     public static skipTask(
-        requestBody: SkipTaskRequest,
+        id: string,
     ): CancelablePromise<void> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/v1/player/tasks/skip',
-            body: requestBody,
-            mediaType: 'application/json',
+            url: '/api/v1/player/tasks/{id}/skip',
+            path: {
+                'id': id,
+            },
         });
     }
     /**

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { useLocalization } from '../hooks/useLocalization';
 import { api } from '../services';
 import Icon from './Icon';
+import { getMonthGenitive } from '../utils';
 import type { 
   PlayerBalanceTransaction, 
   SearchRequest,
@@ -33,7 +34,6 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   onFiltersUpdate
 }) => {
   const [transactions, setTransactions] = useState<TransactionItem[]>([]);
-  const [groups, setGroups] = useState<TransactionGroup[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +57,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   const loadTransactionsRef = useRef<typeof loadTransactions | undefined>(undefined);
   const hasInitialLoadRef = useRef(false);
   
-  const { t } = useLocalization();
+  const { t, currentLanguage } = useLocalization();
 
   // Форматирование даты для группировки
   const formatDateForGroup = useCallback((dateString: string): string => {
@@ -86,32 +86,22 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     if (transactionDate > twoMonthsAgo) {
       // Формат "15 октября"
       const day = date.getDate();
-      const monthNames = [
-        t('common.months.january'), t('common.months.february'), t('common.months.march'),
-        t('common.months.april'), t('common.months.may'), t('common.months.june'),
-        t('common.months.july'), t('common.months.august'), t('common.months.september'),
-        t('common.months.october'), t('common.months.november'), t('common.months.december')
-      ];
-      return `${day} ${monthNames[date.getMonth()]}`;
+      const monthName = getMonthGenitive(date.getMonth(), t, currentLanguage || 'ru');
+      return `${day} ${monthName}`;
     }
     
     // Старые месяцы - только месяц и год
-    const monthNames = [
-      t('common.months.january'), t('common.months.february'), t('common.months.march'),
-      t('common.months.april'), t('common.months.may'), t('common.months.june'),
-      t('common.months.july'), t('common.months.august'), t('common.months.september'),
-      t('common.months.october'), t('common.months.november'), t('common.months.december')
-    ];
+    const monthName = getMonthGenitive(date.getMonth(), t, currentLanguage || 'ru');
     
     const currentYear = now.getFullYear();
     const transactionYear = date.getFullYear();
     
     if (transactionYear === currentYear) {
-      return monthNames[date.getMonth()];
+      return monthName;
     } else {
-      return `${monthNames[date.getMonth()]} ${transactionYear}`;
+      return `${monthName} ${transactionYear}`;
     }
-  }, [t]);
+  }, [t, currentLanguage]);
 
   // Группировка транзакций по датам
   const groupTransactionsByDate = useCallback((transactions: TransactionItem[]): TransactionGroup[] => {
@@ -160,8 +150,10 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
           filter: {
             dateFilters: dateFilters.from && dateFilters.to ? [{
               field: 'createdAt',
-              from: dateFilters.from,
-              to: dateFilters.to
+              range: {
+                from: dateFilters.from,
+                to: dateFilters.to
+              }
             }] : undefined,
             enumFilters: Object.keys(enumFilters).length > 0 ? 
               Object.entries(enumFilters).map(([field, values]) => ({
@@ -294,9 +286,9 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateFilters.from, dateFilters.to, JSON.stringify(enumFilters)]);
 
-  // Обновление групп при изменении транзакций
-  useEffect(() => {
-    setGroups(groupTransactionsByDate(transactions));
+  // Мемоизируем группы транзакций для предотвращения лишних пересчетов
+  const groups = useMemo(() => {
+    return groupTransactionsByDate(transactions);
   }, [transactions, groupTransactionsByDate]);
 
   // Обновление доступных фильтров
@@ -306,8 +298,8 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     }
   }, [availableFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Получение иконки для транзакции
-  const getTransactionIcon = (type: string, cause: string) => {
+  // Мемоизируем функцию получения иконки для транзакции
+  const getTransactionIcon = useCallback((type: string, cause: string) => {
     if (type === 'IN') {
       switch (cause) {
         case 'TASK_COMPLETION':
@@ -322,19 +314,16 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     } else {
       return <Icon type="minus" size={20} />;
     }
-  };
+  }, []);
 
-  // Получение цвета для транзакции (удалено, теперь используется inline стиль)
-
-
-  // Форматирование времени
-  const formatTime = (dateString: string) => {
+  // Мемоизируем функцию форматирования времени
+  const formatTime = useCallback((dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString('ru-RU', { 
       hour: '2-digit', 
       minute: '2-digit' 
     });
-  };
+  }, []);
 
   // Получение локализованного значения
   const getLocalizedValue = (field: string, value: string): string => {
@@ -537,13 +526,13 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
             {group.transactions.map((transaction, index) => (
               <div
                 key={transaction.id}
-                className={`flex items-center py-5 px-6 transition-all duration-200 select-none hover:bg-opacity-10 ${index < group.transactions.length - 1 ? 'border-b' : ''}`}
+                className={`flex items-start py-5 px-6 transition-all duration-200 select-none hover:bg-opacity-10 ${index < group.transactions.length - 1 ? 'border-b' : ''}`}
                 style={{
                   background: index % 2 === 0 ? 'transparent' : 'rgba(220, 235, 245, 0.02)',
                   borderColor: 'rgba(220, 235, 245, 0.1)'
                 }}
               >
-                <div className="flex items-center space-x-4 flex-1 min-w-0">
+                <div className="flex items-start space-x-4 flex-1 min-w-0">
                   <div 
                     className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
                     style={{
@@ -562,13 +551,16 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
                       {getTransactionIcon(transaction.type, transaction.cause)}
                     </div>
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 pr-1 flex flex-col justify-end" style={{ minHeight: '48px' }}>
                     <div 
-                      className="text-base font-tech font-medium truncate select-text" 
+                      className="font-tech font-medium select-text truncate" 
                       data-text="true"
                       style={{
                         color: '#e8f4f8',
-                        textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+                        textShadow: '0 0 4px rgba(180, 220, 240, 0.2)',
+                        fontSize: 'clamp(0.75rem, 2.5vw, 1rem)',
+                        lineHeight: '1.25',
+                        marginBottom: '0.25rem'
                       }}
                     >
                       {getLocalizedValue('cause', transaction.cause)}
@@ -577,14 +569,16 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
                       className="text-sm font-tech select-text" 
                       data-text="true"
                       style={{
-                        color: 'rgba(220, 235, 245, 0.7)'
+                        color: 'rgba(220, 235, 245, 0.7)',
+                        lineHeight: '1.25',
+                        height: '1.25rem'
                       }}
                     >
                       {formatTime(transaction.createdAt)}
                     </div>
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0 ml-4">
+                <div className="text-right flex-shrink-0 ml-2 self-center">
                   <div 
                     className="text-base font-tech font-semibold select-text" 
                     data-text="true"
@@ -619,7 +613,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       {hasMore && !loadingMore && (
         <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
           <div className="text-xs font-tech" style={{ color: 'rgba(220, 235, 245, 0.5)' }}>
-            Загрузка...
+            {t('common.loading')}
           </div>
         </div>
       )}
@@ -627,4 +621,5 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   );
 };
 
-export default BankingTransactionsList;
+// Мемоизируем компонент для предотвращения лишних ре-рендеров
+export default React.memo(BankingTransactionsList);

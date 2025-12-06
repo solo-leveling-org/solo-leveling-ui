@@ -58,6 +58,20 @@ export const ru = {
       november: 'Ноябрь',
       december: 'Декабрь'
     },
+    monthsGenitive: {
+      january: 'января',
+      february: 'февраля',
+      march: 'марта',
+      april: 'апреля',
+      may: 'мая',
+      june: 'июня',
+      july: 'июля',
+      august: 'августа',
+      september: 'сентября',
+      october: 'октября',
+      november: 'ноября',
+      december: 'декабря'
+    },
     days: {
       monday: 'Понедельник',
       tuesday: 'Вторник',
@@ -77,6 +91,7 @@ export const ru = {
     tasks: 'Задачи',
     topics: 'Темы',
     welcome: 'Главная',
+    games: 'Коллекции',
   },
 
   // Приветственная страница
@@ -265,6 +280,9 @@ export const ru = {
       coins: 'Монеты',
       statsTitle: 'Характеристики',
       categoriesTitle: 'Категории',
+      createdAt: 'Создана',
+      completedAt: 'Завершена',
+      skippedAt: 'Пропущена',
     },
   },
 
@@ -303,5 +321,38 @@ export const ru = {
     balance: 'Баланс',
     balanceGained: 'за выполнение задачи',
     continue: 'Продолжить',
+  },
+
+  // Коллекции
+  collections: {
+    tabs: {
+      leaderboard: 'ТАБЛИЦА ЛИДЕРОВ',
+      lootboxes: 'ЛУТ БОКСЫ',
+      inventory: 'ИНВЕНТАРЬ',
+    },
+    leaderboard: {
+      title: 'Таблица лидеров',
+      subtitle: 'Соревнуйся с другими игроками и поднимайся в рейтинге',
+      yourPosition: 'Ваша позиция',
+      noPosition: 'Выполните первую задачу, чтобы занять место в списке лидеров',
+    },
+    types: {
+      level: 'По уровню',
+      tasks: 'По задачам',
+      balance: 'По балансу',
+    },
+    score: {
+      level: 'Уровень',
+      tasks: 'Выполнено задач',
+      balance: 'Баланс',
+    },
+    lootboxes: {
+      comingSoon: 'Скоро',
+      description: 'Лут боксы будут доступны в ближайшее время',
+    },
+    inventory: {
+      comingSoon: 'Скоро',
+      description: 'Инвентарь будет доступен в ближайшее время',
+    },
   },
 };

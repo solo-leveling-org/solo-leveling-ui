@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useModal } from '../contexts/ModalContext';
 
 export interface Notification {
@@ -29,10 +29,10 @@ export const useNotifications = () => {
 const NotificationItem: React.FC<{
   notification: Notification;
   onRemove: (id: string) => void;
-}> = ({ notification, onRemove }) => {
+}> = React.memo(({ notification, onRemove }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
-  const { isDialogOpen } = useModal();
+  const { isTaskDialogOpen } = useModal();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const elapsedTimeRef = useRef(0);
   const startTimeRef = useRef(Date.now());
@@ -57,14 +57,15 @@ const NotificationItem: React.FC<{
   }, []);
 
   // Упрощенная логика прогресс-бара (уменьшается от 100% к 0%)
+  // Оптимизировано: используем setInterval с увеличенным интервалом (100ms вместо 50ms) для лучшей производительности
   useEffect(() => {
     if (!notification.duration || notification.duration <= 0) {
       setProgressPercentage(100);
       return;
     }
 
-    // Если dialog открыт, останавливаем обновление прогресс-бара
-    if (isDialogOpen) {
+    // Если TaskDialog или TaskCompletionDialog открыт, останавливаем обновление прогресс-бара
+    if (isTaskDialogOpen) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -81,7 +82,13 @@ const NotificationItem: React.FC<{
       const elapsedPercent = Math.min(100, (elapsed / notification.duration) * 100);
       const remainingPercent = Math.max(0, 100 - elapsedPercent);
       
-      setProgressPercentage(remainingPercent);
+      // Обновляем состояние только если значение изменилось (оптимизация)
+      setProgressPercentage(prev => {
+        // Округляем до 0.1% для уменьшения количества обновлений
+        const rounded = Math.round(remainingPercent * 10) / 10;
+        const prevRounded = Math.round(prev * 10) / 10;
+        return rounded !== prevRounded ? rounded : prev;
+      });
 
       if (remainingPercent <= 0) {
         if (intervalRef.current) {
@@ -91,11 +98,11 @@ const NotificationItem: React.FC<{
       }
     };
 
-    // Обновляем прогресс каждые 50ms для плавности
+    // Обновляем прогресс каждые 100ms (вместо 50ms) для лучшей производительности при сохранении плавности
     if (!intervalRef.current) {
       startTimeRef.current = Date.now();
       updateProgress(); // Сразу обновляем
-      intervalRef.current = setInterval(updateProgress, 50);
+      intervalRef.current = setInterval(updateProgress, 100);
     }
 
     return () => {
@@ -109,13 +116,13 @@ const NotificationItem: React.FC<{
         startTimeRef.current = Date.now();
       }
     };
-  }, [notification.duration, isDialogOpen]);
+  }, [notification.duration, isTaskDialogOpen]);
 
   useEffect(() => {
     if (!notification.duration || notification.duration <= 0) return;
 
-    // Если dialog открыт, останавливаем таймер и сохраняем прошедшее время
-    if (isDialogOpen) {
+    // Если TaskDialog или TaskCompletionDialog открыт, останавливаем таймер и сохраняем прошедшее время
+    if (isTaskDialogOpen) {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
@@ -145,26 +152,15 @@ const NotificationItem: React.FC<{
         timerRef.current = null;
       }
     };
-  }, [notification.duration, handleRemove, isDialogOpen]);
+  }, [notification.duration, handleRemove, isTaskDialogOpen]);
 
-  const getNotificationStyles = () => {
+  // Мемоизируем стили для предотвращения пересчета при каждом рендере
+  const notificationStyles = useMemo(() => {
     const baseStyles = "relative overflow-hidden rounded-2xl md:rounded-3xl shadow-lg backdrop-blur-md border transition-all duration-300 ease-out transform";
-    
-    switch (notification.type) {
-      case 'success':
-        return `${baseStyles}`;
-      case 'info':
-        return `${baseStyles}`;
-      case 'warning':
-        return `${baseStyles}`;
-      case 'error':
-        return `${baseStyles}`;
-      default:
-        return `${baseStyles}`;
-    }
-  };
+    return baseStyles;
+  }, []);
 
-  const getNotificationBackgroundStyle = () => {
+  const backgroundStyle = useMemo(() => {
     switch (notification.type) {
       case 'success':
         return {
@@ -197,9 +193,10 @@ const NotificationItem: React.FC<{
           boxShadow: '0 0 20px rgba(180, 220, 240, 0.3), 0 0 40px rgba(180, 220, 240, 0.1), inset 0 0 20px rgba(180, 220, 240, 0.05)',
         };
     }
-  };
+  }, [notification.type]);
 
-  const getIcon = () => {
+  // Мемоизируем иконку и её стили
+  const iconElement = useMemo(() => {
     const getIconStyle = () => {
       switch (notification.type) {
         case 'success':
@@ -284,18 +281,12 @@ const NotificationItem: React.FC<{
           </div>
         );
     }
-  };
-
-  const getTextColor = () => {
-    return '#e8f4f8'; // Единый цвет текста в стиле Solo Leveling
-  };
-
-  const backgroundStyle = getNotificationBackgroundStyle();
+  }, [notification.type]);
 
   return (
     <div
       className={`
-        ${getNotificationStyles()}
+        ${notificationStyles}
         ${isVisible && !isRemoving ? 'translate-x-0 opacity-100 scale-100' : 'translate-x-full opacity-0 scale-95'}
         ${isRemoving ? 'translate-x-full opacity-0 scale-95' : ''}
         w-full sm:max-w-sm
@@ -361,14 +352,14 @@ const NotificationItem: React.FC<{
       <div className="relative z-10 p-4">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 mt-0.5">
-            {getIcon()}
+            {iconElement}
           </div>
           
           <div className="flex-1 min-w-0">
             <p 
               className="text-sm font-tech font-medium leading-relaxed"
               style={{
-                color: getTextColor(),
+                color: '#e8f4f8',
                 textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
               }}
             >
@@ -400,7 +391,16 @@ const NotificationItem: React.FC<{
       </div>
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Кастомная функция сравнения для оптимизации
+  return (
+    prevProps.notification.id === nextProps.notification.id &&
+    prevProps.notification.message === nextProps.notification.message &&
+    prevProps.notification.type === nextProps.notification.type &&
+    prevProps.notification.duration === nextProps.notification.duration &&
+    prevProps.onRemove === nextProps.onRemove
+  );
+});
 
 // Контейнер для уведомлений
 export const NotificationContainer: React.FC = () => {

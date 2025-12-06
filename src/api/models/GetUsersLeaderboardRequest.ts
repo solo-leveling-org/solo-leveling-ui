@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { PlayerTask } from './PlayerTask';
-export type SkipTaskRequest = {
-    playerTask: PlayerTask;
+import type { DayRange } from './DayRange';
+export type GetUsersLeaderboardRequest = {
+    range?: DayRange;
 };
 

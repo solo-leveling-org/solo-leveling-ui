@@ -8,14 +8,16 @@ import type {
   CompleteTaskResponse,
   SearchPlayerBalanceTransactionsResponse,
   SearchPlayerTasksResponse,
+  GetUsersLeaderboardResponse,
+  GetUsersLeaderboardRequest,
+  GetUserLeaderboardResponse,
   TgAuthData,
   RefreshRequest,
   SavePlayerTopicsRequest,
-  CompleteTaskRequest,
-  SkipTaskRequest,
   SearchRequest,
   LocalizedField,
   PlayerTask,
+  User,
 } from '../api';
 import {
   mockGetUserResponse,
@@ -27,9 +29,11 @@ import {
   mockTasks,
   mockTransactions,
   mockPlayerTopics,
+  generateMockLeaderboardUsers,
   mockUser,
+  createMockLeaderboardResponse,
 } from './mockData';
-import { PlayerTaskStatus, TaskRarity, TaskTopic } from '../api';
+import { PlayerTaskStatus, TaskRarity, TaskTopic, Assessment, LeaderboardType } from '../api';
 import { createMockTask } from './mockData';
 import { CancelablePromise } from '../api';
 
@@ -116,12 +120,13 @@ class MockState {
     const taskId = `task-${this.taskIdCounter++}`;
     const maxOrder = Math.max(...this.tasks.map(t => t.order || 0), 0);
 
+    const now = new Date();
     const newTask: PlayerTask = {
       id: taskId,
       version: 1,
       order: maxOrder + 1,
       status: PlayerTaskStatus.PREPARING,
-      createdAt: new Date().toISOString(),
+      createdAt: now.toISOString(),
       task: createMockTask(
         taskId,
         taskTitles[randomIndex],
@@ -439,7 +444,47 @@ export const mockUserService = {
   getUser: (userId: number): CancelablePromise<GetUserResponse> => {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
-      resolve(mockGetUserResponse);
+      // Создаем моковые данные для пользователя на основе его ID
+      // Генерируем пользователей из лидерборда
+      const allUsers = generateMockLeaderboardUsers(200);
+      const leaderboardUser = allUsers.find(u => u.id === userId);
+      const mockUserData: User = leaderboardUser ? {
+        id: leaderboardUser.id,
+        version: 1,
+        username: `user_${leaderboardUser.id}`,
+        firstName: leaderboardUser.firstName,
+        lastName: leaderboardUser.lastName,
+        photoUrl: leaderboardUser.photoUrl,
+        locale: 'ru',
+        roles: [],
+        player: {
+          id: leaderboardUser.id,
+          version: 1,
+          maxTasks: 5,
+          agility: 10 + (leaderboardUser.id % 10),
+          strength: 15 + (leaderboardUser.id % 10),
+          intelligence: 12 + (leaderboardUser.id % 10),
+          level: {
+            id: `level-${leaderboardUser.id}`,
+            version: 1,
+            level: Math.floor(leaderboardUser.score / 100) || 1,
+            totalExperience: leaderboardUser.score * 10,
+            currentExperience: (leaderboardUser.score * 10) % 1000,
+            experienceToNextLevel: 1000,
+            assessment: leaderboardUser.id <= 3 ? Assessment.A : Assessment.B,
+          },
+          balance: {
+            id: `balance-${leaderboardUser.id}`,
+            version: 1,
+            balance: {
+              currencyCode: 'GOLD',
+              amount: leaderboardUser.score || 0,
+            },
+          },
+          taskTopics: [],
+        },
+      } : mockUser;
+      resolve({ user: mockUserData });
     });
   },
 
@@ -454,6 +499,60 @@ export const mockUserService = {
     return new CancelablePromise(async (resolve) => {
       await delay(300);
       resolve({ locale: requestBody.locale || 'ru' });
+    });
+  },
+
+  getUsersLeaderboard: (
+    type: LeaderboardType,
+    requestBody: GetUsersLeaderboardRequest,
+    page?: number,
+    pageSize: number = 20
+  ): CancelablePromise<GetUsersLeaderboardResponse> => {
+    return new CancelablePromise(async (resolve) => {
+      await delay(400);
+      const currentPage = page || 0;
+      const response = createMockLeaderboardResponse(currentPage, pageSize, 200);
+      resolve(response);
+    });
+  },
+
+  getUserLeaderboard: (
+    type: LeaderboardType,
+    requestBody: GetUsersLeaderboardRequest,
+  ): CancelablePromise<GetUserLeaderboardResponse> => {
+    return new CancelablePromise(async (resolve, reject) => {
+      await delay(400);
+      
+      // Для тестирования 404: раскомментируйте следующую строку
+      // reject({ status: 404, message: 'User not found in leaderboard' });
+      
+      // Генерируем моковые данные для текущего пользователя
+      // Позиция может быть далеко в списке (например, 12345 для проверки отображения больших чисел)
+      const currentUserId = mockUser.id;
+      const mockPosition = 12345; // Позиция текущего пользователя в лидерборде (большое число для тестирования)
+      
+      // Вычисляем score в зависимости от типа лидерборда
+      let score: number;
+      if (type === LeaderboardType.LEVEL) {
+        score = mockUser.player?.level?.totalExperience || 2500;
+      } else if (type === LeaderboardType.BALANCE) {
+        score = mockUser.player?.balance?.balance?.amount || 1500;
+      } else {
+        score = 1000;
+      }
+      
+      const currentUserLeaderboard: GetUserLeaderboardResponse = {
+        user: {
+          id: currentUserId,
+          firstName: mockUser.firstName || 'User',
+          ...(mockUser.lastName && { lastName: mockUser.lastName }),
+          ...(mockUser.photoUrl && { photoUrl: mockUser.photoUrl }),
+          score: score,
+          position: mockPosition,
+        },
+      };
+      
+      resolve(currentUserLeaderboard);
     });
   },
 };
@@ -496,20 +595,18 @@ export const mockPlayerService = {
     });
   },
 
-  completeTask: (requestBody: CompleteTaskRequest): CancelablePromise<CompleteTaskResponse> => {
+  completeTask: (id: string): CancelablePromise<CompleteTaskResponse> => {
     return new CancelablePromise(async (resolve) => {
       await delay(500);
-      const taskId = requestBody.playerTask?.id || '';
-      const response = mockState.completeTask(taskId);
+      const response = mockState.completeTask(id);
       resolve(response);
     });
   },
 
-  skipTask: (requestBody: SkipTaskRequest): CancelablePromise<void> => {
+  skipTask: (id: string): CancelablePromise<void> => {
     return new CancelablePromise(async (resolve) => {
       await delay(400);
-      const taskId = requestBody.playerTask?.id || '';
-      mockState.skipTask(taskId);
+      mockState.skipTask(id);
       resolve(undefined);
     });
   },
@@ -534,9 +631,9 @@ export const mockPlayerService = {
       // Применяем фильтры по датам
       if (requestBody.options?.filter?.dateFilters) {
         requestBody.options.filter.dateFilters.forEach(dateFilter => {
-          if (dateFilter.field === 'createdAt' && dateFilter.from && dateFilter.to) {
-            const fromDate = new Date(dateFilter.from);
-            const toDate = new Date(dateFilter.to);
+          if (dateFilter.field === 'createdAt' && dateFilter.range?.from && dateFilter.range?.to) {
+            const fromDate = new Date(dateFilter.range.from);
+            const toDate = new Date(dateFilter.range.to);
             filteredTransactions = filteredTransactions.filter(transaction => {
               const transactionDate = new Date(transaction.createdAt);
               return transactionDate >= fromDate && transactionDate <= toDate;
@@ -627,9 +724,9 @@ export const mockPlayerService = {
       // Применяем фильтры по датам
       if (requestBody.options?.filter?.dateFilters) {
         requestBody.options.filter.dateFilters.forEach(dateFilter => {
-          if (dateFilter.field === 'createdAt' && dateFilter.from && dateFilter.to) {
-            const fromDate = new Date(dateFilter.from);
-            const toDate = new Date(dateFilter.to);
+          if (dateFilter.field === 'createdAt' && dateFilter.range?.from && dateFilter.range?.to) {
+            const fromDate = new Date(dateFilter.range.from);
+            const toDate = new Date(dateFilter.range.to);
             filteredTasks = filteredTasks.filter(task => {
               if (!task.createdAt) return false;
               const taskDate = new Date(task.createdAt);

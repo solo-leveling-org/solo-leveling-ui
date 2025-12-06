@@ -58,6 +58,20 @@ export const en = {
       november: 'November',
       december: 'December'
     },
+    monthsGenitive: {
+      january: 'January',
+      february: 'February',
+      march: 'March',
+      april: 'April',
+      may: 'May',
+      june: 'June',
+      july: 'July',
+      august: 'August',
+      september: 'September',
+      october: 'October',
+      november: 'November',
+      december: 'December'
+    },
     days: {
       monday: 'Monday',
       tuesday: 'Tuesday',
@@ -77,6 +91,7 @@ export const en = {
     tasks: 'Tasks',
     topics: 'Topics',
     welcome: 'Home',
+    games: 'Collections',
   },
 
   // Welcome page
@@ -265,6 +280,9 @@ export const en = {
       coins: 'Coins',
       statsTitle: 'Stats',
       categoriesTitle: 'Categories',
+      createdAt: 'Created',
+      completedAt: 'Completed',
+      skippedAt: 'Skipped',
     },
   },
 
@@ -303,5 +321,38 @@ export const en = {
     balance: 'Balance',
     balanceGained: 'for task completion',
     continue: 'Continue',
+  },
+
+  // Collections
+  collections: {
+    tabs: {
+      leaderboard: 'LEADERBOARD',
+      lootboxes: 'LOOT BOXES',
+      inventory: 'INVENTORY',
+    },
+    leaderboard: {
+      title: 'Leaderboard',
+      subtitle: 'Compete with other players and climb the rankings',
+      yourPosition: 'Your Position',
+      noPosition: 'Complete your first task to get a position on the leaderboard',
+    },
+    types: {
+      level: 'By Level',
+      tasks: 'By Tasks',
+      balance: 'By Balance',
+    },
+    score: {
+      level: 'Level',
+      tasks: 'Completed Tasks',
+      balance: 'Balance',
+    },
+    lootboxes: {
+      comingSoon: 'Coming Soon',
+      description: 'Loot boxes will be available soon',
+    },
+    inventory: {
+      comingSoon: 'Coming Soon',
+      description: 'Inventory will be available soon',
+    },
   },
 };

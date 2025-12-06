@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { JwtToken } from './JwtToken';
-export type RefreshResponse = {
-    accessToken: JwtToken;
+import type { LeaderboardUser } from './LeaderboardUser';
+export type GetUserLeaderboardResponse = {
+    user: LeaderboardUser;
 };
 

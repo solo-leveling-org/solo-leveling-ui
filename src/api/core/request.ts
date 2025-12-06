@@ -157,9 +157,13 @@ export const getHeaders = async (config: OpenAPIConfig, options: ApiRequestOptio
 
   const formHeaders = typeof formData?.getHeaders === 'function' && formData?.getHeaders() || {}
 
+  // Получаем временную зону браузера
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   const headers = Object.entries({
     Accept: 'application/json',
     'Accept-Language': getLanguageFromStorage(),
+    'X-TimeZone': timeZone,
     ...additionalHeaders,
     ...options.headers,
     ...formHeaders,
@@ -300,11 +304,13 @@ const handleMockRequest = async <T>(options: ApiRequestOptions): Promise<T | nul
     if (options.url === '/api/v1/player/tasks/generate' && options.method === 'POST') {
       return await mockPlayerService.generateTasks() as any;
     }
-    if (options.url === '/api/v1/player/tasks/complete' && options.method === 'POST') {
-      return await mockPlayerService.completeTask(options.body as any) as any;
+    if (options.url?.includes('/api/v1/player/tasks/') && options.url?.includes('/complete') && options.method === 'POST') {
+      const taskId = options.path?.id as string || '';
+      return await mockPlayerService.completeTask(taskId) as any;
     }
-    if (options.url === '/api/v1/player/tasks/skip' && options.method === 'POST') {
-      return await mockPlayerService.skipTask(options.body as any) as any;
+    if (options.url?.includes('/api/v1/player/tasks/') && options.url?.includes('/skip') && options.method === 'POST') {
+      const taskId = options.path?.id as string || '';
+      return await mockPlayerService.skipTask(taskId) as any;
     }
     if (options.url === '/api/v1/player/balance' && options.method === 'GET') {
       return await mockPlayerService.getPlayerBalance() as any;
@@ -322,6 +328,30 @@ const handleMockRequest = async <T>(options: ApiRequestOptions): Promise<T | nul
       const page = options.query?.page as number | undefined;
       const pageSize = (options.query?.pageSize as number) || 20;
       return await mockPlayerService.searchPlayerTasks(
+        options.body as any,
+        page,
+        pageSize
+      ) as any;
+    }
+    
+    // Обработка leaderboard запросов
+    if (options.url?.includes('/api/v1/user/leaderboard/') && options.method === 'POST') {
+      const { mockUserService } = await import('../../mocks/mockApi');
+      const type = options.path?.type as string;
+      
+      // Проверяем, это запрос для текущего пользователя (/me)
+      if (options.url?.includes('/me')) {
+        return await mockUserService.getUserLeaderboard(
+          type as any,
+          options.body as any
+        ) as any;
+      }
+      
+      // Обычный запрос лидерборда с пагинацией
+      const page = options.query?.page as number | undefined;
+      const pageSize = (options.query?.pageSize as number) || 20;
+      return await mockUserService.getUsersLeaderboard(
+        type as any,
         options.body as any,
         page,
         pageSize
