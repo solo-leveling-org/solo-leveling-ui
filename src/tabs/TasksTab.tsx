@@ -235,7 +235,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
             </div>
 
             {/* Main Navigation - Minimal iOS Segmented Control Style */}
-            <div className="flex justify-center mb-6">
+            <div className={`flex justify-center ${firstTime ? 'mb-4' : 'mb-6'}`}>
               <div 
                 className="inline-flex rounded-full p-1"
                 style={{
@@ -288,7 +288,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
             </div>
 
             {/* Task View Mode Toggle - Same style as leaderboard */}
-            {tabMode === 'tasks' && (
+            {tabMode === 'tasks' && !firstTime && (
               <div className="flex justify-center mb-6">
                 <div
                   className="inline-flex rounded-full p-1"
