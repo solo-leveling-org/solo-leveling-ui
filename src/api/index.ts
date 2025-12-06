@@ -16,6 +16,7 @@ export type { Filter } from './models/Filter';
 export type { GetActiveTasksResponse } from './models/GetActiveTasksResponse';
 export type { GetPlayerBalanceResponse } from './models/GetPlayerBalanceResponse';
 export type { GetPlayerTopicsResponse } from './models/GetPlayerTopicsResponse';
+export type { GetUserLeaderboardResponse } from './models/GetUserLeaderboardResponse';
 export type { GetUserResponse } from './models/GetUserResponse';
 export type { GetUsersLeaderboardRequest } from './models/GetUsersLeaderboardRequest';
 export type { GetUsersLeaderboardResponse } from './models/GetUsersLeaderboardResponse';

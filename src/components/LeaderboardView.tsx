@@ -20,8 +20,11 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
   onUserClick
 }) => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
+  const [currentUser, setCurrentUser] = useState<LeaderboardUser | null>(null);
+  const [currentUserNotFound, setCurrentUserNotFound] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingCurrentUser, setLoadingCurrentUser] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const { t } = useLocalization();
@@ -32,6 +35,34 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
   const hasMoreRef = useRef(true);
   const isLoadingRef = useRef(false);
   const loadLeaderboardRef = useRef<typeof loadLeaderboard | undefined>(undefined);
+
+  // Загрузка данных текущего пользователя
+  const loadCurrentUser = useCallback(async () => {
+    if (!isAuthenticated) return;
+    
+    setLoadingCurrentUser(true);
+    setCurrentUserNotFound(false);
+    try {
+      const response = await api.getUserLeaderboard(
+        leaderboardType,
+        {}
+      );
+      
+      if (response.user) {
+        setCurrentUser(response.user);
+        setCurrentUserNotFound(false);
+      }
+    } catch (error: any) {
+      console.error('Error loading current user leaderboard:', error);
+      // Проверяем, является ли ошибка 404
+      if (error?.status === 404 || error?.response?.status === 404) {
+        setCurrentUserNotFound(true);
+        setCurrentUser(null);
+      }
+    } finally {
+      setLoadingCurrentUser(false);
+    }
+  }, [isAuthenticated, leaderboardType]);
 
   // Загрузка лидерборда с infinity scroll
   const loadLeaderboard = useCallback(async (page: number = 0, reset: boolean = false) => {
@@ -132,6 +163,11 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
     };
   }, [hasMore, loadingMore, leaderboard.length]);
 
+  // Загрузка данных текущего пользователя при изменении типа
+  useEffect(() => {
+    loadCurrentUser();
+  }, [loadCurrentUser]);
+
   // Загрузка при изменении типа с плавным переходом
   useEffect(() => {
     // Начинаем fade-out
@@ -165,10 +201,11 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
     }
   };
 
+
   return (
     <div className="space-y-6">
-      {/* Leaderboard Type Selector */}
-      <div className="flex justify-center mb-6">
+        {/* Leaderboard Type Selector */}
+        <div className="flex justify-center mb-6">
         <div
           className="inline-flex rounded-full p-1"
           style={{
@@ -210,6 +247,193 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
         </div>
         </div>
       </div>
+
+
+      {/* Current User Card - Sticky at top */}
+      {currentUser && (
+        <div className="sticky z-10 mb-3" style={{ top: '1rem' }}>
+          <button
+            onClick={() => onUserClick?.(currentUser.id)}
+            className="w-full rounded-xl p-4 transition-all duration-300 hover:scale-[1.02] text-left"
+            style={{
+              background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.98) 0%, rgba(5, 8, 18, 0.99) 100%)',
+              backdropFilter: 'blur(20px)',
+              border: '2px solid rgba(180, 220, 240, 0.5)',
+              boxShadow: '0 0 25px rgba(180, 220, 240, 0.4), inset 0 0 25px rgba(200, 230, 245, 0.08), 0 0 40px rgba(180, 220, 240, 0.2)'
+            }}
+          >
+            {/* Label inside card */}
+            <div
+              className="text-xs font-tech mb-2 px-1"
+              style={{
+                color: 'rgba(180, 220, 240, 0.9)',
+                textShadow: '0 0 8px rgba(180, 220, 240, 0.5)',
+                letterSpacing: '0.05em'
+              }}
+            >
+              {t('collections.leaderboard.yourPosition')}
+            </div>
+            <div className="flex items-center space-x-4">
+              {/* Position */}
+              <div
+                className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-tech font-bold"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.3) 0%, rgba(160, 210, 235, 0.2) 100%)',
+                  border: '2px solid rgba(180, 220, 240, 0.6)',
+                  color: '#e8f4f8',
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: '0 0 15px rgba(180, 220, 240, 0.4), inset 0 0 10px rgba(200, 230, 245, 0.1)',
+                  fontSize: currentUser.position > 9999 ? '0.75rem' : currentUser.position > 999 ? '0.875rem' : '1.125rem'
+                }}
+              >
+                {currentUser.position > 9999 
+                  ? `${Math.floor(currentUser.position / 1000)}k`
+                  : currentUser.position > 999
+                  ? `${(currentUser.position / 1000).toFixed(1)}k`
+                  : currentUser.position}
+              </div>
+
+              {/* Avatar */}
+              <div
+                className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden"
+                style={{
+                  border: '2px solid rgba(180, 220, 240, 0.4)',
+                  boxShadow: '0 0 10px rgba(180, 220, 240, 0.3)'
+                }}
+              >
+                {currentUser.photoUrl ? (
+                  <img
+                    src={currentUser.photoUrl}
+                    alt={`${currentUser.firstName} ${currentUser.lastName || ''}`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className="w-full h-full flex items-center justify-center"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.3) 0%, rgba(160, 210, 235, 0.2) 100%)'
+                    }}
+                  >
+                    <Icon type="user" size={24} />
+                  </div>
+                )}
+              </div>
+
+              {/* User Info */}
+              <div className="flex-1 min-w-0">
+                <div
+                  className="font-tech font-semibold text-base mb-1 truncate"
+                  style={{
+                    color: '#e8f4f8',
+                    textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+                  }}
+                >
+                  {currentUser.firstName} {currentUser.lastName || ''}
+                </div>
+                <div
+                  className="text-sm font-tech"
+                  style={{
+                    color: 'rgba(220, 235, 245, 0.7)'
+                  }}
+                >
+                  {getScoreLabel(leaderboardType)}: {currentUser.score}
+                </div>
+              </div>
+
+              {/* Highlight Icon */}
+              <div
+                className="flex-shrink-0"
+                style={{
+                  color: 'rgba(180, 220, 240, 1)',
+                  filter: 'drop-shadow(0 0 12px rgba(180, 220, 240, 0.8)) drop-shadow(0 0 20px rgba(160, 210, 235, 0.4))'
+                }}
+              >
+                <Icon type="award" size={24} />
+              </div>
+            </div>
+          </button>
+        </div>
+      )}
+
+      {/* 404 Message */}
+      {currentUserNotFound && !loadingCurrentUser && (
+        <div className="mb-3">
+          <div
+            className="text-xs font-tech mb-2 px-1"
+            style={{
+              color: 'rgba(180, 220, 240, 0.9)',
+              textShadow: '0 0 8px rgba(180, 220, 240, 0.5)',
+              letterSpacing: '0.05em'
+            }}
+          >
+            {t('collections.leaderboard.yourPosition')}
+          </div>
+          <div
+            className="w-full rounded-xl p-6 text-center"
+            style={{
+              background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(220, 235, 245, 0.2)',
+              boxShadow: '0 0 15px rgba(180, 220, 240, 0.1), inset 0 0 20px rgba(200, 230, 245, 0.02)'
+            }}
+          >
+            <div
+              className="font-tech text-base"
+              style={{
+                color: 'rgba(220, 235, 245, 0.8)'
+              }}
+            >
+              {t('collections.leaderboard.noPosition')}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Loading indicator for current user */}
+      {loadingCurrentUser && !currentUser && !currentUserNotFound && (
+        <div className="mb-3">
+          <div
+            className="text-xs font-tech mb-2 px-1"
+            style={{
+              color: 'rgba(180, 220, 240, 0.9)',
+              textShadow: '0 0 8px rgba(180, 220, 240, 0.5)',
+              letterSpacing: '0.05em'
+            }}
+          >
+            {t('collections.leaderboard.yourPosition')}
+          </div>
+          <div
+            className="rounded-xl p-4 animate-pulse w-full"
+            style={{
+              background: 'rgba(220, 235, 245, 0.05)',
+              border: '1px solid rgba(220, 235, 245, 0.1)'
+            }}
+          >
+            <div className="flex items-center space-x-4">
+              <div
+                className="w-12 h-12 rounded-full"
+                style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }}
+              ></div>
+              <div className="flex-1">
+                <div
+                  className="h-4 w-32 rounded mb-2"
+                  style={{
+                    background: 'rgba(220, 235, 245, 0.1)'
+                  }}
+                ></div>
+                <div
+                  className="h-3 w-24 rounded"
+                  style={{
+                    background: 'rgba(220, 235, 245, 0.08)'
+                  }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Leaderboard List */}
       {loading && leaderboard.length === 0 ? (
@@ -267,6 +491,22 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
             {leaderboard.map((user, index) => {
               const isTopThree = index < 3;
               const position = user.position;
+              // Форматируем позицию для больших чисел
+              const formatPosition = (pos: number): string => {
+                if (pos > 9999) {
+                  return `${Math.floor(pos / 1000)}k`;
+                } else if (pos > 999) {
+                  return `${(pos / 1000).toFixed(1)}k`;
+                }
+                return pos.toString();
+              };
+              const formattedPosition = formatPosition(position);
+              const positionFontSize = position > 9999 
+                ? '0.75rem' 
+                : position > 999 
+                ? '0.875rem' 
+                : '1.125rem';
+              
               return (
                 <button
                   key={user.id}
@@ -288,7 +528,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                   <div className="flex items-center space-x-4">
                     {/* Position */}
                     <div
-                      className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-tech font-bold text-lg"
+                      className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-tech font-bold"
                       style={{
                         background: isTopThree
                           ? position === 1
@@ -318,10 +558,11 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                             ? '0 0 20px rgba(192, 192, 192, 0.5), inset 0 0 15px rgba(192, 192, 192, 0.1)'
                             : '0 0 20px rgba(205, 127, 50, 0.5), inset 0 0 15px rgba(205, 127, 50, 0.1)'
                           : 'none',
-                        backdropFilter: 'blur(10px)'
+                        backdropFilter: 'blur(10px)',
+                        fontSize: positionFontSize
                       }}
                     >
-                      {user.position}
+                      {formattedPosition}
                     </div>
 
                     {/* Avatar */}

@@ -166,6 +166,32 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetUsersLeaderboardResponse'
 
+  /api/v1/user/leaderboard/{type}/me:
+    post:
+      tags:
+        - user
+      summary: Get leaderboard for current user
+      operationId: getUserLeaderboard
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/LeaderboardType'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetUsersLeaderboardRequest'
+      responses:
+        '200':
+          description: User leaderboard
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserLeaderboardResponse'
+
   # =============== PLAYER ===============
   /api/v1/player/topics:
     get:
@@ -521,6 +547,14 @@ components:
       required:
         - users
         - paging
+
+    GetUserLeaderboardResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/LeaderboardUser'
+      required:
+        - user
 
     # --- Enums ---
     UserRole:

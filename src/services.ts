@@ -7,7 +7,8 @@ import type {
   GetPlayerBalanceResponse,
   SearchRequest,
   SearchPlayerBalanceTransactionsResponse,
-  SearchPlayerTasksResponse
+  SearchPlayerTasksResponse,
+  GetUserLeaderboardResponse,
 } from './api';
 import {PlayerService, PlayerTask, UserService} from './api';
 import type {User as ApiUser} from './api/models/User';
@@ -124,6 +125,18 @@ export const api = {
       return await UserService.getUsersLeaderboard(type, request, page, pageSize);
     } catch (error) {
       console.error('Error getting users leaderboard:', error);
+      throw error;
+    }
+  },
+
+  getUserLeaderboard: async (
+    type: import('./api').LeaderboardType,
+    request: import('./api').GetUsersLeaderboardRequest,
+  ): Promise<GetUserLeaderboardResponse> => {
+    try {
+      return await UserService.getUserLeaderboard(type, request);
+    } catch (error) {
+      console.error('Error getting user leaderboard:', error);
       throw error;
     }
   },

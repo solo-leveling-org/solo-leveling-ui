@@ -338,6 +338,16 @@ const handleMockRequest = async <T>(options: ApiRequestOptions): Promise<T | nul
     if (options.url?.includes('/api/v1/user/leaderboard/') && options.method === 'POST') {
       const { mockUserService } = await import('../../mocks/mockApi');
       const type = options.path?.type as string;
+      
+      // Проверяем, это запрос для текущего пользователя (/me)
+      if (options.url?.includes('/me')) {
+        return await mockUserService.getUserLeaderboard(
+          type as any,
+          options.body as any
+        ) as any;
+      }
+      
+      // Обычный запрос лидерборда с пагинацией
       const page = options.query?.page as number | undefined;
       const pageSize = (options.query?.pageSize as number) || 20;
       return await mockUserService.getUsersLeaderboard(

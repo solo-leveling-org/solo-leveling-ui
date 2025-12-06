@@ -10,7 +10,7 @@ import type {
   SearchPlayerTasksResponse,
   GetUsersLeaderboardResponse,
   GetUsersLeaderboardRequest,
-  LeaderboardType,
+  GetUserLeaderboardResponse,
   TgAuthData,
   RefreshRequest,
   SavePlayerTopicsRequest,
@@ -33,7 +33,7 @@ import {
   mockUser,
   createMockLeaderboardResponse,
 } from './mockData';
-import { PlayerTaskStatus, TaskRarity, TaskTopic, Assessment } from '../api';
+import { PlayerTaskStatus, TaskRarity, TaskTopic, Assessment, LeaderboardType } from '../api';
 import { createMockTask } from './mockData';
 import { CancelablePromise } from '../api';
 
@@ -513,6 +513,46 @@ export const mockUserService = {
       const currentPage = page || 0;
       const response = createMockLeaderboardResponse(currentPage, pageSize, 200);
       resolve(response);
+    });
+  },
+
+  getUserLeaderboard: (
+    type: LeaderboardType,
+    requestBody: GetUsersLeaderboardRequest,
+  ): CancelablePromise<GetUserLeaderboardResponse> => {
+    return new CancelablePromise(async (resolve, reject) => {
+      await delay(400);
+      
+      // Для тестирования 404: раскомментируйте следующую строку
+      // reject({ status: 404, message: 'User not found in leaderboard' });
+      
+      // Генерируем моковые данные для текущего пользователя
+      // Позиция может быть далеко в списке (например, 12345 для проверки отображения больших чисел)
+      const currentUserId = mockUser.id;
+      const mockPosition = 12345; // Позиция текущего пользователя в лидерборде (большое число для тестирования)
+      
+      // Вычисляем score в зависимости от типа лидерборда
+      let score: number;
+      if (type === LeaderboardType.LEVEL) {
+        score = mockUser.player?.level?.totalExperience || 2500;
+      } else if (type === LeaderboardType.BALANCE) {
+        score = mockUser.player?.balance?.balance?.amount || 1500;
+      } else {
+        score = 1000;
+      }
+      
+      const currentUserLeaderboard: GetUserLeaderboardResponse = {
+        user: {
+          id: currentUserId,
+          firstName: mockUser.firstName || 'User',
+          ...(mockUser.lastName && { lastName: mockUser.lastName }),
+          ...(mockUser.photoUrl && { photoUrl: mockUser.photoUrl }),
+          score: score,
+          position: mockPosition,
+        },
+      };
+      
+      resolve(currentUserLeaderboard);
     });
   },
 };

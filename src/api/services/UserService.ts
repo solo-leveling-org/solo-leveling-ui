@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { GetUserLeaderboardResponse } from '../models/GetUserLeaderboardResponse';
 import type { GetUserResponse } from '../models/GetUserResponse';
 import type { GetUsersLeaderboardRequest } from '../models/GetUsersLeaderboardRequest';
 import type { GetUsersLeaderboardResponse } from '../models/GetUsersLeaderboardResponse';
@@ -91,6 +92,27 @@ export class UserService {
             query: {
                 'page': page,
                 'pageSize': pageSize,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
+     * Get leaderboard for current user
+     * @param type
+     * @param requestBody
+     * @returns GetUserLeaderboardResponse User leaderboard
+     * @throws ApiError
+     */
+    public static getUserLeaderboard(
+        type: LeaderboardType,
+        requestBody: GetUsersLeaderboardRequest,
+    ): CancelablePromise<GetUserLeaderboardResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/user/leaderboard/{type}/me',
+            path: {
+                'type': type,
             },
             body: requestBody,
             mediaType: 'application/json',
