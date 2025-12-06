@@ -37,6 +37,20 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
   const isLoadingRef = useRef(false);
   const loadLeaderboardRef = useRef<typeof loadLeaderboard | undefined>(undefined);
   const isLoadingCurrentUserRef = useRef(false);
+  const pendingLeaderboardLoadRef = useRef(false);
+  const pendingCurrentUserLoadRef = useRef(false);
+
+  // Общая функция для обновления displayLeaderboardType после завершения загрузки
+  const updateDisplayTypeAfterLoad = useCallback(() => {
+    // Обновляем displayLeaderboardType только после завершения обоих запросов
+    if (!pendingLeaderboardLoadRef.current && !pendingCurrentUserLoadRef.current) {
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setIsCurrentUserTransitioning(false);
+        setDisplayLeaderboardType(leaderboardType);
+      }, 25);
+    }
+  }, [leaderboardType]);
 
   // Загрузка данных текущего пользователя
   const loadCurrentUser = useCallback(async () => {
@@ -55,23 +69,23 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       
       if (response.user) {
         setCurrentUser(response.user);
-        // Сбрасываем анимацию после загрузки данных
-        setTimeout(() => {
-          setIsCurrentUserTransitioning(false);
-        }, 25);
       }
+      // Отмечаем, что загрузка текущего пользователя завершена
+      pendingCurrentUserLoadRef.current = false;
+      // Проверяем, можно ли обновить displayLeaderboardType
+      updateDisplayTypeAfterLoad();
     } catch (error: any) {
       console.error('Error loading current user leaderboard:', error);
       setCurrentUser(null);
-      // Сбрасываем анимацию даже при ошибке
-      setTimeout(() => {
-        setIsCurrentUserTransitioning(false);
-      }, 25);
+      // Отмечаем, что загрузка текущего пользователя завершена (даже при ошибке)
+      pendingCurrentUserLoadRef.current = false;
+      // Проверяем, можно ли обновить displayLeaderboardType
+      updateDisplayTypeAfterLoad();
     } finally {
       setLoadingCurrentUser(false);
       isLoadingCurrentUserRef.current = false;
     }
-  }, [isAuthenticated, leaderboardType]);
+  }, [isAuthenticated, leaderboardType, updateDisplayTypeAfterLoad]);
 
   // Загрузка лидерборда с infinity scroll
   const loadLeaderboard = useCallback(async (page: number = 0, reset: boolean = false) => {
@@ -105,12 +119,10 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
         setHasMore(hasMoreData);
         currentPageRef.current = page; // Используем переданный page, а не 0
         hasMoreRef.current = hasMoreData;
-        // После загрузки новых данных делаем fade-in и обновляем отображаемый тип
-        setTimeout(() => {
-          setIsTransitioning(false);
-          setIsCurrentUserTransitioning(false);
-          setDisplayLeaderboardType(leaderboardType);
-        }, 25);
+        // Отмечаем, что загрузка основного списка завершена
+        pendingLeaderboardLoadRef.current = false;
+        // Проверяем, можно ли обновить displayLeaderboardType
+        updateDisplayTypeAfterLoad();
       } else {
         if (newUsers.length > 0) {
           setLeaderboard(prev => [...prev, ...newUsers]);
@@ -129,7 +141,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       setLoadingMore(false);
       isLoadingRef.current = false;
     }
-  }, [isAuthenticated, leaderboardType]);
+  }, [isAuthenticated, leaderboardType, updateDisplayTypeAfterLoad]);
 
   // Сохраняем актуальную версию функции в ref
   useEffect(() => {
@@ -193,6 +205,10 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
     // Начинаем fade-out для основного списка и карточки текущего пользователя
     setIsTransitioning(true);
     setIsCurrentUserTransitioning(true);
+    
+    // Устанавливаем флаги ожидания загрузки
+    pendingLeaderboardLoadRef.current = true;
+    pendingCurrentUserLoadRef.current = true;
     
     // После fade-out загружаем новые данные
     const fadeOutTimeout = setTimeout(() => {
