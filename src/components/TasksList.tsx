@@ -327,7 +327,7 @@ const TasksList: React.FC<TasksListProps> = ({
       {hasMoreRef.current && !loadingMore && (
         <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
           <div className="text-xs font-tech" style={{ color: 'rgba(220, 235, 245, 0.5)' }}>
-            Загрузка...
+            {t('common.loading')}
           </div>
         </div>
       )}
