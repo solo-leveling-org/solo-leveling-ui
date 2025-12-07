@@ -21,6 +21,7 @@ const ScrollNavigationButtons: React.FC<ScrollNavigationButtonsProps> = ({
   const lastScrollPositionRef = useRef<number>(0);
   const previousLoadingRef = useRef<boolean>(false);
   const scrollContainerRef = useRef<HTMLElement | null>(null);
+  const scrollThreshold = 400; // Показывать кнопку "вверх" после скролла на 200px
 
   // Находим скроллируемый контейнер
   const getScrollContainer = useCallback(() => {
@@ -101,8 +102,8 @@ const ScrollNavigationButtons: React.FC<ScrollNavigationButtonsProps> = ({
         clientHeight = window.innerHeight;
       }
 
-      // Показываем кнопку "вверх" если проскроллили вниз (scrollTop > 0)
-      setShowTopButton(scrollTop > 0);
+      // Показываем кнопку "вверх" если проскроллили больше threshold
+      setShowTopButton(scrollTop > scrollThreshold);
       
       // Показываем кнопку "вниз" если есть сохраненная позиция и мы выше этой позиции
       const hasMoreContent = scrollTop + clientHeight < scrollHeight - 50;
