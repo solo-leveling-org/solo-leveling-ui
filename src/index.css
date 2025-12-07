@@ -50,40 +50,70 @@ body::-webkit-scrollbar {
 
 /* Кастомный скроллбар для фильтров в стилистике приложения */
 .filters-scrollbar {
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: rgba(180, 220, 240, 0.4) rgba(10, 14, 39, 0.3); /* Firefox */
+  scrollbar-width: thin !important; /* Firefox */
+  scrollbar-color: rgba(180, 220, 240, 0.4) rgba(10, 14, 39, 0.3) !important; /* Firefox */
 }
 
 .filters-scrollbar::-webkit-scrollbar {
-  display: block; /* Chrome, Safari, Opera */
-  height: 6px;
+  display: block !important; /* Chrome, Safari, Opera */
+  height: 6px !important;
+  width: 6px !important;
 }
 
 .filters-scrollbar::-webkit-scrollbar-track {
-  background: rgba(10, 14, 39, 0.3);
-  border-radius: 10px;
+  background: rgba(10, 14, 39, 0.3) !important;
+  border-radius: 10px !important;
 }
 
 .filters-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(180, 220, 240, 0.4);
-  border-radius: 10px;
-  border: 1px solid rgba(180, 220, 240, 0.2);
-  box-shadow: 0 0 8px rgba(180, 220, 240, 0.3);
+  background: rgba(180, 220, 240, 0.4) !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(180, 220, 240, 0.2) !important;
+  box-shadow: 0 0 8px rgba(180, 220, 240, 0.3) !important;
 }
 
 .filters-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(180, 220, 240, 0.6);
-  box-shadow: 0 0 12px rgba(180, 220, 240, 0.5);
+  background: rgba(180, 220, 240, 0.6) !important;
+  box-shadow: 0 0 12px rgba(180, 220, 240, 0.5) !important;
 }
 
 /* Скрытие скроллбара фильтров на мобильных устройствах */
 .mobile-version .filters-scrollbar {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE and Edge */
 }
 
 .mobile-version .filters-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none !important; /* Chrome, Safari, Opera */
+}
+
+/* Принудительное применение стилей для desktop версии */
+.desktop-version .filters-scrollbar {
+  scrollbar-width: thin !important; /* Firefox */
+  scrollbar-color: rgba(180, 220, 240, 0.4) rgba(10, 14, 39, 0.3) !important; /* Firefox */
+}
+
+.desktop-version .filters-scrollbar::-webkit-scrollbar {
+  display: block !important; /* Chrome, Safari, Opera */
+  height: 6px !important;
+  width: 6px !important;
+}
+
+.desktop-version .filters-scrollbar::-webkit-scrollbar-track {
+  background: rgba(10, 14, 39, 0.3) !important;
+  border-radius: 10px !important;
+}
+
+.desktop-version .filters-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(180, 220, 240, 0.4) !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(180, 220, 240, 0.2) !important;
+  box-shadow: 0 0 8px rgba(180, 220, 240, 0.3) !important;
+}
+
+.desktop-version .filters-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(180, 220, 240, 0.6) !important;
+  box-shadow: 0 0 12px rgba(180, 220, 240, 0.5) !important;
 }
 
 html {
@@ -95,20 +125,27 @@ html {
   padding: 0;
 }
 
-/* Скрытие скроллбара для всех контейнеров */
-div, main, section, article, aside, nav, header, footer {
+/* Скрытие скроллбара для всех контейнеров, кроме фильтров */
+div:not(.filters-scrollbar):not(.custom-scrollbar), 
+main:not(.filters-scrollbar):not(.custom-scrollbar), 
+section:not(.filters-scrollbar):not(.custom-scrollbar), 
+article:not(.filters-scrollbar):not(.custom-scrollbar), 
+aside:not(.filters-scrollbar):not(.custom-scrollbar), 
+nav:not(.filters-scrollbar):not(.custom-scrollbar), 
+header:not(.filters-scrollbar):not(.custom-scrollbar), 
+footer:not(.filters-scrollbar):not(.custom-scrollbar) {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 }
 
-div::-webkit-scrollbar,
-main::-webkit-scrollbar,
-section::-webkit-scrollbar,
-article::-webkit-scrollbar,
-aside::-webkit-scrollbar,
-nav::-webkit-scrollbar,
-header::-webkit-scrollbar,
-footer::-webkit-scrollbar {
+div:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+main:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+section:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+article:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+aside:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+nav:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+header:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+footer:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
 
