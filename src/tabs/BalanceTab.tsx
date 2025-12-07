@@ -291,7 +291,13 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
 
             {/* Фильтры - горизонтальная строка */}
             <div className="mb-6">
-              <div className="flex gap-3 overflow-x-auto pb-2 px-1 filters-scrollbar">
+              <div 
+                className="flex gap-3 overflow-x-auto pb-2 px-1 filters-scrollbar"
+                style={{
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: 'rgba(180, 220, 240, 0.4) rgba(10, 14, 39, 0.3)'
+                }}
+              >
                 {/* Date Range Filter */}
                 <DateFilter
                   from={dateFilters.from}
