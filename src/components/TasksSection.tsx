@@ -136,10 +136,10 @@ const TasksSection: React.FC<TasksSectionProps> = ({
   // Показываем empty state для первого раза
   if (firstTime) {
     return (
-      <div className="relative z-10 min-h-screen flex items-center justify-center pt-16 md:pt-20 px-4 md:px-6 pb-24">
+      <div className="relative z-10 px-4 md:px-6 pt-8 md:pt-12 pb-8 md:pb-12">
         <div className="max-w-2xl mx-auto text-center">
           {/* Empty state */}
-          <div className={`px-4 ${firstTime ? 'py-4' : 'py-12'}`}>
+          <div className="px-4 py-6 md:py-8">
             {/* Icon */}
             <div
               className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full mb-6"
