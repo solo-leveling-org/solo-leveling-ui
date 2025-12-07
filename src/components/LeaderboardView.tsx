@@ -752,7 +752,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
         <div 
           className="my-4"
           style={{
-            opacity: isCurrentUserTransitioning ? 0 : 1,
+            opacity: (isTransitioning || isCurrentUserTransitioning) ? 0 : 1,
             transition: 'opacity 0.15s ease-out'
           }}
         >
@@ -770,7 +770,8 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
               className="mt-4 text-sm font-tech" 
               style={{ 
                 color: 'rgba(220, 235, 245, 0.7)',
-                opacity: isTransitioning ? 1 : 1 // Не затемняем при переходе
+                opacity: (isTransitioning || isCurrentUserTransitioning) ? 0 : 1,
+                transition: 'opacity 0.15s ease-out'
               }}
             >
               {t('common.totalItems', { total: totalCount.toString() })}
@@ -785,7 +786,8 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
           className="mb-4 text-sm font-tech" 
           style={{ 
             color: 'rgba(220, 235, 245, 0.7)',
-            opacity: isTransitioning ? 1 : 1 // Не затемняем при переходе
+            opacity: isTransitioning ? 0 : 1,
+            transition: 'opacity 0.15s ease-out'
           }}
         >
           {t('common.totalItems', { total: totalCount.toString() })}
