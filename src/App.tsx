@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import './App.css';
 import TasksTab from './tabs/TasksTab';
 import ProfileTab from './tabs/ProfileTab';
@@ -22,10 +22,13 @@ import {useTelegram} from './useTelegram';
 import {ModalProvider, useModal} from './contexts/ModalContext';
 import {useTelegramAdaptive} from './hooks/useTelegramAdaptive';
 import AuthLoadingScreen from './components/AuthLoadingScreen';
+import SessionExpiredDialog from './components/SessionExpiredDialog';
+import {auth} from './auth';
 
 function AppRoutes() {
   const location = useLocation();
   const { isBottomBarVisible } = useModal();
+  const [isSessionExpired, setIsSessionExpired] = useState(false);
   
   // Инициализируем Telegram WebApp
   useTelegram();
@@ -48,12 +51,24 @@ function AppRoutes() {
   // Подключение к WebSocket после успешной авторизации
   useWebSocketNotifications({enabled: isAuthenticated, authPromise});
 
+  // Регистрируем callback для обработки истечения сессии
+  useEffect(() => {
+    auth.onSessionExpired(() => {
+      setIsSessionExpired(true);
+    });
+  }, []);
+
   // Автоматический скролл наверх при смене маршрута
   useEffect(() => {
     if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
       window.scrollTo({top: 0, left: 0, behavior: 'auto'});
     }
   }, [location.pathname]);
+
+  // Обработчик обновления страницы при истечении сессии
+  const handleRefreshPage = () => {
+    window.location.reload();
+  };
 
 
   // Показываем экран загрузки пока идет авторизация ИЛИ (после авторизации) загрузка локализации
@@ -65,6 +80,12 @@ function AppRoutes() {
       <div className="App">
         {/* Экран загрузки авторизации и локализации */}
         <AuthLoadingScreen isLoading={shouldShowLoading} />
+        
+        {/* Диалог истечения сессии */}
+        <SessionExpiredDialog 
+          isOpen={isSessionExpired} 
+          onRefresh={handleRefreshPage}
+        />
         
         {!isTelegramChecked ? null : (
             <>

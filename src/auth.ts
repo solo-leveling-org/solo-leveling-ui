@@ -12,6 +12,10 @@ let refreshPromise: Promise<string | null> | null = null;
 type TokenRefreshCallback = (newToken: string) => void;
 const tokenRefreshCallbacks: Set<TokenRefreshCallback> = new Set();
 
+// Callback для уведомления об истечении сессии (refresh токен истек)
+type SessionExpiredCallback = () => void;
+let sessionExpiredCallback: SessionExpiredCallback | null = null;
+
 function saveTokens(jwt: LoginResponse) {
   localStorage.setItem(ACCESS_TOKEN_KEY, jwt.accessToken.token);
   localStorage.setItem(REFRESH_TOKEN_KEY, jwt.refreshToken.token);
@@ -75,9 +79,31 @@ async function refreshTokenIfNeeded(): Promise<string | null> {
       clearTokens();
       return null;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to refresh token:', error);
-    clearTokens();
+    
+    // Проверяем, является ли это ошибкой 401 (истек refresh токен)
+    // ApiError имеет свойство status, также проверяем другие возможные форматы
+    const is401Error = error?.status === 401 || 
+                      error?.response?.status === 401 ||
+                      (error?.body && typeof error.body === 'object' && error.body.status === 401) ||
+                      (error?.message && typeof error.message === 'string' && error.message.includes('401')) ||
+                      (error?.request?.url && error.request.url.includes('/api/v1/auth/refresh') && error?.status === 401);
+    
+    if (is401Error) {
+      // Refresh токен истек - уведомляем об истечении сессии
+      clearTokens();
+      if (sessionExpiredCallback) {
+        try {
+          sessionExpiredCallback();
+        } catch (callbackError) {
+          console.error('[Auth] Error in session expired callback:', callbackError);
+        }
+      }
+    } else {
+      clearTokens();
+    }
+    
     return null;
   }
 }
@@ -145,6 +171,14 @@ function onTokenRefresh(callback: TokenRefreshCallback): () => void {
   };
 }
 
+/**
+ * Устанавливает callback, который будет вызван при истечении сессии (refresh токен истек)
+ * @param callback Функция, которая будет вызвана при истечении сессии
+ */
+function onSessionExpired(callback: SessionExpiredCallback): void {
+  sessionExpiredCallback = callback;
+}
+
 export const auth = {
   loginWithTelegram,
   getAccessToken,
@@ -155,4 +189,5 @@ export const auth = {
   getTokenForRequest,
   isAuthenticated,
   onTokenRefresh,
+  onSessionExpired,
 };

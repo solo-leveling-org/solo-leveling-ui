@@ -284,6 +284,10 @@ export const en = {
       completedAt: 'Completed',
       skippedAt: 'Skipped',
     },
+    sessionExpired: {
+      message: 'Session expired. Please refresh the page to continue.',
+      refreshButton: 'Refresh Page',
+    },
   },
 
   // Errors and messages
