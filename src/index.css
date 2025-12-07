@@ -49,141 +49,41 @@ body::-webkit-scrollbar {
 }
 
 /* Кастомный скроллбар для фильтров в стилистике приложения */
-.filters-scrollbar,
-.filters-scrollbar * {
-  scrollbar-width: thin !important; /* Firefox */
-  scrollbar-color: rgba(180, 220, 240, 0.4) rgba(10, 14, 39, 0.3) !important; /* Firefox */
+.filters-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(180, 220, 240, 0.4) rgba(10, 14, 39, 0.3); /* Firefox */
 }
 
-.filters-scrollbar::-webkit-scrollbar,
-.filters-scrollbar *::-webkit-scrollbar {
-  display: block !important; /* Chrome, Safari, Opera */
-  height: 6px !important;
-  width: 6px !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
+.filters-scrollbar::-webkit-scrollbar {
+  display: block; /* Chrome, Safari, Opera */
+  height: 6px;
 }
 
-.filters-scrollbar::-webkit-scrollbar-track,
-.filters-scrollbar *::-webkit-scrollbar-track {
-  background: rgba(10, 14, 39, 0.3) !important;
-  border-radius: 10px !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
+.filters-scrollbar::-webkit-scrollbar-track {
+  background: rgba(10, 14, 39, 0.3);
+  border-radius: 10px;
 }
 
-.filters-scrollbar::-webkit-scrollbar-thumb,
-.filters-scrollbar *::-webkit-scrollbar-thumb {
-  background: rgba(180, 220, 240, 0.4) !important;
-  border-radius: 10px !important;
-  border: 1px solid rgba(180, 220, 240, 0.2) !important;
-  box-shadow: 0 0 8px rgba(180, 220, 240, 0.3) !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
+.filters-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(180, 220, 240, 0.4);
+  border-radius: 10px;
+  border: 1px solid rgba(180, 220, 240, 0.2);
+  box-shadow: 0 0 8px rgba(180, 220, 240, 0.3);
 }
 
-.filters-scrollbar::-webkit-scrollbar-thumb:hover,
-.filters-scrollbar *::-webkit-scrollbar-thumb:hover {
-  background: rgba(180, 220, 240, 0.6) !important;
-  box-shadow: 0 0 12px rgba(180, 220, 240, 0.5) !important;
+.filters-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(180, 220, 240, 0.6);
+  box-shadow: 0 0 12px rgba(180, 220, 240, 0.5);
 }
 
-/* Скрытие скроллбара фильтров на мобильных устройствах - максимальный приоритет */
-.mobile-version .filters-scrollbar,
-body.mobile-version .filters-scrollbar,
-html.mobile-version .filters-scrollbar,
-.mobile-version .filters-scrollbar *,
-body.mobile-version .filters-scrollbar * {
-  scrollbar-width: none !important; /* Firefox */
-  -ms-overflow-style: none !important; /* IE and Edge */
-  scrollbar-color: transparent transparent !important; /* Firefox */
+/* Скрытие скроллбара фильтров на мобильных устройствах */
+.mobile-version .filters-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
-.mobile-version .filters-scrollbar::-webkit-scrollbar,
-body.mobile-version .filters-scrollbar::-webkit-scrollbar,
-html.mobile-version .filters-scrollbar::-webkit-scrollbar,
-.mobile-version .filters-scrollbar *::-webkit-scrollbar,
-body.mobile-version .filters-scrollbar *::-webkit-scrollbar {
-  display: none !important; /* Chrome, Safari, Opera */
-  width: 0 !important;
-  height: 0 !important;
-  background: transparent !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
-}
-
-.mobile-version .filters-scrollbar::-webkit-scrollbar-track,
-body.mobile-version .filters-scrollbar::-webkit-scrollbar-track {
-  display: none !important;
-  background: transparent !important;
-}
-
-.mobile-version .filters-scrollbar::-webkit-scrollbar-thumb,
-body.mobile-version .filters-scrollbar::-webkit-scrollbar-thumb {
-  display: none !important;
-  background: transparent !important;
-}
-
-/* Принудительное применение стилей для desktop версии */
-.desktop-version .filters-scrollbar,
-.desktop-version .filters-scrollbar * {
-  scrollbar-width: thin !important; /* Firefox */
-  scrollbar-color: rgba(180, 220, 240, 0.4) rgba(10, 14, 39, 0.3) !important; /* Firefox */
-}
-
-.desktop-version .filters-scrollbar::-webkit-scrollbar,
-.desktop-version .filters-scrollbar *::-webkit-scrollbar {
-  display: block !important; /* Chrome, Safari, Opera */
-  height: 6px !important;
-  width: 6px !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  background: transparent !important;
-}
-
-.desktop-version .filters-scrollbar::-webkit-scrollbar-track,
-.desktop-version .filters-scrollbar *::-webkit-scrollbar-track {
-  background: rgba(10, 14, 39, 0.3) !important;
-  border-radius: 10px !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
-}
-
-.desktop-version .filters-scrollbar::-webkit-scrollbar-thumb,
-.desktop-version .filters-scrollbar *::-webkit-scrollbar-thumb {
-  background: rgba(180, 220, 240, 0.4) !important;
-  border-radius: 10px !important;
-  border: 1px solid rgba(180, 220, 240, 0.2) !important;
-  box-shadow: 0 0 8px rgba(180, 220, 240, 0.3) !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
-}
-
-.desktop-version .filters-scrollbar::-webkit-scrollbar-thumb:hover,
-.desktop-version .filters-scrollbar *::-webkit-scrollbar-thumb:hover {
-  background: rgba(180, 220, 240, 0.6) !important;
-  box-shadow: 0 0 12px rgba(180, 220, 240, 0.5) !important;
-}
-
-/* Дополнительные стили для macOS (включая beta версию Telegram) */
-@supports (-webkit-appearance: none) {
-  .filters-scrollbar::-webkit-scrollbar,
-  .desktop-version .filters-scrollbar::-webkit-scrollbar {
-    -webkit-appearance: none !important;
-    background: transparent !important;
-  }
-  
-  .filters-scrollbar::-webkit-scrollbar-track,
-  .desktop-version .filters-scrollbar::-webkit-scrollbar-track {
-    -webkit-appearance: none !important;
-    background: rgba(10, 14, 39, 0.3) !important;
-  }
-  
-  .filters-scrollbar::-webkit-scrollbar-thumb,
-  .desktop-version .filters-scrollbar::-webkit-scrollbar-thumb {
-    -webkit-appearance: none !important;
-    background: rgba(180, 220, 240, 0.4) !important;
-  }
+.mobile-version .filters-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 html {

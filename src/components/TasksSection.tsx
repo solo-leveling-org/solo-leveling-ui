@@ -10,7 +10,6 @@ import FilterDropdown from './FilterDropdown';
 import ResetFiltersButton from './ResetFiltersButton';
 import { taskActions } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
-import { useFiltersScrollbarStyles } from '../hooks/useFiltersScrollbarStyles';
 import ConfirmDialog from './ConfirmDialog';
 
 type TasksSectionProps = {
@@ -53,9 +52,6 @@ const TasksSection: React.FC<TasksSectionProps> = ({
   const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [taskLoading, setTaskLoading] = useState(false);
   const { t } = useLocalization();
-  
-  // Применяем стили скроллбара для фильтров
-  useFiltersScrollbarStyles('filters-scrollbar-styles-tasks');
 
   const handleCompleteTask = useCallback(async (task: PlayerTask) => {
     setConfirmAction({ type: 'complete', task });
@@ -212,13 +208,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
       {/* Фильтры для завершенных задач */}
       {viewMode === 'completed' && (
         <div className="mb-6">
-          <div 
-            className="flex gap-3 overflow-x-auto pb-2 filters-scrollbar"
-            style={{
-              scrollbarWidth: 'thin',
-              scrollbarColor: 'rgba(180, 220, 240, 0.4) rgba(10, 14, 39, 0.3)'
-            }}
-          >
+          <div className="flex gap-3 overflow-x-auto pb-2 filters-scrollbar">
             {/* Date Range Filter */}
             <DateFilter
               from={dateFilters.from}

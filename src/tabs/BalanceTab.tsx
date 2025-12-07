@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
-import { useFiltersScrollbarStyles } from '../hooks/useFiltersScrollbarStyles';
 import type { GetPlayerBalanceResponse, PlayerBalanceTransaction, LocalizedField } from '../api';
 import BankingTransactionsList from '../components/BankingTransactionsList';
 import Icon from '../components/Icon';
@@ -22,9 +21,6 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
   const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [contentLoaded, setContentLoaded] = useState(false);
   const { t } = useLocalization();
-  
-  // Применяем стили скроллбара для фильтров
-  useFiltersScrollbarStyles('filters-scrollbar-styles-balance');
 
   const loadBalance = useCallback(async () => {
     setLoading(true);
@@ -295,13 +291,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
 
             {/* Фильтры - горизонтальная строка */}
             <div className="mb-6">
-              <div 
-                className="flex gap-3 overflow-x-auto pb-2 px-1 filters-scrollbar"
-                style={{
-                  scrollbarWidth: 'thin',
-                  scrollbarColor: 'rgba(180, 220, 240, 0.4) rgba(10, 14, 39, 0.3)'
-                }}
-              >
+              <div className="flex gap-3 overflow-x-auto pb-2 px-1 filters-scrollbar">
                 {/* Date Range Filter */}
                 <DateFilter
                   from={dateFilters.from}
