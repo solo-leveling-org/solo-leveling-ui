@@ -13,6 +13,7 @@ import type {
 import { OrderMode as OrderModeEnum } from '../api';
 import TasksGrid from './TasksGrid';
 import TaskCardSkeleton from './TaskCardSkeleton';
+import ScrollNavigationButtons from './ScrollNavigationButtons';
 
 interface TasksListProps {
   statusFilter: PlayerTaskStatus[];
@@ -331,6 +332,9 @@ const TasksList: React.FC<TasksListProps> = ({
           </div>
         </div>
       )}
+
+      {/* Scroll Navigation Buttons */}
+      <ScrollNavigationButtons isLoadingMore={loadingMore} />
     </>
   );
 };

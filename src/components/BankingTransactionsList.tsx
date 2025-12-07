@@ -3,6 +3,7 @@ import { useLocalization } from '../hooks/useLocalization';
 import { api } from '../services';
 import Icon from './Icon';
 import { getMonthGenitive } from '../utils';
+import ScrollNavigationButtons from './ScrollNavigationButtons';
 import type { 
   PlayerBalanceTransaction, 
   SearchRequest,
@@ -617,6 +618,9 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
           </div>
         </div>
       )}
+
+      {/* Scroll Navigation Buttons */}
+      <ScrollNavigationButtons isLoadingMore={loadingMore} />
     </div>
   );
 };

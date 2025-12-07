@@ -5,6 +5,7 @@ import type { LeaderboardUser } from '../api';
 import { LeaderboardType } from '../api';
 import Icon from './Icon';
 import { cn } from '../utils';
+import ScrollNavigationButtons from './ScrollNavigationButtons';
 
 type LeaderboardViewProps = {
   isAuthenticated: boolean;
@@ -973,6 +974,9 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
           )}
         </>
       )}
+
+      {/* Scroll Navigation Buttons */}
+      <ScrollNavigationButtons isLoadingMore={loadingMore} />
     </div>
   );
 };
