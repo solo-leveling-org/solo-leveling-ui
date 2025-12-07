@@ -44,6 +44,7 @@ export const ru = {
     },
     today: 'Сегодня',
     yesterday: 'Вчера',
+    totalItems: 'Всего: {{total}}',
     months: {
       january: 'Январь',
       february: 'Февраль',

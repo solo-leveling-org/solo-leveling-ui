@@ -104,7 +104,7 @@ async function refreshTokenIfNeeded(): Promise<string | null> {
         }
       }
     } else {
-      clearTokens();
+    clearTokens();
     }
     
     return null;

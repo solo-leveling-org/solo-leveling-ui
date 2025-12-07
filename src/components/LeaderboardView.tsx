@@ -26,6 +26,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadingCurrentUser, setLoadingCurrentUser] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isCurrentUserTransitioning, setIsCurrentUserTransitioning] = useState(false);
   const [displayLeaderboardType, setDisplayLeaderboardType] = useState(leaderboardType);
@@ -114,6 +115,11 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       
       const newUsers = response.users || [];
       const hasMoreData = newUsers.length > 0 && (response.paging?.hasMore || false);
+      
+      // Сохраняем общее количество элементов
+      if (response.paging?.totalRowCount !== undefined) {
+        setTotalCount(response.paging.totalRowCount);
+      }
       
       if (reset) {
         setLeaderboard(newUsers);
@@ -757,6 +763,32 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
               boxShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
             }}
           ></div>
+          
+          {/* Отображение общего количества под чертой */}
+          {totalCount !== null && leaderboard.length > 0 && (
+            <div 
+              className="mt-4 text-sm font-tech" 
+              style={{ 
+                color: 'rgba(220, 235, 245, 0.7)',
+                opacity: isTransitioning ? 1 : 1 // Не затемняем при переходе
+              }}
+            >
+              {t('common.totalItems', { total: totalCount.toString() })}
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Отображение общего количества если нет текущего пользователя */}
+      {!currentUser && totalCount !== null && leaderboard.length > 0 && (
+        <div 
+          className="mb-4 text-sm font-tech" 
+          style={{ 
+            color: 'rgba(220, 235, 245, 0.7)',
+            opacity: isTransitioning ? 1 : 1 // Не затемняем при переходе
+          }}
+        >
+          {t('common.totalItems', { total: totalCount.toString() })}
         </div>
       )}
 

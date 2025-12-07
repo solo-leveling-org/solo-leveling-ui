@@ -39,6 +39,7 @@ const TasksList: React.FC<TasksListProps> = ({
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
   const [, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [, setAvailableSorts] = useState<string[]>([]);
   
@@ -127,6 +128,11 @@ const TasksList: React.FC<TasksListProps> = ({
       const newTasks = response.tasks || [];
       // Если получили 0 записей, значит больше нет данных, даже если API вернул hasMore: true
       const hasMoreData = newTasks.length > 0 && (response.paging?.hasMore || false);
+      
+      // Сохраняем общее количество элементов
+      if (response.paging?.totalRowCount !== undefined) {
+        setTotalCount(response.paging.totalRowCount);
+      }
       
       if (reset) {
         setTasks(newTasks);
@@ -307,6 +313,13 @@ const TasksList: React.FC<TasksListProps> = ({
 
   return (
     <>
+      {/* Отображение общего количества */}
+      {totalCount !== null && tasks.length > 0 && (
+        <div className="mb-4 text-sm font-tech" style={{ color: 'rgba(220, 235, 245, 0.7)' }}>
+          {t('common.totalItems', { total: totalCount.toString() })}
+        </div>
+      )}
+      
       <TasksGrid
         tasks={tasks}
         loading={false}

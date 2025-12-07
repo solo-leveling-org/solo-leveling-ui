@@ -44,6 +44,7 @@ export const en = {
     },
     today: 'Today',
     yesterday: 'Yesterday',
+    totalItems: 'Total: {{total}}',
     months: {
       january: 'January',
       february: 'February',
