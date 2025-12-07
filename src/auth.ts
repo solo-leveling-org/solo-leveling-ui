@@ -16,6 +16,9 @@ const tokenRefreshCallbacks: Set<TokenRefreshCallback> = new Set();
 type SessionExpiredCallback = () => void;
 let sessionExpiredCallback: SessionExpiredCallback | null = null;
 
+// Глобальный промис авторизации для ожидания завершения login перед выполнением запросов
+let globalAuthPromise: Promise<any> | null = null;
+
 function saveTokens(jwt: LoginResponse) {
   localStorage.setItem(ACCESS_TOKEN_KEY, jwt.accessToken.token);
   localStorage.setItem(REFRESH_TOKEN_KEY, jwt.refreshToken.token);
@@ -135,14 +138,34 @@ async function getTokenForRequest(options: any): Promise<string> {
     return '';
   }
 
-  // Для всех остальных запросов проверяем наличие токена
+  // Если есть активный промис авторизации, ждем его завершения
+  // Это гарантирует, что токены будут сохранены перед выполнением запросов
+  if (globalAuthPromise) {
+    try {
+      await globalAuthPromise;
+    } catch (error) {
+      // Игнорируем ошибки авторизации, продолжаем проверку токена
+      console.warn('[Auth] Auth promise rejected, continuing with token check:', error);
+    }
+  }
+
+  // Ждем, пока токен станет доступен (максимум 1 секунда)
+  // Это необходимо, так как localStorage.setItem синхронный, но может быть задержка
+  let attempts = 0;
+  const maxAttempts = 20; // 20 попыток по 50ms = 1 секунда
   let token = getAccessToken();
+  
+  while (!token && attempts < maxAttempts) {
+    await new Promise(resolve => setTimeout(resolve, 50));
+    token = getAccessToken();
+    attempts++;
+  }
 
   if (token) {
     return token;
   }
 
-  // Если токена нет, пытаемся обновить
+  // Если токена все еще нет, пытаемся обновить через refresh токен
   token = await refreshTokenIfNeeded();
 
   if (token) {
@@ -179,6 +202,14 @@ function onSessionExpired(callback: SessionExpiredCallback): void {
   sessionExpiredCallback = callback;
 }
 
+/**
+ * Регистрирует глобальный промис авторизации для ожидания завершения login
+ * @param promise Промис авторизации
+ */
+function setAuthPromise(promise: Promise<any> | null): void {
+  globalAuthPromise = promise;
+}
+
 export const auth = {
   loginWithTelegram,
   getAccessToken,
@@ -190,4 +221,5 @@ export const auth = {
   isAuthenticated,
   onTokenRefresh,
   onSessionExpired,
+  setAuthPromise,
 };

@@ -23,6 +23,7 @@ export const useLocaleSync = (isAuthenticated: boolean) => {
       (async () => {
         try {
           if (isCancelled) return;
+          
           console.log('[Locale] Fetching user locale from backend...');
           await fetchAndUpdateUserLocale(updateSettings, setLocaleLoaded);
           setLocaleFetched(true);
