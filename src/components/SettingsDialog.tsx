@@ -46,7 +46,6 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
         .settings-dialog-close-button {
           color: #e8f4f8 !important;
           opacity: 0.7 !important;
-          transition: all 0.2s ease !important;
           width: 32px !important;
           height: 32px !important;
           display: flex !important;
@@ -59,6 +58,8 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
           pointer-events: auto !important;
           outline: none !important;
           box-shadow: none !important;
+          transform: none !important;
+          transition: none !important;
         }
         
         .settings-dialog-close-button:focus {
@@ -70,10 +71,11 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
         .settings-dialog-close-button:hover {
           opacity: 1 !important;
           color: #ffffff !important;
-          transform: rotate(90deg) scale(1.1) !important;
+          transform: scale(1.1) !important;
           filter: drop-shadow(0 0 8px rgba(180, 220, 240, 0.6)) !important;
           background: rgba(220, 235, 245, 0.1) !important;
           border-color: rgba(220, 235, 245, 0.4) !important;
+          transition: opacity 0.2s ease, color 0.2s ease, transform 0.2s ease, filter 0.2s ease, background 0.2s ease, border-color 0.2s ease !important;
         }
         
         .settings-dialog-close-button svg {

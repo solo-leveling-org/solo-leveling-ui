@@ -697,13 +697,24 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
             }}
           >
             <div className="flex items-center space-x-4">
+              {/* Position skeleton */}
               <div
-                className="w-12 h-12 rounded-full"
+                className="flex-shrink-0 w-12 h-12 rounded-full"
                 style={{
-                  background: 'rgba(220, 235, 245, 0.1)'
+                  background: 'rgba(220, 235, 245, 0.1)',
+                  border: '1px solid rgba(220, 235, 245, 0.2)'
                 }}
               ></div>
-              <div className="flex-1">
+              {/* Avatar skeleton */}
+              <div
+                className="flex-shrink-0 w-12 h-12 rounded-full"
+                style={{
+                  background: 'rgba(220, 235, 245, 0.1)',
+                  border: '1px solid rgba(220, 235, 245, 0.2)'
+                }}
+              ></div>
+              {/* User info skeleton */}
+              <div className="flex-1 min-w-0">
                 <div
                   className="h-4 w-32 rounded mb-2"
                   style={{
@@ -717,31 +728,74 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                   }}
                 ></div>
               </div>
+              {/* Icon skeleton */}
+              <div
+                className="flex-shrink-0 w-6 h-6 rounded"
+                style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }}
+              ></div>
             </div>
           </div>
         </div>
       )}
 
+      {/* Separator line between current user and leaderboard */}
+      {currentUser && (
+        <div 
+          className="my-4"
+          style={{
+            opacity: isCurrentUserTransitioning ? 0 : 1,
+            transition: 'opacity 0.15s ease-out'
+          }}
+        >
+          <div
+            className="w-full h-px rounded-full"
+            style={{
+              background: 'rgba(180, 220, 240, 0.3)',
+              boxShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+            }}
+          ></div>
+        </div>
+      )}
+
       {/* Leaderboard List */}
       {loading && leaderboard.length === 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
             <div
               key={i}
               className="rounded-xl p-4 animate-pulse"
               style={{
-                background: 'rgba(220, 235, 245, 0.05)',
-                border: '1px solid rgba(220, 235, 245, 0.1)'
+                background: i < 3 
+                  ? 'rgba(220, 235, 245, 0.08)' 
+                  : 'rgba(220, 235, 245, 0.05)',
+                border: i < 3
+                  ? '1px solid rgba(220, 235, 245, 0.15)'
+                  : '1px solid rgba(220, 235, 245, 0.1)'
               }}
             >
               <div className="flex items-center space-x-4">
+                {/* Position skeleton */}
                 <div
-                  className="w-12 h-12 rounded-full"
+                  className="flex-shrink-0 w-12 h-12 rounded-full"
                   style={{
-                    background: 'rgba(220, 235, 245, 0.1)'
+                    background: i < 3 
+                      ? 'rgba(220, 235, 245, 0.15)' 
+                      : 'rgba(220, 235, 245, 0.1)',
+                    border: '1px solid rgba(220, 235, 245, 0.2)'
                   }}
                 ></div>
-                <div className="flex-1">
+                {/* Avatar skeleton */}
+                <div
+                  className="flex-shrink-0 w-12 h-12 rounded-full"
+                  style={{
+                    background: 'rgba(220, 235, 245, 0.1)',
+                    border: '1px solid rgba(220, 235, 245, 0.2)'
+                  }}
+                ></div>
+                {/* User info skeleton */}
+                <div className="flex-1 min-w-0">
                   <div
                     className="h-4 w-32 rounded mb-2"
                     style={{
@@ -755,12 +809,15 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                     }}
                   ></div>
                 </div>
-                <div
-                  className="h-4 w-20 rounded"
-                  style={{
-                    background: 'rgba(220, 235, 245, 0.1)'
-                  }}
-                ></div>
+                {/* Trophy icon skeleton for top 3 */}
+                {i < 3 && (
+                  <div
+                    className="flex-shrink-0 w-5 h-5 rounded"
+                    style={{
+                      background: 'rgba(220, 235, 245, 0.1)'
+                    }}
+                  ></div>
+                )}
               </div>
             </div>
           ))}
