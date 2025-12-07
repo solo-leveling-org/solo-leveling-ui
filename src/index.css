@@ -27,13 +27,13 @@
   }
 }
 
-/* Глобальное скрытие скроллбаров */
-* {
+/* Глобальное скрытие скроллбаров, кроме фильтров */
+*:not(.filters-scrollbar):not(.filters-scrollbar *) {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 }
 
-*::-webkit-scrollbar {
+*:not(.filters-scrollbar):not(.filters-scrollbar *)::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
 
@@ -95,20 +95,27 @@ html {
   padding: 0;
 }
 
-/* Скрытие скроллбара для всех контейнеров */
-div, main, section, article, aside, nav, header, footer {
+/* Скрытие скроллбара для всех контейнеров, кроме фильтров */
+div:not(.filters-scrollbar):not(.custom-scrollbar), 
+main:not(.filters-scrollbar):not(.custom-scrollbar), 
+section:not(.filters-scrollbar):not(.custom-scrollbar), 
+article:not(.filters-scrollbar):not(.custom-scrollbar), 
+aside:not(.filters-scrollbar):not(.custom-scrollbar), 
+nav:not(.filters-scrollbar):not(.custom-scrollbar), 
+header:not(.filters-scrollbar):not(.custom-scrollbar), 
+footer:not(.filters-scrollbar):not(.custom-scrollbar) {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 }
 
-div::-webkit-scrollbar,
-main::-webkit-scrollbar,
-section::-webkit-scrollbar,
-article::-webkit-scrollbar,
-aside::-webkit-scrollbar,
-nav::-webkit-scrollbar,
-header::-webkit-scrollbar,
-footer::-webkit-scrollbar {
+div:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+main:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+section:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+article:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+aside:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+nav:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+header:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar,
+footer:not(.filters-scrollbar):not(.custom-scrollbar)::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
 

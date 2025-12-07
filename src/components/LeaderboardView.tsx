@@ -5,6 +5,7 @@ import type { LeaderboardUser } from '../api';
 import { LeaderboardType } from '../api';
 import Icon from './Icon';
 import { cn } from '../utils';
+import ScrollNavigationButtons from './ScrollNavigationButtons';
 
 type LeaderboardViewProps = {
   isAuthenticated: boolean;
@@ -21,11 +22,11 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
 }) => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
   const [currentUser, setCurrentUser] = useState<LeaderboardUser | null>(null);
-  const [currentUserNotFound, setCurrentUserNotFound] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadingCurrentUser, setLoadingCurrentUser] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isCurrentUserTransitioning, setIsCurrentUserTransitioning] = useState(false);
   const [displayLeaderboardType, setDisplayLeaderboardType] = useState(leaderboardType);
@@ -37,13 +38,31 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
   const hasMoreRef = useRef(true);
   const isLoadingRef = useRef(false);
   const loadLeaderboardRef = useRef<typeof loadLeaderboard | undefined>(undefined);
+  const isLoadingCurrentUserRef = useRef(false);
+  const pendingLeaderboardLoadRef = useRef(false);
+  const pendingCurrentUserLoadRef = useRef(false);
+
+  // Общая функция для обновления displayLeaderboardType после завершения загрузки
+  const updateDisplayTypeAfterLoad = useCallback(() => {
+    // Обновляем displayLeaderboardType только после завершения обоих запросов
+    if (!pendingLeaderboardLoadRef.current && !pendingCurrentUserLoadRef.current) {
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setIsCurrentUserTransitioning(false);
+        setDisplayLeaderboardType(leaderboardType);
+      }, 25);
+    }
+  }, [leaderboardType]);
 
   // Загрузка данных текущего пользователя
   const loadCurrentUser = useCallback(async () => {
     if (!isAuthenticated) return;
     
+    // Защита от дублирования запросов
+    if (isLoadingCurrentUserRef.current) return;
+    
+    isLoadingCurrentUserRef.current = true;
     setLoadingCurrentUser(true);
-    setCurrentUserNotFound(false);
     try {
       const response = await api.getUserLeaderboard(
         leaderboardType,
@@ -52,27 +71,23 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       
       if (response.user) {
         setCurrentUser(response.user);
-        setCurrentUserNotFound(false);
-        // Сбрасываем анимацию после загрузки данных
-        setTimeout(() => {
-          setIsCurrentUserTransitioning(false);
-        }, 25);
       }
+      // Отмечаем, что загрузка текущего пользователя завершена
+      pendingCurrentUserLoadRef.current = false;
+      // Проверяем, можно ли обновить displayLeaderboardType
+      updateDisplayTypeAfterLoad();
     } catch (error: any) {
       console.error('Error loading current user leaderboard:', error);
-      // Проверяем, является ли ошибка 404
-      if (error?.status === 404 || error?.response?.status === 404) {
-        setCurrentUserNotFound(true);
-        setCurrentUser(null);
-        // Сбрасываем анимацию даже при ошибке
-        setTimeout(() => {
-          setIsCurrentUserTransitioning(false);
-        }, 25);
-      }
+      setCurrentUser(null);
+      // Отмечаем, что загрузка текущего пользователя завершена (даже при ошибке)
+      pendingCurrentUserLoadRef.current = false;
+      // Проверяем, можно ли обновить displayLeaderboardType
+      updateDisplayTypeAfterLoad();
     } finally {
       setLoadingCurrentUser(false);
+      isLoadingCurrentUserRef.current = false;
     }
-  }, [isAuthenticated, leaderboardType]);
+  }, [isAuthenticated, leaderboardType, updateDisplayTypeAfterLoad]);
 
   // Загрузка лидерборда с infinity scroll
   const loadLeaderboard = useCallback(async (page: number = 0, reset: boolean = false) => {
@@ -101,17 +116,20 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       const newUsers = response.users || [];
       const hasMoreData = newUsers.length > 0 && (response.paging?.hasMore || false);
       
+      // Сохраняем общее количество элементов
+      if (response.paging?.totalRowCount !== undefined) {
+        setTotalCount(response.paging.totalRowCount);
+      }
+      
       if (reset) {
         setLeaderboard(newUsers);
         setHasMore(hasMoreData);
         currentPageRef.current = page; // Используем переданный page, а не 0
         hasMoreRef.current = hasMoreData;
-        // После загрузки новых данных делаем fade-in и обновляем отображаемый тип
-        setTimeout(() => {
-          setIsTransitioning(false);
-          setIsCurrentUserTransitioning(false);
-          setDisplayLeaderboardType(leaderboardType);
-        }, 25);
+        // Отмечаем, что загрузка основного списка завершена
+        pendingLeaderboardLoadRef.current = false;
+        // Проверяем, можно ли обновить displayLeaderboardType
+        updateDisplayTypeAfterLoad();
       } else {
         if (newUsers.length > 0) {
           setLeaderboard(prev => [...prev, ...newUsers]);
@@ -130,7 +148,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       setLoadingMore(false);
       isLoadingRef.current = false;
     }
-  }, [isAuthenticated, leaderboardType]);
+  }, [isAuthenticated, leaderboardType, updateDisplayTypeAfterLoad]);
 
   // Сохраняем актуальную версию функции в ref
   useEffect(() => {
@@ -184,11 +202,6 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
     }
   }, [isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Загрузка данных текущего пользователя при изменении типа
-  useEffect(() => {
-    loadCurrentUser();
-  }, [loadCurrentUser]);
-
   // Загрузка при изменении типа с плавным переходом
   useEffect(() => {
     // Если тип не изменился, не делаем ничего
@@ -199,6 +212,10 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
     // Начинаем fade-out для основного списка и карточки текущего пользователя
     setIsTransitioning(true);
     setIsCurrentUserTransitioning(true);
+    
+    // Устанавливаем флаги ожидания загрузки
+    pendingLeaderboardLoadRef.current = true;
+    pendingCurrentUserLoadRef.current = true;
     
     // После fade-out загружаем новые данные
     const fadeOutTimeout = setTimeout(() => {
@@ -666,42 +683,8 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
         );
       })()}
 
-      {/* 404 Message */}
-      {currentUserNotFound && !loadingCurrentUser && (
-        <div className="mb-3">
-          <div
-            className="text-xs font-tech mb-2 px-1"
-            style={{
-              color: 'rgba(180, 220, 240, 0.9)',
-              textShadow: '0 0 8px rgba(180, 220, 240, 0.5)',
-              letterSpacing: '0.05em'
-            }}
-          >
-            {t('collections.leaderboard.yourPosition')}
-          </div>
-          <div
-            className="w-full rounded-xl p-6 text-center"
-            style={{
-              background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(220, 235, 245, 0.2)',
-              boxShadow: '0 0 15px rgba(180, 220, 240, 0.1), inset 0 0 20px rgba(200, 230, 245, 0.02)'
-            }}
-          >
-            <div
-              className="font-tech text-base"
-              style={{
-                color: 'rgba(220, 235, 245, 0.8)'
-              }}
-            >
-              {t('collections.leaderboard.noPosition')}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Loading indicator for current user */}
-      {loadingCurrentUser && !currentUser && !currentUserNotFound && (
+      {loadingCurrentUser && !currentUser && (
         <div className="mb-3">
           <div
             className="text-xs font-tech mb-2 px-1"
@@ -721,13 +704,24 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
             }}
           >
             <div className="flex items-center space-x-4">
+              {/* Position skeleton */}
               <div
-                className="w-12 h-12 rounded-full"
+                className="flex-shrink-0 w-12 h-12 rounded-full"
                 style={{
-                  background: 'rgba(220, 235, 245, 0.1)'
+                  background: 'rgba(220, 235, 245, 0.1)',
+                  border: '1px solid rgba(220, 235, 245, 0.2)'
                 }}
               ></div>
-              <div className="flex-1">
+              {/* Avatar skeleton */}
+              <div
+                className="flex-shrink-0 w-12 h-12 rounded-full"
+                style={{
+                  background: 'rgba(220, 235, 245, 0.1)',
+                  border: '1px solid rgba(220, 235, 245, 0.2)'
+                }}
+              ></div>
+              {/* User info skeleton */}
+              <div className="flex-1 min-w-0">
                 <div
                   className="h-4 w-32 rounded mb-2"
                   style={{
@@ -741,31 +735,102 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                   }}
                 ></div>
               </div>
+              {/* Icon skeleton */}
+              <div
+                className="flex-shrink-0 w-6 h-6 rounded"
+                style={{
+                  background: 'rgba(220, 235, 245, 0.1)'
+                }}
+              ></div>
             </div>
           </div>
         </div>
       )}
 
+      {/* Separator line between current user and leaderboard */}
+      {currentUser && (
+        <div 
+          className="my-4"
+          style={{
+            opacity: (isTransitioning || isCurrentUserTransitioning) ? 0 : 1,
+            transition: 'opacity 0.15s ease-out'
+          }}
+        >
+          <div
+            className="w-full h-px rounded-full"
+            style={{
+              background: 'rgba(180, 220, 240, 0.3)',
+              boxShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+            }}
+          ></div>
+          
+          {/* Отображение общего количества под чертой */}
+          {totalCount !== null && leaderboard.length > 0 && (
+            <div 
+              className="mt-4 text-sm font-tech" 
+              style={{ 
+                color: 'rgba(220, 235, 245, 0.7)',
+                opacity: (isTransitioning || isCurrentUserTransitioning) ? 0 : 1,
+                transition: 'opacity 0.15s ease-out'
+              }}
+            >
+              {t('common.totalItems', { total: totalCount.toString() })}
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Отображение общего количества если нет текущего пользователя */}
+      {!currentUser && totalCount !== null && leaderboard.length > 0 && (
+        <div 
+          className="mb-4 text-sm font-tech" 
+          style={{ 
+            color: 'rgba(220, 235, 245, 0.7)',
+            opacity: isTransitioning ? 0 : 1,
+            transition: 'opacity 0.15s ease-out'
+          }}
+        >
+          {t('common.totalItems', { total: totalCount.toString() })}
+        </div>
+      )}
+
       {/* Leaderboard List */}
       {loading && leaderboard.length === 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
             <div
               key={i}
               className="rounded-xl p-4 animate-pulse"
               style={{
-                background: 'rgba(220, 235, 245, 0.05)',
-                border: '1px solid rgba(220, 235, 245, 0.1)'
+                background: i < 3 
+                  ? 'rgba(220, 235, 245, 0.08)' 
+                  : 'rgba(220, 235, 245, 0.05)',
+                border: i < 3
+                  ? '1px solid rgba(220, 235, 245, 0.15)'
+                  : '1px solid rgba(220, 235, 245, 0.1)'
               }}
             >
               <div className="flex items-center space-x-4">
+                {/* Position skeleton */}
                 <div
-                  className="w-12 h-12 rounded-full"
+                  className="flex-shrink-0 w-12 h-12 rounded-full"
                   style={{
-                    background: 'rgba(220, 235, 245, 0.1)'
+                    background: i < 3 
+                      ? 'rgba(220, 235, 245, 0.15)' 
+                      : 'rgba(220, 235, 245, 0.1)',
+                    border: '1px solid rgba(220, 235, 245, 0.2)'
                   }}
                 ></div>
-                <div className="flex-1">
+                {/* Avatar skeleton */}
+                <div
+                  className="flex-shrink-0 w-12 h-12 rounded-full"
+                  style={{
+                    background: 'rgba(220, 235, 245, 0.1)',
+                    border: '1px solid rgba(220, 235, 245, 0.2)'
+                  }}
+                ></div>
+                {/* User info skeleton */}
+                <div className="flex-1 min-w-0">
                   <div
                     className="h-4 w-32 rounded mb-2"
                     style={{
@@ -779,12 +844,15 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                     }}
                   ></div>
                 </div>
-                <div
-                  className="h-4 w-20 rounded"
-                  style={{
-                    background: 'rgba(220, 235, 245, 0.1)'
-                  }}
-                ></div>
+                {/* Trophy icon skeleton for top 3 */}
+                {i < 3 && (
+                  <div
+                    className="flex-shrink-0 w-5 h-5 rounded"
+                    style={{
+                      background: 'rgba(220, 235, 245, 0.1)'
+                    }}
+                  ></div>
+                )}
               </div>
             </div>
           ))}
@@ -940,6 +1008,9 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
           )}
         </>
       )}
+
+      {/* Scroll Navigation Buttons */}
+      <ScrollNavigationButtons isLoadingMore={loadingMore} />
     </div>
   );
 };

@@ -44,6 +44,7 @@ export const en = {
     },
     today: 'Today',
     yesterday: 'Yesterday',
+    totalItems: 'Total: {{total}}',
     months: {
       january: 'January',
       february: 'February',
@@ -284,6 +285,10 @@ export const en = {
       completedAt: 'Completed',
       skippedAt: 'Skipped',
     },
+    sessionExpired: {
+      message: 'Session expired. Please refresh the page to continue.',
+      refreshButton: 'Refresh Page',
+    },
   },
 
   // Errors and messages
@@ -334,7 +339,6 @@ export const en = {
       title: 'Leaderboard',
       subtitle: 'Compete with other players and climb the rankings',
       yourPosition: 'Your Position',
-      noPosition: 'Complete your first task to get a position on the leaderboard',
     },
     types: {
       level: 'By Level',

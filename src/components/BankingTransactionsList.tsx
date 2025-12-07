@@ -3,6 +3,7 @@ import { useLocalization } from '../hooks/useLocalization';
 import { api } from '../services';
 import Icon from './Icon';
 import { getMonthGenitive } from '../utils';
+import ScrollNavigationButtons from './ScrollNavigationButtons';
 import type { 
   PlayerBalanceTransaction, 
   SearchRequest,
@@ -38,6 +39,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
   const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [, setAvailableSorts] = useState<string[]>([]);
   
@@ -174,6 +176,11 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
       const newTransactions = response.transactions || [];
       // Если получили 0 записей, значит больше нет данных, даже если API вернул hasMore: true
       const hasMoreData = newTransactions.length > 0 && (response.paging?.hasMore || false);
+      
+      // Сохраняем общее количество элементов
+      if (response.paging?.totalRowCount !== undefined) {
+        setTotalCount(response.paging.totalRowCount);
+      }
       
       if (reset) {
         setTransactions(newTransactions);
@@ -468,6 +475,13 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
 
   return (
     <div className="select-none space-y-6 custom-scrollbar">
+      {/* Отображение общего количества */}
+      {totalCount !== null && transactions.length > 0 && (
+        <div className="mb-4 text-sm font-tech" style={{ color: 'rgba(220, 235, 245, 0.7)' }}>
+          {t('common.totalItems', { total: totalCount.toString() })}
+        </div>
+      )}
+      
       {/* Группы транзакций в стиле Solo Leveling */}
       {groups.map((group, groupIndex) => (
         <div 
@@ -617,6 +631,9 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
           </div>
         </div>
       )}
+
+      {/* Scroll Navigation Buttons */}
+      <ScrollNavigationButtons isLoadingMore={loadingMore} />
     </div>
   );
 };

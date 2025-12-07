@@ -44,6 +44,7 @@ export const ru = {
     },
     today: 'Сегодня',
     yesterday: 'Вчера',
+    totalItems: 'Всего: {{total}}',
     months: {
       january: 'Январь',
       february: 'Февраль',
@@ -284,6 +285,10 @@ export const ru = {
       completedAt: 'Завершена',
       skippedAt: 'Пропущена',
     },
+    sessionExpired: {
+      message: 'Сессия истекла. Пожалуйста, обновите страницу для продолжения работы.',
+      refreshButton: 'Обновить страницу',
+    },
   },
 
   // Ошибки и сообщения
@@ -330,12 +335,11 @@ export const ru = {
       lootboxes: 'ЛУТ БОКСЫ',
       inventory: 'ИНВЕНТАРЬ',
     },
-    leaderboard: {
-      title: 'Таблица лидеров',
-      subtitle: 'Соревнуйся с другими игроками и поднимайся в рейтинге',
-      yourPosition: 'Ваша позиция',
-      noPosition: 'Выполните первую задачу, чтобы занять место в списке лидеров',
-    },
+      leaderboard: {
+        title: 'Таблица лидеров',
+        subtitle: 'Соревнуйся с другими игроками и поднимайся в рейтинге',
+        yourPosition: 'Ваша позиция',
+      },
     types: {
       level: 'По уровню',
       tasks: 'По задачам',

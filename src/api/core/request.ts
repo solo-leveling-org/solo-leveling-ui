@@ -426,9 +426,36 @@ export const request = <T>(config: OpenAPIConfig, options: ApiRequestOptions, ax
       const headers = await getHeaders(config, options, formData);
 
       if (!onCancel.isCancelled) {
-        const response = await sendRequest<T>(config, options, url, body, formData, headers, onCancel, axiosClient);
-        const responseBody = getResponseBody(response);
-        const responseHeader = getResponseHeader(response, options.responseHeader);
+        let response = await sendRequest<T>(config, options, url, body, formData, headers, onCancel, axiosClient);
+        let responseBody = getResponseBody(response);
+        let responseHeader = getResponseHeader(response, options.responseHeader);
+        let retryCount = 0;
+        const maxRetries = 1; // Максимум 1 дополнительная попытка (всего 2 попытки)
+
+        // Retry логика для 500 ошибок
+        while (response.status === 500 && retryCount < maxRetries && 
+               options.url !== '/api/v1/auth/login' && 
+               options.url !== '/api/v1/auth/refresh') {
+          retryCount++;
+          console.warn(`[Request] Received 500 error, retrying (attempt ${retryCount}/${maxRetries})...`, {
+            url: options.url,
+            method: options.method
+          });
+          
+          // Небольшая задержка перед retry (экспоненциальная задержка)
+          await new Promise(resolve => setTimeout(resolve, 100 * retryCount));
+          
+          // Повторяем запрос
+          try {
+            response = await sendRequest<T>(config, options, url, body, formData, headers, onCancel, axiosClient);
+            responseBody = getResponseBody(response);
+            responseHeader = getResponseHeader(response, options.responseHeader);
+          } catch (retryError) {
+            // Если retry тоже упал, используем последний ответ
+            console.error('[Request] Retry failed:', retryError);
+            break;
+          }
+        }
 
         const result: ApiResult = {
           url,

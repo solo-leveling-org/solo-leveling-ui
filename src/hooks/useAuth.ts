@@ -24,6 +24,8 @@ export const useAuth = () => {
         if (!globalAuthPromise) {
           setIsAuthLoading(true);
           globalAuthPromise = auth.loginWithTelegram(initData, tgWebAppData);
+          // Регистрируем промис в auth для использования в getTokenForRequest
+          auth.setAuthPromise(globalAuthPromise);
         } else {
           setIsAuthLoading(true);
         }
@@ -35,12 +37,18 @@ export const useAuth = () => {
           setAuthError(null);
           setIsAuthenticated(true);
           setIsAuthLoading(false);
+          // После успешной авторизации ждем немного перед сбросом промиса,
+          // чтобы все запросы, начатые во время авторизации, успели получить токен
+          setTimeout(() => {
+            auth.setAuthPromise(null);
+          }, 100);
         })
         .catch((e) => {
           setAuthError(e.message || 'Ошибка авторизации');
           setIsAuthenticated(false);
           setIsAuthLoading(false);
           globalAuthPromise = null; // Сбрасываем кэш при ошибке
+          auth.setAuthPromise(null); // Сбрасываем промис в auth
           console.error('[Auth] Authentication failed:', e);
         });
         setShowNoTelegramError(false);

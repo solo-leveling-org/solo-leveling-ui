@@ -8,6 +8,17 @@ const REFRESH_TOKEN_KEY = 'refreshToken';
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
 
+// Callback для уведомления об обновлении токена
+type TokenRefreshCallback = (newToken: string) => void;
+const tokenRefreshCallbacks: Set<TokenRefreshCallback> = new Set();
+
+// Callback для уведомления об истечении сессии (refresh токен истек)
+type SessionExpiredCallback = () => void;
+let sessionExpiredCallback: SessionExpiredCallback | null = null;
+
+// Глобальный промис авторизации для ожидания завершения login перед выполнением запросов
+let globalAuthPromise: Promise<any> | null = null;
+
 function saveTokens(jwt: LoginResponse) {
   localStorage.setItem(ACCESS_TOKEN_KEY, jwt.accessToken.token);
   localStorage.setItem(REFRESH_TOKEN_KEY, jwt.refreshToken.token);
@@ -54,15 +65,48 @@ async function refreshTokenIfNeeded(): Promise<string | null> {
   try {
     const newToken = await AuthService.refresh({refreshToken});
     if (newToken && newToken.accessToken && newToken.accessToken.token) {
-      localStorage.setItem(ACCESS_TOKEN_KEY, newToken.accessToken.token);
-      return newToken.accessToken.token;
+      const tokenValue = newToken.accessToken.token;
+      localStorage.setItem(ACCESS_TOKEN_KEY, tokenValue);
+      
+      // Уведомляем все зарегистрированные callback'и об обновлении токена
+      tokenRefreshCallbacks.forEach(callback => {
+        try {
+          callback(tokenValue);
+        } catch (error) {
+          console.error('[Auth] Error in token refresh callback:', error);
+        }
+      });
+      
+      return tokenValue;
     } else {
       clearTokens();
       return null;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to refresh token:', error);
+    
+    // Проверяем, является ли это ошибкой 401 (истек refresh токен)
+    // ApiError имеет свойство status, также проверяем другие возможные форматы
+    const is401Error = error?.status === 401 || 
+                      error?.response?.status === 401 ||
+                      (error?.body && typeof error.body === 'object' && error.body.status === 401) ||
+                      (error?.message && typeof error.message === 'string' && error.message.includes('401')) ||
+                      (error?.request?.url && error.request.url.includes('/api/v1/auth/refresh') && error?.status === 401);
+    
+    if (is401Error) {
+      // Refresh токен истек - уведомляем об истечении сессии
+      clearTokens();
+      if (sessionExpiredCallback) {
+        try {
+          sessionExpiredCallback();
+        } catch (callbackError) {
+          console.error('[Auth] Error in session expired callback:', callbackError);
+        }
+      }
+    } else {
     clearTokens();
+    }
+    
     return null;
   }
 }
@@ -94,14 +138,34 @@ async function getTokenForRequest(options: any): Promise<string> {
     return '';
   }
 
-  // Для всех остальных запросов проверяем наличие токена
+  // Если есть активный промис авторизации, ждем его завершения
+  // Это гарантирует, что токены будут сохранены перед выполнением запросов
+  if (globalAuthPromise) {
+    try {
+      await globalAuthPromise;
+    } catch (error) {
+      // Игнорируем ошибки авторизации, продолжаем проверку токена
+      console.warn('[Auth] Auth promise rejected, continuing with token check:', error);
+    }
+  }
+
+  // Ждем, пока токен станет доступен (максимум 1 секунда)
+  // Это необходимо, так как localStorage.setItem синхронный, но может быть задержка
+  let attempts = 0;
+  const maxAttempts = 20; // 20 попыток по 50ms = 1 секунда
   let token = getAccessToken();
+  
+  while (!token && attempts < maxAttempts) {
+    await new Promise(resolve => setTimeout(resolve, 50));
+    token = getAccessToken();
+    attempts++;
+  }
 
   if (token) {
     return token;
   }
 
-  // Если токена нет, пытаемся обновить
+  // Если токена все еще нет, пытаемся обновить через refresh токен
   token = await refreshTokenIfNeeded();
 
   if (token) {
@@ -118,6 +182,34 @@ function isAuthenticated(): boolean {
   return !!(getAccessToken() || getRefreshToken());
 }
 
+/**
+ * Регистрирует callback, который будет вызван при обновлении токена
+ * @param callback Функция, которая будет вызвана с новым токеном
+ * @returns Функция для отмены регистрации callback'а
+ */
+function onTokenRefresh(callback: TokenRefreshCallback): () => void {
+  tokenRefreshCallbacks.add(callback);
+  return () => {
+    tokenRefreshCallbacks.delete(callback);
+  };
+}
+
+/**
+ * Устанавливает callback, который будет вызван при истечении сессии (refresh токен истек)
+ * @param callback Функция, которая будет вызвана при истечении сессии
+ */
+function onSessionExpired(callback: SessionExpiredCallback): void {
+  sessionExpiredCallback = callback;
+}
+
+/**
+ * Регистрирует глобальный промис авторизации для ожидания завершения login
+ * @param promise Промис авторизации
+ */
+function setAuthPromise(promise: Promise<any> | null): void {
+  globalAuthPromise = promise;
+}
+
 export const auth = {
   loginWithTelegram,
   getAccessToken,
@@ -127,4 +219,7 @@ export const auth = {
   handle401Error,
   getTokenForRequest,
   isAuthenticated,
+  onTokenRefresh,
+  onSessionExpired,
+  setAuthPromise,
 };

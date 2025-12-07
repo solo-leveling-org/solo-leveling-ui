@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocalization } from '../hooks/useLocalization';
 import { useTelegramWebApp } from '../useTelegram';
 import { LeaderboardType } from '../api';
@@ -20,30 +20,45 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
   const [viewedUserId, setViewedUserId] = useState<number | null>(null);
   const { t } = useLocalization();
   const { backButton } = useTelegramWebApp();
+  const isBackButtonInitializedRef = useRef(false);
+  const currentTabModeRef = useRef<TabMode>('main');
 
-  // Управление кнопкой "Назад" в Telegram
+  // Управление кнопкой "Назад" в Telegram - устанавливаем один раз при открытии лидерборда
   useEffect(() => {
-    if (tabMode !== 'main') {
+    currentTabModeRef.current = tabMode;
+    
+    if (tabMode === 'leaderboard' && !isBackButtonInitializedRef.current) {
+      // Показываем кнопку и устанавливаем обработчик только один раз при первом открытии лидерборда
       backButton.show();
-    } else {
+      
+      const handleBack = () => {
+        const currentMode = currentTabModeRef.current;
+        if (currentMode === 'userProfile') {
+          // Возвращаемся в лидерборд
+          setTabMode('leaderboard');
+          setViewedUserId(null);
+        } else {
+          // Возвращаемся на главную
+          setTabMode('main');
+        }
+      };
+      
+      backButton.onClick(handleBack);
+      isBackButtonInitializedRef.current = true;
+    } else if (tabMode === 'userProfile') {
+      // При открытии профиля пользователя показываем кнопку, но не меняем обработчик
+      backButton.show();
+    } else if (tabMode === 'main') {
+      // Скрываем кнопку только при возврате на главную
       backButton.hide();
+      isBackButtonInitializedRef.current = false;
     }
     
-    const handleBack = () => {
-      if (tabMode === 'userProfile') {
-        // Возвращаемся в лидерборд
-        setTabMode('leaderboard');
-        setViewedUserId(null);
-      } else {
-        // Возвращаемся на главную
-        setTabMode('main');
-      }
-    };
-    
-    backButton.onClick(handleBack);
-    
     return () => {
-      backButton.hide();
+      // Не скрываем кнопку при размонтировании, если мы в лидерборде
+      if (tabMode === 'main') {
+        backButton.hide();
+      }
     };
   }, [backButton, tabMode]);
 
