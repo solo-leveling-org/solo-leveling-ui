@@ -8,6 +8,10 @@ const REFRESH_TOKEN_KEY = 'refreshToken';
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
 
+// Callback для уведомления об обновлении токена
+type TokenRefreshCallback = (newToken: string) => void;
+const tokenRefreshCallbacks: Set<TokenRefreshCallback> = new Set();
+
 function saveTokens(jwt: LoginResponse) {
   localStorage.setItem(ACCESS_TOKEN_KEY, jwt.accessToken.token);
   localStorage.setItem(REFRESH_TOKEN_KEY, jwt.refreshToken.token);
@@ -54,8 +58,19 @@ async function refreshTokenIfNeeded(): Promise<string | null> {
   try {
     const newToken = await AuthService.refresh({refreshToken});
     if (newToken && newToken.accessToken && newToken.accessToken.token) {
-      localStorage.setItem(ACCESS_TOKEN_KEY, newToken.accessToken.token);
-      return newToken.accessToken.token;
+      const tokenValue = newToken.accessToken.token;
+      localStorage.setItem(ACCESS_TOKEN_KEY, tokenValue);
+      
+      // Уведомляем все зарегистрированные callback'и об обновлении токена
+      tokenRefreshCallbacks.forEach(callback => {
+        try {
+          callback(tokenValue);
+        } catch (error) {
+          console.error('[Auth] Error in token refresh callback:', error);
+        }
+      });
+      
+      return tokenValue;
     } else {
       clearTokens();
       return null;
@@ -118,6 +133,18 @@ function isAuthenticated(): boolean {
   return !!(getAccessToken() || getRefreshToken());
 }
 
+/**
+ * Регистрирует callback, который будет вызван при обновлении токена
+ * @param callback Функция, которая будет вызвана с новым токеном
+ * @returns Функция для отмены регистрации callback'а
+ */
+function onTokenRefresh(callback: TokenRefreshCallback): () => void {
+  tokenRefreshCallbacks.add(callback);
+  return () => {
+    tokenRefreshCallbacks.delete(callback);
+  };
+}
+
 export const auth = {
   loginWithTelegram,
   getAccessToken,
@@ -127,4 +154,5 @@ export const auth = {
   handle401Error,
   getTokenForRequest,
   isAuthenticated,
+  onTokenRefresh,
 };

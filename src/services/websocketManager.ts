@@ -17,6 +17,7 @@ class WebSocketManager {
   private isEnabled = false;
   private lastUsedToken: string | null = null;
   private tokenCheckInterval: NodeJS.Timeout | null = null;
+  private tokenRefreshUnsubscribe: (() => void) | null = null;
   private unloadHandlers: {
     beforeunload?: () => void;
     pagehide?: (event: PageTransitionEvent) => void;
@@ -95,6 +96,15 @@ class WebSocketManager {
     this.isEnabled = true;
     console.log('[WS Manager] Enabled, starting connection attempts');
     
+    // Регистрируем callback для уведомления об обновлении токена (только один раз)
+    if (!this.tokenRefreshUnsubscribe) {
+      this.tokenRefreshUnsubscribe = auth.onTokenRefresh((newToken: string) => {
+        console.log('[WS Manager] Token refreshed, reconnecting WebSocket...');
+        // Разрываем текущее соединение и переподключаемся с новым токеном
+        this.reconnect();
+      });
+    }
+    
     // Начинаем попытки подключения
     this.attemptConnection();
 
@@ -124,6 +134,12 @@ class WebSocketManager {
 
     // Останавливаем проверку токена
     this.stopTokenCheck();
+
+    // Отменяем регистрацию callback для обновления токена
+    if (this.tokenRefreshUnsubscribe) {
+      this.tokenRefreshUnsubscribe();
+      this.tokenRefreshUnsubscribe = null;
+    }
 
     // Удаляем обработчики закрытия страницы
     this.unregisterUnloadHandlers();
