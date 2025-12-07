@@ -27,13 +27,13 @@
   }
 }
 
-/* Глобальное скрытие скроллбаров */
-* {
+/* Глобальное скрытие скроллбаров, кроме фильтров */
+*:not(.filters-scrollbar):not(.filters-scrollbar *) {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 }
 
-*::-webkit-scrollbar {
+*:not(.filters-scrollbar):not(.filters-scrollbar *)::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
 
@@ -88,14 +88,40 @@ body::-webkit-scrollbar {
   box-shadow: 0 0 12px rgba(180, 220, 240, 0.5) !important;
 }
 
-/* Скрытие скроллбара фильтров на мобильных устройствах */
-.mobile-version .filters-scrollbar {
+/* Скрытие скроллбара фильтров на мобильных устройствах - максимальный приоритет */
+.mobile-version .filters-scrollbar,
+body.mobile-version .filters-scrollbar,
+html.mobile-version .filters-scrollbar,
+.mobile-version .filters-scrollbar *,
+body.mobile-version .filters-scrollbar * {
   scrollbar-width: none !important; /* Firefox */
   -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-color: transparent transparent !important; /* Firefox */
 }
 
-.mobile-version .filters-scrollbar::-webkit-scrollbar {
+.mobile-version .filters-scrollbar::-webkit-scrollbar,
+body.mobile-version .filters-scrollbar::-webkit-scrollbar,
+html.mobile-version .filters-scrollbar::-webkit-scrollbar,
+.mobile-version .filters-scrollbar *::-webkit-scrollbar,
+body.mobile-version .filters-scrollbar *::-webkit-scrollbar {
   display: none !important; /* Chrome, Safari, Opera */
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+.mobile-version .filters-scrollbar::-webkit-scrollbar-track,
+body.mobile-version .filters-scrollbar::-webkit-scrollbar-track {
+  display: none !important;
+  background: transparent !important;
+}
+
+.mobile-version .filters-scrollbar::-webkit-scrollbar-thumb,
+body.mobile-version .filters-scrollbar::-webkit-scrollbar-thumb {
+  display: none !important;
+  background: transparent !important;
 }
 
 /* Принудительное применение стилей для desktop версии */

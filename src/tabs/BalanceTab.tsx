@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
+import { useFiltersScrollbarStyles } from '../hooks/useFiltersScrollbarStyles';
 import type { GetPlayerBalanceResponse, PlayerBalanceTransaction, LocalizedField } from '../api';
 import BankingTransactionsList from '../components/BankingTransactionsList';
 import Icon from '../components/Icon';
@@ -21,6 +22,9 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
   const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [contentLoaded, setContentLoaded] = useState(false);
   const { t } = useLocalization();
+  
+  // Применяем стили скроллбара для фильтров
+  useFiltersScrollbarStyles('filters-scrollbar-styles-balance');
 
   const loadBalance = useCallback(async () => {
     setLoading(true);

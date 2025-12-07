@@ -10,6 +10,7 @@ import FilterDropdown from './FilterDropdown';
 import ResetFiltersButton from './ResetFiltersButton';
 import { taskActions } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
+import { useFiltersScrollbarStyles } from '../hooks/useFiltersScrollbarStyles';
 import ConfirmDialog from './ConfirmDialog';
 
 type TasksSectionProps = {
@@ -52,6 +53,9 @@ const TasksSection: React.FC<TasksSectionProps> = ({
   const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [taskLoading, setTaskLoading] = useState(false);
   const { t } = useLocalization();
+  
+  // Применяем стили скроллбара для фильтров
+  useFiltersScrollbarStyles('filters-scrollbar-styles-tasks');
 
   const handleCompleteTask = useCallback(async (task: PlayerTask) => {
     setConfirmAction({ type: 'complete', task });
