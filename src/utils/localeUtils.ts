@@ -12,21 +12,27 @@ export const fetchAndUpdateUserLocale = async (
   setLocaleLoaded?: (loaded: boolean) => void
 ): Promise<void> => {
   try {
-    const response = await UserService.getUserLocale();
-    const backendLanguage = parseLanguage(response.locale);
+    const response = await UserService.getUserAdditionalInfo();
     
-    // Обновляем настройки локализации
-    updateSettings({
-      language: backendLanguage,
-      isManual: response.isManual
-    });
+    // Проверяем наличие locale в ответе
+    if (response.locale) {
+      const backendLanguage = parseLanguage(response.locale.locale);
+      
+      // Обновляем настройки локализации
+      updateSettings({
+        language: backendLanguage,
+        isManual: response.locale.isManual
+      });
+      
+      console.log('[Locale] Updated locale from server:', backendLanguage);
+    } else {
+      console.log('[Locale] No locale information in response');
+    }
     
     // Устанавливаем флаг загрузки если функция предоставлена
     if (setLocaleLoaded) {
       setLocaleLoaded(true);
     }
-    
-    console.log('[Locale] Updated locale from server:', backendLanguage);
   } catch (error) {
     console.error('[Locale] Failed to update locale:', error);
     

@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type UserLocaleResponse = {
+export type UserLocale = {
     locale: string;
     isManual: boolean;
 };

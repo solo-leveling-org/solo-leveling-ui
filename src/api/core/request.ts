@@ -280,8 +280,8 @@ const handleMockRequest = async <T>(options: ApiRequestOptions): Promise<T | nul
       const userId = parseInt(options.path?.userId as string || '0');
       return await mockUserService.getUser(userId) as any;
     }
-    if (options.url === '/api/v1/user/locale' && options.method === 'GET') {
-      return await mockUserService.getUserLocale() as any;
+    if (options.url === '/api/v1/user/additional-info' && options.method === 'GET') {
+      return await mockUserService.getUserAdditionalInfo() as any;
     }
     if (options.url === '/api/v1/user/locale' && options.method === 'PUT') {
       return await mockUserService.updateUserLocale(options.body as any) as any;
