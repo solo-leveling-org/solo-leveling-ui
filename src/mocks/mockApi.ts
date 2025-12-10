@@ -492,7 +492,7 @@ export const mockUserService = {
       await delay(200);
       resolve({
         locale: {
-          locale: 'ru',
+          tag: 'ru',
           isManual: false
         },
         roles: []

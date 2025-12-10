@@ -15,8 +15,8 @@ export const fetchAndUpdateUserLocale = async (
     const response = await UserService.getUserAdditionalInfo();
     
     // Проверяем наличие locale в ответе
-    if (response.locale) {
-      const backendLanguage = parseLanguage(response.locale.locale);
+    if (response.locale && response.locale.tag) {
+      const backendLanguage = parseLanguage(response.locale.tag);
       
       // Обновляем настройки локализации
       updateSettings({

@@ -623,7 +623,7 @@ components:
     UserLocale:
       type: object
       properties:
-        locale:
+        tag:
           type: string
         isManual:
           type: boolean
