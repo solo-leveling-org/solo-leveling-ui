@@ -29,9 +29,12 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
   // Проверяем, находимся ли мы на табе коллекций
   const isOnCollectionsTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
 
-  // Скрываем кнопку "Назад" при переходе на другой таб
+  // Скрываем кнопку "Назад" при переходе на другой таб (отслеживаем только location.pathname)
   useEffect(() => {
-    if (!isOnCollectionsTab) {
+    const currentPath = location.pathname;
+    const isOnTab = currentPath === '/collections' || currentPath === '/leaderboard';
+    
+    if (!isOnTab) {
       // Удаляем обработчик перед скрытием кнопки
       if (backButtonHandlerRef.current) {
         backButton.offClick(backButtonHandlerRef.current);
@@ -40,7 +43,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
       backButton.hide();
       isBackButtonInitializedRef.current = false;
     }
-  }, [isOnCollectionsTab, backButton]);
+  }, [location.pathname, backButton]);
 
   // Управление кнопкой "Назад" в Telegram - устанавливаем один раз при открытии лидерборда
   useEffect(() => {
