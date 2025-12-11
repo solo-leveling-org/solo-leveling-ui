@@ -7,6 +7,7 @@ import Icon from '../components/Icon';
 import LeaderboardView from '../components/LeaderboardView';
 import UserProfileView from '../components/UserProfileView';
 import { cn } from '../utils';
+import { globalBackButtonHandlerRef } from '../App';
 
 type CollectionsTabProps = {
   isAuthenticated: boolean;
@@ -24,26 +25,9 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
   const { backButton } = useTelegramWebApp();
   const isBackButtonInitializedRef = useRef(false);
   const currentTabModeRef = useRef<TabMode>('main');
-  const backButtonHandlerRef = useRef<(() => void) | null>(null);
 
   // Проверяем, находимся ли мы на табе коллекций
   const isOnCollectionsTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
-
-  // Скрываем кнопку "Назад" при переходе на другой таб (отслеживаем только location.pathname)
-  useEffect(() => {
-    const currentPath = location.pathname;
-    const isOnTab = currentPath === '/collections' || currentPath === '/leaderboard';
-    
-    if (!isOnTab) {
-      // Удаляем обработчик перед скрытием кнопки
-      if (backButtonHandlerRef.current) {
-        backButton.offClick(backButtonHandlerRef.current);
-        backButtonHandlerRef.current = null;
-      }
-      backButton.hide();
-      isBackButtonInitializedRef.current = false;
-    }
-  }, [location.pathname, backButton]);
 
   // Управление кнопкой "Назад" в Telegram - устанавливаем один раз при открытии лидерборда
   useEffect(() => {
@@ -70,7 +54,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
         }
       };
       
-      backButtonHandlerRef.current = handleBack;
+      globalBackButtonHandlerRef.current = handleBack;
       backButton.onClick(handleBack);
       isBackButtonInitializedRef.current = true;
     } else if (tabMode === 'userProfile') {
@@ -78,9 +62,9 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
       backButton.show();
     } else if (tabMode === 'main') {
       // Скрываем кнопку только при возврате на главную
-      if (backButtonHandlerRef.current) {
-        backButton.offClick(backButtonHandlerRef.current);
-        backButtonHandlerRef.current = null;
+      if (globalBackButtonHandlerRef.current) {
+        backButton.offClick(globalBackButtonHandlerRef.current);
+        globalBackButtonHandlerRef.current = null;
       }
       backButton.hide();
       isBackButtonInitializedRef.current = false;
