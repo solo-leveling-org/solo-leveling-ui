@@ -105,7 +105,7 @@ function AppRoutes() {
                                element={<TasksTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="/profile"
                                element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
-                        <Route path="/games"
+                        <Route path="/collections"
                                element={<CollectionsTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="/leaderboard"
                                element={<CollectionsTab isAuthenticated={isAuthenticated}/>}/>

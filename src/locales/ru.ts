@@ -97,8 +97,8 @@ export const ru = {
 
   // Приветственная страница
   welcome: {
-    title: 'Solo Leveling',
-    subtitle: 'Погрузитесь в мир одиночного развития и становитесь сильнее с каждым заданием',
+    title: 'Solo Leveling AI',
+    subtitle: 'Level Up Your Reality',
     startButton: 'К задачам',
     stats: {
       activePlayers: 'Активных игроков',

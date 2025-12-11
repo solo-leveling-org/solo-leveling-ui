@@ -87,27 +87,34 @@ const WelcomeTab: React.FC = () => {
             <div className="text-center space-y-4 md:space-y-6">
 
               {/* Animated title */}
-              <div className="relative px-2">
+              <div className="relative px-2 whitespace-nowrap overflow-x-auto">
                 <TextType 
                   text={[t('welcome.title')]}
                   typingSpeed={80}
                   pauseDuration={2000}
                   showCursor={true}
                   cursorCharacter="_"
-                  className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-tech font-bold uppercase tracking-wide"
+                  className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-tech font-bold uppercase tracking-wide !whitespace-nowrap"
                   textColors={['#e8f4f8']}
                 />
               <style>{`
+                  .text-2xl,
+                  .text-3xl,
+                  .text-4xl {
+                    white-space: nowrap !important;
+                    word-break: keep-all !important;
+                    overflow-wrap: normal !important;
+                  }
                   .text-2xl span,
-                .text-4xl span,
-                .text-5xl span,
-                .text-6xl span {
+                  .text-3xl span,
+                  .text-4xl span {
                     color: #e8f4f8 !important;
-                  text-shadow: 
+                    text-shadow: 
                       0 0 8px rgba(180, 220, 240, 0.3),
                       0 0 15px rgba(160, 210, 235, 0.15);
                     letter-spacing: 0.05em;
-                }
+                    white-space: nowrap !important;
+                  }
               `}</style>
               </div>
             </div>

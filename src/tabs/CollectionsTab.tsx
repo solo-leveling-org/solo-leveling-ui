@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useLocalization } from '../hooks/useLocalization';
 import { useTelegramWebApp } from '../useTelegram';
 import { LeaderboardType } from '../api';
@@ -19,12 +20,29 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
   const [contentLoaded, setContentLoaded] = useState(false);
   const [viewedUserId, setViewedUserId] = useState<number | null>(null);
   const { t } = useLocalization();
+  const location = useLocation();
   const { backButton } = useTelegramWebApp();
   const isBackButtonInitializedRef = useRef(false);
   const currentTabModeRef = useRef<TabMode>('main');
 
+  // Проверяем, находимся ли мы на табе коллекций
+  const isOnCollectionsTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
+
+  // Скрываем кнопку "Назад" при переходе на другой таб
+  useEffect(() => {
+    if (!isOnCollectionsTab) {
+      backButton.hide();
+      isBackButtonInitializedRef.current = false;
+    }
+  }, [isOnCollectionsTab, backButton]);
+
   // Управление кнопкой "Назад" в Telegram - устанавливаем один раз при открытии лидерборда
   useEffect(() => {
+    // Если мы не на табе коллекций, не управляем кнопкой
+    if (!isOnCollectionsTab) {
+      return;
+    }
+
     currentTabModeRef.current = tabMode;
     
     if (tabMode === 'leaderboard' && !isBackButtonInitializedRef.current) {
@@ -60,7 +78,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
         backButton.hide();
       }
     };
-  }, [backButton, tabMode]);
+  }, [backButton, tabMode, isOnCollectionsTab]);
 
   useEffect(() => {
     setTimeout(() => {
