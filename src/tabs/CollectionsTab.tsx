@@ -24,6 +24,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
   const { backButton } = useTelegramWebApp();
   const isBackButtonInitializedRef = useRef(false);
   const currentTabModeRef = useRef<TabMode>('main');
+  const backButtonHandlerRef = useRef<(() => void) | null>(null);
 
   // Проверяем, находимся ли мы на табе коллекций
   const isOnCollectionsTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
@@ -31,6 +32,11 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
   // Скрываем кнопку "Назад" при переходе на другой таб
   useEffect(() => {
     if (!isOnCollectionsTab) {
+      // Удаляем обработчик перед скрытием кнопки
+      if (backButtonHandlerRef.current) {
+        backButton.offClick(backButtonHandlerRef.current);
+        backButtonHandlerRef.current = null;
+      }
       backButton.hide();
       isBackButtonInitializedRef.current = false;
     }
@@ -61,6 +67,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
         }
       };
       
+      backButtonHandlerRef.current = handleBack;
       backButton.onClick(handleBack);
       isBackButtonInitializedRef.current = true;
     } else if (tabMode === 'userProfile') {
@@ -68,11 +75,20 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
       backButton.show();
     } else if (tabMode === 'main') {
       // Скрываем кнопку только при возврате на главную
+      if (backButtonHandlerRef.current) {
+        backButton.offClick(backButtonHandlerRef.current);
+        backButtonHandlerRef.current = null;
+      }
       backButton.hide();
       isBackButtonInitializedRef.current = false;
     }
     
     return () => {
+      // Удаляем обработчик при размонтировании или изменении зависимостей
+      if (backButtonHandlerRef.current) {
+        backButton.offClick(backButtonHandlerRef.current);
+        backButtonHandlerRef.current = null;
+      }
       // Не скрываем кнопку при размонтировании, если мы в лидерборде
       if (tabMode === 'main') {
         backButton.hide();
