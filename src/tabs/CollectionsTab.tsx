@@ -82,18 +82,6 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
       backButton.hide();
       isBackButtonInitializedRef.current = false;
     }
-    
-    return () => {
-      // Удаляем обработчик при размонтировании или изменении зависимостей
-      if (backButtonHandlerRef.current) {
-        backButton.offClick(backButtonHandlerRef.current);
-        backButtonHandlerRef.current = null;
-      }
-      // Не скрываем кнопку при размонтировании, если мы в лидерборде
-      if (tabMode === 'main') {
-        backButton.hide();
-      }
-    };
   }, [backButton, tabMode, isOnCollectionsTab]);
 
   useEffect(() => {
