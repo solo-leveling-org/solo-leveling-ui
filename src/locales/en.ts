@@ -97,9 +97,13 @@ export const en = {
 
   // Welcome page
   welcome: {
-    title: 'Solo Leveling',
-    subtitle: 'Immerse yourself in the world of solo development and become stronger with each task',
+    title: 'Solo Leveling AI',
+    subtitle: 'Level Up Your Reality',
     startButton: 'To Tasks',
+    feedback: {
+      text: 'Have feedback? Share it with us in the bot using',
+      command: '/feedback',
+    },
     stats: {
       activePlayers: 'Active Players',
       completedTasks: 'Completed Tasks',

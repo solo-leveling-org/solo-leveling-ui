@@ -297,6 +297,15 @@ export function useTelegramWebApp() {
       } catch (error) {
         console.error('Error setting back button click:', error);
       }
+    },
+    offClick: (callback: () => void) => {
+      try {
+        if (webApp.BackButton?.offClick) {
+          webApp.BackButton.offClick(callback);
+        }
+      } catch (error) {
+        console.error('Error removing back button click:', error);
+      }
     }
   };
 

@@ -37,7 +37,6 @@ export const mockUser: User = {
   lastName: 'User',
   photoUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=MockUser&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf',
   locale: 'ru',
-  roles: [],
   player: {
     id: 1,
     version: 1,

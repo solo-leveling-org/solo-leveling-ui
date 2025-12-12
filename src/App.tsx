@@ -18,23 +18,42 @@ import {useAuth} from './hooks/useAuth';
 import {useLocaleSync} from './hooks/useLocaleSync';
 import {useWebSocketNotifications} from './hooks/useWebSocketNotifications';
 import {NotificationProvider} from './components/NotificationSystem';
-import {useTelegram} from './useTelegram';
+import {useTelegram, useTelegramWebApp} from './useTelegram';
 import {ModalProvider, useModal} from './contexts/ModalContext';
 import {useTelegramAdaptive} from './hooks/useTelegramAdaptive';
 import AuthLoadingScreen from './components/AuthLoadingScreen';
 import SessionExpiredDialog from './components/SessionExpiredDialog';
 import {auth} from './auth';
 
+// Глобальный ref для хранения обработчика кнопки "Назад" (экспортируем для использования в CollectionsTab)
+export const globalBackButtonHandlerRef = { current: null as (() => void) | null };
+
 function AppRoutes() {
   const location = useLocation();
   const { isBottomBarVisible } = useModal();
   const [isSessionExpired, setIsSessionExpired] = useState(false);
+  const { backButton } = useTelegramWebApp();
   
   // Инициализируем Telegram WebApp
   useTelegram();
   
   // Централизованное управление адаптивностью (определение устройства, полноэкранный режим, CSS классы)
   useTelegramAdaptive();
+
+  // Глобальное управление кнопкой "Назад" - скрываем при переходе на табы, где она не нужна
+  useEffect(() => {
+    const isOnCollectionsTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
+    
+    if (!isOnCollectionsTab) {
+      // Удаляем обработчик перед скрытием кнопки
+      if (globalBackButtonHandlerRef.current) {
+        backButton.offClick(globalBackButtonHandlerRef.current);
+        globalBackButtonHandlerRef.current = null;
+      }
+      // Скрываем кнопку "Назад" при переходе на другие табы
+      backButton.hide();
+    }
+  }, [location.pathname, backButton]);
 
   // Используем новые хуки для разделения логики
   const {
@@ -105,7 +124,7 @@ function AppRoutes() {
                                element={<TasksTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="/profile"
                                element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
-                        <Route path="/games"
+                        <Route path="/collections"
                                element={<CollectionsTab isAuthenticated={isAuthenticated}/>}/>
                         <Route path="/leaderboard"
                                element={<CollectionsTab isAuthenticated={isAuthenticated}/>}/>

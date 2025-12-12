@@ -38,7 +38,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
     },
     {
       key: 'games',
-      path: '/games',
+      path: '/collections',
       icon: 'sparkles',
       label: t('navigation.games')
     },

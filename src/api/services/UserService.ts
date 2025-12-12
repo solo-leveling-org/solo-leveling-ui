@@ -8,7 +8,7 @@ import type { GetUsersLeaderboardRequest } from '../models/GetUsersLeaderboardRe
 import type { GetUsersLeaderboardResponse } from '../models/GetUsersLeaderboardResponse';
 import type { LeaderboardType } from '../models/LeaderboardType';
 import type { UpdateUserLocaleRequest } from '../models/UpdateUserLocaleRequest';
-import type { UserLocaleResponse } from '../models/UserLocaleResponse';
+import type { UserAdditionalInfoResponse } from '../models/UserAdditionalInfoResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -42,30 +42,30 @@ export class UserService {
         });
     }
     /**
-     * Get current user's locale (from JWT)
-     * @returns UserLocaleResponse Current user locale
-     * @throws ApiError
-     */
-    public static getUserLocale(): CancelablePromise<UserLocaleResponse> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/v1/user/locale',
-        });
-    }
-    /**
      * Manual update current user's locale (from JWT)
      * @param requestBody
-     * @returns UserLocaleResponse Current user locale
+     * @returns void
      * @throws ApiError
      */
     public static updateUserLocale(
         requestBody: UpdateUserLocaleRequest,
-    ): CancelablePromise<UserLocaleResponse> {
+    ): CancelablePromise<void> {
         return __request(OpenAPI, {
             method: 'PUT',
             url: '/api/v1/user/locale',
             body: requestBody,
             mediaType: 'application/json',
+        });
+    }
+    /**
+     * Get additional user info (from JWT)
+     * @returns UserAdditionalInfoResponse Additional user info
+     * @throws ApiError
+     */
+    public static getUserAdditionalInfo(): CancelablePromise<UserAdditionalInfoResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/user/additional-info',
         });
     }
     /**
