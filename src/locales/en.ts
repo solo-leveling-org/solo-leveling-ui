@@ -100,6 +100,10 @@ export const en = {
     title: 'Solo Leveling AI',
     subtitle: 'Level Up Your Reality',
     startButton: 'To Tasks',
+    feedback: {
+      text: 'Have feedback? Share it with us in the bot using',
+      command: '/feedback',
+    },
     stats: {
       activePlayers: 'Active Players',
       completedTasks: 'Completed Tasks',

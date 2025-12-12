@@ -154,6 +154,21 @@ const WelcomeTab: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Feedback message - outside main container */}
+        <div className="text-center pt-6 md:pt-8 px-4">
+          <p className="text-[10px] md:text-xs font-tech tracking-wide leading-relaxed" style={{
+            color: 'rgba(220, 235, 245, 0.5)'
+          }}>
+            {t('welcome.feedback.text')}{' '}
+            <span className="font-mono font-semibold" style={{
+              color: 'rgba(180, 220, 240, 0.7)',
+              textShadow: '0 0 4px rgba(180, 220, 240, 0.3)'
+            }}>
+              {t('welcome.feedback.command')}
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );

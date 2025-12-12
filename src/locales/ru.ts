@@ -100,6 +100,10 @@ export const ru = {
     title: 'Solo Leveling AI',
     subtitle: 'Level Up Your Reality',
     startButton: 'К задачам',
+    feedback: {
+      text: 'Есть обратная связь? Поделитесь с нами в боте через команду',
+      command: '/feedback',
+    },
     stats: {
       activePlayers: 'Активных игроков',
       completedTasks: 'Выполнено задач',
