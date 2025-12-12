@@ -575,7 +575,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
         
         return (
           <div 
-            className="sticky z-10 mb-3" 
+            className="sticky z-10 mb-3 leaderboard-current-user-sticky" 
             style={{ 
               top: '1rem',
               opacity: isCurrentUserTransitioning ? 0 : 1,

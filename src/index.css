@@ -722,6 +722,17 @@ code {
   }
 }
 
+/* Отступ сверху для sticky элемента текущей позиции в лидерборде на мобильных устройствах */
+.mobile-version .leaderboard-current-user-sticky {
+  top: 100px !important;
+}
+
+@supports (padding: max(0px)) {
+  .mobile-version .leaderboard-current-user-sticky {
+    top: max(100px, env(safe-area-inset-top)) !important;
+  }
+}
+
 /* Плавная анимация появления контента при переключении табов */
 @keyframes tabContentFadeIn {
   from {
