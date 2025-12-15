@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import type { PlayerTask, CompleteTaskResponse, LocalizedField } from '../api';
+import type { PlayerTask, CompleteTaskResponse, LocalizedField, Stamina } from '../api';
 import { PlayerTaskStatus as TaskStatus } from '../api';
 import TasksGrid from './TasksGrid';
 import TasksList from './TasksList';
@@ -8,15 +8,17 @@ import TaskCompletionDialog from './TaskCompletionDialog';
 import DateFilter from './DateFilter';
 import FilterDropdown from './FilterDropdown';
 import ResetFiltersButton from './ResetFiltersButton';
-import { taskActions } from '../services';
+import { taskActions, api } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
 import ConfirmDialog from './ConfirmDialog';
+import { getTaskStaminaCost, SKIP_STAMINA_COST } from '../mocks/mockApi';
 
 type TasksSectionProps = {
   tasks: PlayerTask[];
+  stamina: Stamina | null;
   loading: boolean;
   firstTime: boolean;
-  onTasksUpdate?: (tasks: PlayerTask[]) => void;
+  onTasksUpdate?: (tasks: PlayerTask[], stamina?: Stamina) => void;
   onGoToTopics?: () => void;
   initialViewMode?: 'active' | 'completed';
 };
@@ -25,6 +27,7 @@ type TaskViewMode = 'active' | 'completed';
 
 const TasksSection: React.FC<TasksSectionProps> = ({
   tasks,
+  stamina,
   loading,
   firstTime,
   onTasksUpdate,
@@ -59,30 +62,85 @@ const TasksSection: React.FC<TasksSectionProps> = ({
   }, []);
 
   const completeTask = useCallback(async (task: PlayerTask) => {
+    // Проверяем наличие достаточной стамины
+    if (!stamina) {
+      console.error('Stamina data not available');
+      return;
+    }
+    
+    const staminaCost = getTaskStaminaCost(task.task?.rarity);
+    if (stamina.current < staminaCost) {
+      alert(`Недостаточно стамины! Требуется: ${staminaCost}, текущая: ${stamina.current}`);
+      return;
+    }
+
     try {
       setTaskLoading(true);
       const response = await taskActions.completeTask(task);
       setCompletedTask(task);
       setCompletionResponse(response);
+      
+      // Обновляем стамину через запрос к серверу
+      if (onTasksUpdate) {
+        // Обновим стамину после получения новых задач через useTasksRefresh
+        // Временное обновление для мгновенной обратной связи
+        setTimeout(() => {
+          api.getPlayerTasks().then((res) => {
+            onTasksUpdate(res.tasks, res.stamina);
+          });
+        }, 100);
+      }
       // WebSocket уведомления автоматически обновят список задач через useTasksRefresh
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error completing task:', error);
+      if (error?.message?.includes('Not enough stamina')) {
+        alert(`Недостаточно стамины! ${error.message}`);
+      } else {
+        alert('Ошибка при выполнении задачи');
+      }
     } finally {
       setTaskLoading(false);
     }
-  }, []);
+  }, [stamina, onTasksUpdate]);
 
   const skipTask = useCallback(async (playerTask: PlayerTask) => {
+    // Проверяем наличие достаточной стамины
+    if (!stamina) {
+      console.error('Stamina data not available');
+      return;
+    }
+    
+    if (stamina.current < SKIP_STAMINA_COST) {
+      alert(`Недостаточно стамины! Требуется: ${SKIP_STAMINA_COST}, текущая: ${stamina.current}`);
+      return;
+    }
+
     try {
       setTaskLoading(true);
       await taskActions.skipTask(playerTask);
+      
+      // Обновляем стамину через запрос к серверу
+      if (onTasksUpdate) {
+        // Обновим стамину после получения новых задач через useTasksRefresh
+        // Временное обновление для мгновенной обратной связи
+        setTimeout(() => {
+          api.getPlayerTasks().then((res) => {
+            onTasksUpdate(res.tasks, res.stamina);
+          });
+        }, 100);
+      }
       // WebSocket уведомления автоматически обновят список задач через useTasksRefresh
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error skipping task:', error);
+      if (error?.message?.includes('Not enough stamina')) {
+        alert(`Недостаточно стамины! ${error.message}`);
+      } else {
+        alert('Ошибка при пропуске задачи');
+      }
     } finally {
       setTaskLoading(false);
     }
-  }, []);
+  }, [stamina, onTasksUpdate]);
 
   const handleConfirmAction = useCallback(() => {
     if (confirmAction) {
@@ -235,21 +293,27 @@ const TasksSection: React.FC<TasksSectionProps> = ({
 
       {/* Tasks Grid or List */}
       {viewMode === 'active' ? (
-        <TasksGrid
-          tasks={tasks}
-          loading={loading || taskLoading}
-          onTaskClick={handleTaskClick}
-          onComplete={handleCompleteTask}
-          onReplace={handleReplace}
-        />
+        <div key="active-tasks" className="animate-fadeIn">
+          <TasksGrid
+            tasks={tasks}
+            stamina={stamina}
+            loading={loading || taskLoading}
+            onTaskClick={handleTaskClick}
+            onComplete={handleCompleteTask}
+            onReplace={handleReplace}
+          />
+        </div>
       ) : (
-        <TasksList
-          statusFilter={[TaskStatus.COMPLETED, TaskStatus.SKIPPED]}
-          dateFilters={dateFilters}
-          enumFilters={enumFilters}
-          onFiltersUpdate={handleFiltersUpdate}
-          onTaskClick={handleTaskClick}
-        />
+        <div key="completed-tasks" className="animate-fadeIn">
+          <TasksList
+            statusFilter={[TaskStatus.COMPLETED, TaskStatus.SKIPPED]}
+            dateFilters={dateFilters}
+            enumFilters={enumFilters}
+            onFiltersUpdate={handleFiltersUpdate}
+            onTaskClick={handleTaskClick}
+            stamina={stamina}
+          />
+        </div>
       )}
 
       {dialogTask && dialogTask.task && (

@@ -5,7 +5,6 @@
 import type { Player } from './Player';
 export type User = {
     id: number;
-    version: number;
     username?: string;
     firstName: string;
     lastName?: string;

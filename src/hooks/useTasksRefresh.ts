@@ -1,11 +1,11 @@
 import { useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { api } from '../services';
-import type { PlayerTask } from '../api';
+import type { PlayerTask, Stamina } from '../api';
 
 interface UseTasksRefreshProps {
   isAuthenticated: boolean;
-  onTasksUpdate: (tasks: PlayerTask[]) => void;
+  onTasksUpdate: (tasks: PlayerTask[], stamina?: Stamina) => void;
 }
 
 export const useTasksRefresh = ({ isAuthenticated, onTasksUpdate }: UseTasksRefreshProps) => {
@@ -17,7 +17,7 @@ export const useTasksRefresh = ({ isAuthenticated, onTasksUpdate }: UseTasksRefr
     
     try {
       const response = await api.getPlayerTasks();
-      onTasksUpdate(response.tasks);
+      onTasksUpdate(response.tasks, response.stamina);
     } catch (error) {
       console.error('Error refreshing tasks:', error);
     }

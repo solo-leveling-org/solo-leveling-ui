@@ -1,14 +1,16 @@
 import React, { useMemo } from 'react';
-import type { PlayerTask } from '../api';
+import type { PlayerTask, Stamina } from '../api';
 import { PlayerTaskStatus } from '../api';
 import TopicIcon from './TopicIcons';
 import RarityIndicator from './RarityIndicator';
 import Icon from './Icon';
 import { useLocalization } from '../hooks/useLocalization';
 import { getMonthGenitive } from '../utils';
+import { getTaskStaminaCost, SKIP_STAMINA_COST } from '../mocks/mockApi';
 
 type TaskCardProps = {
   playerTask: PlayerTask;
+  stamina: Stamina | null;
   onClick: () => void;
   onComplete?: () => void;
   onReplace?: () => void;
@@ -56,8 +58,28 @@ const getStatusColorScheme = (status: PlayerTaskStatus) => {
     }
   };
 
-const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, onReplace, index = 0 }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ playerTask, stamina, onClick, onComplete, onReplace, index = 0 }) => {
   const { task, status } = playerTask;
+  
+  // Проверка возможности выполнения задачи
+  const canComplete = useMemo(() => {
+    if (!stamina || !task?.rarity) return true;
+    const cost = getTaskStaminaCost(task.rarity);
+    return stamina.current >= cost;
+  }, [stamina, task?.rarity]);
+  
+  // Проверка возможности скипа задачи
+  const canSkip = useMemo(() => {
+    if (!stamina) return true;
+    return stamina.current >= SKIP_STAMINA_COST;
+  }, [stamina]);
+  
+  // Стоимость выполнения задачи
+  const completeCost = useMemo(() => {
+    if (!task?.rarity) return 0;
+    return getTaskStaminaCost(task.rarity);
+  }, [task?.rarity]);
+  
   const { t, currentLanguage } = useLocalization();
   const [isTransitioning, setIsTransitioning] = React.useState(false);
 
@@ -121,8 +143,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
       : status === PlayerTaskStatus.SKIPPED
       ? `0 0 12px rgba(220, 38, 38, 0.2)`
       : `0 0 12px rgba(180, 220, 240, 0.15)`,
-    animationDelay: `${index * 150}ms`,
-  }), [colorScheme, status, index]);
+  }), [colorScheme, status]);
   
   // Мемоизируем стили для текста
   const titleStyle = useMemo(() => ({
@@ -165,14 +186,13 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
   if (status === PlayerTaskStatus.PREPARING) {
     return (
       <div 
-        className="group relative overflow-hidden cursor-pointer transition-transform duration-300 ease-out hover:scale-[1.02] animate-fadeIn"
+        className="group relative overflow-hidden cursor-pointer transition-transform duration-300 ease-out hover:scale-[1.02]"
         onClick={onClick}
         style={{
           background: colorScheme.bg,
           border: `2px solid ${colorScheme.border}`,
           borderRadius: '24px',
           boxShadow: `0 0 12px rgba(180, 220, 240, 0.15)`,
-          animationDelay: `${index * 150}ms`,
         }}
       >
         {/* Glowing orbs */}
@@ -237,7 +257,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
 
   return (
     <div 
-      className={`group relative overflow-hidden cursor-pointer transition-transform duration-500 ease-out hover:scale-[1.02] animate-fadeIn h-full flex flex-col ${isTransitioning ? 'task-status-transition' : ''}`}
+      className={`group relative overflow-hidden cursor-pointer transition-transform duration-500 ease-out hover:scale-[1.02] h-full flex flex-col ${isTransitioning ? 'task-status-transition' : ''}`}
       onClick={onClick}
       key={`${playerTask.id}-${status}`}
       style={cardStyle}
@@ -353,26 +373,45 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onComplete();
+                  if (canComplete) {
+                    onComplete();
+                  }
                 }}
-                className="group relative w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-transform duration-300 hover:scale-110 active:scale-95"
+                disabled={!canComplete}
+                className={`group relative w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  canComplete ? 'hover:scale-110 active:scale-95 cursor-pointer' : 'cursor-not-allowed opacity-50'
+                }`}
                 style={{
-                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
+                  background: canComplete 
+                    ? 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)'
+                    : 'linear-gradient(135deg, rgba(10, 14, 39, 0.6) 0%, rgba(5, 8, 18, 0.7) 100%)',
                   backdropFilter: 'blur(20px)',
-                  border: '2px solid rgba(160, 210, 235, 0.4)',
-                  boxShadow: '0 0 15px rgba(160, 210, 235, 0.3)'
+                  border: canComplete 
+                    ? '2px solid rgba(160, 210, 235, 0.4)'
+                    : '2px solid rgba(220, 235, 245, 0.2)',
+                  boxShadow: canComplete 
+                    ? '0 0 15px rgba(160, 210, 235, 0.3)'
+                    : 'none',
                 }}
-                title={t('taskCard.complete')}
+                title={canComplete 
+                  ? t('taskCard.complete')
+                  : t('tasks.stamina.insufficientStamina', { 
+                      required: completeCost, 
+                      current: stamina?.current || 0 
+                    })
+                }
               >
                 {/* Hover glow effect */}
-                <div
-                  className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{
-                    background: 'radial-gradient(circle, rgba(160, 210, 235, 0.3) 0%, transparent 70%)',
-                    filter: 'blur(8px)'
-                  }}
-                ></div>
-                <div className="relative z-10" style={{ color: 'rgba(160, 210, 235, 0.9)' }}>
+                {canComplete && (
+                  <div
+                    className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{
+                      background: 'radial-gradient(circle, rgba(160, 210, 235, 0.3) 0%, transparent 70%)',
+                      filter: 'blur(8px)'
+                    }}
+                  ></div>
+                )}
+                <div className="relative z-10" style={{ color: canComplete ? 'rgba(160, 210, 235, 0.9)' : 'rgba(220, 235, 245, 0.4)' }}>
                   <Icon type="check" size={16} />
                 </div>
               </button>
@@ -381,26 +420,45 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onReplace();
+                  if (canSkip) {
+                    onReplace();
+                  }
                 }}
-                className="group relative w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-transform duration-300 hover:scale-110 active:scale-95"
+                disabled={!canSkip}
+                className={`group relative w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  canSkip ? 'hover:scale-110 active:scale-95 cursor-pointer' : 'cursor-not-allowed opacity-50'
+                }`}
                 style={{
-                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
+                  background: canSkip 
+                    ? 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)'
+                    : 'linear-gradient(135deg, rgba(10, 14, 39, 0.6) 0%, rgba(5, 8, 18, 0.7) 100%)',
                   backdropFilter: 'blur(20px)',
-                  border: '2px solid rgba(180, 220, 240, 0.4)',
-                  boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)'
+                  border: canSkip 
+                    ? '2px solid rgba(180, 220, 240, 0.4)'
+                    : '2px solid rgba(220, 235, 245, 0.2)',
+                  boxShadow: canSkip 
+                    ? '0 0 15px rgba(180, 220, 240, 0.3)'
+                    : 'none',
                 }}
-                title={t('taskCard.replace')}
+                title={canSkip 
+                  ? t('taskCard.replace')
+                  : t('tasks.stamina.insufficientStamina', { 
+                      required: SKIP_STAMINA_COST, 
+                      current: stamina?.current || 0 
+                    })
+                }
               >
                 {/* Hover glow effect */}
-                <div
-                  className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{
-                    background: 'radial-gradient(circle, rgba(180, 220, 240, 0.3) 0%, transparent 70%)',
-                    filter: 'blur(8px)'
-                  }}
-                ></div>
-                <div className="relative z-10 transition-transform duration-300 group-hover:scale-110" style={{ color: 'rgba(180, 220, 240, 0.9)' }}>
+                {canSkip && (
+                  <div
+                    className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{
+                      background: 'radial-gradient(circle, rgba(180, 220, 240, 0.3) 0%, transparent 70%)',
+                      filter: 'blur(8px)'
+                    }}
+                  ></div>
+                )}
+                <div className={`relative z-10 transition-transform duration-300 ${canSkip ? 'group-hover:scale-110' : ''}`} style={{ color: canSkip ? 'rgba(180, 220, 240, 0.9)' : 'rgba(220, 235, 245, 0.4)' }}>
                   <Icon type="arrow-left-right" size={16} />
                 </div>
               </button>
@@ -414,9 +472,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, onClick, onComplete, on
 
 export default React.memo(TaskCard, (prevProps, nextProps) => {
   // Кастомная функция сравнения для оптимизации
+  // Важно: сравниваем stamina.current, чтобы кнопки обновлялись при изменении стамины
+  const staminaEqual = prevProps.stamina?.current === nextProps.stamina?.current &&
+                       prevProps.stamina?.max === nextProps.stamina?.max;
+  
   return (
     prevProps.playerTask.id === nextProps.playerTask.id &&
     prevProps.playerTask.status === nextProps.playerTask.status &&
-    prevProps.index === nextProps.index
+    prevProps.index === nextProps.index &&
+    staminaEqual
   );
 }); 

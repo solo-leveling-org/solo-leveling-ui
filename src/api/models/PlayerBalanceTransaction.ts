@@ -7,7 +7,6 @@ import type { PlayerBalanceTransactionCause } from './PlayerBalanceTransactionCa
 import type { PlayerBalanceTransactionType } from './PlayerBalanceTransactionType';
 export type PlayerBalanceTransaction = {
     id: string;
-    version: number;
     amount: Money;
     type: PlayerBalanceTransactionType;
     cause: PlayerBalanceTransactionCause;

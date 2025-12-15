@@ -54,6 +54,7 @@ export type { SearchPlayerBalanceTransactionsResponse } from './models/SearchPla
 export type { SearchPlayerTasksResponse } from './models/SearchPlayerTasksResponse';
 export type { SearchRequest } from './models/SearchRequest';
 export type { Sort } from './models/Sort';
+export type { Stamina } from './models/Stamina';
 export type { Task } from './models/Task';
 export { TaskRarity } from './models/TaskRarity';
 export { TaskTopic } from './models/TaskTopic';

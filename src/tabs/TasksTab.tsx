@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import type { PlayerTask } from '../api';
+import type { PlayerTask, Stamina } from '../api';
 import { api } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
 import { useTasksRefresh } from '../hooks/useTasksRefresh';
@@ -7,6 +7,8 @@ import TasksSection from '../components/TasksSection';
 import TopicsSection from '../components/TopicsSection';
 import TaskCardSkeleton from '../components/TaskCardSkeleton';
 import Icon from '../components/Icon';
+import StaminaIndicator from '../components/StaminaIndicator';
+import StaminaIndicatorSkeleton from '../components/StaminaIndicatorSkeleton';
 
 type TasksTabProps = {
   isAuthenticated: boolean;
@@ -17,16 +19,24 @@ type TaskViewMode = 'active' | 'completed';
 
 const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [tasks, setTasks] = useState<PlayerTask[]>([]);
+  const [stamina, setStamina] = useState<Stamina | null>(null);
   const [firstTime, setFirstTime] = useState(false);
   const [loading, setLoading] = useState(true);
   const [tabMode, setTabMode] = useState<TabViewMode>('tasks');
+  const [displayTabMode, setDisplayTabMode] = useState<TabViewMode>('tasks');
+  const [isTabTransitioning, setIsTabTransitioning] = useState(false);
   const [taskViewMode, setTaskViewMode] = useState<TaskViewMode>('active');
+  const [displayTaskViewMode, setDisplayTaskViewMode] = useState<TaskViewMode>('active');
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [contentLoaded, setContentLoaded] = useState(false);
   const { t } = useLocalization();
 
-  // Функция для обновления списка задач
-  const handleTasksUpdate = useCallback((newTasks: PlayerTask[]) => {
+  // Функция для обновления списка задач и стамины
+  const handleTasksUpdate = useCallback((newTasks: PlayerTask[], newStamina?: Stamina) => {
     setTasks(newTasks);
+    if (newStamina) {
+      setStamina(newStamina);
+    }
     // Если задачи появились, значит firstTime стал false
     if (newTasks.length > 0) {
       setFirstTime(false);
@@ -46,11 +56,13 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
       api.getPlayerTasks()
         .then((res) => {
           setTasks(res.tasks);
+          setStamina(res.stamina);
           setFirstTime(res.firstTime);
           setLoading(false);
           // Если firstTime, перенаправляем в топики
           if (res.firstTime) {
             setTabMode('topics');
+            setDisplayTabMode('topics');
           }
           // Запускаем анимацию появления контента
           setTimeout(() => {
@@ -73,29 +85,65 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
 
   // Обработчик переключения на топики
   const handleGoToTopics = useCallback(() => {
-    setTabMode('topics');
-  }, []);
+    if (tabMode !== 'topics') {
+      setIsTabTransitioning(true);
+      setTimeout(() => {
+        setTabMode('topics');
+        setTimeout(() => {
+          setIsTabTransitioning(false);
+          setDisplayTabMode('topics');
+        }, 25);
+      }, 100);
+    }
+  }, [tabMode]);
 
   // Обработчик возврата к задачам
   const handleBackToTasks = useCallback(() => {
-    setTabMode('tasks');
-  }, []);
+    if (tabMode !== 'tasks') {
+      setIsTabTransitioning(true);
+      setTimeout(() => {
+        setTabMode('tasks');
+        setTimeout(() => {
+          setIsTabTransitioning(false);
+          setDisplayTabMode('tasks');
+        }, 25);
+      }, 100);
+    }
+  }, [tabMode]);
 
   // Обработчик сохранения топиков (переключаемся обратно на активные задачи)
   const handleTopicsSave = useCallback(() => {
-    setTabMode('tasks');
-    setTaskViewMode('active');
-    // Перезагружаем задачи после сохранения топиков
-    if (isAuthenticated) {
-      api.getPlayerTasks()
-        .then((res) => {
-          setTasks(res.tasks);
-          setFirstTime(res.firstTime);
-        })
-        .catch((error) => {
-          console.error('Error getting tasks after topics save:', error);
-        });
-    }
+    setIsTabTransitioning(true);
+    setTimeout(() => {
+      setTabMode('tasks');
+      setTaskViewMode('active');
+      setDisplayTaskViewMode('active');
+      // Перезагружаем задачи после сохранения топиков
+      if (isAuthenticated) {
+        api.getPlayerTasks()
+          .then((res) => {
+            setTasks(res.tasks);
+            setStamina(res.stamina);
+            setFirstTime(res.firstTime);
+            setTimeout(() => {
+              setIsTabTransitioning(false);
+              setDisplayTabMode('tasks');
+            }, 25);
+          })
+          .catch((error) => {
+            console.error('Error getting tasks after topics save:', error);
+            setTimeout(() => {
+              setIsTabTransitioning(false);
+              setDisplayTabMode('tasks');
+            }, 25);
+          });
+      } else {
+        setTimeout(() => {
+          setIsTabTransitioning(false);
+          setDisplayTabMode('tasks');
+        }, 25);
+      }
+    }, 100);
   }, [isAuthenticated]);
 
   // Показываем skeleton во время загрузки
@@ -175,6 +223,13 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                   </div>
                 </div>
               </div>
+
+              {/* Stamina Indicator skeleton */}
+              <div className="flex justify-center mb-6 px-4">
+                <div className="w-full max-w-md">
+                  <StaminaIndicatorSkeleton />
+                </div>
+              </div>
             </div>
 
             {/* Tasks grid skeleton */}
@@ -200,7 +255,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
         transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
       }}
     >
-      <div className={`relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 ${tabMode === 'topics' ? '' : 'pb-24'}`}>
+      <div className={`relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 ${displayTabMode === 'topics' ? '' : 'pb-24'}`}>
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
           <div className="mb-8">
@@ -288,7 +343,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
             </div>
 
             {/* Task View Mode Toggle - Same style as leaderboard */}
-            {tabMode === 'tasks' && !firstTime && (
+            {displayTabMode === 'tasks' && !firstTime && (
               <div className="flex justify-center mb-6">
                 <div
                   className="inline-flex rounded-full p-1"
@@ -300,7 +355,18 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                 >
                   <div className="inline-flex gap-2">
                     <button
-                      onClick={() => setTaskViewMode('active')}
+                      onClick={() => {
+                        if (taskViewMode !== 'active') {
+                          setIsTransitioning(true);
+                          setTimeout(() => {
+                            setTaskViewMode('active');
+                            setTimeout(() => {
+                              setIsTransitioning(false);
+                              setDisplayTaskViewMode('active');
+                            }, 25);
+                          }, 100);
+                        }
+                      }}
                       className={`px-6 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-sm md:text-base transition-all duration-150 ease-in-out ${
                         taskViewMode === 'active' ? '' : 'opacity-50 hover:opacity-70'
                       }`}
@@ -313,7 +379,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                         backdropFilter: 'blur(20px)'
                       } : {
                         background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.4) 0%, rgba(5, 8, 18, 0.6) 100%)',
-                        border: '1px solid rgba(220, 235, 245, 0.2)',
+                        border: '2px solid rgba(220, 235, 245, 0.2)',
                         color: 'rgba(220, 235, 245, 0.6)',
                         backdropFilter: 'blur(10px)'
                       }}
@@ -321,7 +387,18 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                       {t('tasks.viewMode.active')}
                     </button>
                     <button
-                      onClick={() => setTaskViewMode('completed')}
+                      onClick={() => {
+                        if (taskViewMode !== 'completed') {
+                          setIsTransitioning(true);
+                          setTimeout(() => {
+                            setTaskViewMode('completed');
+                            setTimeout(() => {
+                              setIsTransitioning(false);
+                              setDisplayTaskViewMode('completed');
+                            }, 25);
+                          }, 100);
+                        }
+                      }}
                       className={`px-6 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-sm md:text-base transition-all duration-150 ease-in-out ${
                         taskViewMode === 'completed' ? '' : 'opacity-50 hover:opacity-70'
                       }`}
@@ -334,7 +411,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                         backdropFilter: 'blur(20px)'
                       } : {
                         background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.4) 0%, rgba(5, 8, 18, 0.6) 100%)',
-                        border: '1px solid rgba(220, 235, 245, 0.2)',
+                        border: '2px solid rgba(220, 235, 245, 0.2)',
                         color: 'rgba(220, 235, 245, 0.6)',
                         backdropFilter: 'blur(10px)'
                       }}
@@ -345,24 +422,72 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                 </div>
               </div>
             )}
+
+            {/* Stamina Indicator - показываем только для активных задач */}
+            {displayTabMode === 'tasks' && !firstTime && displayTaskViewMode === 'active' && (
+              <>
+                {loading ? (
+                  <div className="flex justify-center mb-6 px-4">
+                    <div className="w-full max-w-md">
+                      <StaminaIndicatorSkeleton />
+                    </div>
+                  </div>
+                ) : stamina ? (
+                  <div 
+                    className="flex justify-center mb-6 px-4"
+                    style={{
+                      opacity: isTransitioning ? 0 : 1,
+                      transform: isTransitioning ? 'translateY(10px)' : 'translateY(0)',
+                      transition: 'opacity 0.15s ease-out, transform 0.15s ease-out'
+                    }}
+                  >
+                    <div className="w-full max-w-md">
+                      <StaminaIndicator 
+                        stamina={stamina} 
+                        onStaminaUpdate={(updatedStamina) => {
+                          setStamina(updatedStamina);
+                        }}
+                      />
+                    </div>
+                  </div>
+                ) : null}
+              </>
+            )}
           </div>
 
           {/* Content based on view mode */}
-          {tabMode === 'topics' ? (
-            <TopicsSection
-              isAuthenticated={isAuthenticated}
-              onSave={handleTopicsSave}
-            />
-          ) : (
-            <TasksSection
-              tasks={tasks}
-              loading={loading}
-              firstTime={firstTime}
-              onTasksUpdate={handleTasksUpdate}
-              onGoToTopics={handleGoToTopics}
-              initialViewMode={taskViewMode}
-            />
-          )}
+          <div
+            style={{
+              opacity: isTabTransitioning ? 0 : 1,
+              transform: isTabTransitioning ? 'translateY(10px)' : 'translateY(0)',
+              transition: 'opacity 0.15s ease-out, transform 0.15s ease-out'
+            }}
+          >
+            {displayTabMode === 'topics' ? (
+              <TopicsSection
+                isAuthenticated={isAuthenticated}
+                onSave={handleTopicsSave}
+              />
+            ) : (
+              <div
+                style={{
+                  opacity: isTransitioning ? 0 : 1,
+                  transform: isTransitioning ? 'translateY(10px)' : 'translateY(0)',
+                  transition: 'opacity 0.15s ease-out, transform 0.15s ease-out'
+                }}
+              >
+                <TasksSection
+                  tasks={tasks}
+                  stamina={stamina}
+                  loading={loading}
+                  firstTime={firstTime}
+                  onTasksUpdate={handleTasksUpdate}
+                  onGoToTopics={handleGoToTopics}
+                  initialViewMode={displayTaskViewMode}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -5,12 +5,11 @@
 import type { PlayerTaskStatus } from './PlayerTaskStatus';
 import type { Task } from './Task';
 export type PlayerTask = {
-    id?: string;
-    version?: number;
-    createdAt?: string;
-    updatedAt?: string;
-    order?: number;
-    status?: PlayerTaskStatus;
-    task?: Task;
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    order: number;
+    status: PlayerTaskStatus;
+    task: Task;
 };
 

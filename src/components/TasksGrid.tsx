@@ -1,18 +1,19 @@
 import React, { useMemo } from 'react';
-import type { PlayerTask } from '../api';
+import type { PlayerTask, Stamina } from '../api';
 import { PlayerTaskStatus } from '../api';
 import TaskCard from './TaskCard';
 import TaskCardSkeleton from './TaskCardSkeleton';
 
 type TasksGridProps = {
   tasks: PlayerTask[];
+  stamina: Stamina | null;
   loading: boolean;
   onTaskClick: (task: PlayerTask) => void;
   onComplete?: (task: PlayerTask) => void;
   onReplace?: (task: PlayerTask) => void;
 };
 
-const TasksGrid: React.FC<TasksGridProps> = ({ tasks, loading, onTaskClick, onComplete, onReplace }) => {
+const TasksGrid: React.FC<TasksGridProps> = ({ tasks, stamina, loading, onTaskClick, onComplete, onReplace }) => {
   const visibleTasks = useMemo(() => {
     const filtered = tasks.filter(
       t => t.status === PlayerTaskStatus.PREPARING ||
@@ -63,6 +64,7 @@ const TasksGrid: React.FC<TasksGridProps> = ({ tasks, loading, onTaskClick, onCo
           <TaskCard
             key={playerTask.id}
             playerTask={playerTask}
+            stamina={stamina}
             onClick={handlers.onClick}
             onComplete={handlers.onComplete}
             onReplace={handlers.onReplace}

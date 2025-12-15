@@ -8,7 +8,8 @@ import type {
   SearchPlayerTasksResponse,
   PlayerTaskStatus,
   LocalizedField,
-  OrderMode
+  OrderMode,
+  Stamina
 } from '../api';
 import { OrderMode as OrderModeEnum } from '../api';
 import TasksGrid from './TasksGrid';
@@ -23,6 +24,7 @@ interface TasksListProps {
   onTaskClick?: (task: PlayerTask) => void;
   onComplete?: (task: PlayerTask) => void;
   onReplace?: (task: PlayerTask) => void;
+  stamina?: Stamina | null;
 }
 
 const TasksList: React.FC<TasksListProps> = ({ 
@@ -32,7 +34,8 @@ const TasksList: React.FC<TasksListProps> = ({
   onFiltersUpdate,
   onTaskClick,
   onComplete,
-  onReplace
+  onReplace,
+  stamina
 }) => {
   const [tasks, setTasks] = useState<PlayerTask[]>([]);
   const [loading, setLoading] = useState(false);
@@ -320,13 +323,16 @@ const TasksList: React.FC<TasksListProps> = ({
         </div>
       )}
       
-      <TasksGrid
-        tasks={tasks}
-        loading={false}
-        onTaskClick={onTaskClick || (() => {})}
-        onComplete={onComplete}
-        onReplace={onReplace}
-      />
+      <div className={tasks.length > 0 && !loading ? 'animate-fadeIn' : ''} key={`tasks-${tasks.length}-${loading}`}>
+        <TasksGrid
+          tasks={tasks}
+          stamina={stamina || null}
+          loading={false}
+          onTaskClick={onTaskClick || (() => {})}
+          onComplete={onComplete}
+          onReplace={onReplace}
+        />
+      </div>
       
       {/* Индикатор загрузки для дополнительных задач */}
       {loadingMore && (

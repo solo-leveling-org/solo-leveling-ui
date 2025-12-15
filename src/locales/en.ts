@@ -133,6 +133,20 @@ export const en = {
   tasks: {
     title: 'Your Tasks',
     subtitle: 'Develop every day with personalized assignments',
+    stamina: {
+      title: 'Stamina',
+      nextRegen: 'Next regeneration',
+      fullRegen: 'Full regeneration',
+      now: 'Now',
+      fullyRestored: 'Fully restored',
+      regenRate: 'Regeneration',
+      every: 'every',
+      seconds: 'sec',
+      minutes: 'min',
+      hours: 'h',
+      hoverForDetails: 'Hover for details',
+      insufficientStamina: 'Not enough stamina. Required: {{required}}, you have: {{current}}',
+    },
     noTasks: {
       title: 'Choose Your Topics',
       subtitle: 'This will help select the best tasks for you and create a personal development plan',
