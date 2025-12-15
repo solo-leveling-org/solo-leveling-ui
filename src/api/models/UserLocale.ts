@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type UserLocaleResponse = {
-    locale: string;
+export type UserLocale = {
+    tag?: string;
     isManual: boolean;
 };
 

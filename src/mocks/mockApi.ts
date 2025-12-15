@@ -456,7 +456,6 @@ export const mockUserService = {
         lastName: leaderboardUser.lastName,
         photoUrl: leaderboardUser.photoUrl,
         locale: 'ru',
-        roles: [],
         player: {
           id: leaderboardUser.id,
           version: 1,
@@ -488,10 +487,16 @@ export const mockUserService = {
     });
   },
 
-  getUserLocale: (): CancelablePromise<any> => {
+  getUserAdditionalInfo: (): CancelablePromise<any> => {
     return new CancelablePromise(async (resolve) => {
       await delay(200);
-      resolve({ locale: 'ru' });
+      resolve({
+        locale: {
+          tag: 'ru',
+          isManual: false
+        },
+        roles: []
+      });
     });
   },
 

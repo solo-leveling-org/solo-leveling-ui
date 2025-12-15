@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useLocalization } from '../hooks/useLocalization';
 import { useTelegramWebApp } from '../useTelegram';
 import { LeaderboardType } from '../api';
@@ -6,6 +7,7 @@ import Icon from '../components/Icon';
 import LeaderboardView from '../components/LeaderboardView';
 import UserProfileView from '../components/UserProfileView';
 import { cn } from '../utils';
+import { globalBackButtonHandlerRef } from '../App';
 
 type CollectionsTabProps = {
   isAuthenticated: boolean;
@@ -19,12 +21,21 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
   const [contentLoaded, setContentLoaded] = useState(false);
   const [viewedUserId, setViewedUserId] = useState<number | null>(null);
   const { t } = useLocalization();
+  const location = useLocation();
   const { backButton } = useTelegramWebApp();
   const isBackButtonInitializedRef = useRef(false);
   const currentTabModeRef = useRef<TabMode>('main');
 
+  // Проверяем, находимся ли мы на табе коллекций
+  const isOnCollectionsTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
+
   // Управление кнопкой "Назад" в Telegram - устанавливаем один раз при открытии лидерборда
   useEffect(() => {
+    // Если мы не на табе коллекций, не управляем кнопкой
+    if (!isOnCollectionsTab) {
+      return;
+    }
+
     currentTabModeRef.current = tabMode;
     
     if (tabMode === 'leaderboard' && !isBackButtonInitializedRef.current) {
@@ -43,6 +54,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
         }
       };
       
+      globalBackButtonHandlerRef.current = handleBack;
       backButton.onClick(handleBack);
       isBackButtonInitializedRef.current = true;
     } else if (tabMode === 'userProfile') {
@@ -50,17 +62,14 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
       backButton.show();
     } else if (tabMode === 'main') {
       // Скрываем кнопку только при возврате на главную
+      if (globalBackButtonHandlerRef.current) {
+        backButton.offClick(globalBackButtonHandlerRef.current);
+        globalBackButtonHandlerRef.current = null;
+      }
       backButton.hide();
       isBackButtonInitializedRef.current = false;
     }
-    
-    return () => {
-      // Не скрываем кнопку при размонтировании, если мы в лидерборде
-      if (tabMode === 'main') {
-        backButton.hide();
-      }
-    };
-  }, [backButton, tabMode]);
+  }, [backButton, tabMode, isOnCollectionsTab]);
 
   useEffect(() => {
     setTimeout(() => {

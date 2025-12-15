@@ -63,7 +63,8 @@ export type { TgWebAppChat } from './models/TgWebAppChat';
 export type { TgWebAppData } from './models/TgWebAppData';
 export type { UpdateUserLocaleRequest } from './models/UpdateUserLocaleRequest';
 export type { User } from './models/User';
-export type { UserLocaleResponse } from './models/UserLocaleResponse';
+export type { UserAdditionalInfoResponse } from './models/UserAdditionalInfoResponse';
+export type { UserLocale } from './models/UserLocale';
 export { UserRole } from './models/UserRole';
 
 export { AuthService } from './services/AuthService';

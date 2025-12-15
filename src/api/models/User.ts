@@ -3,16 +3,14 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { Player } from './Player';
-import type { UserRole } from './UserRole';
 export type User = {
     id: number;
     version: number;
     username?: string;
-    firstName?: string;
+    firstName: string;
     lastName?: string;
     photoUrl?: string;
     locale?: string;
-    roles: Array<UserRole>;
     player: Player;
 };
 

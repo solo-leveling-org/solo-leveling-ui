@@ -146,6 +146,67 @@ body {
   box-sizing: border-box;
 }
 
+/* Отключаем выделение для контейнеров и интерактивных элементов */
+div,
+span,
+section,
+article,
+aside,
+nav,
+header,
+footer,
+main,
+button,
+button *,
+a,
+[role="button"],
+[role="button"] *,
+[role="tab"],
+[role="tab"] *,
+[role="menuitem"],
+[role="menuitem"] * {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Разрешаем выделение текста в текстовых элементах */
+p,
+h1, h2, h3, h4, h5, h6,
+li,
+td,
+th,
+label,
+code,
+pre,
+blockquote {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Разрешаем выделение текста в полях ввода */
+input,
+textarea,
+[contenteditable="true"],
+[contenteditable=""] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Класс для явного разрешения выделения текста */
+.selectable-text,
+.selectable-text * {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -719,6 +780,17 @@ code {
 @supports (padding: max(0px)) {
   .mobile-version .notification-container {
     top: calc(max(55px, env(safe-area-inset-top)) + 3rem) !important;
+  }
+}
+
+/* Отступ сверху для sticky элемента текущей позиции в лидерборде на мобильных устройствах */
+.mobile-version .leaderboard-current-user-sticky {
+  top: 100px !important;
+}
+
+@supports (padding: max(0px)) {
+  .mobile-version .leaderboard-current-user-sticky {
+    top: max(100px, env(safe-area-inset-top)) !important;
   }
 }
 
