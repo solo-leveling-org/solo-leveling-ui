@@ -295,7 +295,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
 
       {/* Tasks Grid or List */}
       {viewMode === 'active' ? (
-        <div key="active-tasks" className="animate-fadeIn">
+        <div key="active-tasks">
           <TasksGrid
             tasks={tasks}
             stamina={stamina}
@@ -306,7 +306,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
           />
         </div>
       ) : (
-        <div key="completed-tasks" className="animate-fadeIn">
+        <div key="completed-tasks">
           <TasksList
             statusFilter={[TaskStatus.COMPLETED, TaskStatus.SKIPPED]}
             dateFilters={dateFilters}

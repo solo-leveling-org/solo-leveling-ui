@@ -368,21 +368,28 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                           // Сохраняем позицию скролла перед переходом
                           scrollPositionRef.current = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
                           setIsTransitioning(true);
-                          setTimeout(() => {
-                            setTaskViewMode('active');
+                          // Даем время для начала анимации исчезновения
+                          requestAnimationFrame(() => {
                             setTimeout(() => {
-                              setIsTransitioning(false);
-                              setDisplayTaskViewMode('active');
-                              
-                              // Восстанавливаем позицию скролла после завершения анимации
-                              requestAnimationFrame(() => {
-                                window.scrollTo({
-                                  top: scrollPositionRef.current,
-                                  behavior: 'auto'
-                                });
-                              });
-                            }, 25);
-                          }, 100);
+                              setTaskViewMode('active');
+                              // Даем время для завершения анимации исчезновения перед показом нового контента
+                              setTimeout(() => {
+                                setDisplayTaskViewMode('active');
+                                // Даем время для завершения анимации появления
+                                setTimeout(() => {
+                                  setIsTransitioning(false);
+                                  
+                                  // Восстанавливаем позицию скролла после завершения анимации
+                                  requestAnimationFrame(() => {
+                                    window.scrollTo({
+                                      top: scrollPositionRef.current,
+                                      behavior: 'auto'
+                                    });
+                                  });
+                                }, 50);
+                              }, 150);
+                            }, 50);
+                          });
                         }
                       }}
                       className={`px-6 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-sm md:text-base transition-all duration-150 ease-in-out ${
@@ -410,21 +417,28 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                           // Сохраняем позицию скролла перед переходом
                           scrollPositionRef.current = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
                           setIsTransitioning(true);
-                          setTimeout(() => {
-                            setTaskViewMode('completed');
+                          // Даем время для начала анимации исчезновения
+                          requestAnimationFrame(() => {
                             setTimeout(() => {
-                              setIsTransitioning(false);
-                              setDisplayTaskViewMode('completed');
-                              
-                              // Восстанавливаем позицию скролла после завершения анимации
-                              requestAnimationFrame(() => {
-                                window.scrollTo({
-                                  top: scrollPositionRef.current,
-                                  behavior: 'auto'
-                                });
-                              });
-                            }, 25);
-                          }, 100);
+                              setTaskViewMode('completed');
+                              // Даем время для завершения анимации исчезновения перед показом нового контента
+                              setTimeout(() => {
+                                setDisplayTaskViewMode('completed');
+                                // Даем время для завершения анимации появления
+                                setTimeout(() => {
+                                  setIsTransitioning(false);
+                                  
+                                  // Восстанавливаем позицию скролла после завершения анимации
+                                  requestAnimationFrame(() => {
+                                    window.scrollTo({
+                                      top: scrollPositionRef.current,
+                                      behavior: 'auto'
+                                    });
+                                  });
+                                }, 50);
+                              }, 150);
+                            }, 50);
+                          });
                         }
                       }}
                       className={`px-6 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-sm md:text-base transition-all duration-150 ease-in-out ${
@@ -501,7 +515,8 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                 style={{
                   opacity: isTransitioning ? 0 : 1,
                   transform: isTransitioning ? 'translateY(10px)' : 'translateY(0)',
-                  transition: 'opacity 0.15s ease-out, transform 0.15s ease-out'
+                  transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
+                  willChange: isTransitioning ? 'opacity, transform' : 'auto'
                 }}
               >
                 <TasksSection

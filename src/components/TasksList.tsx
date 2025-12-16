@@ -391,7 +391,7 @@ const TasksList: React.FC<TasksListProps> = ({
         </div>
       )}
       
-      <div className={tasks.length > 0 && !loading ? 'animate-fadeIn' : ''} key={`tasks-${tasks.length}-${loading}`}>
+      <div key={`tasks-${tasks.length}-${loading}`}>
         <TasksGrid
           tasks={tasks}
           stamina={stamina || null}
