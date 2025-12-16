@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { PlayerTask, Stamina } from '../api';
 import { api } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
@@ -29,18 +29,23 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [displayTaskViewMode, setDisplayTaskViewMode] = useState<TaskViewMode>('active');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [contentLoaded, setContentLoaded] = useState(false);
+  const hasLoadedRef = useRef(false);
   const { t } = useLocalization();
 
   // Функция для обновления списка задач и стамины
-  const handleTasksUpdate = useCallback((newTasks: PlayerTask[], newStamina?: Stamina) => {
+  const handleTasksUpdate = useCallback((newTasks: PlayerTask[], newStamina?: Stamina, newFirstTime?: boolean) => {
     setTasks(newTasks);
     if (newStamina) {
       setStamina(newStamina);
+    }
+    if (newFirstTime !== undefined) {
+      setFirstTime(newFirstTime);
     }
     // Если задачи появились, значит firstTime стал false
     if (newTasks.length > 0) {
       setFirstTime(false);
     }
+    setLoading(false);
   }, []);
 
   // Используем хук для автоматического обновления задач при уведомлениях
@@ -50,15 +55,16 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   });
 
   // Загружаем задачи только при монтировании компонента и если авторизованы
+  // Используем useRef, чтобы гарантировать, что запрос выполнится только один раз
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !hasLoadedRef.current) {
+      hasLoadedRef.current = true;
       setContentLoaded(false);
+      setLoading(true);
+      // Делаем запрос только один раз при монтировании
       api.getPlayerTasks()
         .then((res) => {
-          setTasks(res.tasks);
-          setStamina(res.stamina);
-          setFirstTime(res.firstTime);
-          setLoading(false);
+          handleTasksUpdate(res.tasks, res.stamina, res.firstTime);
           // Если firstTime, перенаправляем в топики
           if (res.firstTime) {
             setTabMode('topics');
@@ -76,12 +82,13 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
             setContentLoaded(true);
           }, 50);
         });
-    } else {
+    } else if (!isAuthenticated) {
       // Если не авторизованы, не показываем loading
       setLoading(false);
       setContentLoaded(true);
+      hasLoadedRef.current = false; // Сбрасываем флаг при разлогине
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, handleTasksUpdate]);
 
   // Обработчик переключения на топики
   const handleGoToTopics = useCallback(() => {
@@ -427,21 +434,21 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
             {displayTabMode === 'tasks' && !firstTime && displayTaskViewMode === 'active' && (
               <>
                 {loading ? (
-                  <div className="flex justify-center mb-6 px-4">
-                    <div className="w-full max-w-md">
+                  <div className="mb-6 md:flex md:justify-center">
+                    <div className="w-full max-w-md mx-auto md:mx-0">
                       <StaminaIndicatorSkeleton />
                     </div>
                   </div>
                 ) : stamina ? (
                   <div 
-                    className="flex justify-center mb-6 px-4"
+                    className="mb-6 md:flex md:justify-center"
                     style={{
                       opacity: isTransitioning ? 0 : 1,
                       transform: isTransitioning ? 'translateY(10px)' : 'translateY(0)',
                       transition: 'opacity 0.15s ease-out, transform 0.15s ease-out'
                     }}
                   >
-                    <div className="w-full max-w-md">
+                    <div className="w-full max-w-md mx-auto md:mx-0">
                       <StaminaIndicator 
                         stamina={stamina} 
                         onStaminaUpdate={(updatedStamina) => {

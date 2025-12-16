@@ -140,6 +140,35 @@ const StaminaIndicator: React.FC<StaminaIndicatorProps> = ({ stamina, onStaminaU
     }
     return `${minutes} ${t('tasks.stamina.minutes')} ${seconds} ${t('tasks.stamina.seconds')}`;
   }, [displayStamina?.fullRegenAt, currentTime, t]);
+
+  // Форматирование времени для строки "+1 каждые n секунд"
+  const formatRegenInterval = useMemo(() => {
+    if (!displayStamina?.regenIntervalSeconds) return '';
+    
+    const seconds = displayStamina.regenIntervalSeconds;
+    
+    // Если меньше минуты, показываем секунды
+    if (seconds < 60) {
+      return `${seconds} ${t('tasks.stamina.seconds')}`;
+    }
+    
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    
+    // Если есть часы, показываем только часы и минуты (без секунд)
+    if (hours > 0) {
+      return `${hours} ${t('tasks.stamina.hours')} ${minutes} ${t('tasks.stamina.minutes')}`;
+    }
+    
+    // Если есть только минуты, показываем минуты (без секунд)
+    if (remainingSeconds === 0) {
+      return `${minutes} ${t('tasks.stamina.minutes')}`;
+    }
+    
+    // Если есть минуты и секунды, показываем оба
+    return `${minutes} ${t('tasks.stamina.minutes')} ${remainingSeconds} ${t('tasks.stamina.seconds')}`;
+  }, [displayStamina?.regenIntervalSeconds, t]);
   
   if (!displayStamina) {
     return null;
@@ -147,18 +176,20 @@ const StaminaIndicator: React.FC<StaminaIndicatorProps> = ({ stamina, onStaminaU
 
   const percentage = (displayStamina.current / displayStamina.max) * 100;
   
-  // Приглушенные цвета проекта в стиле Solo Leveling
+  // Неоновые голубые-бирюзовые цвета с ярким свечением
   const staminaColors = {
-    start: 'rgba(180, 220, 240, 0.8)',      // Приглушенный голубой
-    middle: 'rgba(200, 230, 245, 0.7)',     // Светлый голубой
-    end: 'rgba(180, 220, 240, 0.6)',       // Более темный голубой
-    glow: 'rgba(180, 220, 240, 0.3)',
-    glowStrong: 'rgba(200, 230, 245, 0.2)',
+    start: '#00ffff',           // Яркий циан (неоновый)
+    middle: '#40e0d0',          // Бирюзовый (turquoise)
+    end: '#00ced1',             // Темный бирюзовый (dark turquoise)
+    accent: '#00f5ff',          // Яркий акцентный голубой
+    glow: 'rgba(0, 255, 255, 0.6)',
+    glowStrong: 'rgba(64, 224, 208, 0.8)',
+    glowPulse: 'rgba(0, 245, 255, 0.9)',
   };
 
   return (
     <div
-      className="relative rounded-xl px-4 pt-4 pb-3 backdrop-blur-md group"
+      className="relative rounded-xl px-4 pt-4 pb-3 backdrop-blur-md group w-full"
       style={{
         background: 'rgba(220, 235, 245, 0.08)',
         border: '1px solid rgba(220, 235, 245, 0.12)',
@@ -185,52 +216,72 @@ const StaminaIndicator: React.FC<StaminaIndicatorProps> = ({ stamina, onStaminaU
         </span>
       </div>
 
-      {/* Holographic Progress bar with iridescent animation */}
+      {/* Neon Progress bar with vibrant animations */}
       <div className="relative mb-3">
         <div
           className="w-full h-4 rounded-full overflow-hidden relative"
           style={{
-            background: 'rgba(220, 235, 245, 0.1)',
-            boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+            background: 'rgba(0, 0, 0, 0.3)',
+            boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(0, 255, 255, 0.1)',
           }}
         >
-          {/* Animated holographic gradient fill */}
+          {/* Animated neon gradient fill */}
           <div
-            className="h-full rounded-full transition-all duration-500 ease-out relative overflow-hidden"
+            className="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
             style={{
               width: `${percentage}%`,
             }}
           >
-            {/* Main gradient with enhanced iridescent animation */}
+            {/* Main neon gradient with flowing animation */}
             <div
               className="absolute inset-0 rounded-full"
               style={{
-                background: `linear-gradient(135deg, ${staminaColors.start} 0%, ${staminaColors.middle} 30%, ${staminaColors.end} 60%, ${staminaColors.middle} 85%, ${staminaColors.start} 100%)`,
+                background: `linear-gradient(135deg, 
+                  ${staminaColors.start} 0%, 
+                  ${staminaColors.middle} 20%, 
+                  ${staminaColors.accent} 40%, 
+                  ${staminaColors.middle} 60%, 
+                  ${staminaColors.end} 80%, 
+                  ${staminaColors.start} 100%
+                )`,
                 backgroundSize: '300% 100%',
-                animation: 'holographic-shimmer 4s ease-in-out infinite',
+                animation: 'neon-flow 4s ease-in-out infinite',
                 boxShadow: `
-                  inset 0 1px 0 rgba(255, 255, 255, 0.2),
-                  0 0 15px ${staminaColors.glow},
-                  0 0 30px ${staminaColors.glowStrong}
+                  inset 0 1px 0 rgba(255, 255, 255, 0.4),
+                  0 0 20px ${staminaColors.glow},
+                  0 0 40px ${staminaColors.glowStrong},
+                  0 0 60px ${staminaColors.glow}
                 `,
+                filter: 'brightness(1.1)',
               }}
             />
             
-            {/* Enhanced shine effect overlay */}
+            {/* Pulsing glow effect */}
             <div
-              className="absolute inset-0 rounded-full opacity-50"
+              className="absolute inset-0 rounded-full"
               style={{
-                background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 50%, transparent 100%)',
-                animation: 'shimmer 2.5s ease-in-out infinite',
+                background: `radial-gradient(ellipse at center, ${staminaColors.glowPulse} 0%, transparent 60%)`,
+                animation: 'pulse-glow 2.5s ease-in-out infinite',
+                opacity: 0.5,
               }}
             />
             
-            {/* Additional shimmer layer for more depth */}
+            {/* Enhanced shine effect overlay - более плавный */}
             <div
-              className="absolute inset-0 rounded-full opacity-30"
+              className="absolute inset-0 rounded-full opacity-60"
               style={{
-                background: 'linear-gradient(45deg, transparent 30%, rgba(200, 230, 245, 0.4) 50%, transparent 70%)',
-                animation: 'shimmer-reverse 3s ease-in-out infinite',
+                background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 45%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.6) 55%, transparent 100%)',
+                backgroundSize: '200% 100%',
+                animation: 'shimmer 3s ease-in-out infinite',
+              }}
+            />
+            
+            {/* Additional shimmer layer for more depth - более мягкий */}
+            <div
+              className="absolute inset-0 rounded-full opacity-40"
+              style={{
+                background: 'radial-gradient(ellipse 150% 100% at 50% 50%, rgba(0, 255, 255, 0.4) 0%, transparent 60%)',
+                animation: 'shimmer-soft 4s ease-in-out infinite',
               }}
             />
           </div>
@@ -280,7 +331,7 @@ const StaminaIndicator: React.FC<StaminaIndicatorProps> = ({ stamina, onStaminaU
             {displayStamina.isRegenerating && (
               <div className="pt-2 border-t border-white/10">
                 <div className="text-xs font-tech whitespace-nowrap text-center" style={{ color: 'rgba(220, 235, 245, 0.6)' }}>
-                  +{displayStamina.regenRate} {t('tasks.stamina.every')} {displayStamina.regenIntervalSeconds} {t('tasks.stamina.seconds')}
+                  +{displayStamina.regenRate} {t('tasks.stamina.every')} {formatRegenInterval}
                 </div>
               </div>
             )}
@@ -305,31 +356,51 @@ const StaminaIndicator: React.FC<StaminaIndicatorProps> = ({ stamina, onStaminaU
       <style>{`
         @keyframes shimmer {
           0% {
-            transform: translateX(-100%);
+            background-position: -100% 0%;
           }
           100% {
-            transform: translateX(100%);
+            background-position: 200% 0%;
           }
         }
         
-        @keyframes holographic-shimmer {
+        @keyframes neon-flow {
           0% {
             background-position: 0% 50%;
+            filter: brightness(1.1);
+          }
+          33% {
+            background-position: 50% 50%;
+            filter: brightness(1.15);
+          }
+          66% {
+            background-position: 100% 50%;
+            filter: brightness(1.12);
+          }
+          100% {
+            background-position: 0% 50%;
+            filter: brightness(1.1);
+          }
+        }
+        
+        @keyframes pulse-glow {
+          0%, 100% {
+            opacity: 0.4;
+            transform: scale(1) translateX(0);
           }
           50% {
-            background-position: 100% 50%;
-          }
-          100% {
-            background-position: 0% 50%;
+            opacity: 0.7;
+            transform: scale(1.08) translateX(5%);
           }
         }
         
-        @keyframes shimmer-reverse {
-          0% {
-            transform: translateX(100%);
+        @keyframes shimmer-soft {
+          0%, 100% {
+            transform: translateX(-20%) scale(1);
+            opacity: 0.3;
           }
-          100% {
-            transform: translateX(-100%);
+          50% {
+            transform: translateX(20%) scale(1.1);
+            opacity: 0.5;
           }
         }
       `}</style>

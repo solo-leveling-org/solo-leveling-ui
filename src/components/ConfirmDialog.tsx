@@ -98,48 +98,69 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             </div>
 
             {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-row gap-3">
+              {/* Cancel button - красный приглушенный голографический (как скипнутые задачи) */}
               <button
                 ref={cancelButtonRef}
                 type="button"
                 onClick={handleCancel}
                 onMouseDown={(e) => e.stopPropagation()}
-                className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 relative"
+                className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%), linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.1) 100%)',
                   backdropFilter: 'none',
-                  borderColor: 'rgba(220, 235, 245, 0.3)',
-                  boxShadow: '0 0 15px rgba(180, 220, 240, 0.15)',
-                  color: '#e8f4f8',
+                  borderColor: 'rgba(220, 38, 38, 0.3)',
+                  boxShadow: '0 0 20px rgba(220, 38, 38, 0.2), inset 0 0 20px rgba(220, 38, 38, 0.05)',
+                  color: 'rgba(220, 235, 245, 0.8)',
                   outline: 'none'
                 }}
                 tabIndex={0}
               >
+                {/* Holographic shimmer effect */}
+                <div 
+                  className="absolute inset-0 rounded-2xl opacity-30"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.15) 25%, rgba(220, 38, 38, 0.1) 50%, rgba(185, 28, 28, 0.15) 75%, rgba(220, 38, 38, 0.1) 100%)',
+                    backgroundSize: '300% 100%',
+                    animation: 'holographic-shimmer 4s ease-in-out infinite',
+                  }}
+                />
                 <span className="relative z-10 transition-colors duration-300 hover:text-white">
                   {cancelText || t('common.cancel')}
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"></div>
               </button>
+              
+              {/* Confirm button - зеленый (как завершенные задачи) */}
               <button
                 ref={confirmButtonRef}
                 type="button"
                 onClick={handleConfirm}
                 onMouseDown={(e) => e.stopPropagation()}
-                className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 relative"
+                className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%), linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%)',
                   backdropFilter: 'none',
-                  borderColor: 'rgba(180, 220, 240, 0.4)',
-                  boxShadow: '0 0 20px rgba(180, 220, 240, 0.25)',
-                  color: '#e8f4f8',
+                  borderColor: 'rgba(34, 197, 94, 0.3)',
+                  boxShadow: '0 0 20px rgba(34, 197, 94, 0.2), inset 0 0 20px rgba(34, 197, 94, 0.05)',
+                  color: 'rgba(220, 235, 245, 0.8)',
                   outline: 'none'
                 }}
                 tabIndex={0}
               >
+                {/* Holographic shimmer effect */}
+                <div 
+                  className="absolute inset-0 rounded-2xl opacity-30"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.15) 25%, rgba(34, 197, 94, 0.1) 50%, rgba(22, 163, 74, 0.15) 75%, rgba(34, 197, 94, 0.1) 100%)',
+                    backgroundSize: '300% 100%',
+                    animation: 'holographic-shimmer 4s ease-in-out infinite',
+                  }}
+                />
                 <span className="relative z-10 transition-colors duration-300 hover:text-white">
                   {confirmText || t('common.confirm')}
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"></div>
               </button>
             </div>
           </div>
