@@ -25,20 +25,41 @@ import {
   mockGetPlayerBalanceResponse,
   mockLoginResponse,
   mockRefreshResponse,
-  mockCompleteTaskResponse,
   mockTasks,
   mockTransactions,
   mockPlayerTopics,
   generateMockLeaderboardUsers,
   mockUser,
   createMockLeaderboardResponse,
+  mockStamina,
 } from './mockData';
 import { PlayerTaskStatus, TaskRarity, TaskTopic, Assessment, LeaderboardType } from '../api';
 import { createMockTask } from './mockData';
 import { CancelablePromise } from '../api';
+import type { Stamina } from '../api';
 
 // Имитация задержки сети
 const delay = (ms: number = 300) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Функция для получения стоимости задачи по редкости
+export const getTaskStaminaCost = (rarity?: TaskRarity): number => {
+  switch (rarity) {
+    case TaskRarity.COMMON:
+      return 10;
+    case TaskRarity.UNCOMMON:
+      return 20;
+    case TaskRarity.RARE:
+      return 30;
+    case TaskRarity.EPIC:
+      return 40;
+    case TaskRarity.LEGENDARY:
+      return 50;
+    default:
+      return 10; // По умолчанию COMMON
+  }
+};
+
+export const SKIP_STAMINA_COST = 5; // Стоимость скипа любой задачи
 
 // Хранилище состояния для моков (симулирует состояние на сервере)
 class MockState {
@@ -48,6 +69,7 @@ class MockState {
   private taskIdCounter = 1000; // Счетчик для новых задач
   private preparingTaskTimers = new Map<string, NodeJS.Timeout>(); // Таймеры для задач в статусе PREPARING
   private initialized = false; // Флаг инициализации таймеров
+  private stamina: Stamina = { ...mockStamina }; // Состояние стамины
   private playerState = {
     strength: mockUser.player.strength || 0,
     agility: mockUser.player.agility || 0,
@@ -62,6 +84,7 @@ class MockState {
       amount: mockUser.player.balance?.balance?.amount || 0,
     },
   };
+
 
   constructor() {
     // Запускаем таймеры для всех задач в статусе PREPARING при инициализации
@@ -83,11 +106,95 @@ class MockState {
   getTasks(): GetActiveTasksResponse {
     // Убеждаемся, что таймеры запущены
     this.initializePreparingTasks();
+    // Проверяем и обновляем стамину при загрузке страницы
+    this.checkAndUpdateStaminaOnLoad();
     
     return {
       ...mockGetActiveTasksResponse,
       tasks: this.tasks.filter(t => t.status !== 'COMPLETED' && t.status !== 'SKIPPED'),
+      stamina: { ...this.stamina },
     };
+  }
+
+  private updateFullRegenTime(): void {
+    const now = new Date();
+    if (this.stamina.current >= this.stamina.max) {
+      this.stamina.fullRegenAt = undefined;
+      return;
+    }
+    
+    const remainingStamina = this.stamina.max - this.stamina.current;
+    const fullRegenTime = new Date(now.getTime() + remainingStamina * this.stamina.regenIntervalSeconds * 1000);
+    this.stamina.fullRegenAt = fullRegenTime.toISOString();
+  }
+
+  // Проверка и обновление стамины при загрузке страницы или перед операциями
+  private checkAndUpdateStaminaOnLoad(): void {
+    const now = new Date();
+    
+    // Если стамина полная, ничего не делаем
+    if (this.stamina.current >= this.stamina.max) {
+      this.stamina.isRegenerating = false;
+      this.stamina.nextRegenAt = undefined;
+      this.stamina.fullRegenAt = undefined;
+      return;
+    }
+    
+    // Если нет времени следующего восстановления, устанавливаем его
+    if (!this.stamina.nextRegenAt) {
+      this.stamina.isRegenerating = true;
+      this.stamina.nextRegenAt = new Date(now.getTime() + this.stamina.regenIntervalSeconds * 1000).toISOString();
+      this.updateFullRegenTime();
+      return;
+    }
+    
+    let nextRegen = new Date(this.stamina.nextRegenAt);
+    
+    // Если время восстановления уже прошло, прибавляем стамину и устанавливаем следующее время
+    // Используем цикл для обработки всех прошедших интервалов
+    while (now >= nextRegen && this.stamina.current < this.stamina.max) {
+      // Прибавляем стамину
+      this.stamina.current = Math.min(
+        this.stamina.current + this.stamina.regenRate,
+        this.stamina.max
+      );
+      
+      // Устанавливаем следующее время восстановления
+      if (this.stamina.current < this.stamina.max) {
+        const newNextRegen = new Date(nextRegen.getTime() + this.stamina.regenIntervalSeconds * 1000);
+        this.stamina.nextRegenAt = newNextRegen.toISOString();
+        this.updateFullRegenTime();
+        // Обновляем nextRegen для следующей итерации цикла
+        nextRegen = new Date(newNextRegen);
+      } else {
+        // Стамина полностью восстановлена
+        this.stamina.isRegenerating = false;
+        this.stamina.nextRegenAt = undefined;
+        this.stamina.fullRegenAt = undefined;
+        break;
+      }
+    }
+    
+    // Если время еще не подошло, просто обновляем время полного восстановления
+    if (this.stamina.current < this.stamina.max && this.stamina.nextRegenAt) {
+      this.updateFullRegenTime();
+    }
+  }
+
+  // Проверка, достаточно ли стамины для выполнения задачи
+  canCompleteTask(taskRarity?: TaskRarity): boolean {
+    const staminaCost = getTaskStaminaCost(taskRarity);
+    return this.stamina.current >= staminaCost;
+  }
+
+  // Проверка, достаточно ли стамины для скипа задачи
+  canSkipTask(): boolean {
+    return this.stamina.current >= SKIP_STAMINA_COST;
+  }
+
+  // Получение текущей стамины
+  getStamina(): Stamina {
+    return { ...this.stamina };
   }
 
   getPlayerTopics(): GetPlayerTopicsResponse {
@@ -123,10 +230,10 @@ class MockState {
     const now = new Date();
     const newTask: PlayerTask = {
       id: taskId,
-      version: 1,
       order: maxOrder + 1,
       status: PlayerTaskStatus.PREPARING,
       createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
       task: createMockTask(
         taskId,
         taskTitles[randomIndex],
@@ -188,16 +295,32 @@ class MockState {
   }
 
   completeTask(taskId: string): CompleteTaskResponse {
+    // Обновляем стамину на основе времени перед проверкой
+    // Это гарантирует, что стамина актуальна даже если она обновлялась локально в UI
+    this.checkAndUpdateStaminaOnLoad();
+    
     const taskIndex = this.tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) {
-      return mockCompleteTaskResponse;
+      throw new Error('Task not found');
     }
 
     const completedTask = this.tasks[taskIndex];
     const task = completedTask.task;
     if (!task) {
-      return mockCompleteTaskResponse;
+      throw new Error('Task data not found');
     }
+
+    // Проверяем наличие достаточного количества стамины
+    const staminaCost = getTaskStaminaCost(task.rarity);
+    if (this.stamina.current < staminaCost) {
+      throw new Error(`Not enough stamina. Required: ${staminaCost}, Current: ${this.stamina.current}`);
+    }
+
+    // Списываем стамину
+    this.stamina.current = Math.max(0, this.stamina.current - staminaCost);
+    
+    // Обновляем время полного восстановления после списания
+    this.updateFullRegenTime();
 
     this.completedTaskIds.add(taskId);
     
@@ -296,7 +419,6 @@ class MockState {
           taskTopic: topic,
           level: {
             id: `level-${Date.now()}`,
-            version: 1,
             level: 1,
             totalExperience: perTopicExpGain,
             currentExperience: perTopicExpGain,
@@ -370,23 +492,40 @@ class MockState {
   }
 
   skipTask(taskId: string): void {
+    // Обновляем стамину на основе времени перед проверкой
+    // Это гарантирует, что стамина актуальна даже если она обновлялась локально в UI
+    this.checkAndUpdateStaminaOnLoad();
+    
     const taskIndex = this.tasks.findIndex(t => t.id === taskId);
-    if (taskIndex !== -1) {
-      // СРАЗУ заменяем старую задачу на новую в статусе PREPARING
-      const newTask = this.generateNewTask();
-      this.tasks[taskIndex] = newTask;
-      
-      // Запускаем таймер для перехода в IN_PROGRESS
-      if (newTask.id) {
-        this.scheduleTaskStatusChange(newTask.id);
-      }
-      
-      // Отправляем событие для обновления списка задач
-      const event = new CustomEvent('tasks-notification', {
-        detail: { source: 'tasks' }
-      });
-      window.dispatchEvent(event);
+    if (taskIndex === -1) {
+      throw new Error('Task not found');
     }
+
+    // Проверяем наличие достаточного количества стамины
+    if (this.stamina.current < SKIP_STAMINA_COST) {
+      throw new Error(`Not enough stamina. Required: ${SKIP_STAMINA_COST}, Current: ${this.stamina.current}`);
+    }
+
+    // Списываем стамину
+    this.stamina.current = Math.max(0, this.stamina.current - SKIP_STAMINA_COST);
+    
+    // Обновляем время полного восстановления после списания
+    this.updateFullRegenTime();
+
+    // СРАЗУ заменяем старую задачу на новую в статусе PREPARING
+    const newTask = this.generateNewTask();
+    this.tasks[taskIndex] = newTask;
+    
+    // Запускаем таймер для перехода в IN_PROGRESS
+    if (newTask.id) {
+      this.scheduleTaskStatusChange(newTask.id);
+    }
+    
+    // Отправляем событие для обновления списка задач
+    const event = new CustomEvent('tasks-notification', {
+      detail: { source: 'tasks' }
+    });
+    window.dispatchEvent(event);
   }
 
   savePlayerTopics(topics: SavePlayerTopicsRequest): void {
@@ -450,7 +589,6 @@ export const mockUserService = {
       const leaderboardUser = allUsers.find(u => u.id === userId);
       const mockUserData: User = leaderboardUser ? {
         id: leaderboardUser.id,
-        version: 1,
         username: `user_${leaderboardUser.id}`,
         firstName: leaderboardUser.firstName,
         lastName: leaderboardUser.lastName,
@@ -458,14 +596,11 @@ export const mockUserService = {
         locale: 'ru',
         player: {
           id: leaderboardUser.id,
-          version: 1,
-          maxTasks: 5,
           agility: 10 + (leaderboardUser.id % 10),
           strength: 15 + (leaderboardUser.id % 10),
           intelligence: 12 + (leaderboardUser.id % 10),
           level: {
             id: `level-${leaderboardUser.id}`,
-            version: 1,
             level: Math.floor(leaderboardUser.score / 100) || 1,
             totalExperience: leaderboardUser.score * 10,
             currentExperience: (leaderboardUser.score * 10) % 1000,
@@ -474,7 +609,6 @@ export const mockUserService = {
           },
           balance: {
             id: `balance-${leaderboardUser.id}`,
-            version: 1,
             balance: {
               currencyCode: 'GOLD',
               amount: leaderboardUser.score || 0,
@@ -601,18 +735,26 @@ export const mockPlayerService = {
   },
 
   completeTask: (id: string): CancelablePromise<CompleteTaskResponse> => {
-    return new CancelablePromise(async (resolve) => {
+    return new CancelablePromise(async (resolve, reject) => {
       await delay(500);
-      const response = mockState.completeTask(id);
-      resolve(response);
+      try {
+        const response = mockState.completeTask(id);
+        resolve(response);
+      } catch (error) {
+        reject(error);
+      }
     });
   },
 
   skipTask: (id: string): CancelablePromise<void> => {
-    return new CancelablePromise(async (resolve) => {
+    return new CancelablePromise(async (resolve, reject) => {
       await delay(400);
-      mockState.skipTask(id);
-      resolve(undefined);
+      try {
+        mockState.skipTask(id);
+        resolve(undefined);
+      } catch (error) {
+        reject(error);
+      }
     });
   },
 

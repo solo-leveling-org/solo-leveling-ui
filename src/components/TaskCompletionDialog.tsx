@@ -221,17 +221,18 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                       background: 'linear-gradient(90deg, rgba(180, 220, 240, 0.8) 0%, rgba(160, 210, 235, 0.6) 100%)',
                       boxShadow: '0 0 12px rgba(180, 220, 240, 0.4)'
                     }}
-                  >
-                    <div 
-                      className="absolute inset-0 rounded-full"
-                      style={{
-                        background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%)',
-                        backgroundSize: '200% 100%',
-                        animation: 'shimmer 3s ease-in-out infinite',
-                        opacity: 0.5
-                      }}
-                    ></div>
-                  </div>
+                  />
+                  {/* Shimmer effect на всю ширину контейнера - всегда показывается, независимо от опыта */}
+                  <div 
+                    className="absolute top-0 left-0 h-full rounded-full pointer-events-none"
+                    style={{
+                      width: '100%',
+                      background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%)',
+                      backgroundSize: '200% 100%',
+                      animation: 'shimmer 3s ease-in-out infinite',
+                      opacity: 0.5
+                    }}
+                  ></div>
                 </div>
               </div>
               
@@ -355,19 +356,18 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                                   background: 'linear-gradient(90deg, rgba(180, 220, 240, 0.8) 0%, rgba(160, 210, 235, 0.6) 100%)',
                                   boxShadow: '0 0 10px rgba(180, 220, 240, 0.4)'
                                 }}
-                              >
-                                {progressPercentage > 0 && (
-                                  <div 
-                                    className="absolute inset-0 rounded-full"
-                                    style={{
-                                      background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%)',
-                                      backgroundSize: '200% 100%',
-                                      animation: 'shimmer 3s ease-in-out infinite',
-                                      opacity: 0.5
-                                    }}
-                                  ></div>
-                                )}
-                              </div>
+                              />
+                              {/* Shimmer effect на всю ширину контейнера - всегда показывается, независимо от опыта */}
+                              <div 
+                                className="absolute top-0 left-0 h-full rounded-full pointer-events-none"
+                                style={{
+                                  width: '100%',
+                                  background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%)',
+                                  backgroundSize: '200% 100%',
+                                  animation: 'shimmer 3s ease-in-out infinite',
+                                  opacity: 0.5
+                                }}
+                              ></div>
                             </div>
                           </div>
                         </div>

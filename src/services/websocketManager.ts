@@ -1,7 +1,7 @@
 import { Client, IMessage } from '@stomp/stompjs';
-import { OpenAPI } from '../api';
 import type { Message } from '../api';
 import { auth } from '../auth';
+import { config } from '../config/environment';
 
 type NotificationHandler = (notification: Message['payload']) => void;
 type LocaleUpdateHandler = () => Promise<void>;
@@ -203,17 +203,41 @@ class WebSocketManager {
         this.client = null;
       }
 
-      const base = OpenAPI.BASE || '';
-      const url = new URL(base);
-      const isSecure = url.protocol === 'https:';
-      const wsProtocol = isSecure ? 'wss:' : 'ws:';
-      const brokerURL = `${wsProtocol}//${url.host}/ws?token=${encodeURIComponent(token)}`;
+      // Используем wsUrl из конфигурации окружения вместо формирования из OpenAPI.BASE
+      // Важно: всегда читаем актуальное значение из config, чтобы гарантировать правильный URL
+      // Никогда не формируем URL из window.location или OpenAPI.BASE
+      const wsBaseUrl = config.wsUrl || 'wss://solo-leveling-gateway.ru.tuna.am/ws';
+      
+      // Убеждаемся, что URL абсолютный (начинается с ws:// или wss://)
+      if (!wsBaseUrl.startsWith('ws://') && !wsBaseUrl.startsWith('wss://')) {
+        console.error('[WS Manager] Invalid WebSocket URL (must start with ws:// or wss://):', wsBaseUrl);
+        reject(new Error('Invalid WebSocket URL configuration'));
+        return;
+      }
+      
+      const brokerURL = `${wsBaseUrl}?token=${encodeURIComponent(token)}`;
+
+      console.log('[WS Manager] Connecting to:', brokerURL.replace(/\?token=.*$/, '?token=***'));
 
       const client = new Client({
         brokerURL,
-        reconnectDelay: 0, // Отключаем автоматическое переподключение STOMP, управляем сами
+        // КРИТИЧНО: Отключаем ВСЕ автоматические переподключения STOMP
+        // Мы управляем переподключением сами через scheduleReconnect()
+        reconnectDelay: 0,
+        // Устанавливаем большой таймаут, чтобы предотвратить автоматические переподключения
+        connectionTimeout: 5000,
+        // Отключаем автоматическое переподключение при ошибках
+        // Важно: библиотека может пытаться переподключиться автоматически,
+        // поэтому мы должны явно управлять этим через наш код
         heartbeatIncoming: 10000,
         heartbeatOutgoing: 10000,
+        // Дополнительная защита: убеждаемся, что библиотека не использует внутренние механизмы переподключения
+        debug: (str: string) => {
+          // Логируем только важные сообщения, чтобы не засорять консоль
+          if (str.includes('reconnect') || str.includes('error') || str.includes('close')) {
+            console.log('[WS Manager][STOMP Debug]', str);
+          }
+        },
         onConnect: () => {
           console.log('[WS Manager] Connected successfully');
           this.isConnecting = false;
@@ -264,6 +288,14 @@ class WebSocketManager {
         onWebSocketClose: (event: CloseEvent) => {
           console.warn('[WS Manager][CLOSED]', event.code, event.reason);
           this.isConnecting = false;
+          // Важно: очищаем клиент ДО планирования переподключения, чтобы предотвратить использование старого URL
+          if (this.client) {
+            try {
+              this.client.deactivate();
+            } catch (e) {
+              console.warn('[WS Manager] Error deactivating client on close:', e);
+            }
+          }
           this.client = null;
           // Не сбрасываем lastUsedToken, чтобы при переподключении использовать тот же токен
 
@@ -303,21 +335,29 @@ class WebSocketManager {
     // Очищаем предыдущий таймер, если есть
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
     }
 
     // Если менеджер отключен, не планируем переподключение
     if (!this.isEnabled) {
+      console.log('[WS Manager] Not scheduling reconnect: manager is disabled');
       return;
     }
 
     // Если уже подключены, не планируем переподключение
     if (this.isConnected()) {
+      console.log('[WS Manager] Not scheduling reconnect: already connected');
       return;
     }
 
-    console.log(`[WS Manager] Scheduling reconnect in ${this.reconnectInterval / 1000}s`);
+    // Логируем, какой URL будет использован при переподключении
+    // Важно: читаем актуальное значение из config при каждом переподключении
+    const currentWsUrl = config.wsUrl || 'wss://solo-leveling-gateway.ru.tuna.am/ws';
+    console.log(`[WS Manager] Scheduling reconnect in ${this.reconnectInterval / 1000}s to: ${currentWsUrl}`);
+    
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
+      console.log('[WS Manager] Executing scheduled reconnect...');
       this.attemptConnection();
     }, this.reconnectInterval);
   }

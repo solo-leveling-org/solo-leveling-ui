@@ -8,7 +8,8 @@ import type {
   SearchPlayerTasksResponse,
   PlayerTaskStatus,
   LocalizedField,
-  OrderMode
+  OrderMode,
+  Stamina
 } from '../api';
 import { OrderMode as OrderModeEnum } from '../api';
 import TasksGrid from './TasksGrid';
@@ -23,6 +24,8 @@ interface TasksListProps {
   onTaskClick?: (task: PlayerTask) => void;
   onComplete?: (task: PlayerTask) => void;
   onReplace?: (task: PlayerTask) => void;
+  stamina?: Stamina | null;
+  isTransitioning?: boolean;
 }
 
 const TasksList: React.FC<TasksListProps> = ({ 
@@ -32,7 +35,9 @@ const TasksList: React.FC<TasksListProps> = ({
   onFiltersUpdate,
   onTaskClick,
   onComplete,
-  onReplace
+  onReplace,
+  stamina,
+  isTransitioning = false
 }) => {
   const [tasks, setTasks] = useState<PlayerTask[]>([]);
   const [loading, setLoading] = useState(false);
@@ -57,6 +62,7 @@ const TasksList: React.FC<TasksListProps> = ({
   const hasMoreRef = useRef(true);
   const isLoadingRef = useRef(false);
   const loadTasksRef = useRef<typeof loadTasks | undefined>(undefined);
+  const hasAttemptedLoadRef = useRef(false); // Флаг для отслеживания попытки загрузки
   
   const { t } = useLocalization();
 
@@ -68,6 +74,7 @@ const TasksList: React.FC<TasksListProps> = ({
     if (!reset && !hasMoreRef.current) return;
     
     isLoadingRef.current = true;
+    hasAttemptedLoadRef.current = true; // Отмечаем, что началась попытка загрузки
     
     if (reset) {
       setLoading(true);
@@ -219,22 +226,85 @@ const TasksList: React.FC<TasksListProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasMore, loadingMore, tasks.length]);
 
+  // Загрузка при завершении перехода (когда isTransitioning меняется с true на false)
+  useEffect(() => {
+    if (!isTransitioning && tasks.length === 0 && !loading && !isLoadingRef.current) {
+      // Если переход завершился, но данных еще нет, начинаем загрузку
+      hasMoreRef.current = true;
+      currentPageRef.current = 0;
+      hasAttemptedLoadRef.current = false; // Сбрасываем флаг, чтобы показывать skeleton
+      // Добавляем задержку, чтобы дать время анимации полностью завершиться
+      const timeoutId = setTimeout(() => {
+        if (!isTransitioning) { // Дополнительная проверка перед загрузкой
+          loadTasks(0, true);
+        }
+      }, 100); // Задержка для плавности перехода
+      
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTransitioning]);
+
   // Загрузка при монтировании и изменении фильтров
   useEffect(() => {
+    // Не начинаем загрузку, если идет переход (анимация)
+    if (isTransitioning) {
+      return;
+    }
+    
     // Сбрасываем состояние перед загрузкой
     hasMoreRef.current = true;
     currentPageRef.current = 0;
-    loadTasks(0, true);
+    hasAttemptedLoadRef.current = false; // Сбрасываем флаг, чтобы показывать skeleton при новом поиске
+    
+    // Добавляем задержку, чтобы дать время анимации перехода завершиться
+    // и избежать резкого переключения компонентов
+    const timeoutId = setTimeout(() => {
+      // Дополнительная проверка перед загрузкой
+      if (!isTransitioning && !isLoadingRef.current) {
+        loadTasks(0, true);
+      }
+    }, 200); // Увеличиваем задержку для более плавного перехода
+    
+    return () => {
+      clearTimeout(timeoutId);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter.join(','), dateFilters.from, dateFilters.to, JSON.stringify(enumFilters)]);
 
-  // Показываем skeleton во время первой загрузки
-  if (loading && tasks.length === 0) {
+  // Показываем skeleton во время первой загрузки или если загрузка еще не началась
+  // Но не показываем во время перехода, чтобы избежать резкого наложения компонентов
+  if (tasks.length === 0 && !hasAttemptedLoadRef.current && !isTransitioning) {
+    // Показываем skeleton, если загрузка еще не началась
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
           <TaskCardSkeleton key={i} />
         ))}
+      </div>
+    );
+  }
+  
+  if (loading && tasks.length === 0 && !isTransitioning) {
+    // Показываем skeleton во время загрузки
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <TaskCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
+  
+  // Во время перехода показываем пустой контейнер, чтобы не было наложения
+  if (isTransitioning && tasks.length === 0) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6" style={{
+        opacity: 0,
+        minHeight: '200px'
+      }}>
       </div>
     );
   }
@@ -268,8 +338,9 @@ const TasksList: React.FC<TasksListProps> = ({
     );
   }
 
-  // Показываем пустое состояние
-  if (tasks.length === 0 && !loading) {
+  // Показываем пустое состояние только если загрузка была завершена и данных нет
+  // Не показываем, если загрузка еще не начиналась (hasAttemptedLoadRef.current === false)
+  if (tasks.length === 0 && !loading && hasAttemptedLoadRef.current && !error) {
     return (
       <div className="text-center py-12">
         <div 
@@ -320,13 +391,16 @@ const TasksList: React.FC<TasksListProps> = ({
         </div>
       )}
       
-      <TasksGrid
-        tasks={tasks}
-        loading={false}
-        onTaskClick={onTaskClick || (() => {})}
-        onComplete={onComplete}
-        onReplace={onReplace}
-      />
+      <div key={`tasks-${tasks.length}-${loading}`}>
+        <TasksGrid
+          tasks={tasks}
+          stamina={stamina || null}
+          loading={false}
+          onTaskClick={onTaskClick || (() => {})}
+          onComplete={onComplete}
+          onReplace={onReplace}
+        />
+      </div>
       
       {/* Индикатор загрузки для дополнительных задач */}
       {loadingMore && (

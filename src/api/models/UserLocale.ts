@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type UserLocale = {
-    tag?: string;
+    tag: string;
     isManual: boolean;
 };
 

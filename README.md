@@ -15,6 +15,8 @@ npm install
 npm start
 # или явно
 npm run start:dev
+
+tuna http 3000 --subdomain=solo-leveling-ui
 ```
 
 **Development настройки:**

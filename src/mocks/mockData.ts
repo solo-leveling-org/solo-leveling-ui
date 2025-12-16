@@ -17,6 +17,7 @@ import type {
   JwtToken,
   LeaderboardUser,
   GetUsersLeaderboardResponse,
+  Stamina,
 } from '../api';
 import {
   TaskTopic,
@@ -31,7 +32,6 @@ import {
 // Моковые данные для пользователя
 export const mockUser: User = {
   id: 1,
-  version: 1,
   username: 'mock_user',
   firstName: 'Mock',
   lastName: 'User',
@@ -39,14 +39,11 @@ export const mockUser: User = {
   locale: 'ru',
   player: {
     id: 1,
-    version: 1,
-    maxTasks: 5,
     agility: 10,
     strength: 15,
     intelligence: 12,
     level: {
       id: 'level-1',
-      version: 1,
       level: 5,
       totalExperience: 2500,
       currentExperience: 500,
@@ -55,7 +52,6 @@ export const mockUser: User = {
     },
     balance: {
       id: 'balance-1',
-      version: 1,
       balance: {
         currencyCode: 'GOLD',
         amount: 1500,
@@ -68,7 +64,6 @@ export const mockUser: User = {
 // Моковые уровни для топиков
 const createMockLevel = (level: number, assessment: Assessment): Level => ({
   id: `level-${level}`,
-  version: 1,
   level,
   totalExperience: level * 500,
   currentExperience: (level * 500) % 1000,
@@ -123,7 +118,6 @@ export const createMockTask = (
   currencyReward: number
 ): Task => ({
   id,
-  version: 1,
   title,
   description,
   experience,
@@ -211,7 +205,6 @@ const generateCompletedTasks = (): PlayerTask[] => {
     
     tasks.push({
       id: `task-completed-${i + 1}`,
-      version: 1,
       order: i + 1,
       status: taskStatus,
       createdAt: createdAtDate.toISOString(),
@@ -242,10 +235,10 @@ const getCreatedAtForActiveTask = (daysAgo: number, hoursAgo: number = 0) => {
 export const mockTasks: PlayerTask[] = [
   {
     id: 'task-legendary-long',
-    version: 1,
     order: 0,
     status: PlayerTaskStatus.IN_PROGRESS,
     createdAt: getCreatedAtForActiveTask(1, 3),
+    updatedAt: getCreatedAtForActiveTask(1, 3),
     task: createMockTask(
       'task-legendary-long',
       'Очень длинное название задачи для проверки наложения элементов интерфейса друг на друга при максимальной редкости',
@@ -258,10 +251,10 @@ export const mockTasks: PlayerTask[] = [
   },
   {
     id: 'task-1',
-    version: 1,
     order: 1,
     status: PlayerTaskStatus.PREPARING,
     createdAt: getCreatedAtForActiveTask(0, 1),
+    updatedAt: getCreatedAtForActiveTask(0, 1),
     task: createMockTask(
       'task-1',
       'Пробежка 5 км',
@@ -274,10 +267,10 @@ export const mockTasks: PlayerTask[] = [
   },
   {
     id: 'task-2',
-    version: 1,
     order: 2,
     status: PlayerTaskStatus.IN_PROGRESS,
     createdAt: getCreatedAtForActiveTask(0, 5),
+    updatedAt: getCreatedAtForActiveTask(0, 5),
     task: createMockTask(
       'task-2',
       'Прочитать главу книги',
@@ -290,10 +283,10 @@ export const mockTasks: PlayerTask[] = [
   },
   {
     id: 'task-3',
-    version: 1,
     order: 3,
     status: PlayerTaskStatus.IN_PROGRESS,
     createdAt: getCreatedAtForActiveTask(0, 8),
+    updatedAt: getCreatedAtForActiveTask(0, 8),
     task: createMockTask(
       'task-3',
       'Медитация 10 минут',
@@ -306,10 +299,10 @@ export const mockTasks: PlayerTask[] = [
   },
   {
     id: 'task-4',
-    version: 1,
     order: 4,
     status: PlayerTaskStatus.IN_PROGRESS,
     createdAt: getCreatedAtForActiveTask(1, 2),
+    updatedAt: getCreatedAtForActiveTask(1, 2),
     task: createMockTask(
       'task-4',
       'Написать код',
@@ -322,10 +315,10 @@ export const mockTasks: PlayerTask[] = [
   },
   {
     id: 'task-5',
-    version: 1,
     order: 5,
     status: PlayerTaskStatus.IN_PROGRESS,
     createdAt: getCreatedAtForActiveTask(1, 6),
+    updatedAt: getCreatedAtForActiveTask(1, 6),
     task: createMockTask(
       'task-5',
       'Тренировка и изучение',
@@ -338,10 +331,10 @@ export const mockTasks: PlayerTask[] = [
   },
   {
     id: 'task-6',
-    version: 1,
     order: 6,
     status: PlayerTaskStatus.IN_PROGRESS,
     createdAt: getCreatedAtForActiveTask(2, 1),
+    updatedAt: getCreatedAtForActiveTask(2, 1),
     task: createMockTask(
       'task-6',
       'Медитация и творчество',
@@ -354,10 +347,10 @@ export const mockTasks: PlayerTask[] = [
   },
   {
     id: 'task-7',
-    version: 1,
     order: 7,
     status: PlayerTaskStatus.IN_PROGRESS,
     createdAt: getCreatedAtForActiveTask(2, 4),
+    updatedAt: getCreatedAtForActiveTask(2, 4),
     task: createMockTask(
       'task-7',
       'Йога и обучение',
@@ -399,7 +392,6 @@ const generateMockTransactions = (): PlayerBalanceTransaction[] => {
     
     transactions.push({
       id: `trans-${i + 1}`,
-      version: 1,
       amount: {
         currencyCode: 'GOLD',
         amount,
@@ -431,8 +423,20 @@ export const mockGetUserResponse: GetUserResponse = {
   user: mockUser,
 };
 
+// Моковые данные для стамины
+export const mockStamina: Stamina = {
+  current: 100,
+  max: 100,
+  isRegenerating: true,
+  regenRate: 1,
+  regenIntervalSeconds: 10, // Восстановление каждые 10 секунд
+  nextRegenAt: new Date(Date.now() + 10 * 1000).toISOString(), // Через 10 секунд
+  fullRegenAt: new Date(Date.now() + (100 - 100) * 10 * 1000).toISOString(), // Полное восстановление когда current = max
+};
+
 export const mockGetActiveTasksResponse: GetActiveTasksResponse = {
   tasks: mockTasks,
+  stamina: mockStamina,
   firstTime: false,
 };
 

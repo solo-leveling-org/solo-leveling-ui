@@ -28,8 +28,8 @@ const shouldUseMocks = (): boolean => {
 
 const developmentConfig: EnvironmentConfig = {
   env: 'development',
-  apiBaseUrl: 'https://solo-leveling-gateway.ru.tuna.am',
-  wsUrl: 'wss://solo-leveling-gateway.ru.tuna.am/ws',
+  apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'https://solo-leveling-gateway.ru.tuna.am',
+  wsUrl: process.env.REACT_APP_WS_URL || 'wss://solo-leveling-gateway.ru.tuna.am/ws',
   isDevelopment: true,
   isProduction: false,
   useMocks: shouldUseMocks(),
@@ -37,8 +37,8 @@ const developmentConfig: EnvironmentConfig = {
 
 const productionConfig: EnvironmentConfig = {
   env: 'production',
-  apiBaseUrl: 'https://gateway.solo-leveling.online',
-  wsUrl: 'wss://gateway.solo-leveling.online/ws',
+  apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'https://gateway.solo-leveling.online',
+  wsUrl: process.env.REACT_APP_WS_URL || 'wss://gateway.solo-leveling.online/ws',
   isDevelopment: false,
   isProduction: true,
   useMocks: false, // В production никогда не используем моки

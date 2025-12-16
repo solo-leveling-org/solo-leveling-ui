@@ -133,6 +133,20 @@ export const ru = {
   tasks: {
     title: 'Твои задачи',
     subtitle: 'Развивайся каждый день с персональными заданиями',
+    stamina: {
+      title: 'Стамина',
+      nextRegen: 'Следующее восстановление',
+      fullRegen: 'Полное восстановление',
+      now: 'Сейчас',
+      fullyRestored: 'Полностью восстановлена',
+      regenRate: 'Восстановление',
+      every: 'каждые',
+      seconds: 'сек',
+      minutes: 'мин',
+      hours: 'ч',
+      hoverForDetails: 'Наведите для подробностей',
+      insufficientStamina: 'Недостаточно стамины. Требуется: {{required}}, у вас: {{current}}',
+    },
     noTasks: {
       title: 'Выбери свои темы',
       subtitle: 'Это поможет подобрать для тебя лучшие задачи и создать персональный план развития',
