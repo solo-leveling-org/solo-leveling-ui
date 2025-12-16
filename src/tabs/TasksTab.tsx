@@ -512,6 +512,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                   onTasksUpdate={handleTasksUpdate}
                   onGoToTopics={handleGoToTopics}
                   initialViewMode={displayTaskViewMode}
+                  isTransitioning={isTransitioning}
                 />
               </div>
             )}

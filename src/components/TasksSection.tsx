@@ -21,6 +21,7 @@ type TasksSectionProps = {
   onTasksUpdate?: (tasks: PlayerTask[], stamina?: Stamina) => void;
   onGoToTopics?: () => void;
   initialViewMode?: 'active' | 'completed';
+  isTransitioning?: boolean;
 };
 
 type TaskViewMode = 'active' | 'completed';
@@ -32,7 +33,8 @@ const TasksSection: React.FC<TasksSectionProps> = ({
   firstTime,
   onTasksUpdate,
   onGoToTopics,
-  initialViewMode = 'active'
+  initialViewMode = 'active',
+  isTransitioning = false
 }) => {
   const [viewMode, setViewMode] = useState<TaskViewMode>(initialViewMode);
   
@@ -312,6 +314,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
             onFiltersUpdate={handleFiltersUpdate}
             onTaskClick={handleTaskClick}
             stamina={stamina}
+            isTransitioning={isTransitioning}
           />
         </div>
       )}
