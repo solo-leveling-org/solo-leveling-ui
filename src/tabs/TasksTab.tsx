@@ -31,6 +31,9 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [contentLoaded, setContentLoaded] = useState(false);
   const hasLoadedRef = useRef(false);
   const scrollPositionRef = useRef<number>(0);
+  const scrollContainerRef = useRef<HTMLElement | null>(null);
+  const contentHeightRef = useRef<number>(0);
+  const contentContainerRef = useRef<HTMLDivElement | null>(null);
   const { t } = useLocalization();
 
   // Функция для обновления списка задач и стамины
@@ -365,8 +368,22 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                     <button
                       onClick={() => {
                         if (taskViewMode !== 'active') {
+                          // Находим скроллируемый контейнер
+                          const scrollContainer = document.querySelector('.fixed.inset-0.overflow-y-auto') as HTMLElement;
+                          scrollContainerRef.current = scrollContainer;
+                          
                           // Сохраняем позицию скролла перед переходом
-                          scrollPositionRef.current = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+                          if (scrollContainer) {
+                            scrollPositionRef.current = scrollContainer.scrollTop;
+                          } else {
+                            scrollPositionRef.current = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+                          }
+                          
+                          // Сохраняем высоту контента перед переходом
+                          if (contentContainerRef.current) {
+                            contentHeightRef.current = contentContainerRef.current.scrollHeight;
+                          }
+                          
                           setIsTransitioning(true);
                           // Даем время для начала анимации исчезновения
                           requestAnimationFrame(() => {
@@ -380,10 +397,20 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                                   setIsTransitioning(false);
                                   
                                   // Восстанавливаем позицию скролла после завершения анимации
+                                  // Используем несколько requestAnimationFrame для гарантии, что DOM обновился
                                   requestAnimationFrame(() => {
-                                    window.scrollTo({
-                                      top: scrollPositionRef.current,
-                                      behavior: 'auto'
+                                    requestAnimationFrame(() => {
+                                      // Дополнительная задержка для учета загрузки данных в TasksList
+                                      setTimeout(() => {
+                                        if (scrollContainerRef.current) {
+                                          scrollContainerRef.current.scrollTop = scrollPositionRef.current;
+                                        } else {
+                                          window.scrollTo({
+                                            top: scrollPositionRef.current,
+                                            behavior: 'auto'
+                                          });
+                                        }
+                                      }, 100);
                                     });
                                   });
                                 }, 50);
@@ -414,8 +441,22 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                     <button
                       onClick={() => {
                         if (taskViewMode !== 'completed') {
+                          // Находим скроллируемый контейнер
+                          const scrollContainer = document.querySelector('.fixed.inset-0.overflow-y-auto') as HTMLElement;
+                          scrollContainerRef.current = scrollContainer;
+                          
                           // Сохраняем позицию скролла перед переходом
-                          scrollPositionRef.current = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+                          if (scrollContainer) {
+                            scrollPositionRef.current = scrollContainer.scrollTop;
+                          } else {
+                            scrollPositionRef.current = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+                          }
+                          
+                          // Сохраняем высоту контента перед переходом
+                          if (contentContainerRef.current) {
+                            contentHeightRef.current = contentContainerRef.current.scrollHeight;
+                          }
+                          
                           setIsTransitioning(true);
                           // Даем время для начала анимации исчезновения
                           requestAnimationFrame(() => {
@@ -428,11 +469,26 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                                 setTimeout(() => {
                                   setIsTransitioning(false);
                                   
-                                  // Восстанавливаем позицию скролла после завершения анимации
+                                  // Сбрасываем минимальную высоту после завершения перехода
                                   requestAnimationFrame(() => {
-                                    window.scrollTo({
-                                      top: scrollPositionRef.current,
-                                      behavior: 'auto'
+                                    contentHeightRef.current = 0;
+                                  });
+                                  
+                                  // Восстанавливаем позицию скролла после завершения анимации
+                                  // Используем несколько requestAnimationFrame для гарантии, что DOM обновился
+                                  requestAnimationFrame(() => {
+                                    requestAnimationFrame(() => {
+                                      // Дополнительная задержка для учета загрузки данных в TasksList
+                                      setTimeout(() => {
+                                        if (scrollContainerRef.current) {
+                                          scrollContainerRef.current.scrollTop = scrollPositionRef.current;
+                                        } else {
+                                          window.scrollTo({
+                                            top: scrollPositionRef.current,
+                                            behavior: 'auto'
+                                          });
+                                        }
+                                      }, 100);
                                     });
                                   });
                                 }, 50);
@@ -512,11 +568,15 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
               />
             ) : (
               <div
+                ref={contentContainerRef}
                 style={{
                   opacity: isTransitioning ? 0 : 1,
                   transform: isTransitioning ? 'translateY(10px)' : 'translateY(0)',
                   transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
-                  willChange: isTransitioning ? 'opacity, transform' : 'auto'
+                  willChange: isTransitioning ? 'opacity, transform' : 'auto',
+                  minHeight: isTransitioning && contentHeightRef.current > 0 
+                    ? `${contentHeightRef.current}px` 
+                    : 'auto'
                 }}
               >
                 <TasksSection
