@@ -30,29 +30,73 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [contentLoaded, setContentLoaded] = useState(false);
   const hasLoadedRef = useRef(false);
+  const pendingUpdateRef = useRef<{ tasks: PlayerTask[], stamina?: Stamina, firstTime?: boolean } | null>(null);
   const { t } = useLocalization();
 
   // Функция для обновления списка задач и стамины
   const handleTasksUpdate = useCallback((newTasks: PlayerTask[], newStamina?: Stamina, newFirstTime?: boolean) => {
-    setTasks(newTasks);
-    if (newStamina) {
-      setStamina(newStamina);
+    // Если идет переход, откладываем обновление
+    if (isTransitioning) {
+      pendingUpdateRef.current = { tasks: newTasks, stamina: newStamina, firstTime: newFirstTime };
+      return;
     }
-    if (newFirstTime !== undefined) {
-      setFirstTime(newFirstTime);
+    
+    // Если есть отложенное обновление, применяем его вместе с новым
+    if (pendingUpdateRef.current) {
+      const pending = pendingUpdateRef.current;
+      pendingUpdateRef.current = null;
+      // Используем последние данные
+      setTasks(newTasks);
+      if (newStamina) {
+        setStamina(newStamina);
+      } else if (pending.stamina) {
+        setStamina(pending.stamina);
+      }
+      if (newFirstTime !== undefined) {
+        setFirstTime(newFirstTime);
+      } else if (pending.firstTime !== undefined) {
+        setFirstTime(pending.firstTime);
+      }
+    } else {
+      setTasks(newTasks);
+      if (newStamina) {
+        setStamina(newStamina);
+      }
+      if (newFirstTime !== undefined) {
+        setFirstTime(newFirstTime);
+      }
     }
+    
     // Если задачи появились, значит firstTime стал false
     if (newTasks.length > 0) {
       setFirstTime(false);
     }
     setLoading(false);
-  }, []);
+  }, [isTransitioning]);
 
   // Используем хук для автоматического обновления задач при уведомлениях
   useTasksRefresh({
     isAuthenticated,
     onTasksUpdate: handleTasksUpdate,
   });
+
+  // Применяем отложенные обновления после завершения переходов
+  useEffect(() => {
+    if (!isTransitioning && pendingUpdateRef.current) {
+      const pending = pendingUpdateRef.current;
+      pendingUpdateRef.current = null;
+      setTasks(pending.tasks);
+      if (pending.stamina) {
+        setStamina(pending.stamina);
+      }
+      if (pending.firstTime !== undefined) {
+        setFirstTime(pending.firstTime);
+      }
+      if (pending.tasks.length > 0) {
+        setFirstTime(false);
+      }
+    }
+  }, [isTransitioning]);
 
   // Загружаем задачи только при монтировании компонента и если авторизованы
   // Используем useRef, чтобы гарантировать, что запрос выполнится только один раз
@@ -370,6 +414,22 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                             setTimeout(() => {
                               setIsTransitioning(false);
                               setDisplayTaskViewMode('active');
+                              
+                              // Применяем отложенные обновления после завершения анимации
+                              if (pendingUpdateRef.current) {
+                                const pending = pendingUpdateRef.current;
+                                pendingUpdateRef.current = null;
+                                setTasks(pending.tasks);
+                                if (pending.stamina) {
+                                  setStamina(pending.stamina);
+                                }
+                                if (pending.firstTime !== undefined) {
+                                  setFirstTime(pending.firstTime);
+                                }
+                                if (pending.tasks.length > 0) {
+                                  setFirstTime(false);
+                                }
+                              }
                             }, 25);
                           }, 100);
                         }
@@ -402,6 +462,22 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                             setTimeout(() => {
                               setIsTransitioning(false);
                               setDisplayTaskViewMode('completed');
+                              
+                              // Применяем отложенные обновления после завершения анимации
+                              if (pendingUpdateRef.current) {
+                                const pending = pendingUpdateRef.current;
+                                pendingUpdateRef.current = null;
+                                setTasks(pending.tasks);
+                                if (pending.stamina) {
+                                  setStamina(pending.stamina);
+                                }
+                                if (pending.firstTime !== undefined) {
+                                  setFirstTime(pending.firstTime);
+                                }
+                                if (pending.tasks.length > 0) {
+                                  setFirstTime(false);
+                                }
+                              }
                             }, 25);
                           }, 100);
                         }
