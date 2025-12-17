@@ -47,6 +47,7 @@ const TasksList: React.FC<TasksListProps> = ({
   const [totalCount, setTotalCount] = useState<number | null>(null);
   const [, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [, setAvailableSorts] = useState<string[]>([]);
+  const [showContent, setShowContent] = useState(false);
   
   // Используем переданные фильтры или значения по умолчанию
   const dateFilters = useMemo(() => propDateFilters || { from: '', to: '' }, [propDateFilters]);
@@ -146,6 +147,12 @@ const TasksList: React.FC<TasksListProps> = ({
         setHasMore(hasMoreData);
         currentPageRef.current = 0;
         hasMoreRef.current = hasMoreData;
+        // Сбрасываем флаг для fade-in анимации при новой загрузке
+        if (newTasks.length > 0) {
+          setShowContent(false);
+          // Запускаем fade-in анимацию после небольшой задержки
+          setTimeout(() => setShowContent(true), 50);
+        }
       } else {
         // Проверяем, что мы действительно получили новые данные
         if (newTasks.length > 0) {
@@ -233,6 +240,7 @@ const TasksList: React.FC<TasksListProps> = ({
       hasMoreRef.current = true;
       currentPageRef.current = 0;
       hasAttemptedLoadRef.current = false; // Сбрасываем флаг, чтобы показывать skeleton
+      setShowContent(false); // Сбрасываем флаг для fade-in
       // Добавляем задержку, чтобы дать время анимации полностью завершиться
       const timeoutId = setTimeout(() => {
         if (!isTransitioning) { // Дополнительная проверка перед загрузкой
@@ -247,6 +255,13 @@ const TasksList: React.FC<TasksListProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTransitioning]);
 
+  // Устанавливаем showContent в true, если данные уже загружены и не идет загрузка
+  useEffect(() => {
+    if (tasks.length > 0 && !loading && !isTransitioning && !showContent) {
+      setShowContent(true);
+    }
+  }, [tasks.length, loading, isTransitioning, showContent]);
+
   // Загрузка при монтировании и изменении фильтров
   useEffect(() => {
     // Не начинаем загрузку, если идет переход (анимация)
@@ -258,6 +273,7 @@ const TasksList: React.FC<TasksListProps> = ({
     hasMoreRef.current = true;
     currentPageRef.current = 0;
     hasAttemptedLoadRef.current = false; // Сбрасываем флаг, чтобы показывать skeleton при новом поиске
+    setShowContent(false); // Сбрасываем флаг для fade-in
     
     // Добавляем задержку, чтобы дать время анимации перехода завершиться
     // и избежать резкого переключения компонентов
@@ -279,22 +295,44 @@ const TasksList: React.FC<TasksListProps> = ({
   if (tasks.length === 0 && !hasAttemptedLoadRef.current && !isTransitioning) {
     // Показываем skeleton, если загрузка еще не началась
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <TaskCardSkeleton key={i} />
-        ))}
-      </div>
+      <>
+        {/* Skeleton для total количества */}
+        <div className="mb-4">
+          <div 
+            className="h-5 w-32 rounded animate-pulse"
+            style={{
+              background: 'rgba(220, 235, 245, 0.1)'
+            }}
+          />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <TaskCardSkeleton key={i} />
+          ))}
+        </div>
+      </>
     );
   }
   
   if (loading && tasks.length === 0 && !isTransitioning) {
     // Показываем skeleton во время загрузки
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <TaskCardSkeleton key={i} />
-        ))}
-      </div>
+      <>
+        {/* Skeleton для total количества */}
+        <div className="mb-4">
+          <div 
+            className="h-5 w-32 rounded animate-pulse"
+            style={{
+              background: 'rgba(220, 235, 245, 0.1)'
+            }}
+          />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <TaskCardSkeleton key={i} />
+          ))}
+        </div>
+      </>
     );
   }
   
@@ -385,13 +423,37 @@ const TasksList: React.FC<TasksListProps> = ({
   return (
     <>
       {/* Отображение общего количества */}
-      {totalCount !== null && tasks.length > 0 && (
-        <div className="mb-4 text-sm font-tech" style={{ color: 'rgba(220, 235, 245, 0.7)' }}>
+      {(loading || totalCount === null) && tasks.length === 0 ? (
+        <div className="mb-4">
+          <div 
+            className="h-5 w-32 rounded animate-pulse"
+            style={{
+              background: 'rgba(220, 235, 245, 0.1)'
+            }}
+          />
+        </div>
+      ) : totalCount !== null && tasks.length > 0 ? (
+        <div 
+          className="mb-4 text-sm font-tech"
+          style={{ 
+            color: 'rgba(220, 235, 245, 0.7)',
+            opacity: showContent ? 1 : 0,
+            transform: showContent ? 'translateY(0)' : 'translateY(10px)',
+            transition: 'opacity 0.3s ease-out, transform 0.3s ease-out'
+          }}
+        >
           {t('common.totalItems', { total: totalCount.toString() })}
         </div>
-      )}
+      ) : null}
       
-      <div key={`tasks-${tasks.length}-${loading}`}>
+      <div 
+        key={`tasks-${tasks.length}-${loading}`}
+        style={{
+          opacity: showContent ? 1 : 0,
+          transform: showContent ? 'translateY(0)' : 'translateY(10px)',
+          transition: 'opacity 0.3s ease-out, transform 0.3s ease-out'
+        }}
+      >
         <TasksGrid
           tasks={tasks}
           stamina={stamina || null}

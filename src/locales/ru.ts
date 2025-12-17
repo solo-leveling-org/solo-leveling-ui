@@ -358,6 +358,8 @@ export const ru = {
       leaderboard: 'ТАБЛИЦА ЛИДЕРОВ',
       lootboxes: 'ЛУТ БОКСЫ',
       inventory: 'ИНВЕНТАРЬ',
+      guilds: 'ГИЛЬДИИ',
+      dungeons: 'ДАНЖИ',
     },
       leaderboard: {
         title: 'Таблица лидеров',
@@ -381,6 +383,14 @@ export const ru = {
     inventory: {
       comingSoon: 'Скоро',
       description: 'Инвентарь будет доступен в ближайшее время',
+    },
+    guilds: {
+      comingSoon: 'Скоро',
+      description: 'Гильдии будут доступны в ближайшее время',
+    },
+    dungeons: {
+      comingSoon: 'Скоро',
+      description: 'Данжи будут доступны в ближайшее время',
     },
   },
 };
