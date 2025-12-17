@@ -6,7 +6,7 @@ import { LeaderboardType } from '../api';
 import Icon, { IconType } from '../components/Icon';
 import LeaderboardView from '../components/LeaderboardView';
 import UserProfileView from '../components/UserProfileView';
-import { cn } from '../utils';
+import { cn, getOptimizedBlur } from '../utils';
 import { globalBackButtonHandlerRef } from '../App';
 
 type CollectionsTabProps = {
@@ -130,7 +130,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
               className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group h-32 flex items-center"
               style={{
                 background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.15) 50%, rgba(99, 102, 241, 0.2) 100%)',
-                backdropFilter: 'blur(20px)',
+                backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
                 border: '2px solid rgba(139, 92, 246, 0.4)',
                 boxShadow: '0 0 30px rgba(139, 92, 246, 0.25), inset 0 0 30px rgba(139, 92, 246, 0.05)'
               }}
@@ -173,7 +173,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
               className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 opacity-60 cursor-not-allowed group h-32 flex items-center"
               style={{
                 background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.15) 0%, rgba(234, 88, 12, 0.1) 100%)',
-                backdropFilter: 'blur(20px)',
+                backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
                 border: '2px solid rgba(251, 146, 60, 0.3)',
                 boxShadow: '0 0 20px rgba(251, 146, 60, 0.2), inset 0 0 20px rgba(251, 146, 60, 0.05)'
               }}
@@ -224,7 +224,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
               className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 opacity-60 cursor-not-allowed group h-32 flex items-center"
               style={{
                 background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(219, 39, 119, 0.1) 100%)',
-                backdropFilter: 'blur(20px)',
+                backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
                 border: '2px solid rgba(236, 72, 153, 0.3)',
                 boxShadow: '0 0 20px rgba(236, 72, 153, 0.2), inset 0 0 20px rgba(236, 72, 153, 0.05)'
               }}
@@ -275,7 +275,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
               className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 opacity-60 cursor-not-allowed group h-32 flex items-center"
               style={{
                 background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%)',
-                backdropFilter: 'blur(20px)',
+                backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
                 border: '2px solid rgba(34, 197, 94, 0.3)',
                 boxShadow: '0 0 20px rgba(34, 197, 94, 0.2), inset 0 0 20px rgba(34, 197, 94, 0.05)'
               }}
@@ -326,7 +326,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
               className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 opacity-60 cursor-not-allowed group h-32 flex items-center"
               style={{
                 background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%)',
-                backdropFilter: 'blur(20px)',
+                backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
                 border: '2px solid rgba(239, 68, 68, 0.3)',
                 boxShadow: '0 0 20px rgba(239, 68, 68, 0.2), inset 0 0 20px rgba(239, 68, 68, 0.05)'
               }}
@@ -388,7 +388,9 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
           boxSizing: 'border-box',
           opacity: contentLoaded ? 1 : 0,
           transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
-          transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
+          transition: contentLoaded ? 'opacity 0.3s ease-out, transform 0.3s ease-out' : 'none',
+          touchAction: 'pan-y',
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         {/* Holographic grid background */}

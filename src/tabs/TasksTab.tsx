@@ -263,7 +263,9 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
         boxSizing: 'border-box',
         opacity: contentLoaded ? 1 : 0,
         transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
-        transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
+        transition: contentLoaded ? 'opacity 0.4s ease-out, transform 0.4s ease-out' : 'none',
+        touchAction: 'pan-y',
+        WebkitOverflowScrolling: 'touch',
       }}
     >
       <div className={`relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 ${displayTabMode === 'topics' ? '' : 'pb-24'}`}>

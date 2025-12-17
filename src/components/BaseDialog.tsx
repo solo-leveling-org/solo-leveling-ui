@@ -35,12 +35,21 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
   const [isMobile, setIsMobile] = useState(false);
   const [animationComplete, setAnimationComplete] = useState(false);
 
-  // Определяем размер экрана
+  // Определяем мобильное устройство через Telegram WebApp platform
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+      const webApp = (window as any).Telegram?.WebApp;
+      if (webApp?.platform) {
+        const platform = webApp.platform;
+        // Мобильные платформы: ios, android
+        setIsMobile(platform === 'ios' || platform === 'android');
+      } else {
+        // Fallback: если Telegram WebApp недоступен, используем проверку размера экрана
+        setIsMobile(window.innerWidth <= 768);
+      }
     };
     checkMobile();
+    // Слушаем изменения размера только для fallback случая
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);

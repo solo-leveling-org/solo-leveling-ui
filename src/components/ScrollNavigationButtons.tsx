@@ -23,22 +23,23 @@ const ScrollNavigationButtons: React.FC<ScrollNavigationButtonsProps> = ({
   const scrollContainerRef = useRef<HTMLElement | null>(null);
   const scrollThreshold = 400; // Показывать кнопку "вверх" после скролла на 200px
 
-  // Находим скроллируемый контейнер
+  // Находим скроллируемый контейнер (кэшируем результат)
   const getScrollContainer = useCallback(() => {
+    // Если уже нашли контейнер, возвращаем его
+    if (scrollContainerRef.current) {
+      return scrollContainerRef.current;
+    }
+    
     if (scrollContainer) {
       scrollContainerRef.current = scrollContainer;
       return scrollContainer;
     }
     
     // Сначала ищем контейнеры с fixed и overflow-y-auto (например, в BalanceTab)
-    const allElements = document.querySelectorAll('div, main');
-    for (const element of allElements) {
-      const el = element as HTMLElement;
-      const style = window.getComputedStyle(el);
-      if (style.position === 'fixed' && (style.overflowY === 'auto' || style.overflowY === 'scroll')) {
-        scrollContainerRef.current = el;
-        return el;
-      }
+    const fixedContainer = document.querySelector('.fixed.inset-0.overflow-y-auto') as HTMLElement;
+    if (fixedContainer) {
+      scrollContainerRef.current = fixedContainer;
+      return fixedContainer;
     }
     
     // Затем проверяем main.tab-content
@@ -48,21 +49,7 @@ const ScrollNavigationButtons: React.FC<ScrollNavigationButtonsProps> = ({
       return mainElement;
     }
     
-    // Ищем любые скроллируемые контейнеры
-    const scrollableContainers = document.querySelectorAll('[class*="overflow-y-auto"], [class*="overflow-y-scroll"]');
-    for (const container of scrollableContainers) {
-      const element = container as HTMLElement;
-      const style = window.getComputedStyle(element);
-      if (style.overflowY === 'auto' || style.overflowY === 'scroll') {
-        // Проверяем, что элемент действительно скроллируемый
-        if (element.scrollHeight > element.clientHeight) {
-          scrollContainerRef.current = element;
-          return element;
-        }
-      }
-    }
-    
-    // Если не нашли, используем window
+    // Если не нашли, используем null (будет window)
     scrollContainerRef.current = null;
     return null;
   }, [scrollContainer]);
@@ -125,15 +112,14 @@ const ScrollNavigationButtons: React.FC<ScrollNavigationButtonsProps> = ({
     // Проверяем начальное состояние
     handleScroll();
     
-    // Проверяем периодически на случай, если скролл происходит не через события
-    const intervalId = setInterval(handleScroll, 200);
+    // Убираем setInterval - он вызывает лишние вычисления и может блокировать скролл
+    // События scroll достаточно для отслеживания
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
       if (elementToUse instanceof HTMLElement) {
         elementToUse.removeEventListener('scroll', handleScroll);
       }
-      clearInterval(intervalId);
     };
   }, [scrollContainer, getScrollContainer]);
 

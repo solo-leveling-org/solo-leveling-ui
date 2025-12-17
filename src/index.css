@@ -825,3 +825,34 @@ code {
     width: 0%;
   }
 }
+
+/* Оптимизации для скролла на мобильных устройствах */
+/* Используем класс .mobile-version, который добавляется через Telegram WebApp platform */
+.mobile-version .scroll-optimized-orb {
+  /* Уменьшаем blur эффекты на мобильных для лучшей производительности */
+  filter: blur(40px) !important;
+}
+
+.mobile-version .scroll-optimized-bg {
+  /* Отключаем тяжелые 3D трансформации на мобильных */
+  transform: none !important;
+}
+
+.mobile-version .fixed.inset-0.overflow-y-auto {
+  /* Оптимизация для скроллируемых контейнеров */
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  will-change: scroll-position;
+}
+
+.mobile-version .fixed.inset-0.overflow-y-auto * {
+  /* Отключаем backdrop-filter на мобильных во время скролла */
+  will-change: auto;
+}
+
+/* Оптимизация для всех скроллируемых контейнеров */
+.fixed.inset-0.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+}

@@ -394,48 +394,61 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   // Показываем skeleton при загрузке, если нет транзакций
   if (loading && transactions.length === 0) {
     return (
-      <div className="space-y-4">
-        {[...Array(5)].map((_, i) => (
+      <div className="select-none space-y-6">
+        {/* Skeleton для total количества */}
+        <div className="mb-4">
           <div 
-            key={i} 
-            className="rounded-xl p-5 animate-pulse"
+            className="h-5 w-32 rounded animate-pulse"
             style={{
-              background: 'rgba(220, 235, 245, 0.05)',
-              border: '1px solid rgba(220, 235, 245, 0.1)'
+              background: 'rgba(220, 235, 245, 0.1)'
             }}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div 
-                  className="w-12 h-12 rounded-xl"
-                  style={{
-                    background: 'rgba(220, 235, 245, 0.1)'
-                  }}
-                ></div>
-                <div className="flex-1">
+          />
+        </div>
+        
+        {/* Skeleton для транзакций */}
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div 
+              key={i} 
+              className="rounded-xl p-5 animate-pulse"
+              style={{
+                background: 'rgba(220, 235, 245, 0.05)',
+                border: '1px solid rgba(220, 235, 245, 0.1)'
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
                   <div 
-                    className="h-5 rounded w-32 mb-2"
+                    className="w-12 h-12 rounded-xl"
                     style={{
                       background: 'rgba(220, 235, 245, 0.1)'
                     }}
                   ></div>
-                  <div 
-                    className="h-4 rounded w-20"
-                    style={{
-                      background: 'rgba(220, 235, 245, 0.08)'
-                    }}
-                  ></div>
+                  <div className="flex-1">
+                    <div 
+                      className="h-5 rounded w-32 mb-2"
+                      style={{
+                        background: 'rgba(220, 235, 245, 0.1)'
+                      }}
+                    ></div>
+                    <div 
+                      className="h-4 rounded w-20"
+                      style={{
+                        background: 'rgba(220, 235, 245, 0.08)'
+                      }}
+                    ></div>
+                  </div>
                 </div>
+                <div 
+                  className="h-6 rounded w-20"
+                  style={{
+                    background: 'rgba(220, 235, 245, 0.1)'
+                  }}
+                ></div>
               </div>
-              <div 
-                className="h-6 rounded w-20"
-                style={{
-                  background: 'rgba(220, 235, 245, 0.1)'
-                }}
-              ></div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     );
   }
@@ -476,11 +489,20 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
   return (
     <div className="select-none space-y-6 custom-scrollbar">
       {/* Отображение общего количества */}
-      {totalCount !== null && transactions.length > 0 && (
+      {loading && transactions.length === 0 ? (
+        <div className="mb-4">
+          <div 
+            className="h-5 w-32 rounded animate-pulse"
+            style={{
+              background: 'rgba(220, 235, 245, 0.1)'
+            }}
+          />
+        </div>
+      ) : totalCount !== null && transactions.length > 0 ? (
         <div className="mb-4 text-sm font-tech" style={{ color: 'rgba(220, 235, 245, 0.7)' }}>
           {t('common.totalItems', { total: totalCount.toString() })}
         </div>
-      )}
+      ) : null}
       
       {/* Группы транзакций в стиле Solo Leveling */}
       {groups.map((group, groupIndex) => (
