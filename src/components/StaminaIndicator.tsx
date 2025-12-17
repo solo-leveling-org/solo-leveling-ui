@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import type { Stamina } from '../api';
 import Icon from './Icon';
 import { useLocalization } from '../hooks/useLocalization';
+import { useTelegram } from '../useTelegram';
 
 type StaminaIndicatorProps = {
   stamina: Stamina | null;
@@ -13,6 +14,47 @@ const StaminaIndicator: React.FC<StaminaIndicatorProps> = ({ stamina, onStaminaU
   const [currentTime, setCurrentTime] = useState(new Date());
   const [localStamina, setLocalStamina] = useState<Stamina | null>(stamina);
   const { t } = useLocalization();
+  const { webApp } = useTelegram();
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  
+  // Определяем мобильное устройство через Telegram WebApp platform
+  // Fallback на проверку ширины экрана для моковых данных и тестирования
+  const isMobile = useMemo(() => {
+    if (webApp?.platform) {
+      const platform = webApp.platform;
+      if (platform === 'ios' || platform === 'android') {
+        return true;
+      }
+      if (platform === 'macos' || platform === 'windows' || platform === 'linux') {
+        return false;
+      }
+    }
+    // Fallback: проверяем ширину экрана для моковых данных и тестирования
+    return typeof window !== 'undefined' && window.innerWidth < 768;
+  }, [webApp?.platform]);
+
+  // Обработчик клика вне контейнера для закрытия тултипа на мобильных
+  useEffect(() => {
+    if (!isMobile || !showTooltip) return;
+
+    const handleClickOutside = (event: Event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setShowTooltip(false);
+      }
+    };
+
+    // Добавляем обработчик с небольшой задержкой, чтобы не сработал сразу после открытия
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isMobile, showTooltip]);
 
   // Используем локальную стамину для отображения
   const displayStamina = localStamina || stamina;
@@ -187,15 +229,39 @@ const StaminaIndicator: React.FC<StaminaIndicatorProps> = ({ stamina, onStaminaU
     glowPulse: 'rgba(0, 245, 255, 0.9)',
   };
 
+  const handleContainerClick = (e: React.MouseEvent) => {
+    // На мобильных устройствах переключаем тултип при клике
+    if (isMobile) {
+      e.stopPropagation();
+      setShowTooltip(prev => !prev);
+    }
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent) => {
+    // На десктопе скрываем при уходе курсора
+    // На мобильных не обрабатываем, чтобы избежать конфликта с onClick
+    if (!isMobile) {
+      setShowTooltip(false);
+    }
+  };
+
   return (
     <div
+      ref={containerRef}
       className="relative rounded-xl px-4 pt-4 pb-3 backdrop-blur-md group w-full"
       style={{
         background: 'rgba(220, 235, 245, 0.08)',
         border: '1px solid rgba(220, 235, 245, 0.12)',
+        cursor: isMobile ? 'pointer' : 'default',
       }}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
+      onMouseEnter={() => {
+        // На десктопе показываем при наведении
+        if (!isMobile) {
+          setShowTooltip(true);
+        }
+      }}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleContainerClick}
     >
       <div className="flex items-center gap-3 mb-3">
         <div className="flex items-center gap-2">
