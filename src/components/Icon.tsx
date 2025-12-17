@@ -30,6 +30,8 @@ import { ReactComponent as BagIcon } from '../assets/icons/bag.svg';
 import { ReactComponent as Gamepad2Icon } from '../assets/icons/gamepad-2.svg';
 import { ReactComponent as ArrowUpIcon } from '../assets/icons/arrow-up.svg';
 import { ReactComponent as ArrowDownIcon } from '../assets/icons/arrow-down.svg';
+import { ReactComponent as UsersGroupIcon } from '../assets/icons/users-group.svg';
+import { ReactComponent as CastleIcon } from '../assets/icons/castle.svg';
 
 export type IconType = 
   | 'brain' 
@@ -63,7 +65,9 @@ export type IconType =
   | 'bag'
   | 'gamepad-2'
   | 'arrow-up'
-  | 'arrow-down';
+  | 'arrow-down'
+  | 'users-group'
+  | 'castle';
 
 interface IconProps {
   type: IconType;
@@ -142,6 +146,10 @@ const Icon: React.FC<IconProps> = ({ type, className = '', size = 24 }) => {
       return <ArrowUpIcon {...iconProps} />;
     case 'arrow-down':
       return <ArrowDownIcon {...iconProps} />;
+    case 'users-group':
+      return <UsersGroupIcon {...iconProps} />;
+    case 'castle':
+      return <CastleIcon {...iconProps} />;
     default:
       return <div className={className} style={{ width: size, height: size }}>❓</div>;
   }

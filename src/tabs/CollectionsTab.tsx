@@ -314,7 +314,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                     filter: 'drop-shadow(0 0 8px rgba(34, 197, 94, 0.5))'
                   }}
                 >
-                  <Icon type="users" size={48} />
+                  <Icon type="users-group" size={48} />
                 </div>
               </div>
             </button>
@@ -365,7 +365,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                     filter: 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.5))'
                   }}
                 >
-                  <Icon type="sword" size={48} />
+                  <Icon type="castle" size={48} />
                 </div>
               </div>
             </button>
@@ -481,9 +481,9 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
       case 'inventory':
         return 'bag';
       case 'guilds':
-        return 'users';
+        return 'users-group';
       case 'dungeons':
-        return 'sword';
+        return 'castle';
       default:
         return 'bag';
     }
