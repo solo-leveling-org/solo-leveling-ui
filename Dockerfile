@@ -1,6 +1,11 @@
 # Build stage
 FROM node:18-alpine AS build
 WORKDIR /app
+
+# Commit SHA for version.json (passed from CI via --build-arg)
+ARG GIT_COMMIT_SHA
+ENV GIT_COMMIT_SHA=$GIT_COMMIT_SHA
+
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps
 COPY . .
@@ -15,5 +20,7 @@ RUN npm run build:prod
 # Production stage
 FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
+# Custom nginx config: SPA routing + correct cache headers
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

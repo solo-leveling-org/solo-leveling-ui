@@ -24,6 +24,9 @@ import {useTelegramAdaptive} from './hooks/useTelegramAdaptive';
 import AuthLoadingScreen from './components/AuthLoadingScreen';
 import SessionExpiredDialog from './components/SessionExpiredDialog';
 import {auth} from './auth';
+import ConfirmDialog from './components/ConfirmDialog';
+import {useUiUpdate} from './hooks/useUiUpdate';
+import {useLocalization} from './hooks/useLocalization';
 
 // Глобальный ref для хранения обработчика кнопки "Назад" (экспортируем для использования в CollectionsTab)
 export const globalBackButtonHandlerRef = { current: null as (() => void) | null };
@@ -33,6 +36,9 @@ function AppRoutes() {
   const { isBottomBarVisible } = useModal();
   const [isSessionExpired, setIsSessionExpired] = useState(false);
   const { backButton } = useTelegramWebApp();
+  const { t } = useLocalization();
+  const { isUpdateAvailable, reason: updateReason, refreshNow } = useUiUpdate();
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   
   // Инициализируем Telegram WebApp
   useTelegram();
@@ -77,6 +83,10 @@ function AppRoutes() {
     });
   }, []);
 
+  useEffect(() => {
+    if (isUpdateAvailable) setIsUpdateDialogOpen(true);
+  }, [isUpdateAvailable]);
+
   // Автоматический скролл наверх при смене маршрута
   useEffect(() => {
     if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
@@ -87,6 +97,16 @@ function AppRoutes() {
   // Обработчик обновления страницы при истечении сессии
   const handleRefreshPage = () => {
     window.location.reload();
+  };
+
+  const handleUpdateConfirm = () => {
+    refreshNow();
+  };
+
+  const handleUpdateCancel = () => {
+    // Мягкий режим: не форсим reload, просто закрываем.
+    // Если пользователю реально прилетит chunk 404 — сработает ChunkLoadError и мы снова предложим обновиться.
+    setIsUpdateDialogOpen(false);
   };
 
 
@@ -104,6 +124,19 @@ function AppRoutes() {
         <SessionExpiredDialog 
           isOpen={isSessionExpired} 
           onRefresh={handleRefreshPage}
+        />
+
+        <ConfirmDialog
+          isOpen={isUpdateDialogOpen}
+          message={
+            updateReason === 'chunk_load_error'
+              ? t('dialogs.uiUpdate.chunkErrorMessage')
+              : t('dialogs.uiUpdate.message')
+          }
+          onConfirm={handleUpdateConfirm}
+          onCancel={handleUpdateCancel}
+          confirmText={t('dialogs.uiUpdate.refreshButton')}
+          cancelText={t('dialogs.uiUpdate.laterButton')}
         />
         
         {!isTelegramChecked ? null : (

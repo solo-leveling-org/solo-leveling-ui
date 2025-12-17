@@ -307,6 +307,12 @@ export const en = {
       message: 'Session expired. Please refresh the page to continue.',
       refreshButton: 'Refresh Page',
     },
+    uiUpdate: {
+      message: 'A new version of the app is available. Refresh now?',
+      chunkErrorMessage: 'The app was updated on the server. Please refresh the page to continue.',
+      refreshButton: 'Refresh',
+      laterButton: 'Later',
+    },
   },
 
   // Errors and messages
