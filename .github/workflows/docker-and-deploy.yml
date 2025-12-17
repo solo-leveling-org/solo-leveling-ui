@@ -30,6 +30,8 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USER }}/solo-leveling-ui:latest
             ${{ secrets.DOCKERHUB_USER }}/solo-leveling-ui:${{ github.sha }}
+          build-args: |
+            GIT_COMMIT_SHA=${{ github.sha }}
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v4

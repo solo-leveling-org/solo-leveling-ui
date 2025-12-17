@@ -3,17 +3,17 @@ import { useLocation } from 'react-router-dom';
 import { useLocalization } from '../hooks/useLocalization';
 import { useTelegramWebApp } from '../useTelegram';
 import { LeaderboardType } from '../api';
-import Icon from '../components/Icon';
+import Icon, { IconType } from '../components/Icon';
 import LeaderboardView from '../components/LeaderboardView';
 import UserProfileView from '../components/UserProfileView';
-import { cn } from '../utils';
+import { cn, getOptimizedBlur } from '../utils';
 import { globalBackButtonHandlerRef } from '../App';
 
 type CollectionsTabProps = {
   isAuthenticated: boolean;
 };
 
-type TabMode = 'main' | 'leaderboard' | 'lootboxes' | 'inventory' | 'userProfile';
+type TabMode = 'main' | 'leaderboard' | 'lootboxes' | 'inventory' | 'guilds' | 'dungeons' | 'userProfile';
 
 const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
   const [tabMode, setTabMode] = useState<TabMode>('main');
@@ -78,7 +78,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
   }, [tabMode]);
 
   const handleTabChange = (mode: TabMode) => {
-    if (mode === 'lootboxes' || mode === 'inventory') {
+    if (mode === 'lootboxes' || mode === 'inventory' || mode === 'guilds' || mode === 'dungeons') {
       return;
     }
     setTabMode(mode);
@@ -130,7 +130,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
               className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group h-32 flex items-center"
               style={{
                 background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.15) 50%, rgba(99, 102, 241, 0.2) 100%)',
-                backdropFilter: 'blur(20px)',
+                backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
                 border: '2px solid rgba(139, 92, 246, 0.4)',
                 boxShadow: '0 0 30px rgba(139, 92, 246, 0.25), inset 0 0 30px rgba(139, 92, 246, 0.05)'
               }}
@@ -173,7 +173,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
               className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 opacity-60 cursor-not-allowed group h-32 flex items-center"
               style={{
                 background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.15) 0%, rgba(234, 88, 12, 0.1) 100%)',
-                backdropFilter: 'blur(20px)',
+                backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
                 border: '2px solid rgba(251, 146, 60, 0.3)',
                 boxShadow: '0 0 20px rgba(251, 146, 60, 0.2), inset 0 0 20px rgba(251, 146, 60, 0.05)'
               }}
@@ -224,7 +224,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
               className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 opacity-60 cursor-not-allowed group h-32 flex items-center"
               style={{
                 background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(219, 39, 119, 0.1) 100%)',
-                backdropFilter: 'blur(20px)',
+                backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
                 border: '2px solid rgba(236, 72, 153, 0.3)',
                 boxShadow: '0 0 20px rgba(236, 72, 153, 0.2), inset 0 0 20px rgba(236, 72, 153, 0.05)'
               }}
@@ -267,6 +267,108 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                 </div>
               </div>
             </button>
+
+            {/* Карточка Гильдии */}
+            <button
+              onClick={() => handleTabChange('guilds')}
+              disabled
+              className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 opacity-60 cursor-not-allowed group h-32 flex items-center"
+              style={{
+                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%)',
+                backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
+                border: '2px solid rgba(34, 197, 94, 0.3)',
+                boxShadow: '0 0 20px rgba(34, 197, 94, 0.2), inset 0 0 20px rgba(34, 197, 94, 0.05)'
+              }}
+            >
+              {/* Holographic shimmer effect для гильдий */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
+                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.2) 25%, rgba(16, 185, 129, 0.15) 50%, rgba(22, 163, 74, 0.2) 75%, rgba(34, 197, 94, 0.15) 100%)',
+                backgroundSize: '200% 200%',
+                animation: 'holographic-shimmer 4s ease-in-out infinite'
+              }}></div>
+              
+              <div className="flex items-center justify-between w-full relative z-10">
+                <div className="flex-1">
+                  <h2
+                    className="text-3xl md:text-4xl font-tech font-bold"
+                    style={{
+                      color: '#e8f4f8',
+                      textShadow: '0 0 10px rgba(34, 197, 94, 0.4)'
+                    }}
+                  >
+                    {t('collections.tabs.guilds')}
+                  </h2>
+                  <p
+                    className="text-sm md:text-base font-tech mt-1"
+                    style={{
+                      color: 'rgba(220, 235, 245, 0.7)'
+                    }}
+                  >
+                    {t('collections.guilds.comingSoon')}
+                  </p>
+                </div>
+                <div
+                  className="flex-shrink-0"
+                  style={{
+                    color: 'rgba(34, 197, 94, 1)',
+                    filter: 'drop-shadow(0 0 8px rgba(34, 197, 94, 0.5))'
+                  }}
+                >
+                  <Icon type="users-group" size={48} />
+                </div>
+              </div>
+            </button>
+
+            {/* Карточка Данжи */}
+            <button
+              onClick={() => handleTabChange('dungeons')}
+              disabled
+              className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 opacity-60 cursor-not-allowed group h-32 flex items-center"
+              style={{
+                background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%)',
+                backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
+                border: '2px solid rgba(239, 68, 68, 0.3)',
+                boxShadow: '0 0 20px rgba(239, 68, 68, 0.2), inset 0 0 20px rgba(239, 68, 68, 0.05)'
+              }}
+            >
+              {/* Holographic shimmer effect для данжей */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
+                background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.2) 25%, rgba(248, 113, 113, 0.15) 50%, rgba(220, 38, 38, 0.2) 75%, rgba(239, 68, 68, 0.15) 100%)',
+                backgroundSize: '200% 200%',
+                animation: 'holographic-shimmer 4s ease-in-out infinite'
+              }}></div>
+              
+              <div className="flex items-center justify-between w-full relative z-10">
+                <div className="flex-1">
+                  <h2
+                    className="text-3xl md:text-4xl font-tech font-bold"
+                    style={{
+                      color: '#e8f4f8',
+                      textShadow: '0 0 10px rgba(239, 68, 68, 0.4)'
+                    }}
+                  >
+                    {t('collections.tabs.dungeons')}
+                  </h2>
+                  <p
+                    className="text-sm md:text-base font-tech mt-1"
+                    style={{
+                      color: 'rgba(220, 235, 245, 0.7)'
+                    }}
+                  >
+                    {t('collections.dungeons.comingSoon')}
+                  </p>
+                </div>
+                <div
+                  className="flex-shrink-0"
+                  style={{
+                    color: 'rgba(239, 68, 68, 1)',
+                    filter: 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.5))'
+                  }}
+                >
+                  <Icon type="castle" size={48} />
+                </div>
+              </div>
+            </button>
           </div>
         </div>
       </div>
@@ -286,7 +388,9 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
           boxSizing: 'border-box',
           opacity: contentLoaded ? 1 : 0,
           transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
-          transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
+          transition: contentLoaded ? 'opacity 0.3s ease-out, transform 0.3s ease-out' : 'none',
+          touchAction: 'pan-y',
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         {/* Holographic grid background */}
@@ -372,10 +476,25 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
   }
 
   // Заглушки для других функционалов
+  const getIconForTab = (mode: TabMode): IconType => {
+    switch (mode) {
+      case 'lootboxes':
+        return 'gift';
+      case 'inventory':
+        return 'bag';
+      case 'guilds':
+        return 'users-group';
+      case 'dungeons':
+        return 'castle';
+      default:
+        return 'bag';
+    }
+  };
+
   return (
     <div className="text-center py-12">
       <div className="mx-auto mb-4" style={{ color: 'rgba(220, 235, 245, 0.5)' }}>
-        <Icon type={tabMode === 'lootboxes' ? 'gift' : 'bag'} size={64} />
+        <Icon type={getIconForTab(tabMode)} size={64} />
       </div>
       <h3
         className="text-xl font-tech font-semibold mb-2"

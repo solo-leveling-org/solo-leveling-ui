@@ -307,6 +307,12 @@ export const en = {
       message: 'Session expired. Please refresh the page to continue.',
       refreshButton: 'Refresh Page',
     },
+    uiUpdate: {
+      message: 'A new version of the app is available. Refresh now?',
+      chunkErrorMessage: 'The app was updated on the server. Please refresh the page to continue.',
+      refreshButton: 'Refresh',
+      laterButton: 'Later',
+    },
   },
 
   // Errors and messages
@@ -352,6 +358,8 @@ export const en = {
       leaderboard: 'LEADERBOARD',
       lootboxes: 'LOOT BOXES',
       inventory: 'INVENTORY',
+      guilds: 'GUILDS',
+      dungeons: 'DUNGEONS',
     },
     leaderboard: {
       title: 'Leaderboard',
@@ -375,6 +383,14 @@ export const en = {
     inventory: {
       comingSoon: 'Coming Soon',
       description: 'Inventory will be available soon',
+    },
+    guilds: {
+      comingSoon: 'Coming Soon',
+      description: 'Guilds will be available soon',
+    },
+    dungeons: {
+      comingSoon: 'Coming Soon',
+      description: 'Dungeons will be available soon',
     },
   },
 };

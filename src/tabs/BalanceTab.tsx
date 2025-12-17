@@ -20,7 +20,15 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
   const [enumFilters, setEnumFilters] = useState<{[field: string]: string[]}>({});
   const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [contentLoaded, setContentLoaded] = useState(false);
+  const [balanceLoaded, setBalanceLoaded] = useState(false);
   const { t } = useLocalization();
+
+  // Устанавливаем contentLoaded сразу при монтировании, чтобы контент был виден
+  useEffect(() => {
+    setTimeout(() => {
+      setContentLoaded(true);
+    }, 50);
+  }, []);
 
   const loadBalance = useCallback(async () => {
     setLoading(true);
@@ -29,16 +37,13 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
     try {
       const balanceData: GetPlayerBalanceResponse = await api.getPlayerBalance();
       setBalance(balanceData);
-      // Запускаем анимацию появления контента
+      // Запускаем анимацию появления баланса
       setTimeout(() => {
-        setContentLoaded(true);
+        setBalanceLoaded(true);
       }, 50);
     } catch (err) {
       console.error('Error loading balance:', err);
       setError(t('common.error.loadingData'));
-      setTimeout(() => {
-        setContentLoaded(true);
-      }, 50);
     } finally {
       setLoading(false);
     }
@@ -72,11 +77,8 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
     }
   }, [isAuthenticated, loadBalance]);
 
-  if (loading && !balance) {
-    return <BalanceSkeleton />;
-  }
-
-  if (error) {
+  // Показываем ошибку только если она есть и баланс не загружен
+  if (error && !balance) {
     return (
       <div
         className="fixed inset-0 overflow-y-auto overflow-x-hidden flex items-center justify-center px-4"
@@ -124,10 +126,6 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
     );
   }
 
-  if (!balance) {
-    return null;
-  }
-
   return (
     <div
       className={`fixed inset-0 overflow-y-auto overflow-x-hidden ${contentLoaded ? 'tab-content-enter-active' : ''}`}
@@ -136,7 +134,9 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
         boxSizing: 'border-box',
         opacity: contentLoaded ? 1 : 0,
         transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
-        transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
+        transition: contentLoaded ? 'opacity 0.4s ease-out, transform 0.4s ease-out' : 'none',
+        touchAction: 'pan-y',
+        WebkitOverflowScrolling: 'touch',
       }}
     >
       {/* Holographic grid background */}
@@ -192,86 +192,139 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
 
         {/* Current Balance Card - Solo Leveling Style */}
         <div className="flex justify-center mb-8">
-          <div 
-            className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 md:p-8 max-w-md w-full group"
-            style={{
-              background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
-              backdropFilter: 'blur(20px)',
-              border: '2px solid rgba(220, 235, 245, 0.2)',
-              boxShadow: `
-                0 0 20px rgba(180, 220, 240, 0.15),
-                inset 0 0 20px rgba(200, 230, 245, 0.03)
-              `
-            }}
-          >
-            {/* Glowing orbs */}
-            <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full blur-2xl opacity-10 animate-float" style={{
-              background: 'rgba(180, 220, 240, 0.8)'
-            }}></div>
-            <div className="absolute -bottom-4 -left-4 w-24 h-24 rounded-full blur-xl opacity-10 animate-float-delayed" style={{
-              background: 'rgba(180, 220, 240, 0.6)'
-            }}></div>
-            
-            {/* Shimmer effect on hover */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
-            
-            {/* Content */}
-            <div className="relative z-10">
-              {/* Header */}
+          {loading && !balance ? (
+            // Skeleton для баланса
+            <div 
+              className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 md:p-8 max-w-md w-full animate-pulse"
+              style={{
+                background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                backdropFilter: 'blur(20px)',
+                border: '2px solid rgba(220, 235, 245, 0.2)',
+                boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
+              }}
+            >
               <div className="flex justify-between items-center mb-6">
-                <div>
-                  <p 
-                    className="text-xs md:text-sm font-tech mb-1"
+                <div className="space-y-2">
+                  <div 
+                    className="h-4 w-24 rounded"
                     style={{
-                      color: 'rgba(220, 235, 245, 0.7)',
-                      textShadow: '0 0 2px rgba(180, 220, 240, 0.2)'
+                      background: 'rgba(220, 235, 245, 0.1)'
                     }}
-                  >
-                    {t('balance.totalBalance')}
-                  </p>
-                  <p 
-                    className="text-[10px] md:text-xs font-tech"
+                  ></div>
+                  <div 
+                    className="h-3 w-16 rounded"
                     style={{
-                      color: 'rgba(220, 235, 245, 0.6)'
+                      background: 'rgba(220, 235, 245, 0.08)'
                     }}
-                  >
-                    {t('balance.currencyName')}
-                  </p>
+                  ></div>
                 </div>
-                <div
-                  className="profile-icon-wrapper"
+                <div 
+                  className="w-7 h-7 rounded-lg"
                   style={{
-                    color: 'rgba(180, 220, 240, 0.9)',
-                    filter: 'drop-shadow(0 0 8px rgba(180, 220, 240, 0.6))'
+                    background: 'rgba(220, 235, 245, 0.1)'
                   }}
-                >
-                  <Icon type="coins" size={28} />
-                </div>
+                ></div>
               </div>
-              
-              {/* Balance amount */}
               <div className="mb-6">
                 <div 
-                  className="text-4xl md:text-5xl font-tech font-bold mb-2"
+                  className="h-12 w-32 rounded mb-2"
                   style={{
-                    color: '#e8f4f8',
-                    textShadow: '0 0 12px rgba(180, 220, 240, 0.4)'
+                    background: 'rgba(220, 235, 245, 0.1)'
                   }}
-                >
-                  {balance.balance.balance.amount}
-                </div>
+                ></div>
                 <div 
-                  className="text-sm md:text-base font-tech font-semibold"
+                  className="h-5 w-20 rounded"
                   style={{
-                    color: 'rgba(180, 220, 240, 0.8)',
-                    textShadow: '0 0 6px rgba(180, 220, 240, 0.3)'
+                    background: 'rgba(220, 235, 245, 0.08)'
                   }}
-                >
-                  {balance.balance.balance.currencyCode}
+                ></div>
+              </div>
+            </div>
+          ) : balance ? (
+            <div 
+              className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 md:p-8 max-w-md w-full group"
+              style={{
+                background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                backdropFilter: 'blur(20px)',
+                border: '2px solid rgba(220, 235, 245, 0.2)',
+                boxShadow: `
+                  0 0 20px rgba(180, 220, 240, 0.15),
+                  inset 0 0 20px rgba(200, 230, 245, 0.03)
+                `,
+                opacity: balanceLoaded ? 1 : 0,
+                transform: balanceLoaded ? 'translateY(0)' : 'translateY(10px)',
+                transition: 'opacity 0.3s ease-out, transform 0.3s ease-out'
+              }}
+            >
+              {/* Glowing orbs */}
+              <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full blur-2xl opacity-10 animate-float" style={{
+                background: 'rgba(180, 220, 240, 0.8)'
+              }}></div>
+              <div className="absolute -bottom-4 -left-4 w-24 h-24 rounded-full blur-xl opacity-10 animate-float-delayed" style={{
+                background: 'rgba(180, 220, 240, 0.6)'
+              }}></div>
+              
+              {/* Shimmer effect on hover */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+              
+              {/* Content */}
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <p 
+                      className="text-xs md:text-sm font-tech mb-1"
+                      style={{
+                        color: 'rgba(220, 235, 245, 0.7)',
+                        textShadow: '0 0 2px rgba(180, 220, 240, 0.2)'
+                      }}
+                    >
+                      {t('balance.totalBalance')}
+                    </p>
+                    <p 
+                      className="text-[10px] md:text-xs font-tech"
+                      style={{
+                        color: 'rgba(220, 235, 245, 0.6)'
+                      }}
+                    >
+                      {t('balance.currencyName')}
+                    </p>
+                  </div>
+                  <div
+                    className="profile-icon-wrapper"
+                    style={{
+                      color: 'rgba(180, 220, 240, 0.9)',
+                      filter: 'drop-shadow(0 0 8px rgba(180, 220, 240, 0.6))'
+                    }}
+                  >
+                    <Icon type="coins" size={28} />
+                  </div>
+                </div>
+                
+                {/* Balance amount */}
+                <div className="mb-6">
+                  <div 
+                    className="text-4xl md:text-5xl font-tech font-bold mb-2"
+                    style={{
+                      color: '#e8f4f8',
+                      textShadow: '0 0 12px rgba(180, 220, 240, 0.4)'
+                    }}
+                  >
+                    {balance.balance.balance.amount}
+                  </div>
+                  <div 
+                    className="text-sm md:text-base font-tech font-semibold"
+                    style={{
+                      color: 'rgba(180, 220, 240, 0.8)',
+                      textShadow: '0 0 6px rgba(180, 220, 240, 0.3)'
+                    }}
+                  >
+                    {balance.balance.balance.currencyCode}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          ) : null}
         </div>
 
         {/* Transactions Section */}
@@ -447,60 +500,6 @@ export const BalanceSkeleton: React.FC = () => (
         </div>
       </div>
 
-      {/* Transactions skeleton */}
-      <div className="flex justify-center">
-        <div className="max-w-4xl w-full">
-          <div 
-            className="h-6 w-48 mb-6 rounded animate-pulse"
-            style={{
-              background: 'rgba(220, 235, 245, 0.1)'
-            }}
-          ></div>
-          <div className="space-y-3">
-            {[...Array(5)].map((_, i) => (
-              <div 
-                key={i} 
-                className="rounded-xl p-4 animate-pulse"
-                style={{
-                  background: 'rgba(220, 235, 245, 0.05)',
-                  border: '1px solid rgba(220, 235, 245, 0.1)'
-                }}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div 
-                      className="w-10 h-10 rounded-full"
-                      style={{
-                        background: 'rgba(220, 235, 245, 0.1)'
-                      }}
-                    ></div>
-                    <div>
-                      <div 
-                        className="h-4 w-32 rounded mb-2"
-                        style={{
-                          background: 'rgba(220, 235, 245, 0.1)'
-                        }}
-                      ></div>
-                      <div 
-                        className="h-3 w-24 rounded"
-                        style={{
-                          background: 'rgba(220, 235, 245, 0.08)'
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-                  <div 
-                    className="h-4 w-20 rounded"
-                    style={{
-                      background: 'rgba(220, 235, 245, 0.1)'
-                    }}
-                  ></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 );

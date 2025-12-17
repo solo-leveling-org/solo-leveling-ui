@@ -4,6 +4,7 @@ import { useLocalization } from '../hooks/useLocalization';
 import Icon from './Icon';
 import TopicIcon from './TopicIcons';
 import BaseDialog from './BaseDialog';
+import { ExperienceProgressBar } from './ui/experience-progress-bar';
 
 // Определяем цветовую схему для COMPLETED статуса
 const getCompletedColorScheme = () => {
@@ -80,6 +81,14 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
           background: ${colorScheme.bg} !important;
           border: 2px solid ${colorScheme.border} !important;
           box-shadow: ${dialogBoxShadow} !important;
+        }
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+        @keyframes pulse-glow {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.6; }
         }
       `}</style>
 
@@ -211,29 +220,14 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                   </div>
                 </div>
                 
-                <div 
-                  className="relative w-full rounded-full h-2 overflow-hidden"
-                >
-                  <div
-                    className="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out"
-                    style={{ 
-                      width: `${Math.min(100, Math.round(((playerAfter.level?.currentExperience || 0) / (playerAfter.level?.experienceToNextLevel || 100)) * 100))}%`,
-                      background: 'linear-gradient(90deg, rgba(180, 220, 240, 0.8) 0%, rgba(160, 210, 235, 0.6) 100%)',
-                      boxShadow: '0 0 12px rgba(180, 220, 240, 0.4)'
-                    }}
-                  />
-                  {/* Shimmer effect на всю ширину контейнера - всегда показывается, независимо от опыта */}
-                  <div 
-                    className="absolute top-0 left-0 h-full rounded-full pointer-events-none"
-                    style={{
-                      width: '100%',
-                      background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%)',
-                      backgroundSize: '200% 100%',
-                      animation: 'shimmer 3s ease-in-out infinite',
-                      opacity: 0.5
-                    }}
-                  ></div>
-                </div>
+                <ExperienceProgressBar
+                  currentExp={playerAfter.level?.currentExperience || 0}
+                  maxExp={playerAfter.level?.experienceToNextLevel || 100}
+                  accentColor="rgba(180, 220, 240, 0.8)"
+                  height="h-2"
+                  showPulseGlow={true}
+                  className="shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]"
+                />
               </div>
               
               {/* Topics Progress */}
@@ -269,7 +263,6 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                       const level = topicData.level;
                       const currentExp = level.currentExperience || 0;
                       const maxExp = level.experienceToNextLevel || 100;
-                      const progressPercentage = Math.min(100, Math.round((currentExp / maxExp) * 100));
                       
                       return (
                         <div 
@@ -346,29 +339,13 @@ const TaskCompletionDialog: React.FC<TaskCompletionDialogProps> = ({ response, c
                                 )}
                               </span>
                             </div>
-                            <div 
-                              className="relative w-full rounded-full h-1.5 overflow-hidden"
-                            >
-                              <div
-                                className="absolute top-0 left-0 h-full rounded-full transition-all duration-500"
-                                style={{ 
-                                  width: `${progressPercentage}%`,
-                                  background: 'linear-gradient(90deg, rgba(180, 220, 240, 0.8) 0%, rgba(160, 210, 235, 0.6) 100%)',
-                                  boxShadow: '0 0 10px rgba(180, 220, 240, 0.4)'
-                                }}
-                              />
-                              {/* Shimmer effect на всю ширину контейнера - всегда показывается, независимо от опыта */}
-                              <div 
-                                className="absolute top-0 left-0 h-full rounded-full pointer-events-none"
-                                style={{
-                                  width: '100%',
-                                  background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%)',
-                                  backgroundSize: '200% 100%',
-                                  animation: 'shimmer 3s ease-in-out infinite',
-                                  opacity: 0.5
-                                }}
-                              ></div>
-                            </div>
+                            <ExperienceProgressBar
+                              currentExp={currentExp}
+                              maxExp={maxExp}
+                              accentColor="rgba(180, 220, 240, 0.8)"
+                              height="h-1.5"
+                              showPulseGlow={false}
+                            />
                           </div>
                         </div>
                       );
