@@ -37,8 +37,8 @@ const developmentConfig: EnvironmentConfig = {
 
 const productionConfig: EnvironmentConfig = {
   env: 'production',
-  apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'https://gateway.solo-leveling.online',
-  wsUrl: process.env.REACT_APP_WS_URL || 'wss://gateway.solo-leveling.online/ws',
+  apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'https://gateway.solo-leveling.org',
+  wsUrl: process.env.REACT_APP_WS_URL || 'wss://gateway.solo-leveling.org/ws',
   isDevelopment: false,
   isProduction: true,
   useMocks: false, // В production никогда не используем моки
