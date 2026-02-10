@@ -35,10 +35,12 @@ const developmentConfig: EnvironmentConfig = {
   useMocks: shouldUseMocks(),
 };
 
+const PROD_HOST = 'gateway.solo-leveling.org';
+
 const productionConfig: EnvironmentConfig = {
   env: 'production',
-  apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'https://gateway.solo-leveling.org',
-  wsUrl: process.env.REACT_APP_WS_URL || 'wss://gateway.solo-leveling.org/ws',
+  apiBaseUrl: process.env.REACT_APP_API_BASE_URL || `https://${PROD_HOST}`,
+  wsUrl: process.env.REACT_APP_WS_URL || `wss://${PROD_HOST}/ws`,
   isDevelopment: false,
   isProduction: true,
   useMocks: false, // В production никогда не используем моки
