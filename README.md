@@ -52,8 +52,8 @@ npm run start:prod
 ```
 
 **Production настройки:**
-- API URL: `https://gateway.solo-leveling.online`
-- WebSocket: `wss://gateway.solo-leveling.online/ws`
+- API URL: `https://gateway.solo-leveling.org`
+- WebSocket: `wss://gateway.solo-leveling.org/ws`
 - Индикатор: Зеленый бейдж "PRODUCTION" в правом нижнем углу
 
 ## Профили окружения
@@ -217,8 +217,8 @@ kubectl apply -f k8s/
 ### Production настройки в Docker
 - **NODE_ENV**: `production`
 - **REACT_APP_ENV**: `production`
-- **API URL**: `https://gateway.solo-leveling.online`
-- **WebSocket**: `wss://gateway.solo-leveling.online/ws`
+- **API URL**: `https://gateway.solo-leveling.org`
+- **WebSocket**: `wss://gateway.solo-leveling.org/ws`
 
 ## Требования
 
