@@ -678,21 +678,67 @@ code {
   background-color: #050812;
 }
 
+/* На мобильной страница не скроллится — только контент внутри табов; верх не наезжает на TopBar */
+html.mobile-version,
+body.mobile-version {
+  overflow: hidden !important;
+  height: 100% !important;
+  position: fixed !important;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
 .mobile-version #root {
   position: relative;
   background-color: #050812;
+  height: 100%;
+  overflow: hidden;
 }
 
-/* Убрали черные полоски - теперь используем только отступы */
+/* Мобильная версия: TopBar тянется от верха, пустая зона — часть TopBar */
 .mobile-version .App {
-  /* Большой отступ сверху для мобильных устройств в fullscreen режиме */
-  /* Используем минимум 100px или safe-area-inset-top, если он больше */
-  padding-top: 100px;
+  padding-top: 0;
   background-color: #050812;
   width: 100%;
   max-width: 100vw;
-  overflow-x: hidden;
+  height: 100%;
+  overflow: hidden;
   min-height: 100vh;
+}
+
+/* TopBar на мобильной: фиксирован сверху, не скроллится; высота 100px + 56px */
+.mobile-version .app-topbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  padding-top: 100px;
+  min-height: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  box-sizing: content-box;
+}
+
+/* Обёртка под TopBar резервирует место, чтобы контент не прыгал */
+.mobile-version .topbar-wrapper {
+  min-height: 156px;
+}
+
+/* Контент — под TopBar (156px) + небольшой отступ снизу от края TopBar (12px) = 168px */
+body.mobile-version .tab-content-with-top-bar {
+  padding-top: 168px !important;
+}
+
+body.mobile-version .tab-inner-content {
+  padding-top: 168px !important;
+}
+
+/* Перебиваем Tailwind pt-16/pt-20 на мобильной */
+body.mobile-version .tab-inner-content.pt-16,
+body.mobile-version .tab-inner-content.pt-20 {
+  padding-top: 168px !important;
 }
 
 .mobile-version main,
@@ -703,23 +749,14 @@ code {
   overflow-x: hidden;
 }
 
-/* Отступ для внутренних контейнеров табов на мобильных устройствах */
-/* Переопределяем Tailwind классы pt-16/pt-20 для увеличения отступа сверху в fullscreen режиме */
-.mobile-version .relative.z-10.min-h-screen {
-  padding-top: 100px !important;
+/* Не обнулять padding у tab-inner-content */
+.mobile-version .relative.z-10.min-h-screen:not(.tab-inner-content) {
+  padding-top: 0 !important;
 }
 
-@supports (padding: max(0px)) {
-  .mobile-version .relative.z-10.min-h-screen {
-    padding-top: max(100px, env(safe-area-inset-top)) !important;
-  }
-}
-
-/* Для устройств с вырезом (notch) - используем safe-area-inset-top если он больше 100px */
-@supports (padding: max(0px)) {
-  .mobile-version .App {
-    padding-top: max(100px, env(safe-area-inset-top));
-  }
+/* Оверлей стрика — под TopBar с отступом */
+.mobile-version .day-streak-info-overlay {
+  top: 168px !important;
 }
 
 /* На десктопе убираем ВСЕ псевдоэлементы и белые полоски */
@@ -772,26 +809,13 @@ code {
   background-color: #050812 !important;
 }
 
-/* Позиционирование уведомлений для мобильных устройств */
+/* Позиционирование уведомлений и лидерборда на мобильных — под TopBar с отступом (168px) */
 .mobile-version .notification-container {
-  top: calc(55px + 3rem) !important;
+  top: 168px !important;
 }
 
-@supports (padding: max(0px)) {
-  .mobile-version .notification-container {
-    top: calc(max(55px, env(safe-area-inset-top)) + 3rem) !important;
-  }
-}
-
-/* Отступ сверху для sticky элемента текущей позиции в лидерборде на мобильных устройствах */
 .mobile-version .leaderboard-current-user-sticky {
-  top: 100px !important;
-}
-
-@supports (padding: max(0px)) {
-  .mobile-version .leaderboard-current-user-sticky {
-    top: max(100px, env(safe-area-inset-top)) !important;
-  }
+  top: 168px !important;
 }
 
 /* Плавная анимация появления контента при переключении табов */

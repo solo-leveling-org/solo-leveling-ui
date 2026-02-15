@@ -24,6 +24,10 @@ body, .App {
   background-color: #050812;
 }
 
+.tab-content-with-top-bar {
+  padding-top: 4rem; /* TopBar height (56px) + gap */
+}
+
 
 
 /* Responsive padding for mobile */

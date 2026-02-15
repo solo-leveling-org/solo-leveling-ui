@@ -32,6 +32,7 @@ import { ReactComponent as ArrowUpIcon } from '../assets/icons/arrow-up.svg';
 import { ReactComponent as ArrowDownIcon } from '../assets/icons/arrow-down.svg';
 import { ReactComponent as UsersGroupIcon } from '../assets/icons/users-group.svg';
 import { ReactComponent as CastleIcon } from '../assets/icons/castle.svg';
+import { ReactComponent as FireIcon } from '../assets/icons/fire.svg';
 
 export type IconType = 
   | 'brain' 
@@ -67,7 +68,8 @@ export type IconType =
   | 'arrow-up'
   | 'arrow-down'
   | 'users-group'
-  | 'castle';
+  | 'castle'
+  | 'fire';
 
 interface IconProps {
   type: IconType;
@@ -150,6 +152,8 @@ const Icon: React.FC<IconProps> = ({ type, className = '', size = 24 }) => {
       return <UsersGroupIcon {...iconProps} />;
     case 'castle':
       return <CastleIcon {...iconProps} />;
+    case 'fire':
+      return <FireIcon {...iconProps} />;
     default:
       return <div className={className} style={{ width: size, height: size }}>❓</div>;
   }

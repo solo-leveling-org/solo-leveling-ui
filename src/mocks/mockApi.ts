@@ -625,6 +625,12 @@ export const mockUserService = {
     return new CancelablePromise(async (resolve) => {
       await delay(200);
       resolve({
+        photoUrl: undefined,
+        dayStreak: {
+          id: 'mock-streak',
+          current: 3,
+          max: 7,
+        },
         locale: {
           tag: 'ru',
           isManual: false
@@ -740,6 +746,14 @@ export const mockPlayerService = {
       try {
         const response = mockState.completeTask(id);
         resolve(response);
+        // Имитация: после выполнения задачи считаем, что выполнена daily task — отправляем событие для оверлея продления стрика
+        setTimeout(() => {
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('day-streak-notification', {
+              detail: { message: 'Ежедневный стрик продлён!' },
+            }));
+          }
+        }, 300);
       } catch (error) {
         reject(error);
       }
@@ -854,6 +868,49 @@ export const mockPlayerService = {
       };
       
       resolve(response);
+    });
+  },
+
+  getDailyTasks: (): CancelablePromise<{ tasks?: import('../api').PlayerDailyTask[] }> => {
+    return new CancelablePromise(async (resolve) => {
+      await delay(200);
+      resolve({
+        tasks: [
+          {
+            id: 'daily-1',
+            title: 'Выполни 2 задачи',
+            progress: 1,
+            goal: 2,
+            completed: false,
+          },
+          {
+            id: 'daily-2',
+            title: 'Потрать 1000 монет',
+            progress: 350,
+            goal: 1000,
+            completed: false,
+          },
+          {
+            id: 'daily-3',
+            title: 'Зайди в приложение',
+            progress: 1,
+            goal: 1,
+            completed: true,
+          },
+        ],
+      });
+    });
+  },
+
+  getMonthlyActivity: (year: number, month: number): CancelablePromise<{ activeDays?: number[] }> => {
+    return new CancelablePromise(async (resolve) => {
+      await delay(200);
+      // Мок: несколько активных дней в текущем месяце (1, 5, 10, 15, 20)
+      const today = new Date().getDate();
+      const activeDays = [1, 5, Math.min(10, today), Math.min(15, today), Math.min(20, today)].filter(
+        (d, i, arr) => arr.indexOf(d) === i && d <= new Date(year, month, 0).getDate()
+      );
+      resolve({ activeDays });
     });
   },
 

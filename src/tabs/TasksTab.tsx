@@ -15,7 +15,7 @@ type TasksTabProps = {
 };
 
 type TabViewMode = 'tasks' | 'topics';
-type TaskViewMode = 'active' | 'completed';
+type TaskViewMode = 'active' | 'completed' | 'daily';
 
 const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [tasks, setTasks] = useState<PlayerTask[]>([]);
@@ -167,7 +167,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           boxSizing: 'border-box'
         }}
       >
-        <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+        <div className="tab-inner-content relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header skeleton */}
             <div className="mb-8">
@@ -268,7 +268,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
         WebkitOverflowScrolling: 'touch',
       }}
     >
-      <div className={`relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 ${displayTabMode === 'topics' ? '' : 'pb-24'}`}>
+      <div className={`tab-inner-content relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 ${displayTabMode === 'topics' ? '' : 'pb-24'}`}>
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
           <div className="mb-8">
@@ -355,62 +355,47 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
               </div>
             </div>
 
-            {/* Task View Mode Toggle - Same style as leaderboard */}
+            {/* Task View Mode Toggle - полная ширина без обрезки (отрицательный margin компенсирует отступ таба) */}
             {displayTabMode === 'tasks' && !firstTime && (
-              <div className="flex justify-center mb-6">
+              <div className="flex justify-center mb-6 overflow-x-auto -mx-4 md:-mx-6">
                 <div
-                  className="inline-flex rounded-full p-1"
+                  className="inline-flex rounded-full p-1 flex-nowrap gap-2 px-3 md:px-4"
                   style={{
                     background: 'rgba(220, 235, 245, 0.08)',
                     border: '1px solid rgba(220, 235, 245, 0.12)',
                     backdropFilter: 'blur(10px)'
                   }}
                 >
-                  <div className="inline-flex gap-2">
+                    {/* 1 - Ежедневные */}
                     <button
                       onClick={() => {
-                        if (taskViewMode !== 'active') {
-                          // Находим скроллируемый контейнер
+                        if (taskViewMode !== 'daily') {
                           const scrollContainer = document.querySelector('.fixed.inset-0.overflow-y-auto') as HTMLElement;
                           scrollContainerRef.current = scrollContainer;
-                          
-                          // Сохраняем позицию скролла перед переходом
                           if (scrollContainer) {
                             scrollPositionRef.current = scrollContainer.scrollTop;
                           } else {
                             scrollPositionRef.current = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
                           }
-                          
-                          // Сохраняем высоту контента перед переходом
                           if (contentContainerRef.current) {
                             contentHeightRef.current = contentContainerRef.current.scrollHeight;
                           }
-                          
                           setIsTransitioning(true);
-                          // Даем время для начала анимации исчезновения
                           requestAnimationFrame(() => {
                             setTimeout(() => {
-                              setTaskViewMode('active');
-                              // Даем время для завершения анимации исчезновения перед показом нового контента
+                              setTaskViewMode('daily');
                               setTimeout(() => {
-                                setDisplayTaskViewMode('active');
-                                // Даем время для завершения анимации появления
+                                setDisplayTaskViewMode('daily');
                                 setTimeout(() => {
                                   setIsTransitioning(false);
-                                  
-                                  // Восстанавливаем позицию скролла после завершения анимации
-                                  // Используем несколько requestAnimationFrame для гарантии, что DOM обновился
+                                  requestAnimationFrame(() => { contentHeightRef.current = 0; });
                                   requestAnimationFrame(() => {
                                     requestAnimationFrame(() => {
-                                      // Дополнительная задержка для учета загрузки данных в TasksList
                                       setTimeout(() => {
                                         if (scrollContainerRef.current) {
                                           scrollContainerRef.current.scrollTop = scrollPositionRef.current;
                                         } else {
-                                          window.scrollTo({
-                                            top: scrollPositionRef.current,
-                                            behavior: 'auto'
-                                          });
+                                          window.scrollTo({ top: scrollPositionRef.current, behavior: 'auto' });
                                         }
                                       }, 100);
                                     });
@@ -421,7 +406,65 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                           });
                         }
                       }}
-                      className={`px-6 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-sm md:text-base transition-all duration-150 ease-in-out ${
+                      className={`flex-shrink-0 px-5 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-xs md:text-base transition-all duration-150 ease-in-out ${
+                        taskViewMode === 'daily' ? '' : 'opacity-50 hover:opacity-70'
+                      }`}
+                      style={taskViewMode === 'daily' ? {
+                        background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.25) 0%, rgba(160, 210, 235, 0.15) 100%)',
+                        border: '2px solid rgba(180, 220, 240, 0.4)',
+                        color: '#e8f4f8',
+                        boxShadow: '0 0 20px rgba(180, 220, 240, 0.3), inset 0 0 20px rgba(200, 230, 245, 0.05)',
+                        textShadow: '0 0 4px rgba(180, 220, 240, 0.3)',
+                        backdropFilter: 'blur(20px)'
+                      } : {
+                        background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.4) 0%, rgba(5, 8, 18, 0.6) 100%)',
+                        border: '2px solid rgba(220, 235, 245, 0.2)',
+                        color: 'rgba(220, 235, 245, 0.6)',
+                        backdropFilter: 'blur(10px)'
+                      }}
+                    >
+                      {t('tasks.viewMode.daily')}
+                    </button>
+                    {/* 2 - Активные (выбраны по умолчанию) */}
+                    <button
+                      onClick={() => {
+                        if (taskViewMode !== 'active') {
+                          const scrollContainer = document.querySelector('.fixed.inset-0.overflow-y-auto') as HTMLElement;
+                          scrollContainerRef.current = scrollContainer;
+                          if (scrollContainer) {
+                            scrollPositionRef.current = scrollContainer.scrollTop;
+                          } else {
+                            scrollPositionRef.current = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+                          }
+                          if (contentContainerRef.current) {
+                            contentHeightRef.current = contentContainerRef.current.scrollHeight;
+                          }
+                          setIsTransitioning(true);
+                          requestAnimationFrame(() => {
+                            setTimeout(() => {
+                              setTaskViewMode('active');
+                              setTimeout(() => {
+                                setDisplayTaskViewMode('active');
+                                setTimeout(() => {
+                                  setIsTransitioning(false);
+                                  requestAnimationFrame(() => {
+                                    requestAnimationFrame(() => {
+                                      setTimeout(() => {
+                                        if (scrollContainerRef.current) {
+                                          scrollContainerRef.current.scrollTop = scrollPositionRef.current;
+                                        } else {
+                                          window.scrollTo({ top: scrollPositionRef.current, behavior: 'auto' });
+                                        }
+                                      }, 100);
+                                    });
+                                  });
+                                }, 50);
+                              }, 150);
+                            }, 50);
+                          });
+                        }
+                      }}
+                      className={`flex-shrink-0 px-5 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-xs md:text-base transition-all duration-150 ease-in-out ${
                         taskViewMode === 'active' ? '' : 'opacity-50 hover:opacity-70'
                       }`}
                       style={taskViewMode === 'active' ? {
@@ -440,55 +483,36 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                     >
                       {t('tasks.viewMode.active')}
                     </button>
+                    {/* 3 - Завершенные */}
                     <button
                       onClick={() => {
                         if (taskViewMode !== 'completed') {
-                          // Находим скроллируемый контейнер
                           const scrollContainer = document.querySelector('.fixed.inset-0.overflow-y-auto') as HTMLElement;
                           scrollContainerRef.current = scrollContainer;
-                          
-                          // Сохраняем позицию скролла перед переходом
                           if (scrollContainer) {
                             scrollPositionRef.current = scrollContainer.scrollTop;
                           } else {
                             scrollPositionRef.current = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
                           }
-                          
-                          // Сохраняем высоту контента перед переходом
                           if (contentContainerRef.current) {
                             contentHeightRef.current = contentContainerRef.current.scrollHeight;
                           }
-                          
                           setIsTransitioning(true);
-                          // Даем время для начала анимации исчезновения
                           requestAnimationFrame(() => {
                             setTimeout(() => {
                               setTaskViewMode('completed');
-                              // Даем время для завершения анимации исчезновения перед показом нового контента
                               setTimeout(() => {
                                 setDisplayTaskViewMode('completed');
-                                // Даем время для завершения анимации появления
                                 setTimeout(() => {
                                   setIsTransitioning(false);
-                                  
-                                  // Сбрасываем минимальную высоту после завершения перехода
-                                  requestAnimationFrame(() => {
-                                    contentHeightRef.current = 0;
-                                  });
-                                  
-                                  // Восстанавливаем позицию скролла после завершения анимации
-                                  // Используем несколько requestAnimationFrame для гарантии, что DOM обновился
+                                  requestAnimationFrame(() => { contentHeightRef.current = 0; });
                                   requestAnimationFrame(() => {
                                     requestAnimationFrame(() => {
-                                      // Дополнительная задержка для учета загрузки данных в TasksList
                                       setTimeout(() => {
                                         if (scrollContainerRef.current) {
                                           scrollContainerRef.current.scrollTop = scrollPositionRef.current;
                                         } else {
-                                          window.scrollTo({
-                                            top: scrollPositionRef.current,
-                                            behavior: 'auto'
-                                          });
+                                          window.scrollTo({ top: scrollPositionRef.current, behavior: 'auto' });
                                         }
                                       }, 100);
                                     });
@@ -499,7 +523,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                           });
                         }
                       }}
-                      className={`px-6 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-sm md:text-base transition-all duration-150 ease-in-out ${
+                      className={`flex-shrink-0 px-5 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-xs md:text-base transition-all duration-150 ease-in-out ${
                         taskViewMode === 'completed' ? '' : 'opacity-50 hover:opacity-70'
                       }`}
                       style={taskViewMode === 'completed' ? {
@@ -518,12 +542,11 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                     >
                       {t('tasks.viewMode.completed')}
                     </button>
-                  </div>
                 </div>
               </div>
             )}
 
-            {/* Stamina Indicator - показываем только для активных задач */}
+            {/* Stamina Indicator - показываем только для активных задач (не для Daily и не для Завершенные) */}
             {displayTabMode === 'tasks' && !firstTime && displayTaskViewMode === 'active' && (
               <>
                 {loading ? (

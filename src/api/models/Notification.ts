@@ -8,6 +8,5 @@ export type Notification = {
     message?: string;
     type: NotificationType;
     source: NotificationSource;
-    visible: boolean;
 };
 

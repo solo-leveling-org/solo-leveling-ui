@@ -95,6 +95,16 @@ export const ru = {
     games: 'Коллекции',
   },
 
+  dayStreak: {
+    extended: 'Ежедневный стрик продлён!',
+    days: 'дней',
+    current: 'Текущий стрик',
+    max: 'Рекорд',
+    monthlyActivity: 'Активность за месяц',
+    noActivity: 'Нет активности',
+    year: 'Год',
+  },
+
   // Приветственная страница
   welcome: {
     title: 'Solo Leveling AI',
@@ -174,6 +184,10 @@ export const ru = {
     viewMode: {
       active: 'Активные',
       completed: 'Завершенные',
+      daily: 'Ежедневные',
+    },
+    daily: {
+      empty: 'Нет ежедневных задач на сегодня',
     },
     noCompletedTasks: 'Нет завершенных задач',
     noCompletedTasksDescription: 'Выполняйте задачи, чтобы увидеть их здесь!',

@@ -8,6 +8,7 @@ import LeaderboardView from '../components/LeaderboardView';
 import UserProfileView from '../components/UserProfileView';
 import { cn, getOptimizedBlur } from '../utils';
 import { globalBackButtonHandlerRef } from '../App';
+import { useStreakOverlay } from '../contexts/StreakOverlayContext';
 
 type CollectionsTabProps = {
   isAuthenticated: boolean;
@@ -23,18 +24,20 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
   const { t } = useLocalization();
   const location = useLocation();
   const { backButton } = useTelegramWebApp();
+  const { isOpen: isStreakOverlayOpen } = useStreakOverlay();
   const isBackButtonInitializedRef = useRef(false);
   const currentTabModeRef = useRef<TabMode>('main');
 
   // Проверяем, находимся ли мы на табе коллекций
   const isOnCollectionsTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
 
-  // Управление кнопкой "Назад" в Telegram - устанавливаем один раз при открытии лидерборда
+  // Управление кнопкой "Назад" в Telegram - не перехватываем, когда открыт оверлей стрика
   useEffect(() => {
-    // Если мы не на табе коллекций, не управляем кнопкой
-    if (!isOnCollectionsTab) {
+    if (isStreakOverlayOpen) {
+      isBackButtonInitializedRef.current = false;
       return;
     }
+    if (!isOnCollectionsTab) return;
 
     currentTabModeRef.current = tabMode;
     
@@ -69,7 +72,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
       backButton.hide();
       isBackButtonInitializedRef.current = false;
     }
-  }, [backButton, tabMode, isOnCollectionsTab]);
+  }, [backButton, tabMode, isOnCollectionsTab, isStreakOverlayOpen]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -122,7 +125,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
           background: 'rgba(200, 230, 245, 0.6)'
         }}></div>
 
-        <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+        <div className="tab-inner-content relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
           <div className="max-w-4xl mx-auto space-y-4">
             {/* Карточка Таблица лидеров */}
             <button
@@ -414,7 +417,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
           background: 'rgba(200, 230, 245, 0.6)'
         }}></div>
 
-        <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+        <div className="tab-inner-content relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <div className="mb-8">

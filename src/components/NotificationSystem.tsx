@@ -407,7 +407,7 @@ export const NotificationContainer: React.FC = () => {
   const { notifications, removeNotification } = useNotifications();
 
   return (
-    <div className="fixed top-4 right-4 left-4 sm:left-auto sm:right-4 z-50 space-y-3 pointer-events-none notification-container">
+    <div className="fixed top-[4rem] right-4 left-4 sm:left-auto sm:right-4 z-50 space-y-3 pointer-events-none notification-container">
       {notifications.map((notification) => (
         <div key={notification.id} className="pointer-events-auto w-full sm:w-auto">
           <NotificationItem

@@ -425,6 +425,7 @@ export const mockGetUserResponse: GetUserResponse = {
 
 // Моковые данные для стамины
 export const mockStamina: Stamina = {
+  id: 'mock-stamina',
   current: 100,
   max: 100,
   isRegenerating: true,

@@ -95,6 +95,16 @@ export const en = {
     games: 'Collections',
   },
 
+  dayStreak: {
+    extended: 'Daily streak extended!',
+    days: 'days',
+    current: 'Current streak',
+    max: 'Best',
+    monthlyActivity: 'Monthly activity',
+    noActivity: 'No activity',
+    year: 'Year',
+  },
+
   // Welcome page
   welcome: {
     title: 'Solo Leveling AI',
@@ -174,6 +184,10 @@ export const en = {
     viewMode: {
       active: 'Active',
       completed: 'Completed',
+      daily: 'Daily',
+    },
+    daily: {
+      empty: 'No daily tasks for today',
     },
     noCompletedTasks: 'No completed tasks',
     noCompletedTasksDescription: 'Complete tasks to see them here!',

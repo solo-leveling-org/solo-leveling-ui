@@ -14,7 +14,6 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
   const location = useLocation();
   const { t } = useLocalization();
   const { isDialogOpen, closeDialog } = useModal();
-
   // Мемоизируем табы для предотвращения пересоздания при каждом рендере
   const tabs = useMemo(() => [
     {

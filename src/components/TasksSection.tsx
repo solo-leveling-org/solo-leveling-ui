@@ -1,8 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import type { PlayerTask, CompleteTaskResponse, LocalizedField, Stamina } from '../api';
 import { PlayerTaskStatus as TaskStatus } from '../api';
+import { PlayerService } from '../api';
+import type { PlayerDailyTask } from '../api';
 import TasksGrid from './TasksGrid';
 import TasksList from './TasksList';
+import DailyTasksGrid from './DailyTasksGrid';
 import TaskDialog from './TaskDialog';
 import TaskCompletionDialog from './TaskCompletionDialog';
 import DateFilter from './DateFilter';
@@ -20,11 +23,11 @@ type TasksSectionProps = {
   firstTime: boolean;
   onTasksUpdate?: (tasks: PlayerTask[], stamina?: Stamina) => void;
   onGoToTopics?: () => void;
-  initialViewMode?: 'active' | 'completed';
+  initialViewMode?: 'active' | 'completed' | 'daily';
   isTransitioning?: boolean;
 };
 
-type TaskViewMode = 'active' | 'completed';
+type TaskViewMode = 'active' | 'completed' | 'daily';
 
 const TasksSection: React.FC<TasksSectionProps> = ({
   tasks,
@@ -56,7 +59,18 @@ const TasksSection: React.FC<TasksSectionProps> = ({
   const [enumFilters, setEnumFilters] = useState<{ [field: string]: string[] }>({});
   const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [taskLoading, setTaskLoading] = useState(false);
+  const [dailyTasks, setDailyTasks] = useState<PlayerDailyTask[]>([]);
+  const [dailyLoading, setDailyLoading] = useState(false);
   const { t } = useLocalization();
+
+  useEffect(() => {
+    if (viewMode !== 'daily') return;
+    setDailyLoading(true);
+    PlayerService.getDailyTasks()
+      .then((res) => setDailyTasks(res.tasks ?? []))
+      .catch(() => setDailyTasks([]))
+      .finally(() => setDailyLoading(false));
+  }, [viewMode]);
 
   const handleCompleteTask = useCallback(async (task: PlayerTask) => {
     setConfirmAction({ type: 'complete', task });
@@ -293,7 +307,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
         </div>
       )}
 
-      {/* Tasks Grid or List */}
+      {/* Tasks Grid or List or Daily */}
       {viewMode === 'active' ? (
         <div key="active-tasks">
           <TasksGrid
@@ -304,6 +318,10 @@ const TasksSection: React.FC<TasksSectionProps> = ({
             onComplete={handleCompleteTask}
             onReplace={handleReplace}
           />
+        </div>
+      ) : viewMode === 'daily' ? (
+        <div key="daily-tasks">
+          <DailyTasksGrid tasks={dailyTasks} loading={dailyLoading} />
         </div>
       ) : (
         <div key="completed-tasks">

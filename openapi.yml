@@ -320,6 +320,53 @@ paths:
               schema:
                 $ref: '#/components/schemas/SearchPlayerTasksResponse'
 
+  /api/v1/player/tasks/daily:
+    get:
+      tags:
+        - player
+      summary: Get current daily tasks
+      operationId: getDailyTasks
+      responses:
+        '200':
+          description: Daily tasks retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDailyTasksResponse'
+
+  /api/v1/player/activity/monthly:
+    get:
+      tags:
+        - player
+      summary: Get monthly activity calendar
+      operationId: getMonthlyActivity
+      parameters:
+        - name: year
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 2000
+            maximum: 2100
+          description: Year (e.g. 2026)
+        - name: month
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 12
+          description: Month number from 1 (January) to 12 (December)
+      responses:
+        '200':
+          description: Monthly activity retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMonthlyActivityResponse'
+
   /api/v1/player/balance:
     get:
       tags:
@@ -449,12 +496,20 @@ components:
     UserAdditionalInfoResponse:
       type: object
       properties:
+        photoUrl:
+          type: string
+        dayStreak:
+          $ref: '#/components/schemas/DayStreak'
         locale:
           $ref: '#/components/schemas/UserLocale'
         roles:
           type: array
           items:
             $ref: '#/components/schemas/UserRole'
+      required:
+        - dayStreak
+        - locale
+        - roles
 
     GetPlayerTopicsResponse:
       type: object
@@ -556,6 +611,26 @@ components:
       required:
         - user
 
+    GetDailyTasksResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerDailyTask'
+
+    GetMonthlyActivityResponse:
+      type: object
+      properties:
+        activeDays:
+          type: array
+          items:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 31
+          description: List of day numbers (1-31) when daily tasks were completed
+
     # --- Enums ---
     UserRole:
       type: string
@@ -637,6 +712,9 @@ components:
     Stamina:
       type: object
       properties:
+        id:
+          type: string
+          format: uuid
         current:
           type: integer
           format: int32
@@ -676,11 +754,29 @@ components:
           description: Время полного восстановления стамины (ISO 8601)
           example: "2025-12-15T17:00:00Z"
       required:
+        - id
         - current
         - max
         - isRegenerating
         - regenRate
         - regenIntervalSeconds
+
+    DayStreak:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        current:
+          type: integer
+          format: int32
+        max:
+          type: integer
+          format: int32
+      required:
+        - id
+        - current
+        - max
 
     Task:
       type: object
@@ -793,6 +889,33 @@ components:
       required:
         - id
         - balance
+
+    PlayerDailyTask:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          description: Localized task title
+        progress:
+          type: number
+          format: decimal
+          description: Current progress value
+        goal:
+          type: number
+          format: decimal
+          description: Target goal value
+        completed:
+          type: boolean
+          description: Whether task is completed
+      required:
+        - id
+        - title
+        - progress
+        - goal
+        - completed
 
     Player:
       type: object
@@ -1185,12 +1308,9 @@ components:
           $ref: '#/components/schemas/NotificationType'
         source:
           $ref: '#/components/schemas/NotificationSource'
-        visible:
-          type: boolean
       required:
         - type
         - source
-        - visible
 
     NotificationType:
       type: string
@@ -1198,4 +1318,4 @@ components:
 
     NotificationSource:
       type: string
-      enum: [ tasks, locale ]
+      enum: [ tasks, locale, dayStreak ]
