@@ -14,7 +14,7 @@ const STREAK_NUMBER_DURATION_MS = 1000;
  * Текст заголовка берётся из notification.message (source=dayStreak), иначе из локали.
  */
 const DayStreakOverlay: React.FC = () => {
-  const { isDialogOpen } = useModal();
+  const { isDialogOpen, isOverlayOpen } = useModal();
   const { dayStreak: contextStreak, refetch } = useUserAdditionalInfo();
   const { t } = useLocalization();
   const [pending, setPending] = useState(false);
@@ -44,7 +44,7 @@ const DayStreakOverlay: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!pending || isDialogOpen) return;
+    if (!pending || isDialogOpen || isOverlayOpen) return;
     setPending(false);
     const before = contextStreak?.current ?? 0;
     setStreakBefore(before);
@@ -55,7 +55,7 @@ const DayStreakOverlay: React.FC = () => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setOverlayMounted(true));
     });
-  }, [pending, isDialogOpen, contextStreak]);
+  }, [pending, isDialogOpen, isOverlayOpen, contextStreak]);
 
   useEffect(() => {
     if (!visible) return;
@@ -87,95 +87,118 @@ const DayStreakOverlay: React.FC = () => {
 
   return (
     <div
-      className="day-streak-overlay fixed inset-0 z-[100] flex flex-col items-center justify-center"
+      className="day-streak-overlay fixed left-0 top-0 right-0 bottom-0 z-[100] flex flex-col box-border"
       style={{
+        width: '100%',
+        height: '100%',
+        minHeight: '100vh',
         background: 'linear-gradient(135deg, rgba(5, 8, 18, 0.97) 0%, rgba(10, 14, 39, 0.98) 100%)',
         backdropFilter: 'blur(16px)',
+        paddingLeft: 'env(safe-area-inset-left, 0)',
+        paddingRight: 'env(safe-area-inset-right, 0)',
+        paddingTop: 'env(safe-area-inset-top, 0)',
         opacity: overlayMounted ? 1 : 0,
         transition: 'opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1)',
       }}
     >
-      <div
-        className="relative z-10 flex flex-col items-center gap-6 px-6 transition-transform duration-500"
-        style={{
-          opacity: overlayMounted ? 1 : 0,
-          transform: overlayMounted ? 'translateY(0)' : 'translateY(12px)',
-          transition: 'opacity 0.55s cubic-bezier(0.33, 1, 0.68, 1), transform 0.55s cubic-bezier(0.33, 1, 0.68, 1)',
-        }}
-      >
-        <div className="w-40 h-40 flex-shrink-0 opacity-95">
-          <DotLottieReact
-            src={fireLottieSrc}
-            autoplay
-            loop
-            style={{ width: '100%', height: '100%' }}
-          />
-        </div>
-
-        <p
-          className="text-xl font-tech text-center tracking-wide"
+      {/* Контент по центру (как в TaskCompletionOverlay — контент сверху, кнопка отдельно снизу) */}
+      <div className="flex-1 flex flex-col items-center justify-center min-h-0 px-6">
+        <div
+          className="relative z-10 flex flex-col items-center gap-6"
           style={{
-            color: 'rgba(232, 244, 248, 0.95)',
-            textShadow: '0 0 20px rgba(180, 220, 240, 0.15)',
-            letterSpacing: '0.02em',
+            opacity: overlayMounted ? 1 : 0,
+            transform: overlayMounted ? 'translateY(0)' : 'translateY(12px)',
+            transition: 'opacity 0.55s cubic-bezier(0.33, 1, 0.68, 1), transform 0.55s cubic-bezier(0.33, 1, 0.68, 1)',
           }}
         >
-          {notificationMessage && notificationMessage.trim() !== ''
-            ? notificationMessage
-            : t('dayStreak.extended', 'Ежедневный стрик продлён!')}
-        </p>
+          <div className="w-40 h-40 flex-shrink-0 opacity-95">
+            <DotLottieReact
+              src={fireLottieSrc}
+              autoplay
+              loop
+              style={{ width: '100%', height: '100%' }}
+            />
+          </div>
 
-        <div className="flex items-baseline justify-center gap-2 mt-2 min-h-[4.5rem]">
-          {phase === 'before' && (
-            <span
-              className="day-streak-number inline-block text-6xl font-bold tabular-nums leading-none"
-              style={{
-                color: 'rgba(251, 146, 60, 0.95)',
-                textShadow: '0 0 24px rgba(251, 146, 60, 0.25), 0 0 48px rgba(251, 146, 60, 0.12)',
-              }}
-            >
-              {streakBefore}
-            </span>
-          )}
-          {phase === 'after' && (
-            <span
-              className="day-streak-result inline-block text-6xl font-bold tabular-nums leading-none"
-              style={{
-                color: 'rgba(251, 146, 60, 0.95)',
-                textShadow: '0 0 24px rgba(251, 146, 60, 0.25), 0 0 48px rgba(251, 146, 60, 0.12)',
-              }}
-            >
-              {streakAfter}
-            </span>
-          )}
-          <span
-            className="text-2xl font-tech ml-1 leading-none"
-            style={{ color: 'rgba(220, 235, 245, 0.8)' }}
+          <p
+            className="text-xl font-tech text-center tracking-wide"
+            style={{
+              color: 'rgba(232, 244, 248, 0.95)',
+              textShadow: '0 0 20px rgba(180, 220, 240, 0.15)',
+              letterSpacing: '0.02em',
+            }}
           >
-            {t('dayStreak.days', { count: phase === 'after' ? streakAfter : streakBefore })}
-          </span>
-        </div>
+            {notificationMessage && notificationMessage.trim() !== ''
+              ? notificationMessage
+              : t('dayStreak.extended')}
+          </p>
 
+          <div className="flex items-baseline justify-center gap-2 mt-2 min-h-[4.5rem]">
+            {phase === 'before' && (
+              <span
+                className="day-streak-number inline-block text-6xl font-bold tabular-nums leading-none"
+                style={{
+                  color: 'rgba(251, 146, 60, 0.95)',
+                  textShadow: '0 0 24px rgba(251, 146, 60, 0.25), 0 0 48px rgba(251, 146, 60, 0.12)',
+                }}
+              >
+                {streakBefore}
+              </span>
+            )}
+            {phase === 'after' && (
+              <span
+                className="day-streak-result inline-block text-6xl font-bold tabular-nums leading-none"
+                style={{
+                  color: 'rgba(251, 146, 60, 0.95)',
+                  textShadow: '0 0 24px rgba(251, 146, 60, 0.25), 0 0 48px rgba(251, 146, 60, 0.12)',
+                }}
+              >
+                {streakAfter}
+              </span>
+            )}
+            <span
+              className="text-2xl font-tech ml-1 leading-none"
+              style={{ color: 'rgba(220, 235, 245, 0.8)' }}
+            >
+              {t('dayStreak.days', { count: phase === 'after' ? streakAfter : streakBefore })}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Кнопка «Продолжить» внизу в одном месте с TaskCompletionOverlay */}
+      <div
+        className="flex-shrink-0 flex justify-center items-center w-full px-4 pt-3 pb-4"
+        style={{
+          paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0px))',
+          paddingLeft: 'env(safe-area-inset-left, 0)',
+          paddingRight: 'env(safe-area-inset-right, 0)',
+          background: 'linear-gradient(180deg, transparent 0%, rgba(5, 8, 18, 0.7) 100%)',
+          opacity: overlayMounted ? 1 : 0,
+          transform: overlayMounted ? 'translateY(0)' : 'translateY(10px)',
+          transition: 'opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1) 0.08s, transform 0.5s cubic-bezier(0.33, 1, 0.68, 1) 0.08s',
+        }}
+      >
         <button
           type="button"
           onClick={handleClose}
-          className="relative z-10 mt-8 px-8 py-3.5 rounded-2xl font-tech font-medium text-base tracking-wide transition-all duration-300 ease-out"
+          className="w-full max-w-xs py-3.5 px-6 rounded-xl font-tech font-semibold text-base transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           style={{
-            background: 'rgba(180, 220, 240, 0.12)',
-            border: '1px solid rgba(180, 220, 240, 0.25)',
+            background: 'rgba(180, 220, 240, 0.15)',
+            border: '1px solid rgba(180, 220, 240, 0.3)',
             color: 'rgba(232, 244, 248, 0.95)',
-            boxShadow: '0 0 24px rgba(180, 220, 240, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.04)',
+            boxShadow: '0 0 20px rgba(180, 220, 240, 0.1)',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'rgba(180, 220, 240, 0.18)';
             e.currentTarget.style.borderColor = 'rgba(180, 220, 240, 0.35)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'rgba(180, 220, 240, 0.12)';
-            e.currentTarget.style.borderColor = 'rgba(180, 220, 240, 0.25)';
+            e.currentTarget.style.background = 'rgba(180, 220, 240, 0.15)';
+            e.currentTarget.style.borderColor = 'rgba(180, 220, 240, 0.3)';
           }}
         >
-          {t('common.close', 'Закрыть')}
+          {t('common.continue')}
         </button>
       </div>
 

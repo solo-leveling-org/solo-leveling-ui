@@ -461,6 +461,7 @@ const TasksList: React.FC<TasksListProps> = ({
           onTaskClick={onTaskClick || (() => {})}
           onComplete={onComplete}
           onReplace={onReplace}
+          preserveOrder
         />
       </div>
       

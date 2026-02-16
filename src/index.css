@@ -788,6 +788,25 @@ body.mobile-version.android .day-streak-info-panel {
   top: 3.5rem !important;
 }
 
+/* TaskCompletionOverlay: отступ сверху под кнопки Telegram (мобильная), чуть меньше чем TopBar */
+body.mobile-version .task-completion-overlay {
+  padding-top: 72px !important;
+}
+
+body.mobile-version.android .task-completion-overlay {
+  padding-top: 56px !important;
+}
+
+/* Десктоп: отступ сверху у заголовка и снизу (от баланса до кнопки) — одинаковые */
+.desktop-version .task-completion-overlay .task-completion-title {
+  padding-top: 1rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+.desktop-version .task-completion-overlay .task-completion-footer-spacer {
+  padding-top: 1rem !important;
+}
+
 /* На десктопе убираем ВСЕ псевдоэлементы и белые полоски */
 .desktop-version {
   background-color: #050812 !important;

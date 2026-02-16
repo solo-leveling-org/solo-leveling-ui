@@ -40,7 +40,7 @@ export const useScrollLock = (isLocked: boolean) => {
     allElements.forEach(el => {
       const htmlEl = el as HTMLElement;
       // Проверяем, не находится ли элемент внутри диалога
-      const isInsideDialog = htmlEl.closest('.base-dialog-content, .bottom-sheet') !== null;
+      const isInsideDialog = htmlEl.closest('.base-dialog-content, .bottom-sheet, .task-completion-overlay') !== null;
       if (isInsideDialog) {
         return; // Пропускаем элементы внутри диалогов
       }

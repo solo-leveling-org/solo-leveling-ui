@@ -355,11 +355,11 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
               </div>
             </div>
 
-            {/* Task View Mode Toggle - полная ширина без обрезки (отрицательный margin компенсирует отступ таба) */}
+            {/* Task View Mode Toggle — отступ от краёв экрана (десктоп и мобильный) */}
             {displayTabMode === 'tasks' && !firstTime && (
-              <div className="flex justify-center mb-6 overflow-x-auto -mx-4 md:-mx-6">
+              <div className="flex justify-center mb-6 overflow-x-auto px-4 md:px-8">
                 <div
-                  className="inline-flex rounded-full p-1 flex-nowrap gap-2 px-3 md:px-4"
+                  className="inline-flex rounded-full p-1 flex-nowrap gap-1.5 sm:gap-2 px-2 sm:px-3 md:px-4"
                   style={{
                     background: 'rgba(220, 235, 245, 0.08)',
                     border: '1px solid rgba(220, 235, 245, 0.12)',
@@ -406,7 +406,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                           });
                         }
                       }}
-                      className={`flex-shrink-0 px-5 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-xs md:text-base transition-all duration-150 ease-in-out ${
+                      className={`flex-shrink-0 px-3 sm:px-5 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-xs md:text-base transition-all duration-150 ease-in-out ${
                         taskViewMode === 'daily' ? '' : 'opacity-50 hover:opacity-70'
                       }`}
                       style={taskViewMode === 'daily' ? {
@@ -464,7 +464,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                           });
                         }
                       }}
-                      className={`flex-shrink-0 px-5 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-xs md:text-base transition-all duration-150 ease-in-out ${
+                      className={`flex-shrink-0 px-3 sm:px-5 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-xs md:text-base transition-all duration-150 ease-in-out ${
                         taskViewMode === 'active' ? '' : 'opacity-50 hover:opacity-70'
                       }`}
                       style={taskViewMode === 'active' ? {
@@ -523,7 +523,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                           });
                         }
                       }}
-                      className={`flex-shrink-0 px-5 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-xs md:text-base transition-all duration-150 ease-in-out ${
+                      className={`flex-shrink-0 px-3 sm:px-5 md:px-8 py-2.5 md:py-3 rounded-full font-tech font-semibold text-xs md:text-base transition-all duration-150 ease-in-out ${
                         taskViewMode === 'completed' ? '' : 'opacity-50 hover:opacity-70'
                       }`}
                       style={taskViewMode === 'completed' ? {

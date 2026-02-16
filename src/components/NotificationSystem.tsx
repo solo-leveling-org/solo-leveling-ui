@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useModal } from '../contexts/ModalContext';
 
 export interface Notification {
@@ -30,6 +31,7 @@ const NotificationItem: React.FC<{
   notification: Notification;
   onRemove: (id: string) => void;
 }> = React.memo(({ notification, onRemove }) => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
   const { isTaskDialogOpen, isOverlayOpen } = useModal();
@@ -380,7 +382,7 @@ const NotificationItem: React.FC<{
               e.currentTarget.style.color = 'rgba(220, 235, 245, 0.6)';
               e.currentTarget.style.background = 'transparent';
             }}
-            aria-label="Закрыть уведомление"
+            aria-label={t('common.closeNotification')}
           >
             <svg className="w-4 h-4 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

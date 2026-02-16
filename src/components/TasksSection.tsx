@@ -7,7 +7,7 @@ import TasksGrid from './TasksGrid';
 import TasksList from './TasksList';
 import DailyTasksGrid from './DailyTasksGrid';
 import TaskDialog from './TaskDialog';
-import TaskCompletionDialog from './TaskCompletionDialog';
+import TaskCompletionOverlay from './TaskCompletionOverlay';
 import DateFilter from './DateFilter';
 import FilterDropdown from './FilterDropdown';
 import ResetFiltersButton from './ResetFiltersButton';
@@ -110,9 +110,9 @@ const TasksSection: React.FC<TasksSectionProps> = ({
     } catch (error: any) {
       console.error('Error completing task:', error);
       if (error?.message?.includes('Not enough stamina')) {
-        alert(`Недостаточно стамины! ${error.message}`);
+        alert(`${t('errors.insufficientStamina')} ${error.message}`);
       } else {
-        alert('Ошибка при выполнении задачи');
+        alert(t('errors.taskCompleteFailed'));
       }
     } finally {
       setTaskLoading(false);
@@ -127,7 +127,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
     }
     
     if (stamina.current < SKIP_STAMINA_COST) {
-      alert(`Недостаточно стамины! Требуется: ${SKIP_STAMINA_COST}, текущая: ${stamina.current}`);
+      alert(t('tasks.stamina.insufficientStamina', { required: SKIP_STAMINA_COST, current: stamina.current }));
       return;
     }
 
@@ -149,9 +149,9 @@ const TasksSection: React.FC<TasksSectionProps> = ({
     } catch (error: any) {
       console.error('Error skipping task:', error);
       if (error?.message?.includes('Not enough stamina')) {
-        alert(`Недостаточно стамины! ${error.message}`);
+        alert(`${t('errors.insufficientStamina')} ${error.message}`);
       } else {
-        alert('Ошибка при пропуске задачи');
+        alert(t('errors.taskSkipFailed'));
       }
     } finally {
       setTaskLoading(false);
@@ -317,6 +317,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
             onTaskClick={handleTaskClick}
             onComplete={handleCompleteTask}
             onReplace={handleReplace}
+            preserveOrder={false}
           />
         </div>
       ) : viewMode === 'daily' ? (
@@ -349,7 +350,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
       )}
 
       {completionResponse && (
-        <TaskCompletionDialog
+        <TaskCompletionOverlay
           response={completionResponse}
           completedTask={completedTask?.task}
           onClose={() => {

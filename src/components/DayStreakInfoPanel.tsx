@@ -198,7 +198,7 @@ const DayStreakInfoPanelContent: React.FC<DayStreakInfoPanelContentProps> = ({ d
               color: '#e8f4f8',
               border: '1px solid rgba(220, 235, 245, 0.15)',
             }}
-            aria-label={t('common.prev', 'Пред.')}
+            aria-label={t('common.prev')}
           >
             <span className="inline-block text-lg font-bold leading-none" style={{ color: 'inherit' }}>‹</span>
           </button>
@@ -237,7 +237,7 @@ const DayStreakInfoPanelContent: React.FC<DayStreakInfoPanelContentProps> = ({ d
                 onClick={() => setOpenDropdown(openDropdown === 'year' ? null : 'year')}
                 style={yearTriggerStyle}
                 className="font-tech w-full focus:outline-none focus:ring-2 focus:ring-[rgba(251,146,60,0.5)] focus:ring-offset-1 focus:ring-offset-[rgb(5,8,18)]"
-                aria-label={t('dayStreak.year', 'Год')}
+                aria-label={t('dayStreak.year')}
                 aria-expanded={openDropdown === 'year'}
               >
                 <span>{selectedYear}</span>
@@ -270,7 +270,7 @@ const DayStreakInfoPanelContent: React.FC<DayStreakInfoPanelContentProps> = ({ d
               color: '#e8f4f8',
               border: '1px solid rgba(220, 235, 245, 0.15)',
             }}
-            aria-label={t('common.next', 'След.')}
+            aria-label={t('common.next')}
           >
             <span className="inline-block text-lg font-bold leading-none" style={{ color: 'inherit' }}>›</span>
           </button>

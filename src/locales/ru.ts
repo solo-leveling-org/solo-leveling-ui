@@ -5,9 +5,12 @@ export const ru = {
     save: 'Сохранить',
     cancel: 'Отмена',
     close: 'Закрыть',
+    closeNotification: 'Закрыть уведомление',
     back: 'Назад',
-    next: 'Далее',
+    prev: 'Пред.',
+    next: 'След.',
     confirm: 'Подтвердить',
+    continue: 'Продолжить',
     active: 'Активно',
     completed: 'Завершено',
     inProgress: 'В процессе',
@@ -92,7 +95,7 @@ export const ru = {
     tasks: 'Задачи',
     topics: 'Темы',
     welcome: 'Главная',
-    games: 'Коллекции',
+    games: 'Сервисы',
   },
 
   dayStreak: {
@@ -337,6 +340,9 @@ export const ru = {
     authError: 'Ошибка авторизации',
     loadingError: 'Ошибка загрузки',
     saveError: 'Ошибка сохранения',
+    taskCompleteFailed: 'Ошибка при выполнении задачи',
+    taskSkipFailed: 'Ошибка при пропуске задачи',
+    insufficientStamina: 'Недостаточно стамины!',
   },
   // Редкости задач
   rarity: {
@@ -368,8 +374,8 @@ export const ru = {
     continue: 'Продолжить',
   },
 
-  // Коллекции
-  collections: {
+  // Сервисы
+  services: {
     tabs: {
       leaderboard: 'ТАБЛИЦА ЛИДЕРОВ',
       lootboxes: 'ЛУТ БОКСЫ',
@@ -377,11 +383,11 @@ export const ru = {
       guilds: 'ГИЛЬДИИ',
       dungeons: 'ДАНЖИ',
     },
-      leaderboard: {
-        title: 'Таблица лидеров',
-        subtitle: 'Соревнуйся с другими игроками и поднимайся в рейтинге',
-        yourPosition: 'Ваша позиция',
-      },
+    leaderboard: {
+      title: 'Таблица лидеров',
+      subtitle: 'Соревнуйся с другими игроками и поднимайся в рейтинге',
+      yourPosition: 'Ваша позиция',
+    },
     types: {
       level: 'По уровню',
       tasks: 'По задачам',

@@ -5,7 +5,7 @@ interface ModalContextType {
   setIsBottomSheetOpen: (isOpen: boolean) => void;
   isBottomBarVisible: boolean;
   isDialogOpen: boolean;
-  isTaskDialogOpen: boolean; // Флаг для TaskDialog и TaskCompletionDialog
+  isTaskDialogOpen: boolean; // Флаг для TaskDialog и TaskCompletionOverlay
   isOverlayOpen: boolean; // Флаг для оверлеев (DayStreak и т.д.) — при открытом оверлее таймер уведомлений ставится на паузу
   openDialog: () => void;
   closeDialog: () => void;

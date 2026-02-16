@@ -13,7 +13,7 @@ export function BackButtonStreakSync() {
   const location = useLocation();
   const { backButton } = useTelegramWebApp();
   const { isOpen: isStreakOverlayOpen, close: closeStreakOverlay } = useStreakOverlay();
-  const isOnCollectionsTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
+  const isOnServicesTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
 
   // Закрываем оверлей при смене маршрута (таб/профиль), чтобы не было кадра со старым табом
   useEffect(() => {
@@ -40,14 +40,14 @@ export function BackButtonStreakSync() {
       };
     }
 
-    if (!isOnCollectionsTab) {
+    if (!isOnServicesTab) {
       if (globalBackButtonHandlerRef.current) {
         backButton.offClick(globalBackButtonHandlerRef.current);
         globalBackButtonHandlerRef.current = null;
       }
       backButton.hide();
     }
-  }, [location.pathname, backButton, isStreakOverlayOpen, closeStreakOverlay, isOnCollectionsTab]);
+  }, [location.pathname, backButton, isStreakOverlayOpen, closeStreakOverlay, isOnServicesTab]);
 
   return null;
 }
