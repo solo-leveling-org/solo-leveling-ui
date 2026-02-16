@@ -210,10 +210,10 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
             </h2>
           </div>
 
-          {/* Content — без скролла; блок баланса не сжимается, чтобы был виден на десктопе */}
-          <div className="relative z-10 px-2 sm:px-6 pb-2 overflow-hidden flex-1 min-h-0 flex flex-col">
-            <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
-            {/* Level Progress — overflow-visible чтобы стикер уровня не обрезался */}
+          {/* Content — без скролла; блок баланса не сжимается, чтобы был виден на десктопе; overflow-visible чтобы стикер +N уровня не обрезался */}
+          <div className="relative z-10 px-2 sm:px-6 pb-2 overflow-visible flex-1 min-h-0 flex flex-col">
+            <div className="flex-1 min-h-0 overflow-visible flex flex-col">
+            {/* Level Progress — стикер +N позиционируется поверх (translate), родители с overflow-visible не обрезают */}
             <div
               className={`relative overflow-visible rounded-2xl p-2.5 mb-2 ${overlayMounted ? 'task-completion-block-in' : ''}`}
               style={overlayMounted ? { animationDelay: '0.08s' } : undefined}

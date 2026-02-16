@@ -606,20 +606,6 @@ code {
   animation: dialogContentStagger 0.5s ease-out 0.4s both;
 }
 
-/* Анимация прогресс-бара для уведомлений */
-@keyframes progress {
-  from {
-    width: 100%;
-  }
-  to {
-    width: 0;
-  }
-}
-
-.animate-progress {
-  animation: progress 5s linear forwards;
-}
-
 /* Анимация перехода статуса задачи */
 @keyframes taskStatusTransition {
   0% {
@@ -891,16 +877,6 @@ body.mobile-version.android .leaderboard-current-user-sticky {
   opacity: 1;
   transform: translateY(0);
   transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-}
-
-/* Анимация прогресс-бара для уведомлений */
-@keyframes progress {
-  from {
-    width: 100%;
-  }
-  to {
-    width: 0%;
-  }
 }
 
 /* Оптимизации для скролла на мобильных устройствах */
