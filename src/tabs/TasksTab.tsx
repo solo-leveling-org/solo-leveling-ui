@@ -29,6 +29,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   const [displayTaskViewMode, setDisplayTaskViewMode] = useState<TaskViewMode>('active');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [contentLoaded, setContentLoaded] = useState(false);
+  const [activeViewLoading, setActiveViewLoading] = useState(false);
   const hasLoadedRef = useRef(false);
   const scrollPositionRef = useRef<number>(0);
   const scrollContainerRef = useRef<HTMLElement | null>(null);
@@ -157,7 +158,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     }, 100);
   }, [isAuthenticated]);
 
-  // Показываем skeleton во время загрузки
+  // Полностраничный skeleton только при первом открытии таба (loading = true только в начальном useEffect)
   if (loading && tabMode === 'tasks') {
     return (
       <div 
@@ -366,10 +367,13 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                     backdropFilter: 'blur(10px)'
                   }}
                 >
-                    {/* 1 - Ежедневные */}
+                    {/* 1 - Ежедневные; уходим с активных — не храним их в состоянии */}
                     <button
                       onClick={() => {
                         if (taskViewMode !== 'daily') {
+                          if (taskViewMode === 'active') {
+                            setTasks([]);
+                          }
                           const scrollContainer = document.querySelector('.fixed.inset-0.overflow-y-auto') as HTMLElement;
                           scrollContainerRef.current = scrollContainer;
                           if (scrollContainer) {
@@ -425,7 +429,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                     >
                       {t('tasks.viewMode.daily')}
                     </button>
-                    {/* 2 - Активные (выбраны по умолчанию) */}
+                    {/* 2 - Активные: переключение как у завершённых, скелетон + запрос в фоне, плавное появление */}
                     <button
                       onClick={() => {
                         if (taskViewMode !== 'active') {
@@ -440,6 +444,18 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                             contentHeightRef.current = contentContainerRef.current.scrollHeight;
                           }
                           setIsTransitioning(true);
+                          setActiveViewLoading(true);
+                          api.getPlayerTasks()
+                            .then((res) => {
+                              handleTasksUpdate(res.tasks, res.stamina, res.isFirstTime);
+                            })
+                            .catch((err) => {
+                              console.error('Error fetching active tasks:', err);
+                              setTasks([]);
+                            })
+                            .finally(() => {
+                              setActiveViewLoading(false);
+                            });
                           requestAnimationFrame(() => {
                             setTimeout(() => {
                               setTaskViewMode('active');
@@ -447,6 +463,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                                 setDisplayTaskViewMode('active');
                                 setTimeout(() => {
                                   setIsTransitioning(false);
+                                  requestAnimationFrame(() => { contentHeightRef.current = 0; });
                                   requestAnimationFrame(() => {
                                     requestAnimationFrame(() => {
                                       setTimeout(() => {
@@ -483,10 +500,13 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                     >
                       {t('tasks.viewMode.active')}
                     </button>
-                    {/* 3 - Завершенные */}
+                    {/* 3 - Завершенные; уходим с активных — не храним их в состоянии */}
                     <button
                       onClick={() => {
                         if (taskViewMode !== 'completed') {
+                          if (taskViewMode === 'active') {
+                            setTasks([]);
+                          }
                           const scrollContainer = document.querySelector('.fixed.inset-0.overflow-y-auto') as HTMLElement;
                           scrollContainerRef.current = scrollContainer;
                           if (scrollContainer) {
@@ -546,10 +566,10 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
               </div>
             )}
 
-            {/* Stamina Indicator - показываем только для активных задач (не для Daily и не для Завершенные) */}
+            {/* Stamina Indicator - только для активных; скелетон при начальной загрузке или при подгрузке при переключении на «Активные» */}
             {displayTabMode === 'tasks' && !firstTime && displayTaskViewMode === 'active' && (
               <>
-                {loading ? (
+                {(loading || activeViewLoading) ? (
                   <div className="mb-6 md:flex md:justify-center">
                     <div className="w-full max-w-md mx-auto md:mx-0">
                       <StaminaIndicatorSkeleton />
@@ -608,6 +628,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                   tasks={tasks}
                   stamina={stamina}
                   loading={loading}
+                  activeViewLoading={activeViewLoading}
                   firstTime={firstTime}
                   onTasksUpdate={handleTasksUpdate}
                   onGoToTopics={handleGoToTopics}

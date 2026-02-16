@@ -5,6 +5,7 @@ import { PlayerService } from '../api';
 import type { PlayerDailyTask } from '../api';
 import TasksGrid from './TasksGrid';
 import TasksList from './TasksList';
+import TaskCardSkeleton from './TaskCardSkeleton';
 import DailyTasksGrid from './DailyTasksGrid';
 import TaskDialog from './TaskDialog';
 import TaskCompletionOverlay from './TaskCompletionOverlay';
@@ -20,6 +21,8 @@ type TasksSectionProps = {
   tasks: PlayerTask[];
   stamina: Stamina | null;
   loading: boolean;
+  /** Подгрузка при переключении на «Активные» (без полностраничного skeleton) */
+  activeViewLoading?: boolean;
   firstTime: boolean;
   onTasksUpdate?: (tasks: PlayerTask[], stamina?: Stamina) => void;
   onGoToTopics?: () => void;
@@ -33,12 +36,14 @@ const TasksSection: React.FC<TasksSectionProps> = ({
   tasks,
   stamina,
   loading,
+  activeViewLoading = false,
   firstTime,
   onTasksUpdate,
   onGoToTopics,
   initialViewMode = 'active',
   isTransitioning = false
 }) => {
+  const activeLoading = loading || activeViewLoading;
   const [viewMode, setViewMode] = useState<TaskViewMode>(initialViewMode);
   
   // Синхронизируем viewMode с пропсом
@@ -61,7 +66,20 @@ const TasksSection: React.FC<TasksSectionProps> = ({
   const [taskLoading, setTaskLoading] = useState(false);
   const [dailyTasks, setDailyTasks] = useState<PlayerDailyTask[]>([]);
   const [dailyLoading, setDailyLoading] = useState(false);
+  const [showActiveContent, setShowActiveContent] = useState(false);
   const { t } = useLocalization();
+
+  // Плавное появление контента активных задач после загрузки (как у завершённых в TasksList)
+  useEffect(() => {
+    if (viewMode === 'active' && tasks.length > 0 && !activeLoading && !taskLoading) {
+      setShowActiveContent(false);
+      const tId = setTimeout(() => setShowActiveContent(true), 50);
+      return () => clearTimeout(tId);
+    }
+    if (viewMode !== 'active' || (tasks.length === 0 && activeLoading)) {
+      setShowActiveContent(false);
+    }
+  }, [viewMode, tasks.length, activeLoading, taskLoading]);
 
   useEffect(() => {
     if (viewMode !== 'daily') return;
@@ -310,15 +328,37 @@ const TasksSection: React.FC<TasksSectionProps> = ({
       {/* Tasks Grid or List or Daily */}
       {viewMode === 'active' ? (
         <div key="active-tasks">
-          <TasksGrid
-            tasks={tasks}
-            stamina={stamina}
-            loading={loading || taskLoading}
-            onTaskClick={handleTaskClick}
-            onComplete={handleCompleteTask}
-            onReplace={handleReplace}
-            preserveOrder={false}
-          />
+          {activeLoading && tasks.length === 0 ? (
+            <div 
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6"
+              style={{
+                opacity: 1,
+                transition: 'opacity 0.2s ease-out',
+              }}
+            >
+              {Array.from({ length: 6 }).map((_, i) => (
+                <TaskCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : (
+            <div
+              style={{
+                opacity: showActiveContent ? 1 : 0,
+                transform: showActiveContent ? 'translateY(0)' : 'translateY(10px)',
+                transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
+              }}
+            >
+              <TasksGrid
+                tasks={tasks}
+                stamina={stamina}
+                loading={taskLoading}
+                onTaskClick={handleTaskClick}
+                onComplete={handleCompleteTask}
+                onReplace={handleReplace}
+                preserveOrder={false}
+              />
+            </div>
+          )}
         </div>
       ) : viewMode === 'daily' ? (
         <div key="daily-tasks">

@@ -213,9 +213,9 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
           {/* Content — без скролла; блок баланса не сжимается, чтобы был виден на десктопе */}
           <div className="relative z-10 px-2 sm:px-6 pb-2 overflow-hidden flex-1 min-h-0 flex flex-col">
             <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
-            {/* Level Progress */}
+            {/* Level Progress — overflow-visible чтобы стикер уровня не обрезался */}
             <div
-              className={`relative overflow-hidden rounded-2xl p-2.5 mb-2 ${overlayMounted ? 'task-completion-block-in' : ''}`}
+              className={`relative overflow-visible rounded-2xl p-2.5 mb-2 ${overlayMounted ? 'task-completion-block-in' : ''}`}
               style={overlayMounted ? { animationDelay: '0.08s' } : undefined}
             >
               <div className="relative z-10 flex items-center justify-between mb-2">
@@ -228,7 +228,7 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
                   </div>
                   {t('taskCompletion.level')}
                 </h3>
-                <div className="relative flex items-center">
+                <div className="relative flex items-center overflow-visible">
                   <div
                     className="text-lg font-tech font-bold rounded-full pl-4 pr-4 py-1.5"
                     style={{
@@ -274,12 +274,9 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
                     </span>
                     {expChange > 0 && (
                       <span
-                        className="text-[11px] font-tech font-bold rounded-full px-1.5 py-0.5"
+                        className="text-[11px] font-tech font-bold"
                         style={{
-                          background: 'rgba(10, 14, 39, 1)',
-                          border: '1px solid rgba(34, 197, 94, 0.8)',
-                          color: 'rgba(34, 197, 94, 0.9)',
-                          boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), inset 0 0 8px rgba(34, 197, 94, 0.2)',
+                          color: 'rgba(34, 197, 94, 0.95)',
                           textShadow: '0 0 6px rgba(34, 197, 94, 0.6)',
                         }}
                       >

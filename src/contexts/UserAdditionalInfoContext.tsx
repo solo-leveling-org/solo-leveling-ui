@@ -46,6 +46,10 @@ export const UserAdditionalInfoProvider: React.FC<UserAdditionalInfoProviderProp
       const data: UserAdditionalInfoResponse = await UserService.getUserAdditionalInfo();
       setPhotoUrl(data.photoUrl);
       setDayStreak(data.dayStreak ?? null);
+      if (data.photoUrl) {
+        const img = new Image();
+        img.src = data.photoUrl;
+      }
     } catch (e) {
       console.error('[UserAdditionalInfo] Failed to fetch:', e);
       setError(true);
