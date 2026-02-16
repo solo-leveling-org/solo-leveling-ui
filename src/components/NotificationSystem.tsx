@@ -32,7 +32,8 @@ const NotificationItem: React.FC<{
 }> = React.memo(({ notification, onRemove }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
-  const { isTaskDialogOpen } = useModal();
+  const { isTaskDialogOpen, isOverlayOpen } = useModal();
+  const shouldPauseTimer = isTaskDialogOpen || isOverlayOpen;
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const elapsedTimeRef = useRef(0);
   const startTimeRef = useRef(Date.now());
@@ -64,8 +65,8 @@ const NotificationItem: React.FC<{
       return;
     }
 
-    // Если TaskDialog или TaskCompletionDialog открыт, останавливаем обновление прогресс-бара
-    if (isTaskDialogOpen) {
+    // Если открыт Dialog или Overlay — останавливаем обновление прогресс-бара
+    if (shouldPauseTimer) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -116,20 +117,18 @@ const NotificationItem: React.FC<{
         startTimeRef.current = Date.now();
       }
     };
-  }, [notification.duration, isTaskDialogOpen]);
+  }, [notification.duration, shouldPauseTimer]);
 
   useEffect(() => {
     if (!notification.duration || notification.duration <= 0) return;
 
-    // Если TaskDialog или TaskCompletionDialog открыт, останавливаем таймер и сохраняем прошедшее время
-    if (isTaskDialogOpen) {
+    // Если открыт Dialog или Overlay — останавливаем таймер и сохраняем прошедшее время
+    if (shouldPauseTimer) {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
-        // Сохраняем прошедшее время
         elapsedTimeRef.current += Date.now() - startTimeRef.current;
       }
-      // Сбрасываем startTimeRef, чтобы не учитывать время пока dialog открыт
       startTimeRef.current = Date.now();
       return;
     }
@@ -152,7 +151,7 @@ const NotificationItem: React.FC<{
         timerRef.current = null;
       }
     };
-  }, [notification.duration, handleRemove, isTaskDialogOpen]);
+  }, [notification.duration, handleRemove, shouldPauseTimer]);
 
   // Мемоизируем стили для предотвращения пересчета при каждом рендере
   const notificationStyles = useMemo(() => {

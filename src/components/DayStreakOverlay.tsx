@@ -2,13 +2,15 @@ import React, { useEffect, useState, useRef } from 'react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useModal } from '../contexts/ModalContext';
 import { useUserAdditionalInfo } from '../contexts/UserAdditionalInfoContext';
+import { useFullscreenOverlay } from '../hooks/useFullscreenOverlay';
 import { UserService } from '../api';
 import { useLocalization } from '../hooks/useLocalization';
 
 const STREAK_NUMBER_DURATION_MS = 1000;
 
 /**
- * Полноэкранный оверлей продления ежедневного стрика.
+ * Полноэкранный оверлей продления ежедневного стрика (перекрывает весь экран).
+ * Реализует контракт Fullscreen Overlay: пока открыт — таймеры уведомлений замирают.
  * Текст заголовка берётся из notification.message (source=dayStreak), иначе из локали.
  */
 const DayStreakOverlay: React.FC = () => {
@@ -24,6 +26,8 @@ const DayStreakOverlay: React.FC = () => {
   const [phase, setPhase] = useState<'before' | 'after'>('before');
   const mountedRef = useRef(true);
   const fireLottieSrc = `${process.env.PUBLIC_URL || ''}/lottie/Fire.lottie`;
+
+  useFullscreenOverlay(visible);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -92,18 +96,6 @@ const DayStreakOverlay: React.FC = () => {
       }}
     >
       <div
-        className="absolute inset-0 overflow-hidden pointer-events-none"
-        style={{
-          opacity: 0.06,
-          backgroundImage: `
-            linear-gradient(rgba(200, 230, 245, 0.15) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(200, 230, 245, 0.15) 1px, transparent 1px)
-          `,
-          backgroundSize: '28px 28px',
-        }}
-      />
-
-      <div
         className="relative z-10 flex flex-col items-center gap-6 px-6 transition-transform duration-500"
         style={{
           opacity: overlayMounted ? 1 : 0,
@@ -160,7 +152,7 @@ const DayStreakOverlay: React.FC = () => {
             className="text-2xl font-tech ml-1 leading-none"
             style={{ color: 'rgba(220, 235, 245, 0.8)' }}
           >
-            {t('dayStreak.days', 'дней')}
+            {t('dayStreak.days', { count: phase === 'after' ? streakAfter : streakBefore })}
           </span>
         </div>
 

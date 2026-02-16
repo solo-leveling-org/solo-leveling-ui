@@ -32,7 +32,7 @@ import { ReactComponent as ArrowUpIcon } from '../assets/icons/arrow-up.svg';
 import { ReactComponent as ArrowDownIcon } from '../assets/icons/arrow-down.svg';
 import { ReactComponent as UsersGroupIcon } from '../assets/icons/users-group.svg';
 import { ReactComponent as CastleIcon } from '../assets/icons/castle.svg';
-import { ReactComponent as FireIcon } from '../assets/icons/fire.svg';
+import { ReactComponent as ActiveFireIcon } from '../assets/icons/active-fire.svg';
 
 export type IconType = 
   | 'brain' 
@@ -75,9 +75,11 @@ interface IconProps {
   type: IconType;
   className?: string;
   size?: number;
+  /** Для type="fire": false — неактивная (серая), true — активная (оранжевая). По умолчанию true. */
+  active?: boolean;
 }
 
-const Icon: React.FC<IconProps> = ({ type, className = '', size = 24 }) => {
+const Icon: React.FC<IconProps> = ({ type, className = '', size = 24, active = true }) => {
   const iconProps = {
     className,
     style: { width: size, height: size }
@@ -152,8 +154,16 @@ const Icon: React.FC<IconProps> = ({ type, className = '', size = 24 }) => {
       return <UsersGroupIcon {...iconProps} />;
     case 'castle':
       return <CastleIcon {...iconProps} />;
-    case 'fire':
-      return <FireIcon {...iconProps} />;
+    case 'fire': {
+      const fireStyle = active
+        ? undefined
+        : { opacity: 0.7, filter: 'grayscale(1)' };
+      return (
+        <span style={{ display: 'inline-flex', ...fireStyle }}>
+          <ActiveFireIcon {...iconProps} />
+        </span>
+      );
+    }
     default:
       return <div className={className} style={{ width: size, height: size }}>❓</div>;
   }

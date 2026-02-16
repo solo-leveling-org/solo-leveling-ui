@@ -721,9 +721,18 @@ body.mobile-version {
   box-sizing: content-box;
 }
 
+/* Android: меньше отступ сверху у TopBar, чем на iOS (расстояние до кнопок Telegram меньше) */
+body.mobile-version.android .app-topbar {
+  padding-top: 80px;
+}
+
 /* Обёртка под TopBar резервирует место, чтобы контент не прыгал */
 .mobile-version .topbar-wrapper {
   min-height: 156px;
+}
+
+body.mobile-version.android .topbar-wrapper {
+  min-height: 136px; /* 80 + 56 */
 }
 
 /* Контент — под TopBar (156px) + небольшой отступ снизу от края TopBar (12px) = 168px */
@@ -741,6 +750,17 @@ body.mobile-version .tab-inner-content.pt-20 {
   padding-top: 168px !important;
 }
 
+/* Android: контент под TopBar (136px + 12px = 148px) */
+body.mobile-version.android .tab-content-with-top-bar {
+  padding-top: 148px !important;
+}
+
+body.mobile-version.android .tab-inner-content,
+body.mobile-version.android .tab-inner-content.pt-16,
+body.mobile-version.android .tab-inner-content.pt-20 {
+  padding-top: 148px !important;
+}
+
 .mobile-version main,
 .mobile-version .tab-content {
   background-color: #050812 !important;
@@ -755,8 +775,17 @@ body.mobile-version .tab-inner-content.pt-20 {
 }
 
 /* Оверлей стрика — под TopBar с отступом */
-.mobile-version .day-streak-info-overlay {
-  top: 168px !important;
+/* Панель стрика (календарь) — без отступа под TopBar */
+.mobile-version .day-streak-info-panel {
+  top: 156px !important;
+}
+
+body.mobile-version.android .day-streak-info-panel {
+  top: 136px !important;
+}
+
+.desktop-version .day-streak-info-panel {
+  top: 3.5rem !important;
 }
 
 /* На десктопе убираем ВСЕ псевдоэлементы и белые полоски */
@@ -816,6 +845,11 @@ body.mobile-version .tab-inner-content.pt-20 {
 
 .mobile-version .leaderboard-current-user-sticky {
   top: 168px !important;
+}
+
+body.mobile-version.android .notification-container,
+body.mobile-version.android .leaderboard-current-user-sticky {
+  top: 148px !important;
 }
 
 /* Плавная анимация появления контента при переключении табов */

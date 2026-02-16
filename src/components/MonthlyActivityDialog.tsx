@@ -76,7 +76,7 @@ const MonthlyActivityDialog: React.FC<MonthlyActivityDialogProps> = ({
             }}
           >
             <div className="flex items-center gap-2">
-              <Icon type="fire" size={24} />
+              <Icon type="fire" size={24} active={dayStreak.isExtendedToday} />
               <span style={{ color: 'rgba(220, 235, 245, 0.9)' }} className="text-sm font-tech">
                 {t('dayStreak.current')}: <strong style={{ color: '#fb923c' }}>{dayStreak.current}</strong>
               </span>

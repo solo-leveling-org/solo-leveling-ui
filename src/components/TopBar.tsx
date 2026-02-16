@@ -70,6 +70,7 @@ const TopBar: React.FC = () => {
           <Icon
             type="fire"
             size={22}
+            active={dayStreak?.isExtendedToday ?? false}
           />
           <span
             className="text-sm font-tech font-semibold tabular-nums"

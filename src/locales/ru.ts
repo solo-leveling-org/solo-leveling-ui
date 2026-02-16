@@ -97,7 +97,9 @@ export const ru = {
 
   dayStreak: {
     extended: 'Ежедневный стрик продлён!',
-    days: 'дней',
+    days_one: 'день',
+    days_few: 'дня',
+    days_many: 'дней',
     current: 'Текущий стрик',
     max: 'Рекорд',
     monthlyActivity: 'Активность за месяц',

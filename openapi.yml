@@ -530,12 +530,12 @@ components:
             $ref: '#/components/schemas/PlayerTask'
         stamina:
           $ref: '#/components/schemas/Stamina'
-        firstTime:
+        isFirstTime:
           type: boolean
       required:
         - tasks
         - stamina
-        - firstTime
+        - isFirstTime
 
     CompleteTaskResponse:
       type: object
@@ -773,10 +773,13 @@ components:
         max:
           type: integer
           format: int32
+        isExtendedToday:
+          type: boolean
       required:
         - id
         - current
         - max
+        - isExtendedToday
 
     Task:
       type: object
@@ -907,7 +910,7 @@ components:
           type: number
           format: decimal
           description: Target goal value
-        completed:
+        isCompleted:
           type: boolean
           description: Whether task is completed
       required:
@@ -915,7 +918,7 @@ components:
         - title
         - progress
         - goal
-        - completed
+        - isCompleted
 
     Player:
       type: object

@@ -6,5 +6,6 @@ export type DayStreak = {
     id: string;
     current: number;
     max: number;
+    isExtendedToday: boolean;
 };
 

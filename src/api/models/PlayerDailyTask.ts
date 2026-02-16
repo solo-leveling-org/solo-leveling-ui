@@ -19,6 +19,6 @@ export type PlayerDailyTask = {
     /**
      * Whether task is completed
      */
-    completed: boolean;
+    isCompleted: boolean;
 };
 

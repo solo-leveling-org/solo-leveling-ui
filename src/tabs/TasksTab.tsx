@@ -68,9 +68,9 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
       // Делаем запрос только один раз при монтировании
       api.getPlayerTasks()
         .then((res) => {
-          handleTasksUpdate(res.tasks, res.stamina, res.firstTime);
-          // Если firstTime, перенаправляем в топики
-          if (res.firstTime) {
+          handleTasksUpdate(res.tasks, res.stamina, res.isFirstTime);
+          // Если isFirstTime, перенаправляем в топики
+          if (res.isFirstTime) {
             setTabMode('topics');
             setDisplayTabMode('topics');
           }
@@ -135,7 +135,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           .then((res) => {
             setTasks(res.tasks);
             setStamina(res.stamina);
-            setFirstTime(res.firstTime);
+            setFirstTime(res.isFirstTime);
             setTimeout(() => {
               setIsTabTransitioning(false);
               setDisplayTabMode('tasks');

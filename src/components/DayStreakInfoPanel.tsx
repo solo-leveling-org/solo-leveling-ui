@@ -9,20 +9,20 @@ import { useStreakOverlay } from '../contexts/StreakOverlayContext';
 const WEEKDAY_LABELS = [0, 1, 2, 3, 4, 5, 6];
 const MONTH_KEYS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'] as const;
 
-/** Обёртка: подставляет dayStreak и onClose из контекстов и рендерит контент оверлея. */
-export function DayStreakInfoOverlay() {
+/** Панель «Активность за месяц» (календарь стрика). Не полноэкранный overlay — TopBar и BottomBar остаются. */
+export function DayStreakInfoPanel() {
   const { dayStreak } = useUserAdditionalInfo();
   const { isOpen, close } = useStreakOverlay();
   if (!isOpen) return null;
-  return <DayStreakInfoOverlayContent dayStreak={dayStreak} onClose={close} />;
+  return <DayStreakInfoPanelContent dayStreak={dayStreak} onClose={close} />;
 }
 
-interface DayStreakInfoOverlayContentProps {
+interface DayStreakInfoPanelContentProps {
   dayStreak: DayStreak | null;
   onClose: () => void;
 }
 
-const DayStreakInfoOverlayContent: React.FC<DayStreakInfoOverlayContentProps> = ({ dayStreak, onClose }) => {
+const DayStreakInfoPanelContent: React.FC<DayStreakInfoPanelContentProps> = ({ dayStreak, onClose }) => {
   const { t } = useLocalization();
   const now = useMemo(() => new Date(), []);
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
@@ -153,15 +153,14 @@ const DayStreakInfoOverlayContent: React.FC<DayStreakInfoOverlayContentProps> = 
 
   return (
     <div
-      className="day-streak-info-overlay fixed left-0 right-0 z-40 flex flex-col overflow-auto"
+      className="day-streak-info-panel fixed left-0 right-0 z-40 flex flex-col overflow-y-auto overflow-x-hidden"
       style={{
-        top: '3.5rem',
         bottom: '5rem',
         background: 'linear-gradient(180deg, rgb(5, 8, 18) 0%, rgb(10, 14, 39) 100%)',
         borderTop: '1px solid rgba(220, 235, 245, 0.08)',
       }}
     >
-      <div className="p-4 pb-6 space-y-4 flex-1">
+      <div className="p-4 pb-6 space-y-4 flex-1 max-w-lg mx-auto w-full box-border">
         <h2
           className="text-lg font-tech font-semibold text-center"
           style={{ color: '#e8f4f8', textShadow: '0 0 6px rgba(180, 220, 240, 0.2)' }}
@@ -178,7 +177,7 @@ const DayStreakInfoOverlayContent: React.FC<DayStreakInfoOverlayContentProps> = 
             }}
           >
             <div className="flex items-center gap-2">
-              <Icon type="fire" size={24} />
+              <Icon type="fire" size={24} active={dayStreak.isExtendedToday} />
               <span style={{ color: 'rgba(220, 235, 245, 0.9)' }} className="text-sm font-tech">
                 {t('dayStreak.current')}: <strong style={{ color: '#fb923c' }}>{dayStreak.current}</strong>
               </span>
@@ -277,11 +276,17 @@ const DayStreakInfoOverlayContent: React.FC<DayStreakInfoOverlayContentProps> = 
           </button>
         </div>
 
-        <div className="grid grid-cols-7 gap-1" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
+        <div
+          className="grid grid-cols-7 gap-1.5 max-w-md mx-auto"
+          style={{
+            gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
+            gridAutoRows: 'minmax(0, 1fr)',
+          }}
+        >
           {WEEKDAY_LABELS.map((i) => (
             <div
-              key={i}
-              className="text-center text-[10px] font-tech py-1"
+              key={`wd-${i}`}
+              className="aspect-square min-h-0 flex items-center justify-center text-[10px] font-tech"
               style={{ color: 'rgba(220, 235, 245, 0.5)' }}
             >
               {['S', 'M', 'T', 'W', 'T', 'F', 'S'][i]}
@@ -289,18 +294,31 @@ const DayStreakInfoOverlayContent: React.FC<DayStreakInfoOverlayContentProps> = 
           ))}
           {calendarCells.map((day, idx) => {
             if (day === null) {
-              return <div key={`empty-${idx}`} />;
+              return (
+                <div
+                  key={`empty-${idx}`}
+                  className="aspect-square min-w-0 min-h-0 rounded-lg"
+                  style={{ background: 'transparent' }}
+                  aria-hidden
+                />
+              );
             }
             const isActive = activeDays.includes(day);
+            const isCurrentDay =
+              selectedYear === now.getFullYear() && selectedMonth === now.getMonth() + 1 && day === now.getDate();
             return (
               <div
                 key={day}
-                className="aspect-square flex items-center justify-center rounded-lg text-sm font-tech transition-colors duration-200"
+                className="aspect-square min-w-0 min-h-0 w-full flex items-center justify-center rounded-lg text-sm font-tech transition-colors duration-200 box-border"
                 style={{
                   background: isActive
                     ? 'linear-gradient(135deg, rgba(251, 146, 60, 0.35) 0%, rgba(234, 88, 12, 0.25) 100%)'
                     : 'rgba(220, 235, 245, 0.06)',
-                  border: isActive ? '1px solid rgba(251, 146, 60, 0.5)' : '1px solid transparent',
+                  border: isCurrentDay
+                    ? '2px solid rgba(180, 220, 240, 0.9)'
+                    : isActive
+                      ? '1px solid rgba(251, 146, 60, 0.5)'
+                      : '1px solid rgba(220, 235, 245, 0.1)',
                   color: isActive ? '#fb923c' : 'rgba(220, 235, 245, 0.7)',
                 }}
               >
@@ -313,4 +331,3 @@ const DayStreakInfoOverlayContent: React.FC<DayStreakInfoOverlayContentProps> = 
     </div>
   );
 };
-

@@ -61,7 +61,7 @@ export function useTelegramAdaptive() {
       
       if (finalIsDesktop) {
         document.body.classList.add('desktop-version');
-        document.body.classList.remove('mobile-version');
+        document.body.classList.remove('mobile-version', 'android', 'ios');
         
         if (!tg.isExpanded && tg.expand) {
           setTimeout(() => {
@@ -73,6 +73,15 @@ export function useTelegramAdaptive() {
       } else if (finalIsMobile) {
         document.body.classList.add('mobile-version');
         document.body.classList.remove('desktop-version');
+        if (platform === 'android') {
+          document.body.classList.add('android');
+          document.body.classList.remove('ios');
+        } else if (platform === 'ios') {
+          document.body.classList.add('ios');
+          document.body.classList.remove('android');
+        } else {
+          document.body.classList.remove('android', 'ios');
+        }
         
         const postEvent = (eventType: string, eventData?: any) => {
           try {
@@ -122,9 +131,10 @@ export function useTelegramAdaptive() {
         if (isMobile) {
           document.body.classList.add('mobile-version');
           document.body.classList.remove('desktop-version');
+          document.body.classList.remove('android', 'ios');
         } else {
           document.body.classList.add('desktop-version');
-          document.body.classList.remove('mobile-version');
+          document.body.classList.remove('mobile-version', 'android', 'ios');
         }
       }
     } else {
@@ -132,9 +142,10 @@ export function useTelegramAdaptive() {
       if (isMobile) {
         document.body.classList.add('mobile-version');
         document.body.classList.remove('desktop-version');
+        document.body.classList.remove('android', 'ios');
       } else {
         document.body.classList.add('desktop-version');
-        document.body.classList.remove('mobile-version');
+        document.body.classList.remove('mobile-version', 'android', 'ios');
       }
     }
   }, [webApp]);

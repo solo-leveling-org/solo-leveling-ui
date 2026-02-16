@@ -97,7 +97,10 @@ export const en = {
 
   dayStreak: {
     extended: 'Daily streak extended!',
-    days: 'days',
+    days_one: 'day',
+    days_few: 'days',
+    days_many: 'days',
+    days_other: 'days',
     current: 'Current streak',
     max: 'Best',
     monthlyActivity: 'Monthly activity',

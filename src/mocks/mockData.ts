@@ -438,7 +438,7 @@ export const mockStamina: Stamina = {
 export const mockGetActiveTasksResponse: GetActiveTasksResponse = {
   tasks: mockTasks,
   stamina: mockStamina,
-  firstTime: false,
+  isFirstTime: false,
 };
 
 export const mockGetPlayerTopicsResponse: GetPlayerTopicsResponse = {

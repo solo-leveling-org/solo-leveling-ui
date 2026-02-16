@@ -45,7 +45,7 @@ const DailyTaskCard: React.FC<DailyTaskCardProps> = ({ task }) => {
             <span style={{ color: TEXT_COLOR }}>
               {task.progress} / {task.goal}
             </span>
-            {task.completed && (
+            {task.isCompleted && (
               <span className="inline-flex items-center gap-1" style={{ color: 'rgba(34, 197, 94, 0.9)' }}>
                 <Icon type="check" size={14} />
                 <span>{t('common.completed')}</span>
@@ -63,7 +63,7 @@ const DailyTaskCard: React.FC<DailyTaskCardProps> = ({ task }) => {
               className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${progressPercent}%`,
-                background: task.completed
+                background: task.isCompleted
                   ? 'linear-gradient(90deg, rgba(34, 197, 94, 0.8) 0%, rgba(22, 163, 74, 0.7) 100%)'
                   : 'linear-gradient(90deg, rgba(251, 191, 36, 0.7) 0%, rgba(234, 179, 8, 0.6) 100%)',
                 boxShadow: '0 0 8px rgba(251, 191, 36, 0.3)',

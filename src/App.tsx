@@ -31,7 +31,7 @@ import {UserAdditionalInfoProvider} from './contexts/UserAdditionalInfoContext';
 import {StreakOverlayProvider} from './contexts/StreakOverlayContext';
 import TopBar from './components/TopBar';
 import DayStreakOverlay from './components/DayStreakOverlay';
-import {DayStreakInfoOverlay} from './components/DayStreakInfoOverlay';
+import { DayStreakInfoPanel } from './components/DayStreakInfoPanel';
 import {BackButtonStreakSync} from './components/BackButtonStreakSync';
 
 // Глобальный ref для хранения обработчика кнопки "Назад" (экспортируем для использования в CollectionsTab)
@@ -175,7 +175,7 @@ function AppRoutes() {
                                    element={<BalanceTab isAuthenticated={isAuthenticated}/>}/>
                             <Route path="*" element={<Navigate to="/profile" replace/>}/>
                           </Routes>
-                          {isAuthenticated && <DayStreakInfoOverlay />}
+                          {isAuthenticated && <DayStreakInfoPanel />}
                         </div>
                       </main>
                       {isAuthenticated && <BottomBar isAuthenticated={isAuthenticated} isVisible={isBottomBarVisible}/>}
