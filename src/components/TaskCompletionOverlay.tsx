@@ -461,7 +461,7 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
 
                 {/* Intelligence */}
                 <div
-                  className="relative rounded-xl p-2.5 text-center flex flex-col items-center justify-center"
+                  className="relative rounded-xl p-2.5 text-center"
                   style={{
                     background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
                     border: '1px solid rgba(168, 85, 247, 0.2)',

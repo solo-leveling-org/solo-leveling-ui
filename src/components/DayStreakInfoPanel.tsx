@@ -305,7 +305,7 @@ const DayStreakInfoPanelContent: React.FC<DayStreakInfoPanelContentProps> = ({ d
             }
             const isActive = activeDays.includes(day);
             const isCurrentDay =
-              selectedYear === now.getFullYear() && selectedMonth === now.getMonth() + 1 && day === now.getDate();
+              selectedYear === now.getUTCFullYear() && selectedMonth === now.getUTCMonth() + 1 && day === now.getUTCDate();
             return (
               <div
                 key={day}
