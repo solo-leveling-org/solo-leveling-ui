@@ -95,6 +95,22 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     }
   }, [isAuthenticated, handleTasksUpdate]);
 
+  // Синхронизация стамины с бэкендом каждую минуту, пока открыт таб (без перезагрузки списка задач)
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const syncStamina = () => {
+      api.getPlayerTasks()
+        .then((res) => {
+          if (res.stamina) setStamina(res.stamina);
+        })
+        .catch(() => { /* тихо игнорируем ошибки синка */ });
+    };
+
+    const intervalId = setInterval(syncStamina, 60_000);
+    return () => clearInterval(intervalId);
+  }, [isAuthenticated]);
+
   // Обработчик переключения на топики
   const handleGoToTopics = useCallback(() => {
     if (tabMode !== 'topics') {
