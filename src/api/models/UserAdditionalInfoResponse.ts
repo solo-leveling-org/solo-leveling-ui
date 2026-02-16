@@ -2,10 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { DayStreak } from './DayStreak';
 import type { UserLocale } from './UserLocale';
 import type { UserRole } from './UserRole';
 export type UserAdditionalInfoResponse = {
-    locale?: UserLocale;
-    roles?: Array<UserRole>;
+    photoUrl?: string;
+    dayStreak: DayStreak;
+    locale: UserLocale;
+    roles: Array<UserRole>;
 };
 

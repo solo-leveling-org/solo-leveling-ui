@@ -5,9 +5,12 @@ export const en = {
     save: 'Save',
     cancel: 'Cancel',
     close: 'Close',
+    closeNotification: 'Close notification',
     back: 'Back',
+    prev: 'Prev.',
     next: 'Next',
     confirm: 'Confirm',
+    continue: 'Continue',
     active: 'Active',
     completed: 'Completed',
     inProgress: 'In Progress',
@@ -92,7 +95,20 @@ export const en = {
     tasks: 'Tasks',
     topics: 'Topics',
     welcome: 'Home',
-    games: 'Collections',
+    games: 'Services',
+  },
+
+  dayStreak: {
+    extended: 'Daily streak extended!',
+    days_one: 'day',
+    days_few: 'days',
+    days_many: 'days',
+    days_other: 'days',
+    current: 'Current streak',
+    max: 'Best',
+    monthlyActivity: 'Monthly activity',
+    noActivity: 'No activity',
+    year: 'Year',
   },
 
   // Welcome page
@@ -174,6 +190,10 @@ export const en = {
     viewMode: {
       active: 'Active',
       completed: 'Completed',
+      daily: 'Daily',
+    },
+    daily: {
+      empty: 'No daily tasks for today',
     },
     noCompletedTasks: 'No completed tasks',
     noCompletedTasksDescription: 'Complete tasks to see them here!',
@@ -321,6 +341,9 @@ export const en = {
     authError: 'Authentication Error',
     loadingError: 'Loading Error',
     saveError: 'Save Error',
+    taskCompleteFailed: 'Error completing task',
+    taskSkipFailed: 'Error skipping task',
+    insufficientStamina: 'Not enough stamina!',
   },
   // Task rarity
   rarity: {
@@ -352,8 +375,8 @@ export const en = {
     continue: 'Continue',
   },
 
-  // Collections
-  collections: {
+  // Services
+  services: {
     tabs: {
       leaderboard: 'LEADERBOARD',
       lootboxes: 'LOOT BOXES',

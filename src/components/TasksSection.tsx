@@ -1,10 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import type { PlayerTask, CompleteTaskResponse, LocalizedField, Stamina } from '../api';
 import { PlayerTaskStatus as TaskStatus } from '../api';
+import { PlayerService } from '../api';
+import type { PlayerDailyTask } from '../api';
 import TasksGrid from './TasksGrid';
 import TasksList from './TasksList';
+import TaskCardSkeleton from './TaskCardSkeleton';
+import DailyTasksGrid from './DailyTasksGrid';
 import TaskDialog from './TaskDialog';
-import TaskCompletionDialog from './TaskCompletionDialog';
+import TaskCompletionOverlay from './TaskCompletionOverlay';
 import DateFilter from './DateFilter';
 import FilterDropdown from './FilterDropdown';
 import ResetFiltersButton from './ResetFiltersButton';
@@ -17,25 +21,29 @@ type TasksSectionProps = {
   tasks: PlayerTask[];
   stamina: Stamina | null;
   loading: boolean;
+  /** Подгрузка при переключении на «Активные» (без полностраничного skeleton) */
+  activeViewLoading?: boolean;
   firstTime: boolean;
   onTasksUpdate?: (tasks: PlayerTask[], stamina?: Stamina) => void;
   onGoToTopics?: () => void;
-  initialViewMode?: 'active' | 'completed';
+  initialViewMode?: 'active' | 'completed' | 'daily';
   isTransitioning?: boolean;
 };
 
-type TaskViewMode = 'active' | 'completed';
+type TaskViewMode = 'active' | 'completed' | 'daily';
 
 const TasksSection: React.FC<TasksSectionProps> = ({
   tasks,
   stamina,
   loading,
+  activeViewLoading = false,
   firstTime,
   onTasksUpdate,
   onGoToTopics,
   initialViewMode = 'active',
   isTransitioning = false
 }) => {
+  const activeLoading = loading || activeViewLoading;
   const [viewMode, setViewMode] = useState<TaskViewMode>(initialViewMode);
   
   // Синхронизируем viewMode с пропсом
@@ -56,7 +64,31 @@ const TasksSection: React.FC<TasksSectionProps> = ({
   const [enumFilters, setEnumFilters] = useState<{ [field: string]: string[] }>({});
   const [availableFilters, setAvailableFilters] = useState<LocalizedField[]>([]);
   const [taskLoading, setTaskLoading] = useState(false);
+  const [dailyTasks, setDailyTasks] = useState<PlayerDailyTask[]>([]);
+  const [dailyLoading, setDailyLoading] = useState(false);
+  const [showActiveContent, setShowActiveContent] = useState(false);
   const { t } = useLocalization();
+
+  // Плавное появление контента активных задач после загрузки (как у завершённых в TasksList)
+  useEffect(() => {
+    if (viewMode === 'active' && tasks.length > 0 && !activeLoading && !taskLoading) {
+      setShowActiveContent(false);
+      const tId = setTimeout(() => setShowActiveContent(true), 50);
+      return () => clearTimeout(tId);
+    }
+    if (viewMode !== 'active' || (tasks.length === 0 && activeLoading)) {
+      setShowActiveContent(false);
+    }
+  }, [viewMode, tasks.length, activeLoading, taskLoading]);
+
+  useEffect(() => {
+    if (viewMode !== 'daily') return;
+    setDailyLoading(true);
+    PlayerService.getDailyTasks()
+      .then((res) => setDailyTasks(res.tasks ?? []))
+      .catch(() => setDailyTasks([]))
+      .finally(() => setDailyLoading(false));
+  }, [viewMode]);
 
   const handleCompleteTask = useCallback(async (task: PlayerTask) => {
     setConfirmAction({ type: 'complete', task });
@@ -96,14 +128,14 @@ const TasksSection: React.FC<TasksSectionProps> = ({
     } catch (error: any) {
       console.error('Error completing task:', error);
       if (error?.message?.includes('Not enough stamina')) {
-        alert(`Недостаточно стамины! ${error.message}`);
+        alert(`${t('errors.insufficientStamina')} ${error.message}`);
       } else {
-        alert('Ошибка при выполнении задачи');
+        alert(t('errors.taskCompleteFailed'));
       }
     } finally {
       setTaskLoading(false);
     }
-  }, [stamina, onTasksUpdate]);
+  }, [stamina, onTasksUpdate, t]);
 
   const skipTask = useCallback(async (playerTask: PlayerTask) => {
     // Проверяем наличие достаточной стамины
@@ -113,7 +145,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
     }
     
     if (stamina.current < SKIP_STAMINA_COST) {
-      alert(`Недостаточно стамины! Требуется: ${SKIP_STAMINA_COST}, текущая: ${stamina.current}`);
+      alert(t('tasks.stamina.insufficientStamina', { required: SKIP_STAMINA_COST, current: stamina.current }));
       return;
     }
 
@@ -135,14 +167,14 @@ const TasksSection: React.FC<TasksSectionProps> = ({
     } catch (error: any) {
       console.error('Error skipping task:', error);
       if (error?.message?.includes('Not enough stamina')) {
-        alert(`Недостаточно стамины! ${error.message}`);
+        alert(`${t('errors.insufficientStamina')} ${error.message}`);
       } else {
-        alert('Ошибка при пропуске задачи');
+        alert(t('errors.taskSkipFailed'));
       }
     } finally {
       setTaskLoading(false);
     }
-  }, [stamina, onTasksUpdate]);
+  }, [stamina, onTasksUpdate, t]);
 
   const handleConfirmAction = useCallback(() => {
     if (confirmAction) {
@@ -293,17 +325,44 @@ const TasksSection: React.FC<TasksSectionProps> = ({
         </div>
       )}
 
-      {/* Tasks Grid or List */}
+      {/* Tasks Grid or List or Daily */}
       {viewMode === 'active' ? (
         <div key="active-tasks">
-          <TasksGrid
-            tasks={tasks}
-            stamina={stamina}
-            loading={loading || taskLoading}
-            onTaskClick={handleTaskClick}
-            onComplete={handleCompleteTask}
-            onReplace={handleReplace}
-          />
+          {activeLoading && tasks.length === 0 ? (
+            <div 
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6"
+              style={{
+                opacity: 1,
+                transition: 'opacity 0.2s ease-out',
+              }}
+            >
+              {Array.from({ length: 6 }).map((_, i) => (
+                <TaskCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : (
+            <div
+              style={{
+                opacity: showActiveContent ? 1 : 0,
+                transform: showActiveContent ? 'translateY(0)' : 'translateY(10px)',
+                transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
+              }}
+            >
+              <TasksGrid
+                tasks={tasks}
+                stamina={stamina}
+                loading={taskLoading}
+                onTaskClick={handleTaskClick}
+                onComplete={handleCompleteTask}
+                onReplace={handleReplace}
+                preserveOrder={false}
+              />
+            </div>
+          )}
+        </div>
+      ) : viewMode === 'daily' ? (
+        <div key="daily-tasks">
+          <DailyTasksGrid tasks={dailyTasks} loading={dailyLoading} />
         </div>
       ) : (
         <div key="completed-tasks">
@@ -331,7 +390,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
       )}
 
       {completionResponse && (
-        <TaskCompletionDialog
+        <TaskCompletionOverlay
           response={completionResponse}
           completedTask={completedTask?.task}
           onClose={() => {

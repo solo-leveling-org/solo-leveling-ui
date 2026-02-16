@@ -4,6 +4,8 @@
 /* eslint-disable */
 import type { CompleteTaskResponse } from '../models/CompleteTaskResponse';
 import type { GetActiveTasksResponse } from '../models/GetActiveTasksResponse';
+import type { GetDailyTasksResponse } from '../models/GetDailyTasksResponse';
+import type { GetMonthlyActivityResponse } from '../models/GetMonthlyActivityResponse';
 import type { GetPlayerBalanceResponse } from '../models/GetPlayerBalanceResponse';
 import type { GetPlayerTopicsResponse } from '../models/GetPlayerTopicsResponse';
 import type { SavePlayerTopicsRequest } from '../models/SavePlayerTopicsRequest';
@@ -119,6 +121,37 @@ export class PlayerService {
             },
             body: requestBody,
             mediaType: 'application/json',
+        });
+    }
+    /**
+     * Get current daily tasks
+     * @returns GetDailyTasksResponse Daily tasks retrieved successfully
+     * @throws ApiError
+     */
+    public static getDailyTasks(): CancelablePromise<GetDailyTasksResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/player/tasks/daily',
+        });
+    }
+    /**
+     * Get monthly activity calendar
+     * @param year Year (e.g. 2026)
+     * @param month Month number from 1 (January) to 12 (December)
+     * @returns GetMonthlyActivityResponse Monthly activity retrieved successfully
+     * @throws ApiError
+     */
+    public static getMonthlyActivity(
+        year: number,
+        month: number,
+    ): CancelablePromise<GetMonthlyActivityResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/player/activity/monthly',
+            query: {
+                'year': year,
+                'month': month,
+            },
         });
     }
     /**

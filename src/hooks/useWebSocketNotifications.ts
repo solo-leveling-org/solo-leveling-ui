@@ -27,22 +27,30 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
           const body = event.detail;
           const notification = body.payload;
 
-          // Если visible = true, показываем уведомление пользователю
-          if (notification.visible && notification.message) {
+          // Если message != null — отображаем уведомление (с учётом source)
+          const shouldShowToast = notification.message != null && notification.message !== '';
+
+          if (notification.source === 'dayStreak' || notification.source === 'DAY_STREAK') {
+            window.dispatchEvent(new CustomEvent('day-streak-notification', {
+              detail: { message: notification.message ?? undefined },
+            }));
+          } else if (notification.source === 'TASKS' || notification.source === 'tasks') {
+            if (shouldShowToast) {
+              show({
+                message: notification.message,
+                type: notification.type?.toLowerCase() || 'info',
+                duration: 3000,
+              });
+            }
+            window.dispatchEvent(new CustomEvent('tasks-notification', {
+              detail: { source: 'tasks' }
+            }));
+          } else if (shouldShowToast) {
             show({
-              message: notification.message,
+              message: notification.message!,
               type: notification.type?.toLowerCase() || 'info',
               duration: 3000,
             });
-          }
-
-          // Обрабатываем действия в зависимости от source
-          if (notification.source === 'TASKS' || notification.source === 'tasks') {
-            // Отправляем кастомное событие для уведомлений с source = 'tasks'
-            const tasksEvent = new CustomEvent('tasks-notification', {
-              detail: { source: 'tasks' }
-            });
-            window.dispatchEvent(tasksEvent);
           }
         } catch (e) {
           console.warn('[WS][Mock Notification] Failed to parse message', e, event.detail);
@@ -70,27 +78,37 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
     if (!handlersRegisteredRef.current) {
       // Обработчик уведомлений
       const removeNotificationHandler = websocketManager.addNotificationHandler((notification) => {
-        // Если visible = true, показываем уведомление пользователю
-        if (notification.visible && notification.message) {
-          show({
-            message: notification.message,
-            type: notification.type,
-            duration: 3000,
-          });
-        }
+        // Если message != null, отображаем уведомление (с учётом source)
+        const hasMessage = notification.message != null && notification.message !== '';
 
-        // Обрабатываем действия в зависимости от source
         switch (notification.source) {
+          case 'dayStreak':
+            window.dispatchEvent(new CustomEvent('day-streak-notification', {
+              detail: { message: notification.message ?? undefined },
+            }));
+            break;
+
           case 'tasks':
-            // Отправляем кастомное событие для уведомлений с source = 'tasks'
-            const event = new CustomEvent('tasks-notification', {
+            if (hasMessage) {
+              show({
+                message: notification.message!,
+                type: (notification.type?.toLowerCase?.() ?? notification.type) as 'info' | 'success' | 'warning' | 'error',
+                duration: 3000,
+              });
+            }
+            window.dispatchEvent(new CustomEvent('tasks-notification', {
               detail: { source: notification.source }
-            });
-            window.dispatchEvent(event);
+            }));
             break;
 
           default:
-            // locale обрабатывается отдельным обработчиком
+            if (hasMessage) {
+              show({
+                message: notification.message!,
+                type: (notification.type?.toLowerCase?.() ?? notification.type) as 'info' | 'success' | 'warning' | 'error',
+                duration: 3000,
+              });
+            }
             break;
         }
       });

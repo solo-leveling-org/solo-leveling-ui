@@ -160,7 +160,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
         background: 'rgba(200, 230, 245, 0.6)'
       }}></div>
 
-      <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+      <div className="tab-inner-content relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
         {/* Header */}
         <div className="text-center mb-8">
           <h1
@@ -412,7 +412,7 @@ export const BalanceSkeleton: React.FC = () => (
       background: 'rgba(200, 230, 245, 0.6)'
     }}></div>
 
-    <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+    <div className="tab-inner-content relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
       {/* Header skeleton */}
       <div className="text-center mb-8">
         <div 

@@ -60,19 +60,6 @@ const AuthLoadingScreen: React.FC<AuthLoadingScreenProps> = ({
         background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
       }}
     >
-      {/* Holographic grid background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-          transform: 'perspective(500px) rotateX(60deg)',
-          transformOrigin: 'center center'
-        }}></div>
-      </div>
-
       {/* Aura effect emanating from center */}
       <div 
         className="absolute top-1/2 left-1/2 rounded-full blur-3xl pointer-events-none"

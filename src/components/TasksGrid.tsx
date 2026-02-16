@@ -11,9 +11,11 @@ type TasksGridProps = {
   onTaskClick: (task: PlayerTask) => void;
   onComplete?: (task: PlayerTask) => void;
   onReplace?: (task: PlayerTask) => void;
+  /** Сохранять порядок задач как пришло с API (для завершённых из searchTasks) */
+  preserveOrder?: boolean;
 };
 
-const TasksGrid: React.FC<TasksGridProps> = ({ tasks, stamina, loading, onTaskClick, onComplete, onReplace }) => {
+const TasksGrid: React.FC<TasksGridProps> = ({ tasks, stamina, loading, onTaskClick, onComplete, onReplace, preserveOrder = false }) => {
   const visibleTasks = useMemo(() => {
     const filtered = tasks.filter(
       t => t.status === PlayerTaskStatus.PREPARING ||
@@ -21,13 +23,14 @@ const TasksGrid: React.FC<TasksGridProps> = ({ tasks, stamina, loading, onTaskCl
          t.status === PlayerTaskStatus.COMPLETED ||
          t.status === PlayerTaskStatus.SKIPPED
     );
-    // Сортируем по order (по возрастанию)
+    if (preserveOrder) return filtered;
+    // Сортируем по order (по возрастанию) для активных задач
     return filtered.sort((a, b) => {
       const orderA = a.order ?? 0;
       const orderB = b.order ?? 0;
       return orderA - orderB;
     });
-  }, [tasks]);
+  }, [tasks, preserveOrder]);
 
   // Мемоизируем обработчики для каждой задачи
   const taskHandlers = useMemo(() => {

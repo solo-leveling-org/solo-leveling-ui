@@ -238,11 +238,11 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
   const getScoreLabel = (type: LeaderboardType): string => {
     switch (type) {
       case LeaderboardType.LEVEL:
-        return t('collections.score.level');
+        return t('services.score.level');
       case LeaderboardType.BALANCE:
-        return t('collections.score.balance');
+        return t('services.score.balance');
       default:
-        return t('collections.score.level');
+        return t('services.score.level');
     }
   };
 
@@ -548,7 +548,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                 backdropFilter: 'blur(10px)'
               }}
             >
-              {t(`collections.types.${type.toLowerCase()}`)}
+              {t(`services.types.${type.toLowerCase()}`)}
             </button>
             );
           })}
@@ -602,7 +602,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                   letterSpacing: '0.05em'
                 }}
               >
-                {t('collections.leaderboard.yourPosition')}
+                {t('services.leaderboard.yourPosition')}
               </div>
               <div className="flex items-center space-x-4">
                 {/* Position */}
@@ -694,7 +694,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
               letterSpacing: '0.05em'
             }}
           >
-            {t('collections.leaderboard.yourPosition')}
+            {t('services.leaderboard.yourPosition')}
           </div>
           <div
             className="rounded-xl p-4 animate-pulse w-full"

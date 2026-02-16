@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useModal } from '../contexts/ModalContext';
 
 export interface Notification {
@@ -30,14 +31,14 @@ const NotificationItem: React.FC<{
   notification: Notification;
   onRemove: (id: string) => void;
 }> = React.memo(({ notification, onRemove }) => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
-  const { isTaskDialogOpen } = useModal();
+  const { isTaskDialogOpen, isOverlayOpen } = useModal();
+  const shouldPauseTimer = isTaskDialogOpen || isOverlayOpen;
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const elapsedTimeRef = useRef(0);
   const startTimeRef = useRef(Date.now());
-  const [progressPercentage, setProgressPercentage] = useState(100);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleRemove = useCallback(() => {
     setIsRemoving(true);
@@ -56,80 +57,16 @@ const NotificationItem: React.FC<{
     return () => clearTimeout(timer);
   }, []);
 
-  // Упрощенная логика прогресс-бара (уменьшается от 100% к 0%)
-  // Оптимизировано: используем setInterval с увеличенным интервалом (100ms вместо 50ms) для лучшей производительности
-  useEffect(() => {
-    if (!notification.duration || notification.duration <= 0) {
-      setProgressPercentage(100);
-      return;
-    }
-
-    // Если TaskDialog или TaskCompletionDialog открыт, останавливаем обновление прогресс-бара
-    if (isTaskDialogOpen) {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      return;
-    }
-
-    // Если dialog закрыт, запускаем обновление прогресс-бара
-    const updateProgress = () => {
-      if (!notification.duration) return;
-      
-      const now = Date.now();
-      const elapsed = elapsedTimeRef.current + (now - startTimeRef.current);
-      const elapsedPercent = Math.min(100, (elapsed / notification.duration) * 100);
-      const remainingPercent = Math.max(0, 100 - elapsedPercent);
-      
-      // Обновляем состояние только если значение изменилось (оптимизация)
-      setProgressPercentage(prev => {
-        // Округляем до 0.1% для уменьшения количества обновлений
-        const rounded = Math.round(remainingPercent * 10) / 10;
-        const prevRounded = Math.round(prev * 10) / 10;
-        return rounded !== prevRounded ? rounded : prev;
-      });
-
-      if (remainingPercent <= 0) {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-        }
-      }
-    };
-
-    // Обновляем прогресс каждые 100ms (вместо 50ms) для лучшей производительности при сохранении плавности
-    if (!intervalRef.current) {
-      startTimeRef.current = Date.now();
-      updateProgress(); // Сразу обновляем
-      intervalRef.current = setInterval(updateProgress, 100);
-    }
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      // Сохраняем прошедшее время при размонтировании
-      if (startTimeRef.current) {
-        elapsedTimeRef.current += Date.now() - startTimeRef.current;
-        startTimeRef.current = Date.now();
-      }
-    };
-  }, [notification.duration, isTaskDialogOpen]);
-
   useEffect(() => {
     if (!notification.duration || notification.duration <= 0) return;
 
-    // Если TaskDialog или TaskCompletionDialog открыт, останавливаем таймер и сохраняем прошедшее время
-    if (isTaskDialogOpen) {
+    // Если открыт Dialog или Overlay — останавливаем таймер и сохраняем прошедшее время
+    if (shouldPauseTimer) {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
-        // Сохраняем прошедшее время
         elapsedTimeRef.current += Date.now() - startTimeRef.current;
       }
-      // Сбрасываем startTimeRef, чтобы не учитывать время пока dialog открыт
       startTimeRef.current = Date.now();
       return;
     }
@@ -152,7 +89,7 @@ const NotificationItem: React.FC<{
         timerRef.current = null;
       }
     };
-  }, [notification.duration, handleRemove, isTaskDialogOpen]);
+  }, [notification.duration, handleRemove, shouldPauseTimer]);
 
   // Мемоизируем стили для предотвращения пересчета при каждом рендере
   const notificationStyles = useMemo(() => {
@@ -328,27 +265,6 @@ const NotificationItem: React.FC<{
           : 'rgba(220, 38, 38, 0.6)'
       }}></div>
 
-      {/* Прогресс-бар для автоматического закрытия */}
-      {notification.duration && notification.duration > 0 && (
-        <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl overflow-hidden" style={{
-          background: 'rgba(220, 235, 245, 0.1)'
-        }}>
-          <div 
-            className="h-full rounded-t-2xl transition-all duration-100 ease-linear"
-            style={{
-              width: `${progressPercentage}%`,
-              background: notification.type === 'info' 
-                ? 'linear-gradient(90deg, rgba(180, 220, 240, 0.8) 0%, rgba(160, 210, 235, 0.6) 100%)'
-                : notification.type === 'success'
-                ? 'linear-gradient(90deg, rgba(34, 197, 94, 0.8) 0%, rgba(16, 185, 129, 0.6) 100%)'
-                : notification.type === 'warning'
-                ? 'linear-gradient(90deg, rgba(251, 191, 36, 0.8) 0%, rgba(245, 158, 11, 0.6) 100%)'
-                : 'linear-gradient(90deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.6) 100%)',
-            }}
-          />
-        </div>
-      )}
-      
       <div className="relative z-10 p-4">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 mt-0.5">
@@ -381,7 +297,7 @@ const NotificationItem: React.FC<{
               e.currentTarget.style.color = 'rgba(220, 235, 245, 0.6)';
               e.currentTarget.style.background = 'transparent';
             }}
-            aria-label="Закрыть уведомление"
+            aria-label={t('common.closeNotification')}
           >
             <svg className="w-4 h-4 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -407,7 +323,7 @@ export const NotificationContainer: React.FC = () => {
   const { notifications, removeNotification } = useNotifications();
 
   return (
-    <div className="fixed top-4 right-4 left-4 sm:left-auto sm:right-4 z-50 space-y-3 pointer-events-none notification-container">
+    <div className="fixed top-[4rem] right-4 left-4 sm:left-auto sm:right-4 z-50 space-y-3 pointer-events-none notification-container">
       {notifications.map((notification) => (
         <div key={notification.id} className="pointer-events-auto w-full sm:w-auto">
           <NotificationItem

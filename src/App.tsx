@@ -3,7 +3,7 @@ import './App.css';
 import TasksTab from './tabs/TasksTab';
 import ProfileTab from './tabs/ProfileTab';
 import BalanceTab from './tabs/BalanceTab';
-import CollectionsTab from './tabs/CollectionsTab';
+import ServicesTab from './tabs/ServicesTab';
 import BottomBar from './components/BottomBar';
 import {TelegramWidget} from './components/TelegramWidget';
 import {
@@ -27,8 +27,14 @@ import {auth} from './auth';
 import ConfirmDialog from './components/ConfirmDialog';
 import {useUiUpdate} from './hooks/useUiUpdate';
 import {useLocalization} from './hooks/useLocalization';
+import {UserAdditionalInfoProvider} from './contexts/UserAdditionalInfoContext';
+import {StreakOverlayProvider} from './contexts/StreakOverlayContext';
+import TopBar from './components/TopBar';
+import DayStreakOverlay from './components/DayStreakOverlay';
+import { DayStreakInfoPanel } from './components/DayStreakInfoPanel';
+import {BackButtonStreakSync} from './components/BackButtonStreakSync';
 
-// Глобальный ref для хранения обработчика кнопки "Назад" (экспортируем для использования в CollectionsTab)
+// Глобальный ref для хранения обработчика кнопки "Назад" (экспортируем для использования в ServicesTab)
 export const globalBackButtonHandlerRef = { current: null as (() => void) | null };
 
 function AppRoutes() {
@@ -46,21 +52,6 @@ function AppRoutes() {
   // Централизованное управление адаптивностью (определение устройства, полноэкранный режим, CSS классы)
   useTelegramAdaptive();
 
-  // Глобальное управление кнопкой "Назад" - скрываем при переходе на табы, где она не нужна
-  useEffect(() => {
-    const isOnCollectionsTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
-    
-    if (!isOnCollectionsTab) {
-      // Удаляем обработчик перед скрытием кнопки
-      if (globalBackButtonHandlerRef.current) {
-        backButton.offClick(globalBackButtonHandlerRef.current);
-        globalBackButtonHandlerRef.current = null;
-      }
-      // Скрываем кнопку "Назад" при переходе на другие табы
-      backButton.hide();
-    }
-  }, [location.pathname, backButton]);
-
   // Используем новые хуки для разделения логики
   const {
     isAuthenticated,
@@ -75,6 +66,17 @@ function AppRoutes() {
 
   // Подключение к WebSocket после успешной авторизации
   useWebSocketNotifications({enabled: isAuthenticated, authPromise});
+
+  // Скрываем кнопку "Назад" когда пользователь не авторизован (логика для авторизованных — в BackButtonStreakSync)
+  useEffect(() => {
+    if (!isAuthenticated) {
+      if (globalBackButtonHandlerRef.current) {
+        backButton.offClick(globalBackButtonHandlerRef.current);
+        globalBackButtonHandlerRef.current = null;
+      }
+      backButton.hide();
+    }
+  }, [isAuthenticated, backButton]);
 
   // Регистрируем callback для обработки истечения сессии
   useEffect(() => {
@@ -148,26 +150,38 @@ function AppRoutes() {
                   <TelegramWidget type="auth-error" errorMessage={authError}/>
               )}
               {!showNoTelegramError && !authError && (
-                  <>
-                    <main className={`tab-content custom-scrollbar ${isBottomBarVisible ? 'tab-content-with-bottom-bar' : 'tab-content-without-bottom-bar'}`}>
-                      <Routes>
-                        <Route path="/" element={<WelcomeTab/>}/>
-                        <Route path="/welcome" element={<WelcomeTab/>}/>
-                        <Route path="/tasks"
-                               element={<TasksTab isAuthenticated={isAuthenticated}/>}/>
-                        <Route path="/profile"
-                               element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
-                        <Route path="/collections"
-                               element={<CollectionsTab isAuthenticated={isAuthenticated}/>}/>
-                        <Route path="/leaderboard"
-                               element={<CollectionsTab isAuthenticated={isAuthenticated}/>}/>
-                        <Route path="/balance"
-                               element={<BalanceTab isAuthenticated={isAuthenticated}/>}/>
-                        <Route path="*" element={<Navigate to="/profile" replace/>}/>
-                      </Routes>
-                    </main>
-                    {isAuthenticated && <BottomBar isAuthenticated={isAuthenticated} isVisible={isBottomBarVisible}/>}
-                  </>
+                  <UserAdditionalInfoProvider isAuthenticated={isAuthenticated}>
+                    <StreakOverlayProvider>
+                      {isAuthenticated && (
+                        <div className="topbar-wrapper relative z-50 shrink-0">
+                          <BackButtonStreakSync />
+                          <TopBar />
+                        </div>
+                      )}
+                      <main className={`tab-content custom-scrollbar flex flex-col relative z-0 ${isAuthenticated ? 'tab-content-with-top-bar' : ''} ${isBottomBarVisible ? 'tab-content-with-bottom-bar' : 'tab-content-without-bottom-bar'}`}>
+                        <div className="relative flex-1 min-h-0 flex flex-col">
+                          <Routes>
+                            <Route path="/" element={<WelcomeTab/>}/>
+                            <Route path="/welcome" element={<WelcomeTab/>}/>
+                            <Route path="/tasks"
+                                   element={<TasksTab isAuthenticated={isAuthenticated}/>}/>
+                            <Route path="/profile"
+                                   element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
+                            <Route path="/collections"
+                                   element={<ServicesTab isAuthenticated={isAuthenticated}/>}/>
+                            <Route path="/leaderboard"
+                                   element={<ServicesTab isAuthenticated={isAuthenticated}/>}/>
+                            <Route path="/balance"
+                                   element={<BalanceTab isAuthenticated={isAuthenticated}/>}/>
+                            <Route path="*" element={<Navigate to="/profile" replace/>}/>
+                          </Routes>
+                          {isAuthenticated && <DayStreakInfoPanel />}
+                        </div>
+                      </main>
+                      {isAuthenticated && <BottomBar isAuthenticated={isAuthenticated} isVisible={isBottomBarVisible}/>}
+                      <DayStreakOverlay />
+                    </StreakOverlayProvider>
+                  </UserAdditionalInfoProvider>
               )}
             </>
         )}

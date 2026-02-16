@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type Stamina = {
+    id: string;
     /**
      * Текущее количество стамины
      */

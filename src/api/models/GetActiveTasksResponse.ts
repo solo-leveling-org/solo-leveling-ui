@@ -7,6 +7,6 @@ import type { Stamina } from './Stamina';
 export type GetActiveTasksResponse = {
     tasks: Array<PlayerTask>;
     stamina: Stamina;
-    firstTime: boolean;
+    isFirstTime: boolean;
 };
 

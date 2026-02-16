@@ -12,7 +12,7 @@ export interface BaseDialogProps {
   maxWidth?: string;
   maxHeight?: string;
   onClickBackdrop?: () => void;
-  isTaskDialog?: boolean; // Флаг для TaskDialog и TaskCompletionDialog
+  isTaskDialog?: boolean; // Флаг для TaskDialog и TaskCompletionOverlay
 }
 
 /**

@@ -26,19 +26,6 @@ const WelcomeTab: React.FC = () => {
         zIndex: 1
       }}
     >
-      {/* Holographic grid background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-          transform: 'perspective(500px) rotateX(60deg)',
-          transformOrigin: 'center center'
-        }}></div>
-      </div>
-
       {/* Animated scan lines */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-[2px] animate-scan-line" style={{

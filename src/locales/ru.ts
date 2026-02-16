@@ -5,9 +5,12 @@ export const ru = {
     save: 'Сохранить',
     cancel: 'Отмена',
     close: 'Закрыть',
+    closeNotification: 'Закрыть уведомление',
     back: 'Назад',
-    next: 'Далее',
+    prev: 'Пред.',
+    next: 'След.',
     confirm: 'Подтвердить',
+    continue: 'Продолжить',
     active: 'Активно',
     completed: 'Завершено',
     inProgress: 'В процессе',
@@ -92,7 +95,19 @@ export const ru = {
     tasks: 'Задачи',
     topics: 'Темы',
     welcome: 'Главная',
-    games: 'Коллекции',
+    games: 'Сервисы',
+  },
+
+  dayStreak: {
+    extended: 'Ежедневный стрик продлён!',
+    days_one: 'день',
+    days_few: 'дня',
+    days_many: 'дней',
+    current: 'Текущий стрик',
+    max: 'Рекорд',
+    monthlyActivity: 'Активность за месяц',
+    noActivity: 'Нет активности',
+    year: 'Год',
   },
 
   // Приветственная страница
@@ -174,6 +189,10 @@ export const ru = {
     viewMode: {
       active: 'Активные',
       completed: 'Завершенные',
+      daily: 'Ежедневные',
+    },
+    daily: {
+      empty: 'Нет ежедневных задач на сегодня',
     },
     noCompletedTasks: 'Нет завершенных задач',
     noCompletedTasksDescription: 'Выполняйте задачи, чтобы увидеть их здесь!',
@@ -321,6 +340,9 @@ export const ru = {
     authError: 'Ошибка авторизации',
     loadingError: 'Ошибка загрузки',
     saveError: 'Ошибка сохранения',
+    taskCompleteFailed: 'Ошибка при выполнении задачи',
+    taskSkipFailed: 'Ошибка при пропуске задачи',
+    insufficientStamina: 'Недостаточно стамины!',
   },
   // Редкости задач
   rarity: {
@@ -352,8 +374,8 @@ export const ru = {
     continue: 'Продолжить',
   },
 
-  // Коллекции
-  collections: {
+  // Сервисы
+  services: {
     tabs: {
       leaderboard: 'ТАБЛИЦА ЛИДЕРОВ',
       lootboxes: 'ЛУТ БОКСЫ',
@@ -361,11 +383,11 @@ export const ru = {
       guilds: 'ГИЛЬДИИ',
       dungeons: 'ДАНЖИ',
     },
-      leaderboard: {
-        title: 'Таблица лидеров',
-        subtitle: 'Соревнуйся с другими игроками и поднимайся в рейтинге',
-        yourPosition: 'Ваша позиция',
-      },
+    leaderboard: {
+      title: 'Таблица лидеров',
+      subtitle: 'Соревнуйся с другими игроками и поднимайся в рейтинге',
+      yourPosition: 'Ваша позиция',
+    },
     types: {
       level: 'По уровню',
       tasks: 'По задачам',

@@ -324,6 +324,9 @@ const handleMockRequest = async <T>(options: ApiRequestOptions): Promise<T | nul
         pageSize
       ) as any;
     }
+    if (options.url === '/api/v1/player/tasks/daily' && options.method === 'GET') {
+      return await mockPlayerService.getDailyTasks() as any;
+    }
     if (options.url === '/api/v1/player/tasks/search' && options.method === 'POST') {
       const page = options.query?.page as number | undefined;
       const pageSize = (options.query?.pageSize as number) || 20;
@@ -332,6 +335,11 @@ const handleMockRequest = async <T>(options: ApiRequestOptions): Promise<T | nul
         page,
         pageSize
       ) as any;
+    }
+    if (options.url?.startsWith('/api/v1/player/activity/monthly') && options.method === 'GET') {
+      const year = Number(options.query?.year) || new Date().getFullYear();
+      const month = Number(options.query?.month) || new Date().getMonth() + 1;
+      return await mockPlayerService.getMonthlyActivity(year, month) as any;
     }
     
     // Обработка leaderboard запросов

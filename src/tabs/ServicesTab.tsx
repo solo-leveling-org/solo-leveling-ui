@@ -8,14 +8,15 @@ import LeaderboardView from '../components/LeaderboardView';
 import UserProfileView from '../components/UserProfileView';
 import { cn, getOptimizedBlur } from '../utils';
 import { globalBackButtonHandlerRef } from '../App';
+import { useStreakOverlay } from '../contexts/StreakOverlayContext';
 
-type CollectionsTabProps = {
+type ServicesTabProps = {
   isAuthenticated: boolean;
 };
 
 type TabMode = 'main' | 'leaderboard' | 'lootboxes' | 'inventory' | 'guilds' | 'dungeons' | 'userProfile';
 
-const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
+const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
   const [tabMode, setTabMode] = useState<TabMode>('main');
   const [leaderboardType, setLeaderboardType] = useState<LeaderboardType>(LeaderboardType.LEVEL);
   const [contentLoaded, setContentLoaded] = useState(false);
@@ -23,18 +24,20 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
   const { t } = useLocalization();
   const location = useLocation();
   const { backButton } = useTelegramWebApp();
+  const { isOpen: isStreakOverlayOpen } = useStreakOverlay();
   const isBackButtonInitializedRef = useRef(false);
   const currentTabModeRef = useRef<TabMode>('main');
 
-  // Проверяем, находимся ли мы на табе коллекций
-  const isOnCollectionsTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
+  // Проверяем, находимся ли мы на табе сервисов
+  const isOnServicesTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
 
-  // Управление кнопкой "Назад" в Telegram - устанавливаем один раз при открытии лидерборда
+  // Управление кнопкой "Назад" в Telegram - не перехватываем, когда открыт оверлей стрика
   useEffect(() => {
-    // Если мы не на табе коллекций, не управляем кнопкой
-    if (!isOnCollectionsTab) {
+    if (isStreakOverlayOpen) {
+      isBackButtonInitializedRef.current = false;
       return;
     }
+    if (!isOnServicesTab) return;
 
     currentTabModeRef.current = tabMode;
     
@@ -69,7 +72,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
       backButton.hide();
       isBackButtonInitializedRef.current = false;
     }
-  }, [backButton, tabMode, isOnCollectionsTab]);
+  }, [backButton, tabMode, isOnServicesTab, isStreakOverlayOpen]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -122,7 +125,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
           background: 'rgba(200, 230, 245, 0.6)'
         }}></div>
 
-        <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+        <div className="tab-inner-content relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
           <div className="max-w-4xl mx-auto space-y-4">
             {/* Карточка Таблица лидеров */}
             <button
@@ -151,7 +154,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                       textShadow: '0 0 10px rgba(139, 92, 246, 0.4)'
                     }}
                   >
-                    {t('collections.tabs.leaderboard')}
+                    {t('services.tabs.leaderboard')}
                   </h2>
                 </div>
                 <div
@@ -194,7 +197,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                       textShadow: '0 0 10px rgba(251, 146, 60, 0.4)'
                     }}
                   >
-                    {t('collections.tabs.lootboxes')}
+                    {t('services.tabs.lootboxes')}
                   </h2>
                   <p
                     className="text-sm md:text-base font-tech mt-1"
@@ -202,7 +205,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                       color: 'rgba(220, 235, 245, 0.7)'
                     }}
                   >
-                    {t('collections.lootboxes.comingSoon')}
+                    {t('services.lootboxes.comingSoon')}
                   </p>
                 </div>
                 <div
@@ -245,7 +248,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                       textShadow: '0 0 10px rgba(236, 72, 153, 0.4)'
                     }}
                   >
-                    {t('collections.tabs.inventory')}
+                    {t('services.tabs.inventory')}
                   </h2>
                   <p
                     className="text-sm md:text-base font-tech mt-1"
@@ -253,7 +256,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                       color: 'rgba(220, 235, 245, 0.7)'
                     }}
                   >
-                    {t('collections.inventory.comingSoon')}
+                    {t('services.inventory.comingSoon')}
                   </p>
                 </div>
                 <div
@@ -296,7 +299,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                       textShadow: '0 0 10px rgba(34, 197, 94, 0.4)'
                     }}
                   >
-                    {t('collections.tabs.guilds')}
+                    {t('services.tabs.guilds')}
                   </h2>
                   <p
                     className="text-sm md:text-base font-tech mt-1"
@@ -304,7 +307,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                       color: 'rgba(220, 235, 245, 0.7)'
                     }}
                   >
-                    {t('collections.guilds.comingSoon')}
+                    {t('services.guilds.comingSoon')}
                   </p>
                 </div>
                 <div
@@ -347,7 +350,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                       textShadow: '0 0 10px rgba(239, 68, 68, 0.4)'
                     }}
                   >
-                    {t('collections.tabs.dungeons')}
+                    {t('services.tabs.dungeons')}
                   </h2>
                   <p
                     className="text-sm md:text-base font-tech mt-1"
@@ -355,7 +358,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                       color: 'rgba(220, 235, 245, 0.7)'
                     }}
                   >
-                    {t('collections.dungeons.comingSoon')}
+                    {t('services.dungeons.comingSoon')}
                   </p>
                 </div>
                 <div
@@ -414,7 +417,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
           background: 'rgba(200, 230, 245, 0.6)'
         }}></div>
 
-        <div className="relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
+        <div className="tab-inner-content relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <div className="mb-8">
@@ -426,7 +429,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                     textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
                   }}
                 >
-                  {t('collections.leaderboard.title')}
+                  {t('services.leaderboard.title')}
                 </h1>
 
                 <p
@@ -435,7 +438,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
                     color: 'rgba(220, 235, 245, 0.7)'
                   }}
                 >
-                  {t('collections.leaderboard.subtitle')}
+                  {t('services.leaderboard.subtitle')}
                 </p>
 
                 {/* Divider */}
@@ -503,7 +506,7 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
           textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
         }}
       >
-        {t(`collections.${tabMode}.comingSoon`)}
+        {t(`services.${tabMode}.comingSoon`)}
       </h3>
       <p
         className="text-sm"
@@ -511,10 +514,10 @@ const CollectionsTab: React.FC<CollectionsTabProps> = ({ isAuthenticated }) => {
           color: 'rgba(220, 235, 245, 0.7)'
         }}
       >
-        {t(`collections.${tabMode}.description`)}
+        {t(`services.${tabMode}.description`)}
       </p>
     </div>
   );
 };
 
-export default CollectionsTab;
+export default ServicesTab;

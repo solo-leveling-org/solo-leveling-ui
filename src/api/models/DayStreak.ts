@@ -2,8 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export enum NotificationSource {
-    TASKS = 'tasks',
-    LOCALE = 'locale',
-    DAY_STREAK = 'dayStreak',
-}
+export type DayStreak = {
+    id: string;
+    current: number;
+    max: number;
+    isExtendedToday: boolean;
+};
+

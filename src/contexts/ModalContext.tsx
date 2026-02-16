@@ -5,11 +5,14 @@ interface ModalContextType {
   setIsBottomSheetOpen: (isOpen: boolean) => void;
   isBottomBarVisible: boolean;
   isDialogOpen: boolean;
-  isTaskDialogOpen: boolean; // Флаг для TaskDialog и TaskCompletionDialog
+  isTaskDialogOpen: boolean; // Флаг для TaskDialog и TaskCompletionOverlay
+  isOverlayOpen: boolean; // Флаг для оверлеев (DayStreak и т.д.) — при открытом оверлее таймер уведомлений ставится на паузу
   openDialog: () => void;
   closeDialog: () => void;
-  openTaskDialog: () => void; // Открытие TaskDialog или TaskCompletionDialog
-  closeTaskDialog: () => void; // Закрытие TaskDialog или TaskCompletionDialog
+  openTaskDialog: () => void;
+  closeTaskDialog: () => void;
+  openOverlay: () => void;
+  closeOverlay: () => void;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -30,11 +33,12 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [dialogCount, setDialogCount] = useState(0);
   const [taskDialogCount, setTaskDialogCount] = useState(0);
+  const [overlayCount, setOverlayCount] = useState(0);
 
-  // Скрываем BottomBar когда открыт BottomSheet (фильтр с выбором значений)
   const isBottomBarVisible = !isBottomSheetOpen;
   const isDialogOpen = dialogCount > 0;
   const isTaskDialogOpen = taskDialogCount > 0;
+  const isOverlayOpen = overlayCount > 0;
 
   const openDialog = useCallback(() => {
     setDialogCount(prev => prev + 1);
@@ -52,16 +56,27 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
     setTaskDialogCount(prev => Math.max(0, prev - 1));
   }, []);
 
+  const openOverlay = useCallback(() => {
+    setOverlayCount(prev => prev + 1);
+  }, []);
+
+  const closeOverlay = useCallback(() => {
+    setOverlayCount(prev => Math.max(0, prev - 1));
+  }, []);
+
   const value = {
     isBottomSheetOpen,
     setIsBottomSheetOpen,
     isBottomBarVisible,
     isDialogOpen,
     isTaskDialogOpen,
+    isOverlayOpen,
     openDialog,
     closeDialog,
     openTaskDialog,
     closeTaskDialog,
+    openOverlay,
+    closeOverlay,
   };
 
   return (
