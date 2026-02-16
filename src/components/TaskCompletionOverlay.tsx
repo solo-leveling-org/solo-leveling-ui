@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import type { CompleteTaskResponse, Task } from '../api';
+import type { CompleteTaskResponse, Task, TaskTopic } from '../api';
 import { useLocalization } from '../hooks/useLocalization';
 import Icon from './Icon';
 import TopicIcon from './TopicIcons';
@@ -60,7 +60,7 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
   };
 
   const renderTopicRow = (
-    topic: string | undefined,
+    topic: TaskTopic | undefined,
     level: { level?: number; currentExperience?: number; experienceToNextLevel?: number } | undefined,
     rowHidden: boolean,
     currentExp: number,

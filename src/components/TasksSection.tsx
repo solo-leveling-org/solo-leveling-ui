@@ -117,7 +117,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
     } finally {
       setTaskLoading(false);
     }
-  }, [stamina, onTasksUpdate]);
+  }, [stamina, onTasksUpdate, t]);
 
   const skipTask = useCallback(async (playerTask: PlayerTask) => {
     // Проверяем наличие достаточной стамины
@@ -156,7 +156,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
     } finally {
       setTaskLoading(false);
     }
-  }, [stamina, onTasksUpdate]);
+  }, [stamina, onTasksUpdate, t]);
 
   const handleConfirmAction = useCallback(() => {
     if (confirmAction) {
