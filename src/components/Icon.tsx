@@ -33,6 +33,7 @@ import { ReactComponent as ArrowDownIcon } from '../assets/icons/arrow-down.svg'
 import { ReactComponent as UsersGroupIcon } from '../assets/icons/users-group.svg';
 import { ReactComponent as CastleIcon } from '../assets/icons/castle.svg';
 import { ReactComponent as ActiveFireIcon } from '../assets/icons/active-fire.svg';
+import { ReactComponent as MenuIcon } from '../assets/icons/menu.svg';
 
 export type IconType = 
   | 'brain' 
@@ -69,7 +70,8 @@ export type IconType =
   | 'arrow-down'
   | 'users-group'
   | 'castle'
-  | 'fire';
+  | 'fire'
+  | 'menu';
 
 interface IconProps {
   type: IconType;
@@ -164,6 +166,8 @@ const Icon: React.FC<IconProps> = ({ type, className = '', size = 24, active = t
         </span>
       );
     }
+    case 'menu':
+      return <MenuIcon {...iconProps} />;
     default:
       return <div className={className} style={{ width: size, height: size }}>❓</div>;
   }

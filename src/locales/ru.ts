@@ -95,7 +95,7 @@ export const ru = {
     tasks: 'Задачи',
     topics: 'Темы',
     welcome: 'Главная',
-    games: 'Сервисы',
+    menu: 'Меню',
   },
 
   dayStreak: {
@@ -374,8 +374,8 @@ export const ru = {
     continue: 'Продолжить',
   },
 
-  // Сервисы
-  services: {
+  // Меню
+  menu: {
     tabs: {
       leaderboard: 'ТАБЛИЦА ЛИДЕРОВ',
       lootboxes: 'ЛУТ БОКСЫ',

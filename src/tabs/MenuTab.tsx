@@ -10,13 +10,13 @@ import { cn, getOptimizedBlur } from '../utils';
 import { globalBackButtonHandlerRef } from '../App';
 import { useStreakOverlay } from '../contexts/StreakOverlayContext';
 
-type ServicesTabProps = {
+type MenuTabProps = {
   isAuthenticated: boolean;
 };
 
 type TabMode = 'main' | 'leaderboard' | 'lootboxes' | 'inventory' | 'guilds' | 'dungeons' | 'userProfile';
 
-const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
+const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
   const [tabMode, setTabMode] = useState<TabMode>('main');
   const [leaderboardType, setLeaderboardType] = useState<LeaderboardType>(LeaderboardType.LEVEL);
   const [contentLoaded, setContentLoaded] = useState(false);
@@ -28,8 +28,8 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
   const isBackButtonInitializedRef = useRef(false);
   const currentTabModeRef = useRef<TabMode>('main');
 
-  // Проверяем, находимся ли мы на табе сервисов
-  const isOnServicesTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
+  // Проверяем, находимся ли мы на табе меню
+  const isOnMenuTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
 
   // Управление кнопкой "Назад" в Telegram - не перехватываем, когда открыт оверлей стрика
   useEffect(() => {
@@ -37,7 +37,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
       isBackButtonInitializedRef.current = false;
       return;
     }
-    if (!isOnServicesTab) return;
+    if (!isOnMenuTab) return;
 
     currentTabModeRef.current = tabMode;
     
@@ -72,7 +72,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
       backButton.hide();
       isBackButtonInitializedRef.current = false;
     }
-  }, [backButton, tabMode, isOnServicesTab, isStreakOverlayOpen]);
+  }, [backButton, tabMode, isOnMenuTab, isStreakOverlayOpen]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -154,7 +154,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
                       textShadow: '0 0 10px rgba(139, 92, 246, 0.4)'
                     }}
                   >
-                    {t('services.tabs.leaderboard')}
+                    {t('menu.tabs.leaderboard')}
                   </h2>
                 </div>
                 <div
@@ -197,7 +197,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
                       textShadow: '0 0 10px rgba(251, 146, 60, 0.4)'
                     }}
                   >
-                    {t('services.tabs.lootboxes')}
+                    {t('menu.tabs.lootboxes')}
                   </h2>
                   <p
                     className="text-sm md:text-base font-tech mt-1"
@@ -205,7 +205,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
                       color: 'rgba(220, 235, 245, 0.7)'
                     }}
                   >
-                    {t('services.lootboxes.comingSoon')}
+                    {t('menu.lootboxes.comingSoon')}
                   </p>
                 </div>
                 <div
@@ -248,7 +248,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
                       textShadow: '0 0 10px rgba(236, 72, 153, 0.4)'
                     }}
                   >
-                    {t('services.tabs.inventory')}
+                    {t('menu.tabs.inventory')}
                   </h2>
                   <p
                     className="text-sm md:text-base font-tech mt-1"
@@ -256,7 +256,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
                       color: 'rgba(220, 235, 245, 0.7)'
                     }}
                   >
-                    {t('services.inventory.comingSoon')}
+                    {t('menu.inventory.comingSoon')}
                   </p>
                 </div>
                 <div
@@ -299,7 +299,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
                       textShadow: '0 0 10px rgba(34, 197, 94, 0.4)'
                     }}
                   >
-                    {t('services.tabs.guilds')}
+                    {t('menu.tabs.guilds')}
                   </h2>
                   <p
                     className="text-sm md:text-base font-tech mt-1"
@@ -307,7 +307,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
                       color: 'rgba(220, 235, 245, 0.7)'
                     }}
                   >
-                    {t('services.guilds.comingSoon')}
+                    {t('menu.guilds.comingSoon')}
                   </p>
                 </div>
                 <div
@@ -350,7 +350,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
                       textShadow: '0 0 10px rgba(239, 68, 68, 0.4)'
                     }}
                   >
-                    {t('services.tabs.dungeons')}
+                    {t('menu.tabs.dungeons')}
                   </h2>
                   <p
                     className="text-sm md:text-base font-tech mt-1"
@@ -358,7 +358,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
                       color: 'rgba(220, 235, 245, 0.7)'
                     }}
                   >
-                    {t('services.dungeons.comingSoon')}
+                    {t('menu.dungeons.comingSoon')}
                   </p>
                 </div>
                 <div
@@ -429,7 +429,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
                     textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
                   }}
                 >
-                  {t('services.leaderboard.title')}
+                  {t('menu.leaderboard.title')}
                 </h1>
 
                 <p
@@ -438,7 +438,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
                     color: 'rgba(220, 235, 245, 0.7)'
                   }}
                 >
-                  {t('services.leaderboard.subtitle')}
+                  {t('menu.leaderboard.subtitle')}
                 </p>
 
                 {/* Divider */}
@@ -506,7 +506,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
           textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
         }}
       >
-        {t(`services.${tabMode}.comingSoon`)}
+        {t(`menu.${tabMode}.comingSoon`)}
       </h3>
       <p
         className="text-sm"
@@ -514,10 +514,10 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ isAuthenticated }) => {
           color: 'rgba(220, 235, 245, 0.7)'
         }}
       >
-        {t(`services.${tabMode}.description`)}
+        {t(`menu.${tabMode}.description`)}
       </p>
     </div>
   );
 };
 
-export default ServicesTab;
+export default MenuTab;
