@@ -3,7 +3,7 @@ import './App.css';
 import TasksTab from './tabs/TasksTab';
 import ProfileTab from './tabs/ProfileTab';
 import BalanceTab from './tabs/BalanceTab';
-import ServicesTab from './tabs/ServicesTab';
+import MenuTab from './tabs/MenuTab';
 import BottomBar from './components/BottomBar';
 import {TelegramWidget} from './components/TelegramWidget';
 import {
@@ -34,7 +34,7 @@ import DayStreakOverlay from './components/DayStreakOverlay';
 import { DayStreakInfoPanel } from './components/DayStreakInfoPanel';
 import {BackButtonStreakSync} from './components/BackButtonStreakSync';
 
-// Глобальный ref для хранения обработчика кнопки "Назад" (экспортируем для использования в ServicesTab)
+// Глобальный ref для хранения обработчика кнопки "Назад" (экспортируем для использования в MenuTab)
 export const globalBackButtonHandlerRef = { current: null as (() => void) | null };
 
 function AppRoutes() {
@@ -168,9 +168,9 @@ function AppRoutes() {
                             <Route path="/profile"
                                    element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
                             <Route path="/collections"
-                                   element={<ServicesTab isAuthenticated={isAuthenticated}/>}/>
+                                   element={<MenuTab isAuthenticated={isAuthenticated}/>}/>
                             <Route path="/leaderboard"
-                                   element={<ServicesTab isAuthenticated={isAuthenticated}/>}/>
+                                   element={<MenuTab isAuthenticated={isAuthenticated}/>}/>
                             <Route path="/balance"
                                    element={<BalanceTab isAuthenticated={isAuthenticated}/>}/>
                             <Route path="*" element={<Navigate to="/profile" replace/>}/>

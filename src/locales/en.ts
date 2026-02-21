@@ -95,7 +95,7 @@ export const en = {
     tasks: 'Tasks',
     topics: 'Topics',
     welcome: 'Home',
-    games: 'Services',
+    menu: 'Menu',
   },
 
   dayStreak: {
@@ -375,8 +375,8 @@ export const en = {
     continue: 'Continue',
   },
 
-  // Services
-  services: {
+  // Menu
+  menu: {
     tabs: {
       leaderboard: 'LEADERBOARD',
       lootboxes: 'LOOT BOXES',
