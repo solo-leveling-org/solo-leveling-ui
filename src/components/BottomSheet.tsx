@@ -151,8 +151,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
         onClick={onClose}
       />
       
-      {/* Bottom Sheet - Solo Leveling Style */}
-      <div 
+      <div
         ref={sheetRef}
         className={`bottom-sheet fixed bottom-0 left-0 right-0 z-[10000] rounded-t-2xl md:rounded-t-3xl shadow-2xl max-h-[80vh] overflow-hidden ${
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'

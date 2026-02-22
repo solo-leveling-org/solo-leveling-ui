@@ -1,4 +1,4 @@
-# Solo Leveling UI
+# Soloist UI
 
 React Telegram Mini App с поддержкой локальной разработки и моков для независимой разработки frontend.
 

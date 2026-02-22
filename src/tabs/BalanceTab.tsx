@@ -190,7 +190,6 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
           ></div>
         </div>
 
-        {/* Current Balance Card - Solo Leveling Style */}
         <div className="flex justify-center mb-8">
           {loading && !balance ? (
             // Skeleton для баланса

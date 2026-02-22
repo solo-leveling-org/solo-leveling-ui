@@ -17,7 +17,7 @@ export const TelegramWidget: React.FC<TelegramWidgetProps> = ({ type, errorMessa
     ? errorMessage || t('errors.authError')
     : "Это приложение работает только в Telegram Mini App. Нажмите кнопку ниже, чтобы открыть приложение в Telegram.";
 
-  const buttonText = isAuthError ? "Попробовать снова" : "Открыть Solo Leveling";
+  const buttonText = isAuthError ? "Попробовать снова" : "Открыть Soloist AI";
 
   return (
     <div 

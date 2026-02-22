@@ -504,7 +504,6 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
         </div>
       ) : null}
       
-      {/* Группы транзакций в стиле Solo Leveling */}
       {groups.map((group, groupIndex) => (
         <div 
           key={group.date} 

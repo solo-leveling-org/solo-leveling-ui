@@ -11,7 +11,6 @@ module.exports = {
         sans: ['Space Grotesk', 'system-ui', 'sans-serif'],
       },
       colors: {
-        // Solo Leveling color palette - dark blue neon theme
         'solo': {
           'dark': '#0a0e27',      // Deep dark blue background
           'darker': '#050812',     // Almost black blue

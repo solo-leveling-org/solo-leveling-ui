@@ -112,7 +112,7 @@ export const ru = {
 
   // Приветственная страница
   welcome: {
-    title: 'Solo Leveling AI',
+    title: 'Soloist AI',
     subtitle: 'Level Up Your Reality',
     startButton: 'К задачам',
     feedback: {
@@ -286,7 +286,7 @@ export const ru = {
     title: 'Баланс',
     subtitle: 'Ваш текущий баланс и история транзакций',
     totalBalance: 'Общий баланс',
-    currencyName: 'Solo Leveling Coin',
+    currencyName: 'Soloist Coin',
     topUp: 'Пополнить',
     transfer: 'Перевести',
     transactions: {

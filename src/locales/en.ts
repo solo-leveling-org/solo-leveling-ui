@@ -113,7 +113,7 @@ export const en = {
 
   // Welcome page
   welcome: {
-    title: 'Solo Leveling AI',
+    title: 'Soloist AI',
     subtitle: 'Level Up Your Reality',
     startButton: 'To Tasks',
     feedback: {
@@ -287,7 +287,7 @@ export const en = {
     title: 'Balance',
     subtitle: 'Your current balance and transaction history',
     totalBalance: 'Total Balance',
-    currencyName: 'Solo Leveling Coin',
+    currencyName: 'Soloist Coin',
     topUp: 'Top Up',
     transfer: 'Transfer',
     transactions: {
