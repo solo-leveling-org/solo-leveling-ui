@@ -35,7 +35,7 @@ const developmentConfig: EnvironmentConfig = {
   useMocks: shouldUseMocks(),
 };
 
-const PROD_HOST = 'gateway.solo-leveling.org';
+const PROD_HOST = 'gateway.soloist-ai.com';
 
 const productionConfig: EnvironmentConfig = {
   env: 'production',
