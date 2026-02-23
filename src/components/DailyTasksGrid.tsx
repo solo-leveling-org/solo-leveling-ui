@@ -1,7 +1,7 @@
 import React from 'react';
 import type { PlayerDailyTask } from '../api';
 import DailyTaskCard from './DailyTaskCard';
-import TaskCardSkeleton from './TaskCardSkeleton';
+import DailyTaskCardSkeleton from './DailyTaskCardSkeleton';
 import { useLocalization } from '../hooks/useLocalization';
 
 type DailyTasksGridProps = {
@@ -15,7 +15,7 @@ const DailyTasksGrid: React.FC<DailyTasksGridProps> = ({ tasks, loading }) => {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 sm:gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
-          <TaskCardSkeleton key={i} />
+          <DailyTaskCardSkeleton key={i} />
         ))}
       </div>
     );
