@@ -48,7 +48,11 @@ const Calendar: React.FC<CalendarProps> = ({
     return `${year}-${month}-${day}`;
   };
 
-  const getDaysInMonth = (date: Date) => {
+  const ROWS = 6;
+  const COLS = 7;
+  const CELLS_COUNT = ROWS * COLS; // 42 — всегда 6 рядов, чтобы высота календаря не прыгала при смене месяца
+
+  const getDaysInMonth = (date: Date): (Date | null)[] => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
@@ -56,16 +60,10 @@ const Calendar: React.FC<CalendarProps> = ({
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
 
-    const days = [];
-    
-    for (let i = 0; i < startingDayOfWeek; i++) {
-      days.push(null);
-    }
-    
-    for (let day = 1; day <= daysInMonth; day++) {
-      days.push(new Date(year, month, day));
-    }
-    
+    const days: (Date | null)[] = [];
+    for (let i = 0; i < startingDayOfWeek; i++) days.push(null);
+    for (let day = 1; day <= daysInMonth; day++) days.push(new Date(year, month, day));
+    while (days.length < CELLS_COUNT) days.push(null);
     return days;
   };
 

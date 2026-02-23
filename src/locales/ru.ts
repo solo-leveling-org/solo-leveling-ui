@@ -196,6 +196,7 @@ export const ru = {
     },
     noCompletedTasks: 'Нет завершенных задач',
     noCompletedTasksDescription: 'Выполняйте задачи, чтобы увидеть их здесь!',
+    noCompletedTasksByFilterDescription: 'По выбранным фильтрам ничего не найдено.',
     filters: {
       reset: 'Сбросить фильтры',
     },
@@ -292,7 +293,8 @@ export const ru = {
     transactions: {
       title: 'История транзакций',
       empty: 'Транзакции не найдены',
-      emptyDescription: 'Выполняйте задачи, чтобы заработать награды!'
+      emptyDescription: 'Выполняйте задачи, чтобы заработать награды!',
+      emptyByFilterDescription: 'По выбранным фильтрам ничего не найдено.'
     },
     empty: 'Пока нет транзакций',
     causes: {

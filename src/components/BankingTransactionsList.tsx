@@ -342,54 +342,60 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
     return value;
   };
 
-  // Рендер пустого состояния
-  const renderEmpty = () => (
-    <div className="text-center py-12">
-      <div 
-        className="relative overflow-hidden rounded-2xl md:rounded-3xl p-8 max-w-md mx-auto"
-        style={{
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
-          backdropFilter: 'blur(20px)',
-          border: '2px solid rgba(220, 235, 245, 0.2)',
-          boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
-        }}
-      >
+  const hasActiveFilters =
+    (dateFilters.from || dateFilters.to) ||
+    Object.values(enumFilters).some((arr) => Array.isArray(arr) && arr.length > 0);
+
+  const renderEmpty = () => {
+    const emptyDescription = hasActiveFilters ? t('balance.transactions.emptyByFilterDescription') : t('balance.transactions.emptyDescription');
+    return (
+      <div className="text-center py-12">
         <div 
-          className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+          className="relative overflow-hidden rounded-2xl md:rounded-3xl p-8 max-w-md mx-auto"
           style={{
-            background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.2) 0%, rgba(234, 179, 8, 0.1) 100%)',
-            border: '2px solid rgba(234, 179, 8, 0.3)'
+            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            backdropFilter: 'blur(20px)',
+            border: '2px solid rgba(220, 235, 245, 0.2)',
+            boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
           }}
         >
-          <div
+          <div 
+            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
             style={{
-              color: 'rgba(234, 179, 8, 0.9)',
-              filter: 'drop-shadow(0 0 8px rgba(234, 179, 8, 0.6))'
+              background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.2) 0%, rgba(234, 179, 8, 0.1) 100%)',
+              border: '2px solid rgba(234, 179, 8, 0.3)'
             }}
           >
-            <Icon type="coins" size={32} />
+            <div
+              style={{
+                color: 'rgba(234, 179, 8, 0.9)',
+                filter: 'drop-shadow(0 0 8px rgba(234, 179, 8, 0.6))'
+              }}
+            >
+              <Icon type="coins" size={32} />
+            </div>
           </div>
+          <h3 
+            className="text-lg font-tech font-semibold mb-2"
+            style={{
+              color: '#e8f4f8',
+              textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+            }}
+          >
+            {t('balance.transactions.empty')}
+          </h3>
+          <p 
+            className="text-sm font-tech"
+            style={{
+              color: 'rgba(220, 235, 245, 0.7)'
+            }}
+          >
+            {emptyDescription}
+          </p>
         </div>
-        <h3 
-          className="text-lg font-tech font-semibold mb-2"
-          style={{
-            color: '#e8f4f8',
-            textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
-          }}
-        >
-          {t('balance.transactions.empty')}
-        </h3>
-        <p 
-          className="text-sm font-tech"
-          style={{
-            color: 'rgba(220, 235, 245, 0.7)'
-          }}
-        >
-          {t('balance.transactions.emptyDescription')}
-        </p>
       </div>
-    </div>
-  );
+    );
+  };
 
   // Показываем skeleton при загрузке, если нет транзакций
   if (loading && transactions.length === 0) {

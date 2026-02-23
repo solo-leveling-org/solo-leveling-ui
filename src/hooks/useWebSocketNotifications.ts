@@ -39,7 +39,7 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
               show({
                 message: notification.message,
                 type: notification.type?.toLowerCase() || 'info',
-                duration: 3000,
+                duration: 2000,
               });
             }
             window.dispatchEvent(new CustomEvent('tasks-notification', {
@@ -49,7 +49,7 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
             show({
               message: notification.message!,
               type: notification.type?.toLowerCase() || 'info',
-              duration: 3000,
+              duration: 2000,
             });
           }
         } catch (e) {
@@ -93,7 +93,7 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
               show({
                 message: notification.message!,
                 type: (notification.type?.toLowerCase?.() ?? notification.type) as 'info' | 'success' | 'warning' | 'error',
-                duration: 3000,
+                duration: 2000,
               });
             }
             window.dispatchEvent(new CustomEvent('tasks-notification', {
@@ -106,7 +106,7 @@ export function useWebSocketNotifications({ enabled, authPromise }: UseWebSocket
               show({
                 message: notification.message!,
                 type: (notification.type?.toLowerCase?.() ?? notification.type) as 'info' | 'success' | 'warning' | 'error',
-                duration: 3000,
+                duration: 2000,
               });
             }
             break;

@@ -61,8 +61,8 @@ function AppRoutes() {
     isAuthLoading,
     authPromise
   } = useAuth();
-  // Синхронизация локализации (загружается только после успешной авторизации)
-  const { isLocaleLoading, localeLoaded } = useLocaleSync(isAuthenticated);
+  // Один запрос getAdditionalInfo после авторизации: локаль + данные для UserAdditionalInfoProvider
+  const { isLocaleLoading, localeLoaded, additionalInfoData } = useLocaleSync(isAuthenticated);
 
   // Подключение к WebSocket после успешной авторизации
   useWebSocketNotifications({enabled: isAuthenticated, authPromise});
@@ -149,8 +149,11 @@ function AppRoutes() {
               {authError && !showNoTelegramError && (
                   <TelegramWidget type="auth-error" errorMessage={authError}/>
               )}
-              {!showNoTelegramError && !authError && (
-                  <UserAdditionalInfoProvider isAuthenticated={isAuthenticated}>
+              {!showNoTelegramError && !authError && (isAuthenticated ? additionalInfoData != null : true) && (
+                  <UserAdditionalInfoProvider
+                    isAuthenticated={isAuthenticated}
+                    initialData={additionalInfoData ?? undefined}
+                  >
                     <StreakOverlayProvider>
                       {isAuthenticated && (
                         <div className="topbar-wrapper relative z-50 shrink-0">

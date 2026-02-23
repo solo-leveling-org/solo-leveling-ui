@@ -197,6 +197,7 @@ export const en = {
     },
     noCompletedTasks: 'No completed tasks',
     noCompletedTasksDescription: 'Complete tasks to see them here!',
+    noCompletedTasksByFilterDescription: 'Nothing found for the selected filters.',
     filters: {
       reset: 'Reset Filters',
     },
@@ -292,8 +293,9 @@ export const en = {
     transfer: 'Transfer',
     transactions: {
       title: 'Transaction History',
-      empty: 'No transactions found',
-      emptyDescription: 'Complete tasks to earn rewards!'
+      empty: 'No transactions yet',
+      emptyDescription: 'Complete tasks to earn rewards!',
+      emptyByFilterDescription: 'Nothing found for the selected filters.'
     },
     empty: 'No transactions yet',
     causes: {
