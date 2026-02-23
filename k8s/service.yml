@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: solo-leveling-ui
+  name: soloist-ui
 spec:
   selector:
-    app: solo-leveling-ui
+    app: soloist-ui
   ports:
     - protocol: TCP
       port: 80

@@ -28,8 +28,8 @@ const shouldUseMocks = (): boolean => {
 
 const developmentConfig: EnvironmentConfig = {
   env: 'development',
-  apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'https://solo-leveling-gateway.ru.tuna.am',
-  wsUrl: process.env.REACT_APP_WS_URL || 'wss://solo-leveling-gateway.ru.tuna.am/ws',
+  apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'https://soloist-gateway.ru.tuna.am',
+  wsUrl: process.env.REACT_APP_WS_URL || 'wss://soloist-gateway.ru.tuna.am/ws',
   isDevelopment: true,
   isProduction: false,
   useMocks: shouldUseMocks(),
