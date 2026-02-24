@@ -336,6 +336,11 @@ export const ru = {
     },
   },
 
+  maintenance: {
+    title: 'Технические работы',
+    description: 'Проводятся технические работы. Пожалуйста, попробуйте позже.',
+  },
+
   // Ошибки и сообщения
   errors: {
     telegramRequired: 'Требуется Telegram',

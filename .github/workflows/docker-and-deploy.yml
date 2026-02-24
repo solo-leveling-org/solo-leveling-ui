@@ -2,6 +2,12 @@ name: Docker build, Push and Deploy to Kubernetes
 
 on:
   workflow_dispatch:
+    inputs:
+      maintenance_mode:
+        description: 'Deploy maintenance version (shows "Technical maintenance" screen only)'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   docker-and-deploy:
@@ -34,6 +40,7 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/soloist-ui:${{ github.sha }}
           build-args: |
             GIT_COMMIT_SHA=${{ github.sha }}
+            REACT_APP_MAINTENANCE_MODE=${{ inputs.maintenance_mode }}
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v4

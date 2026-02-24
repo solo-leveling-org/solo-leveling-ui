@@ -1,5 +1,7 @@
 import {useEffect, useState} from 'react';
 import './App.css';
+import { config } from './config/environment';
+import MaintenanceScreen from './components/MaintenanceScreen';
 import TasksTab from './tabs/TasksTab';
 import ProfileTab from './tabs/ProfileTab';
 import BalanceTab from './tabs/BalanceTab';
@@ -193,6 +195,10 @@ function AppRoutes() {
 }
 
 export default function App() {
+  if (config.isMaintenanceMode) {
+    return <MaintenanceScreen />;
+  }
+
   return (
       <ModalProvider>
       <NotificationProvider>

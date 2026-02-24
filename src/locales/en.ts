@@ -337,6 +337,11 @@ export const en = {
     },
   },
 
+  maintenance: {
+    title: 'Technical maintenance',
+    description: 'We are carrying out technical work. Please try again later.',
+  },
+
   // Errors and messages
   errors: {
     telegramRequired: 'Telegram Required',
