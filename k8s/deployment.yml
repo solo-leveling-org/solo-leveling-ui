@@ -13,6 +13,7 @@ spec:
         app: soloist-ui
       annotations:
         commit.sha: "${GIT_COMMIT_SHA}"
+        maintenance-mode: "${MAINTENANCE_MODE}"
     spec:
       containers:
         - name: app
