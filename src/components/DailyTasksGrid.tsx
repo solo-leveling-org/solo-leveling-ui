@@ -26,7 +26,7 @@ const DailyTasksGrid: React.FC<DailyTasksGridProps> = ({ tasks, loading }) => {
       <div
         className="rounded-2xl p-8 text-center"
         style={{
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.6) 0%, rgba(5, 8, 18, 0.8) 100%)',
+          background: 'rgba(255, 255, 255, 0.05)',
           border: '2px solid rgba(251, 191, 36, 0.2)',
         }}
       >

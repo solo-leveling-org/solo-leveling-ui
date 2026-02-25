@@ -101,31 +101,31 @@ const NotificationItem: React.FC<{
     switch (notification.type) {
       case 'success':
         return {
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
+          background: 'rgba(255, 255, 255, 0.08)',
           border: '2px solid rgba(34, 197, 94, 0.4)',
           boxShadow: '0 0 20px rgba(34, 197, 94, 0.3), 0 0 40px rgba(34, 197, 94, 0.1), inset 0 0 20px rgba(34, 197, 94, 0.05)',
         };
       case 'info':
         return {
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
+          background: 'rgba(255, 255, 255, 0.08)',
           border: '2px solid rgba(180, 220, 240, 0.4)',
           boxShadow: '0 0 20px rgba(180, 220, 240, 0.3), 0 0 40px rgba(180, 220, 240, 0.1), inset 0 0 20px rgba(180, 220, 240, 0.05)',
         };
       case 'warning':
         return {
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
+          background: 'rgba(255, 255, 255, 0.08)',
           border: '2px solid rgba(251, 191, 36, 0.4)',
           boxShadow: '0 0 20px rgba(251, 191, 36, 0.3), 0 0 40px rgba(251, 191, 36, 0.1), inset 0 0 20px rgba(251, 191, 36, 0.05)',
         };
       case 'error':
         return {
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
+          background: 'rgba(255, 255, 255, 0.08)',
           border: '2px solid rgba(239, 68, 68, 0.4)',
           boxShadow: '0 0 20px rgba(239, 68, 68, 0.3), 0 0 40px rgba(239, 68, 68, 0.1), inset 0 0 20px rgba(239, 68, 68, 0.05)',
         };
       default:
         return {
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
+          background: 'rgba(255, 255, 255, 0.08)',
           border: '2px solid rgba(180, 220, 240, 0.4)',
           boxShadow: '0 0 20px rgba(180, 220, 240, 0.3), 0 0 40px rgba(180, 220, 240, 0.1), inset 0 0 20px rgba(180, 220, 240, 0.05)',
         };
@@ -234,17 +234,6 @@ const NotificationItem: React.FC<{
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
-      {/* Holographic grid overlay */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '20px 20px'
-        }}></div>
-      </div>
-
       {/* Glowing orbs */}
       <div className="absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl opacity-10 pointer-events-none" style={{
         background: notification.type === 'info' 
@@ -321,9 +310,13 @@ const NotificationItem: React.FC<{
 // Контейнер для уведомлений
 export const NotificationContainer: React.FC = () => {
   const { notifications, removeNotification } = useNotifications();
+  const { isOverlayOpen } = useModal();
 
   return (
-    <div className="fixed top-[4rem] right-4 left-4 sm:left-auto sm:right-4 z-50 space-y-3 pointer-events-none notification-container">
+    <div
+      className="fixed top-[4rem] right-4 left-4 sm:left-auto sm:right-4 z-50 space-y-3 pointer-events-none notification-container"
+      style={{ zIndex: isOverlayOpen ? 0 : undefined }}
+    >
       {notifications.map((notification) => (
         <div key={notification.id} className="pointer-events-auto w-full sm:w-auto">
           <NotificationItem

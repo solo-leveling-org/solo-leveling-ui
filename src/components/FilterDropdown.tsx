@@ -91,7 +91,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
               style={{
                 background: isSelected
                   ? 'linear-gradient(135deg, rgba(180, 220, 240, 0.2) 0%, rgba(160, 210, 235, 0.1) 100%)'
-                  : 'linear-gradient(135deg, rgba(10, 14, 39, 0.6) 0%, rgba(5, 8, 18, 0.8) 100%)',
+                  : 'rgba(255, 255, 255, 0.05)',
                 backdropFilter: 'blur(10px)',
                 border: isSelected
                   ? '2px solid rgba(180, 220, 240, 0.4)'

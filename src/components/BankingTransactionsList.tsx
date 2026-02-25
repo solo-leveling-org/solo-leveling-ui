@@ -353,9 +353,9 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
         <div 
           className="relative overflow-hidden rounded-2xl md:rounded-3xl p-8 max-w-md mx-auto"
           style={{
-            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            background: 'rgba(255, 255, 255, 0.06)',
             backdropFilter: 'blur(20px)',
-            border: '2px solid rgba(220, 235, 245, 0.2)',
+            border: '2px solid rgba(255, 255, 255, 0.12)',
             boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
           }}
         >
@@ -378,7 +378,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
           <h3 
             className="text-lg font-tech font-semibold mb-2"
             style={{
-              color: '#e8f4f8',
+              color: '#f4f4f5',
               textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
             }}
           >
@@ -465,7 +465,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
         <div 
           className="mb-4 font-tech font-semibold"
           style={{
-            color: '#e8f4f8',
+            color: '#f4f4f5',
             textShadow: '0 0 8px rgba(220, 38, 38, 0.3)'
           }}
         >
@@ -477,7 +477,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
           style={{
             background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)',
             border: '1px solid rgba(180, 220, 240, 0.4)',
-            color: '#e8f4f8',
+            color: '#f4f4f5',
             boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
             textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
           }}
@@ -515,9 +515,9 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
           key={group.date} 
           className="relative overflow-hidden rounded-2xl md:rounded-3xl"
           style={{
-            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            background: 'rgba(255, 255, 255, 0.06)',
             backdropFilter: 'blur(20px)',
-            border: '2px solid rgba(220, 235, 245, 0.2)',
+            border: '2px solid rgba(255, 255, 255, 0.12)',
             boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
           }}
         >
@@ -533,7 +533,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
           <div 
             className="relative z-10 sticky top-0 py-4 px-6 select-none"
             style={{
-              background: 'rgba(10, 14, 39, 0.7)',
+              background: 'rgba(255, 255, 255, 0.08)',
               backdropFilter: 'blur(10px)',
               borderBottom: '1px solid rgba(220, 235, 245, 0.1)'
             }}
@@ -543,7 +543,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
                 className="text-base md:text-lg font-tech font-semibold select-text" 
                 data-text="true"
                 style={{
-                  color: '#e8f4f8',
+                  color: '#f4f4f5',
                   textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
                 }}
               >
@@ -597,7 +597,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
                       className="font-tech font-medium select-text truncate" 
                       data-text="true"
                       style={{
-                        color: '#e8f4f8',
+                        color: '#f4f4f5',
                         textShadow: '0 0 4px rgba(180, 220, 240, 0.2)',
                         fontSize: 'clamp(0.75rem, 2.5vw, 1rem)',
                         lineHeight: '1.25',
@@ -643,7 +643,7 @@ const BankingTransactionsList: React.FC<BankingTransactionsListProps> = ({
           <div 
             className="animate-spin rounded-full h-6 w-6 border-2"
             style={{
-              borderColor: 'rgba(220, 235, 245, 0.2)',
+              borderColor: 'rgba(255, 255, 255, 0.12)',
               borderTopColor: 'rgba(180, 220, 240, 0.6)'
             }}
           ></div>

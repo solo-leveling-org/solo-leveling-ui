@@ -81,16 +81,15 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
   if (error && !balance) {
     return (
       <div
-        className="fixed inset-0 overflow-y-auto overflow-x-hidden flex items-center justify-center px-4"
+        className="tab-page-wrapper fixed inset-0 overflow-y-auto overflow-x-hidden flex items-center justify-center px-4"
         style={{
-          background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
           boxSizing: 'border-box',
         }}
       >
         <div 
           className="relative rounded-2xl md:rounded-3xl p-6 md:p-8 max-w-md w-full"
           style={{
-            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
+            background: 'rgba(255, 255, 255, 0.08)',
             backdropFilter: 'blur(20px)',
             border: '2px solid rgba(220, 38, 38, 0.3)',
             boxShadow: `
@@ -128,9 +127,8 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
 
   return (
     <div
-      className={`fixed inset-0 overflow-y-auto overflow-x-hidden ${contentLoaded ? 'tab-content-enter-active' : ''}`}
+      className={`tab-page-wrapper fixed inset-0 overflow-y-auto overflow-x-hidden ${contentLoaded ? 'tab-content-enter-active' : ''}`}
       style={{
-        background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
         boxSizing: 'border-box',
         opacity: contentLoaded ? 1 : 0,
         transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
@@ -139,27 +137,6 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
         WebkitOverflowScrolling: 'touch',
       }}
     >
-      {/* Holographic grid background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-          transform: 'perspective(500px) rotateX(60deg)',
-          transformOrigin: 'center center'
-        }}></div>
-      </div>
-
-      {/* Glowing orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
-        background: 'rgba(180, 216, 232, 0.8)'
-      }}></div>
-      <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
-        background: 'rgba(200, 230, 245, 0.6)'
-      }}></div>
-
       <div className="tab-inner-content relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
         {/* Header */}
         <div className="text-center mb-8">
@@ -196,7 +173,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
             <div 
               className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 md:p-8 max-w-md w-full animate-pulse"
               style={{
-                background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                background: 'rgba(255, 255, 255, 0.06)',
                 backdropFilter: 'blur(20px)',
                 border: '2px solid rgba(220, 235, 245, 0.2)',
                 boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
@@ -243,7 +220,7 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
             <div 
               className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 md:p-8 max-w-md w-full group"
               style={{
-                background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                background: 'rgba(255, 255, 255, 0.06)',
                 backdropFilter: 'blur(20px)',
                 border: '2px solid rgba(220, 235, 245, 0.2)',
                 boxShadow: `
@@ -384,33 +361,11 @@ const BalanceTab: React.FC<BalanceTabProps> = ({ isAuthenticated }) => {
 
 export const BalanceSkeleton: React.FC = () => (
   <div
-    className="fixed inset-0 overflow-y-auto overflow-x-hidden"
+    className="tab-page-wrapper fixed inset-0 overflow-y-auto overflow-x-hidden"
     style={{
-      background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
       boxSizing: 'border-box',
     }}
   >
-    {/* Holographic grid background */}
-    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-      <div className="absolute inset-0" style={{
-        backgroundImage: `
-          linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-        `,
-        backgroundSize: '50px 50px',
-        transform: 'perspective(500px) rotateX(60deg)',
-        transformOrigin: 'center center'
-      }}></div>
-    </div>
-
-    {/* Glowing orbs */}
-    <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
-      background: 'rgba(180, 216, 232, 0.8)'
-    }}></div>
-    <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
-      background: 'rgba(200, 230, 245, 0.6)'
-    }}></div>
-
     <div className="tab-inner-content relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
       {/* Header skeleton */}
       <div className="text-center mb-8">
@@ -440,7 +395,7 @@ export const BalanceSkeleton: React.FC = () => (
         <div 
           className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 md:p-8 max-w-md w-full animate-pulse"
           style={{
-            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            background: 'rgba(255, 255, 255, 0.06)',
             backdropFilter: 'blur(20px)',
             border: '2px solid rgba(220, 235, 245, 0.2)',
             boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'

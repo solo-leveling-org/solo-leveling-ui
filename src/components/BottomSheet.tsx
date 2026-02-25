@@ -143,8 +143,9 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
           isVisible ? 'opacity-100' : 'opacity-0'
         }`}
         style={{
-          background: 'rgba(0, 0, 0, 0.5)',
-          backdropFilter: 'none', // Без blur, как в BaseDialog
+          background: 'transparent',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
           transition: 'opacity 0.3s ease-out',
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
@@ -158,9 +159,9 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
         }`}
         style={{
           ...transformStyle,
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.98) 0%, rgba(5, 8, 18, 0.98) 100%)',
-          backdropFilter: 'blur(20px)',
-          border: '2px solid rgba(220, 235, 245, 0.2)',
+          background: 'rgba(18, 18, 18, 0.98)',
+          backdropFilter: 'none',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
           borderBottom: 'none',
           boxShadow: '0 -4px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(180, 220, 240, 0.2), inset 0 0 20px rgba(200, 230, 245, 0.03)',
           // Анимация всплытия

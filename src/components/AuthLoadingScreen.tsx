@@ -16,15 +16,20 @@ const AuthLoadingScreen: React.FC<AuthLoadingScreenProps> = ({
   const [isVisible, setIsVisible] = useState(isLoading);
   const [shouldRender, setShouldRender] = useState(isLoading);
   const startTimeRef = useRef<number | null>(null);
+  const hasEverShownRef = useRef(false);
 
   useEffect(() => {
     if (isLoading) {
+      hasEverShownRef.current = true;
       // Запоминаем время начала загрузки
       if (startTimeRef.current === null) {
         startTimeRef.current = Date.now();
       }
       setIsVisible(true);
       setShouldRender(true);
+    } else if (!hasEverShownRef.current) {
+      // Экран загрузки не показывался (isLoading сразу false) — сразу уведомляем
+      onTransitionEnd?.();
     } else {
       // Проверяем, прошло ли минимум 2 секунды
       const elapsed = startTimeRef.current ? Date.now() - startTimeRef.current : 0;
@@ -37,7 +42,8 @@ const AuthLoadingScreen: React.FC<AuthLoadingScreenProps> = ({
         const fadeOutTimer = setTimeout(() => {
           setShouldRender(false);
           startTimeRef.current = null; // Сбрасываем время начала
-          onTransitionEnd?.();
+          // Задержка перед onTransitionEnd, чтобы экран полностью исчез и браузер отрисовал кадр
+          setTimeout(() => onTransitionEnd?.(), 50);
         }, 500); // Длительность анимации fade out
         return () => clearTimeout(fadeOutTimer);
       }, remainingTime);
@@ -57,7 +63,7 @@ const AuthLoadingScreen: React.FC<AuthLoadingScreenProps> = ({
         isVisible ? "opacity-100" : "opacity-0"
       )}
       style={{
-        background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
+        background: 'radial-gradient(ellipse 100% 100% at 50% 50%, rgb(28, 28, 32) 0%, rgb(14, 14, 16) 50%, #000000 100%)',
       }}
     >
       {/* Aura effect emanating from center */}

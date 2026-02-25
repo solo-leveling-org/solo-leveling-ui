@@ -1,5 +1,88 @@
 @import url('https://fonts.googleapis.com/css?family=Inter');
 
+/* Слой фона: портал в body, под всем контентом #root. Мягкий градиент + анимированный белый засвет. */
+.app-background-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 100% 100% at 50% 50%,
+    rgb(28, 28, 32) 0%,
+    rgb(14, 14, 16) 50%,
+    #000000 100%
+  );
+  overflow: hidden;
+}
+
+/* Движущиеся орбы засвета на всех табах: полноценное перемещение по экрану */
+.app-background-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  -webkit-filter: blur(60px);
+  opacity: 0.24;
+}
+@media (min-width: 768px) {
+  .app-background-glow {
+    filter: blur(80px);
+    -webkit-filter: blur(80px);
+  }
+}
+/* Размер орбов зависит от экрана: на мобилках компактнее, на десктопе крупнее */
+.app-background-glow-1 {
+  width: min(28rem, 40vmin);
+  height: min(28rem, 40vmin);
+  background: rgba(180, 216, 232, 0.9);
+  top: 15%;
+  left: 10%;
+  animation: background-glow-drift-1 48s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.app-background-glow-2 {
+  width: min(36rem, 55vmin);
+  height: min(36rem, 55vmin);
+  background: rgba(200, 230, 245, 0.8);
+  bottom: 15%;
+  right: 10%;
+  animation: background-glow-drift-2 50s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Траектории: орбы движутся по периметру в противоположных углах (орб1 по часовой, орб2 против) */
+@keyframes background-glow-drift-1 {
+  0%, 100% { transform: translate(0, 0); }           /* лево-верх */
+  25% { transform: translate(35vw, 0); }             /* право-верх */
+  50% { transform: translate(35vw, 38vh); }          /* право-низ */
+  75% { transform: translate(0, 38vh); }             /* лево-низ */
+}
+@keyframes background-glow-drift-2 {
+  0%, 100% { transform: translate(0, 0); }           /* право-низ */
+  25% { transform: translate(-35vw, 0); }            /* лево-низ */
+  50% { transform: translate(-35vw, -38vh); }        /* лево-верх */
+  75% { transform: translate(0, -38vh); }            /* право-верх */
+}
+
+/* Фон контента прозрачный, чтобы был виден слой .app-background-layer */
+html.app-background-visible,
+html.app-background-visible body,
+html.app-background-visible #root,
+html.app-background-visible .App,
+html.app-background-visible main,
+html.app-background-visible .tab-content {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+html.app-background-visible #root {
+  position: relative;
+  z-index: 1;
+}
+
+html.app-background-visible .tab-page-wrapper {
+  background: transparent !important;
+}
+
 html {
   width: 100%;
   overflow-x: hidden;
@@ -7,7 +90,7 @@ html {
 
 body, .App {
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  color: #e0e7ff;
+  color: #f4f4f5;
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -21,7 +104,6 @@ body, .App {
   max-width: 100%;
   overflow-x: hidden;
   box-sizing: border-box;
-  background-color: #050812;
 }
 
 .tab-content-with-top-bar {

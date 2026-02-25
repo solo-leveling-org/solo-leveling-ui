@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import { createPortal } from 'react-dom';
 import './App.css';
 import { config } from './config/environment';
 import MaintenanceScreen from './components/MaintenanceScreen';
@@ -9,7 +10,7 @@ import MenuTab from './tabs/MenuTab';
 import BottomBar from './components/BottomBar';
 import {TelegramWidget} from './components/TelegramWidget';
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Routes,
   Route,
   Navigate,
@@ -32,12 +33,62 @@ import {useLocalization} from './hooks/useLocalization';
 import {UserAdditionalInfoProvider} from './contexts/UserAdditionalInfoContext';
 import {StreakOverlayProvider} from './contexts/StreakOverlayContext';
 import TopBar from './components/TopBar';
-import DayStreakOverlay from './components/DayStreakOverlay';
-import { DayStreakInfoPanel } from './components/DayStreakInfoPanel';
+import { DayStreakNavigator } from './components/DayStreakNavigator';
+import { DayStreakOverlay } from './components/DayStreakOverlay';
+import { DayStreakOverlayProvider, useDayStreakOverlay } from './contexts/DayStreakOverlayContext';
+import StreakCalendarTab from './tabs/StreakCalendarTab';
 import {BackButtonStreakSync} from './components/BackButtonStreakSync';
 
 // Глобальный ref для хранения обработчика кнопки "Назад" (экспортируем для использования в MenuTab)
 export const globalBackButtonHandlerRef = { current: null as (() => void) | null };
+
+function AuthenticatedLayout({
+  isAuthenticated,
+  isBottomBarVisible,
+  isLoadingScreenClosed,
+}: {
+  isAuthenticated: boolean;
+  isBottomBarVisible: boolean;
+  isLoadingScreenClosed: boolean;
+}) {
+  const { isOpen: isDayStreakOverlayOpen } = useDayStreakOverlay();
+
+  return (
+    <>
+      {isAuthenticated && (
+        <>
+          <BackButtonStreakSync />
+          {!isDayStreakOverlayOpen && (
+            <div className="topbar-wrapper relative z-50 shrink-0">
+              <TopBar />
+            </div>
+          )}
+        </>
+      )}
+      <main className={`tab-content custom-scrollbar flex flex-col relative z-0 ${isAuthenticated ? 'tab-content-with-top-bar' : ''} ${isBottomBarVisible && !isDayStreakOverlayOpen ? 'tab-content-with-bottom-bar' : 'tab-content-without-bottom-bar'}`}>
+        <div className="relative flex-1 min-h-0 flex flex-col">
+          <Routes>
+            <Route path="/" element={<WelcomeTab canStartAnimation={isLoadingScreenClosed} />}/>
+            <Route path="/welcome" element={<WelcomeTab canStartAnimation={isLoadingScreenClosed} />}/>
+            <Route path="/tasks" element={<TasksTab isAuthenticated={isAuthenticated}/>}/>
+            <Route path="/profile" element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
+            <Route path="/menu" element={<MenuTab isAuthenticated={isAuthenticated}/>}/>
+            <Route path="/leaderboard" element={<MenuTab isAuthenticated={isAuthenticated}/>}/>
+            <Route path="/balance" element={<BalanceTab isAuthenticated={isAuthenticated}/>}/>
+            <Route path="/streak" element={<StreakCalendarTab />}/>
+            <Route path="*" element={<Navigate to="/" replace/>}/>
+          </Routes>
+        </div>
+      </main>
+      {isAuthenticated && (
+        <BottomBar
+          isAuthenticated={isAuthenticated}
+          isVisible={isBottomBarVisible && !isDayStreakOverlayOpen}
+        />
+      )}
+    </>
+  );
+}
 
 function AppRoutes() {
   const location = useLocation();
@@ -118,11 +169,15 @@ function AppRoutes() {
   // Локализация загружается только после успешной авторизации
   // Если пользователь авторизован, показываем загрузку пока локализация не загружена
   const shouldShowLoading = isAuthLoading || (isAuthenticated && (isLocaleLoading || !localeLoaded));
+  const [isLoadingScreenClosed, setIsLoadingScreenClosed] = useState(false);
 
   return (
       <div className="App">
         {/* Экран загрузки авторизации и локализации */}
-        <AuthLoadingScreen isLoading={shouldShowLoading} />
+        <AuthLoadingScreen
+          isLoading={shouldShowLoading}
+          onTransitionEnd={() => setIsLoadingScreenClosed(true)}
+        />
         
         {/* Диалог истечения сессии */}
         <SessionExpiredDialog 
@@ -156,36 +211,17 @@ function AppRoutes() {
                     isAuthenticated={isAuthenticated}
                     initialData={additionalInfoData ?? undefined}
                   >
-                    <StreakOverlayProvider>
-                      {isAuthenticated && (
-                        <div className="topbar-wrapper relative z-50 shrink-0">
-                          <BackButtonStreakSync />
-                          <TopBar />
-                        </div>
-                      )}
-                      <main className={`tab-content custom-scrollbar flex flex-col relative z-0 ${isAuthenticated ? 'tab-content-with-top-bar' : ''} ${isBottomBarVisible ? 'tab-content-with-bottom-bar' : 'tab-content-without-bottom-bar'}`}>
-                        <div className="relative flex-1 min-h-0 flex flex-col">
-                          <Routes>
-                            <Route path="/" element={<WelcomeTab/>}/>
-                            <Route path="/welcome" element={<WelcomeTab/>}/>
-                            <Route path="/tasks"
-                                   element={<TasksTab isAuthenticated={isAuthenticated}/>}/>
-                            <Route path="/profile"
-                                   element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
-                            <Route path="/collections"
-                                   element={<MenuTab isAuthenticated={isAuthenticated}/>}/>
-                            <Route path="/leaderboard"
-                                   element={<MenuTab isAuthenticated={isAuthenticated}/>}/>
-                            <Route path="/balance"
-                                   element={<BalanceTab isAuthenticated={isAuthenticated}/>}/>
-                            <Route path="*" element={<Navigate to="/profile" replace/>}/>
-                          </Routes>
-                          {isAuthenticated && <DayStreakInfoPanel />}
-                        </div>
-                      </main>
-                      {isAuthenticated && <BottomBar isAuthenticated={isAuthenticated} isVisible={isBottomBarVisible}/>}
-                      <DayStreakOverlay />
-                    </StreakOverlayProvider>
+                    <DayStreakOverlayProvider>
+                      <StreakOverlayProvider>
+                        <AuthenticatedLayout
+                          isAuthenticated={isAuthenticated}
+                          isBottomBarVisible={isBottomBarVisible}
+                          isLoadingScreenClosed={isLoadingScreenClosed}
+                        />
+                        <DayStreakOverlay />
+                        <DayStreakNavigator />
+                      </StreakOverlayProvider>
+                    </DayStreakOverlayProvider>
                   </UserAdditionalInfoProvider>
               )}
             </>
@@ -194,18 +230,33 @@ function AppRoutes() {
   );
 }
 
+const appBackground = (
+  <div className="app-background-layer" aria-hidden>
+    <div className="app-background-glow app-background-glow-1" />
+    <div className="app-background-glow app-background-glow-2" />
+  </div>
+);
+
 export default function App() {
   if (config.isMaintenanceMode) {
-    return <MaintenanceScreen />;
+    return (
+      <>
+        {createPortal(appBackground, document.body)}
+        <MaintenanceScreen />
+      </>
+    );
   }
 
   return (
-      <ModalProvider>
-      <NotificationProvider>
-          <Router>
-            <AppRoutes/>
-          </Router>
-        </NotificationProvider>
+      <>
+        {createPortal(appBackground, document.body)}
+        <ModalProvider>
+          <NotificationProvider>
+            <Router>
+              <AppRoutes/>
+            </Router>
+          </NotificationProvider>
         </ModalProvider>
+      </>
   );
 }

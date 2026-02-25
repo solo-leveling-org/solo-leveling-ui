@@ -116,10 +116,10 @@ const Calendar: React.FC<CalendarProps> = ({
     t('common.months.october'), t('common.months.november'), t('common.months.december')
   ];
 
-  const dayNames = [
-    t('common.days.monday'), t('common.days.tuesday'), t('common.days.wednesday'),
-    t('common.days.thursday'), t('common.days.friday'), t('common.days.saturday'),
-    t('common.days.sunday')
+  const dayNamesShort = [
+    t('common.daysShort.sunday'), t('common.daysShort.monday'), t('common.daysShort.tuesday'),
+    t('common.daysShort.wednesday'), t('common.daysShort.thursday'), t('common.daysShort.friday'),
+    t('common.daysShort.saturday')
   ];
 
   return (
@@ -213,12 +213,12 @@ const Calendar: React.FC<CalendarProps> = ({
           </div>
 
           {/* Day Headers */}
-          <div className={`relative z-10 grid grid-cols-7 gap-0 mb-2 ${
+          <div className={`relative z-10 grid grid-cols-7 gap-2 mb-2 ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
           }`} style={{ 
             transition: isVisible ? 'transform 0.3s ease-out 0.2s, opacity 0.3s ease-out 0.2s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
           }}>
-            {dayNames.map((day) => (
+            {dayNamesShort.map((day) => (
               <div 
                 key={day} 
                 className="text-center text-xs font-tech font-semibold py-1 select-none"
@@ -226,20 +226,20 @@ const Calendar: React.FC<CalendarProps> = ({
                   color: 'rgba(220, 235, 245, 0.7)'
                 }}
               >
-                {day.slice(0, 3)}
+                {day}
               </div>
             ))}
           </div>
 
           {/* Calendar Grid */}
-          <div className={`grid grid-cols-7 gap-0 mb-4 ${
+          <div className={`grid grid-cols-7 gap-2 mb-4 ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
           }`} style={{ 
             transition: isVisible ? 'transform 0.3s ease-out 0.25s, opacity 0.3s ease-out 0.25s' : 'transform 0.2s ease-in, opacity 0.2s ease-in'
           }}>
             {days.map((day, index) => {
               if (!day) {
-                return <div key={index} className="aspect-square" style={{ minHeight: '32px', minWidth: '32px' }}></div>;
+                return <div key={index} className="aspect-square min-w-0" style={{ minHeight: '32px' }}></div>;
               }
 
               const dateStr = formatDate(day);
@@ -307,7 +307,7 @@ const Calendar: React.FC<CalendarProps> = ({
               }}
               className="flex-1 px-4 py-2 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95 select-none"
               style={{
-              background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+              background: 'rgba(255, 255, 255, 0.1)',
                 border: '1px solid rgba(220, 235, 245, 0.3)',
                 color: '#e8f4f8',
                 boxShadow: '0 0 10px rgba(180, 220, 240, 0.2)'

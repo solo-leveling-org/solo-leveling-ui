@@ -152,10 +152,11 @@ const ScrollNavigationButtons: React.FC<ScrollNavigationButtonsProps> = ({
         onClick={scrollToTop}
         className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 border-2 relative"
         style={{
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
-          backdropFilter: 'none',
-          borderColor: 'rgba(180, 220, 240, 0.4)',
-          boxShadow: '0 0 20px rgba(180, 220, 240, 0.25)',
+          background: 'radial-gradient(ellipse 80% 80% at 50% 50%, rgb(18, 18, 22) 0%, rgb(10, 10, 14) 70%, rgb(5, 5, 8) 100%)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          borderColor: 'rgba(255, 255, 255, 0.15)',
+          boxShadow: '0 0 24px rgba(180, 220, 240, 0.12), 0 4px 16px rgba(0,0,0,0.4)',
           color: '#e8f4f8',
           outline: 'none',
           opacity: showTopButton ? 1 : 0,
@@ -173,10 +174,11 @@ const ScrollNavigationButtons: React.FC<ScrollNavigationButtonsProps> = ({
         onClick={scrollToLastPosition}
         className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 border-2 relative"
         style={{
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
-          backdropFilter: 'none',
-          borderColor: 'rgba(180, 220, 240, 0.4)',
-          boxShadow: '0 0 20px rgba(180, 220, 240, 0.25)',
+          background: 'radial-gradient(ellipse 80% 80% at 50% 50%, rgb(18, 18, 22) 0%, rgb(10, 10, 14) 70%, rgb(5, 5, 8) 100%)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          borderColor: 'rgba(255, 255, 255, 0.15)',
+          boxShadow: '0 0 24px rgba(180, 220, 240, 0.12), 0 4px 16px rgba(0,0,0,0.4)',
           color: '#e8f4f8',
           outline: 'none',
           opacity: showBottomButton ? 1 : 0,

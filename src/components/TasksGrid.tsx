@@ -80,9 +80,9 @@ const TasksGrid: React.FC<TasksGridProps> = ({ tasks, stamina, loading, onTaskCl
         <div 
           className="group relative overflow-hidden flex flex-col items-center justify-center animate-fadeIn"
           style={{
-            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            background: 'rgba(255, 255, 255, 0.06)',
             backdropFilter: 'blur(20px)',
-            border: '2px solid rgba(220, 235, 245, 0.2)',
+            border: '2px solid rgba(255, 255, 255, 0.12)',
             borderRadius: '24px',
             boxShadow: `
               0 0 20px rgba(180, 220, 240, 0.15),
@@ -106,7 +106,7 @@ const TasksGrid: React.FC<TasksGridProps> = ({ tasks, stamina, loading, onTaskCl
                 <div 
                   className="w-16 h-16 border-4 rounded-full animate-spin"
                   style={{
-                    borderColor: 'rgba(220, 235, 245, 0.2)',
+                    borderColor: 'rgba(255, 255, 255, 0.12)',
                     borderTopColor: 'rgba(180, 220, 240, 0.6)'
                   }}
                 ></div>
@@ -122,7 +122,7 @@ const TasksGrid: React.FC<TasksGridProps> = ({ tasks, stamina, loading, onTaskCl
                 <div 
                   className="font-tech font-semibold text-lg tracking-wide"
                   style={{
-                    color: '#e8f4f8',
+                    color: '#f4f4f5',
                     textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
                   }}
                 >

@@ -5,6 +5,7 @@ import { api } from '../services';
 import TopicIcon from './TopicIcons';
 import { useLocalization } from '../hooks/useLocalization';
 import { ExperienceProgressBar } from './ui/experience-progress-bar';
+import { getOptimizedBlur } from '../utils/performance';
 
 type TopicsSectionProps = {
   isAuthenticated: boolean;
@@ -19,6 +20,7 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const { t } = useLocalization();
+  const backdropBlur = getOptimizedBlur('20px', '4px');
 
   // Определяем заблокированные топики
   const getIsDisabled = (topic: TaskTopic): boolean => {
@@ -281,8 +283,8 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
               style={{
                 background: isSelected && !isDisabled
                   ? colorScheme.selectedBgGradient
-                  : 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
-                backdropFilter: 'blur(20px)',
+                  : 'rgba(255, 255, 255, 0.06)',
+                backdropFilter: `blur(${backdropBlur})`,
                 border: isSelected && !isDisabled
                   ? `2px solid ${colorScheme.borderColor}`
                   : '2px solid rgba(220, 235, 245, 0.2)',
@@ -449,8 +451,8 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
         <div
           className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 max-w-2xl w-full"
           style={{
-            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
-            backdropFilter: 'blur(20px)',
+            background: 'rgba(255, 255, 255, 0.06)',
+            backdropFilter: `blur(${backdropBlur})`,
             border: '2px solid rgba(220, 235, 245, 0.2)',
             boxShadow: `
               0 0 20px rgba(180, 220, 240, 0.15),
@@ -541,7 +543,7 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
                 style={{
                   background: 'linear-gradient(135deg, rgba(180, 220, 240, 1) 0%, rgba(160, 210, 235, 0.95) 100%)',
                   border: '2px solid rgba(180, 220, 240, 1)',
-                  color: '#0a0e1a',
+                  color: '#000000',
                   boxShadow: '0 0 35px rgba(180, 220, 240, 0.7), 0 0 70px rgba(180, 220, 240, 0.4), inset 0 0 25px rgba(180, 220, 240, 0.15)',
                   textShadow: '0 0 12px rgba(180, 220, 240, 0.6)',
                   minWidth: '160px',
@@ -594,17 +596,18 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
 // Skeleton component for TopicsSection
 const TopicsSectionSkeleton: React.FC = () => {
   const allTopics = Object.values(TaskTopic);
+  const backdropBlur = getOptimizedBlur('20px', '4px');
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+    <>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
         {allTopics.map((topic) => (
           <div
             key={topic}
             className="relative p-4 sm:p-6 rounded-2xl md:rounded-3xl animate-pulse"
             style={{
-              background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
-              backdropFilter: 'blur(20px)',
+              background: 'rgba(255, 255, 255, 0.06)',
+              backdropFilter: `blur(${backdropBlur})`,
               border: '2px solid rgba(220, 235, 245, 0.2)',
               boxShadow: '0 0 15px rgba(180, 220, 240, 0.1), inset 0 0 20px rgba(200, 230, 245, 0.02)',
             }}
@@ -659,7 +662,32 @@ const TopicsSectionSkeleton: React.FC = () => {
           </div>
         ))}
       </div>
-    </div>
+
+      {/* Skeleton нижней плашки (Preference Settings) — те же отступы что в обычной версии без кнопки Save */}
+      <div className="flex justify-center mb-8 md:mb-10 mt-20 md:mt-24 pb-24 md:pb-28">
+        <div
+          className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 max-w-2xl w-full animate-pulse"
+          style={{
+            background: 'rgba(255, 255, 255, 0.06)',
+            backdropFilter: `blur(${backdropBlur})`,
+            border: '2px solid rgba(220, 235, 245, 0.2)',
+            boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
+          }}
+        >
+          <div className="flex items-start">
+            <div
+              className="w-10 h-10 rounded-2xl flex-shrink-0 mr-4"
+              style={{ background: 'rgba(220, 235, 245, 0.1)' }}
+            />
+            <div className="flex-1 min-w-0 space-y-2">
+              <div className="h-5 w-48 rounded" style={{ background: 'rgba(220, 235, 245, 0.1)' }} />
+              <div className="h-4 w-full max-w-md rounded" style={{ background: 'rgba(220, 235, 245, 0.1)' }} />
+              <div className="h-4 w-3/4 max-w-sm rounded" style={{ background: 'rgba(220, 235, 245, 0.1)' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

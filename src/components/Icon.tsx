@@ -32,6 +32,7 @@ import { ReactComponent as ArrowUpIcon } from '../assets/icons/arrow-up.svg';
 import { ReactComponent as ArrowDownIcon } from '../assets/icons/arrow-down.svg';
 import { ReactComponent as UsersGroupIcon } from '../assets/icons/users-group.svg';
 import { ReactComponent as CastleIcon } from '../assets/icons/castle.svg';
+import { ReactComponent as DungeonIcon } from '../assets/icons/dungeon-door.svg';
 import { ReactComponent as ActiveFireIcon } from '../assets/icons/active-fire.svg';
 import { ReactComponent as MenuIcon } from '../assets/icons/menu.svg';
 
@@ -70,6 +71,7 @@ export type IconType =
   | 'arrow-down'
   | 'users-group'
   | 'castle'
+  | 'dungeon'
   | 'fire'
   | 'menu';
 
@@ -156,6 +158,8 @@ const Icon: React.FC<IconProps> = ({ type, className = '', size = 24, active = t
       return <UsersGroupIcon {...iconProps} />;
     case 'castle':
       return <CastleIcon {...iconProps} />;
+    case 'dungeon':
+      return <DungeonIcon {...iconProps} />;
     case 'fire': {
       const fireStyle = active
         ? undefined

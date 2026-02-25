@@ -184,8 +184,9 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
           }
         }}
         style={{
-          background: 'rgba(0, 0, 0, 0.5)',
-          backdropFilter: 'none', // Явно убираем blur
+          background: 'rgba(0, 0, 0, 0.25)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           paddingTop: 'env(safe-area-inset-top, 0px)',
           paddingBottom: '5rem', // Отступ для BottomBar
           opacity: isVisible ? 1 : 0,
@@ -208,13 +209,10 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
           transition: isVisible 
             ? `transform ${isMobile ? '0.4s' : '0.35s'} cubic-bezier(0.16, 1, 0.3, 1), opacity ${isMobile ? '0.4s' : '0.35s'} ease-out`
             : 'transform 0.2s ease-in, opacity 0.2s ease-in',
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+          background: 'rgba(36, 38, 44, 0.98)',
           backdropFilter: 'none',
-          border: '2px solid rgba(220, 235, 245, 0.2)',
-          boxShadow: `
-            0 0 30px rgba(180, 220, 240, 0.2),
-            inset 0 0 30px rgba(200, 230, 245, 0.03)
-          `,
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+          boxShadow: '0 4px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
           // Дополнительные свойства для четкого рендеринга
           WebkitFontSmoothing: 'antialiased',
           MozOsxFontSmoothing: 'grayscale',
@@ -226,21 +224,6 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
               : 'translate3d(-50%, -50%, 0) scale(0.95)'),
         }}
       >
-        {/* Holographic grid overlay */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-              `,
-              backgroundSize: '30px 30px',
-            }}
-          />
-        </div>
-
-
         {/* Children content - с поддержкой скролла */}
         <div className="relative z-10 flex-1 flex flex-col min-h-0">{children}</div>
       </div>

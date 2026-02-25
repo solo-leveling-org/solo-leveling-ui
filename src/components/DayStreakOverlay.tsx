@@ -1,110 +1,63 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import { useModal } from '../contexts/ModalContext';
 import { useUserAdditionalInfo } from '../contexts/UserAdditionalInfoContext';
-import { useFullscreenOverlay } from '../hooks/useFullscreenOverlay';
+import { useDayStreakOverlay } from '../contexts/DayStreakOverlayContext';
 import { UserService } from '../api';
 import { useLocalization } from '../hooks/useLocalization';
+import { useFullscreenOverlay } from '../hooks/useFullscreenOverlay';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 const STREAK_NUMBER_DURATION_MS = 1000;
 
 /**
- * Окно в мс, в течение которого даём любому полноэкранному оверлею (TaskCompletionOverlay и др.)
- * время зарегистрироваться в ModalContext (useFullscreenOverlay). Если по истечении этого времени
- * isOverlayOpen всё ещё false — показываем оверлей стрика (сценарии не из завершения задачи).
- * Новые оверлеи, которые должны блокировать показ стрика до своего закрытия, достаточно
- * подключать через useFullscreenOverlay(visible) — менять логику здесь не нужно.
+ * Оверлей «Стрик продлён» — показывается по day-streak-notification поверх текущего таба.
+ * Закрытие без навигации — просто скрывает оверлей, таб остаётся без перезагрузки.
  */
-const PENDING_OVERLAY_REGISTRATION_MS = 250;
-
-/**
- * Полноэкранный оверлей продления ежедневного стрика.
- * Показ зависит только от isOverlayOpen (ModalContext): если открыт другой полноэкранный оверлей —
- * показываем стрик только после его закрытия (переход isOverlayOpen true→false).
- * Если оверлея не было (или он не успел зарегистрироваться за PENDING_OVERLAY_REGISTRATION_MS) —
- * показываем после окна регистрации. Так же будет работать с любыми будущими оверлеями на useFullscreenOverlay.
- */
-const DayStreakOverlay: React.FC = () => {
-  const { isDialogOpen, isOverlayOpen } = useModal();
+export function DayStreakOverlay() {
+  const { isOpen, message: notificationMessage, close } = useDayStreakOverlay();
   const { dayStreak: contextStreak, refetch } = useUserAdditionalInfo();
   const { t } = useLocalization();
-  const [pending, setPending] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState<string | null>(null);
-  const [visible, setVisible] = useState(false);
-  const [overlayMounted, setOverlayMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [streakBefore, setStreakBefore] = useState<number>(0);
   const [streakAfter, setStreakAfter] = useState<number>(0);
   const [phase, setPhase] = useState<'before' | 'after'>('before');
-  const mountedRef = useRef(true);
-  const prevOverlayOpenRef = useRef(false);
+  const initRef = useRef(false);
   const fireLottieSrc = `${process.env.PUBLIC_URL || ''}/lottie/Fire.lottie`;
+  const streakCurrent = contextStreak?.current ?? 0;
 
-  useFullscreenOverlay(visible);
+  useFullscreenOverlay(isOpen);
+  useScrollLock(isOpen);
 
-  // По событию только сохраняем pending, оверлей не показываем (показ — по переходам isOverlayOpen или по окну регистрации)
   useEffect(() => {
-    mountedRef.current = true;
-    const handler = (e: Event) => {
-      const customEvent = e as CustomEvent<{ message?: string | null }>;
-      setNotificationMessage(customEvent.detail?.message ?? null);
-      setPending(true);
-    };
-    window.addEventListener('day-streak-notification', handler);
-    return () => {
-      mountedRef.current = false;
-      window.removeEventListener('day-streak-notification', handler);
-    };
-  }, []);
+    if (!isOpen) return;
+    initRef.current = false;
+  }, [isOpen]);
 
-  const showStreakOverlay = useCallback(() => {
-    setPending(false);
-    const before = contextStreak?.current ?? 0;
-    setStreakBefore(before);
-    setStreakAfter(before + 1);
+  useEffect(() => {
+    if (!isOpen || initRef.current) return;
+    initRef.current = true;
+    setStreakBefore(streakCurrent);
+    setStreakAfter(streakCurrent + 1);
     setPhase('before');
-    setVisible(true);
-    setOverlayMounted(false);
+    setMounted(false);
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => setOverlayMounted(true));
+      requestAnimationFrame(() => setMounted(true));
     });
-  }, [contextStreak]);
-
-  // Показ только после закрытия другого полноэкранного оверлея (isOverlayOpen: true → false)
-  useEffect(() => {
-    const wasOverlayOpen = prevOverlayOpenRef.current;
-    prevOverlayOpenRef.current = isOverlayOpen;
-
-    if (wasOverlayOpen && !isOverlayOpen && pending && !isDialogOpen) {
-      showStreakOverlay();
-    }
-  }, [pending, isDialogOpen, isOverlayOpen, showStreakOverlay]);
-
-  // Показ, когда pending и нет открытого оверлея: даём окно на регистрацию любого useFullscreenOverlay, затем показываем
-  useEffect(() => {
-    if (!pending || isDialogOpen || isOverlayOpen) return;
-    const t = setTimeout(() => {
-      if (!mountedRef.current) return;
-      setPending((p) => {
-        if (!p) return p;
-        showStreakOverlay();
-        return false;
-      });
-    }, PENDING_OVERLAY_REGISTRATION_MS);
-    return () => clearTimeout(t);
-  }, [pending, isDialogOpen, isOverlayOpen, showStreakOverlay]);
+  }, [isOpen, streakCurrent]);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!isOpen) return;
     let cancelled = false;
     (async () => {
       try {
         const info = await UserService.getUserAdditionalInfo();
-        if (cancelled || !mountedRef.current) return;
+        if (cancelled) return;
         const newCurrent = info.dayStreak?.current ?? streakBefore + 1;
         setStreakAfter(newCurrent);
         await refetch();
-      } catch (e) {
-        if (mountedRef.current) setStreakAfter((s) => s);
+      } catch {
+        // Оставляем streakAfter без изменений
       }
     })();
     const t1 = setTimeout(() => !cancelled && setPhase('after'), STREAK_NUMBER_DURATION_MS);
@@ -112,38 +65,43 @@ const DayStreakOverlay: React.FC = () => {
       cancelled = true;
       clearTimeout(t1);
     };
-  }, [visible, refetch, streakBefore]);
+  }, [isOpen, refetch, streakBefore]);
 
-  const handleClose = () => {
-    setOverlayMounted(false);
-    setTimeout(() => setVisible(false), 320);
+  const handleContinue = () => {
+    setMounted(false);
+    setTimeout(() => close(), 280);
   };
 
-  if (!visible) return null;
+  if (!isOpen) return null;
 
-  return (
+  const overlayContent = (
     <div
-      className="day-streak-overlay fixed left-0 top-0 right-0 bottom-0 z-[100] flex flex-col box-border"
+      className="day-streak-overlay fixed inset-0 flex flex-col overflow-hidden"
       style={{
+        boxSizing: 'border-box',
+        zIndex: 10000,
         width: '100%',
         height: '100%',
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, rgba(5, 8, 18, 0.97) 0%, rgba(10, 14, 39, 0.98) 100%)',
-        backdropFilter: 'blur(16px)',
+        background: 'radial-gradient(ellipse 100% 100% at 50% 50%, rgb(28, 28, 32) 0%, rgb(14, 14, 16) 50%, #000000 100%)',
         paddingLeft: 'env(safe-area-inset-left, 0)',
         paddingRight: 'env(safe-area-inset-right, 0)',
         paddingTop: 'env(safe-area-inset-top, 0)',
-        opacity: overlayMounted ? 1 : 0,
-        transition: 'opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1)',
       }}
     >
-      {/* Контент по центру (как в TaskCompletionOverlay — контент сверху, кнопка отдельно снизу) */}
-      <div className="flex-1 flex flex-col items-center justify-center min-h-0 px-6">
+      <div
+        className="flex-1 flex flex-col items-center justify-center min-h-0 px-6"
+        style={{
+          paddingLeft: 'env(safe-area-inset-left, 1.5rem)',
+          paddingRight: 'env(safe-area-inset-right, 1.5rem)',
+          paddingTop: 'env(safe-area-inset-top, 0)',
+        }}
+      >
         <div
-          className="relative z-10 flex flex-col items-center gap-6"
+          className="relative flex flex-col items-center gap-6"
           style={{
-            opacity: overlayMounted ? 1 : 0,
-            transform: overlayMounted ? 'translateY(0)' : 'translateY(12px)',
+            opacity: mounted ? 1 : 0,
+            transform: mounted ? 'translateY(0)' : 'translateY(12px)',
             transition: 'opacity 0.55s cubic-bezier(0.33, 1, 0.68, 1), transform 0.55s cubic-bezier(0.33, 1, 0.68, 1)',
           }}
         >
@@ -174,8 +132,8 @@ const DayStreakOverlay: React.FC = () => {
               <span
                 className="day-streak-number inline-block text-6xl font-bold tabular-nums leading-none"
                 style={{
-                  color: 'rgba(251, 146, 60, 0.95)',
-                  textShadow: '0 0 24px rgba(251, 146, 60, 0.25), 0 0 48px rgba(251, 146, 60, 0.12)',
+                  color: '#e8f4f8',
+                  textShadow: '0 0 12px rgba(180, 220, 240, 0.2)',
                 }}
               >
                 {streakBefore}
@@ -185,8 +143,8 @@ const DayStreakOverlay: React.FC = () => {
               <span
                 className="day-streak-result inline-block text-6xl font-bold tabular-nums leading-none"
                 style={{
-                  color: 'rgba(251, 146, 60, 0.95)',
-                  textShadow: '0 0 24px rgba(251, 146, 60, 0.25), 0 0 48px rgba(251, 146, 60, 0.12)',
+                  color: '#e8f4f8',
+                  textShadow: '0 0 12px rgba(180, 220, 240, 0.2)',
                 }}
               >
                 {streakAfter}
@@ -202,22 +160,20 @@ const DayStreakOverlay: React.FC = () => {
         </div>
       </div>
 
-      {/* Кнопка «Продолжить» внизу в одном месте с TaskCompletionOverlay */}
       <div
         className="flex-shrink-0 flex justify-center items-center w-full px-4 pt-3 pb-4"
         style={{
           paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0px))',
-          paddingLeft: 'env(safe-area-inset-left, 0)',
-          paddingRight: 'env(safe-area-inset-right, 0)',
-          background: 'linear-gradient(180deg, transparent 0%, rgba(5, 8, 18, 0.7) 100%)',
-          opacity: overlayMounted ? 1 : 0,
-          transform: overlayMounted ? 'translateY(0)' : 'translateY(10px)',
+          paddingLeft: 'env(safe-area-inset-left, 1rem)',
+          paddingRight: 'env(safe-area-inset-right, 1rem)',
+          opacity: mounted ? 1 : 0,
+          transform: mounted ? 'translateY(0)' : 'translateY(10px)',
           transition: 'opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1) 0.08s, transform 0.5s cubic-bezier(0.33, 1, 0.68, 1) 0.08s',
         }}
       >
         <button
           type="button"
-          onClick={handleClose}
+          onClick={handleContinue}
           className="w-full max-w-xs py-3.5 px-6 rounded-xl font-tech font-semibold text-base transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           style={{
             background: 'rgba(180, 220, 240, 0.15)',
@@ -256,6 +212,6 @@ const DayStreakOverlay: React.FC = () => {
       `}</style>
     </div>
   );
-};
 
-export default React.memo(DayStreakOverlay);
+  return createPortal(overlayContent, document.body);
+}

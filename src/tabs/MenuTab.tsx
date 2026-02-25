@@ -19,7 +19,7 @@ type TabMode = 'main' | 'leaderboard' | 'lootboxes' | 'inventory' | 'guilds' | '
 const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
   const [tabMode, setTabMode] = useState<TabMode>('main');
   const [leaderboardType, setLeaderboardType] = useState<LeaderboardType>(LeaderboardType.LEVEL);
-  const [contentLoaded, setContentLoaded] = useState(false);
+  const [contentLoaded, setContentLoaded] = useState(true);
   const [viewedUserId, setViewedUserId] = useState<number | null>(null);
   const { t } = useLocalization();
   const location = useLocation();
@@ -29,7 +29,7 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
   const currentTabModeRef = useRef<TabMode>('main');
 
   // Проверяем, находимся ли мы на табе меню
-  const isOnMenuTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
+  const isOnMenuTab = location.pathname === '/menu' || location.pathname === '/leaderboard';
 
   // Управление кнопкой "Назад" в Telegram - не перехватываем, когда открыт оверлей стрика
   useEffect(() => {
@@ -75,9 +75,7 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
   }, [backButton, tabMode, isOnMenuTab, isStreakOverlayOpen]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setContentLoaded(true);
-    }, 50);
+    if (tabMode === 'main' || tabMode === 'leaderboard') setContentLoaded(true);
   }, [tabMode]);
 
   const handleTabChange = (mode: TabMode) => {
@@ -88,41 +86,30 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
     setContentLoaded(false);
   };
 
-  // Главная страница с карточками функционалов
+  // Задержки для последовательного появления карточек (CSS animation-delay, без задержки до старта)
+  const CARD_STAGGER_DELAYS = [0, 0.14, 0.28, 0.42, 0.56];
+
+  // Главная страница меню — плашки с CSS-анимацией появления (старт в момент отрисовки)
   if (tabMode === 'main') {
     return (
       <div
         className={cn(
-          "fixed inset-0 overflow-y-auto overflow-x-hidden",
+          "tab-page-wrapper fixed inset-0 overflow-y-auto overflow-x-hidden",
           contentLoaded ? 'tab-content-enter-active' : ''
         )}
         style={{
-          background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
           boxSizing: 'border-box',
           opacity: contentLoaded ? 1 : 0,
           transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
           transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
         }}
       >
-        {/* Holographic grid background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `
-              linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px',
-            transform: 'perspective(500px) rotateX(60deg)',
-            transformOrigin: 'center center'
-          }}></div>
-        </div>
-
         {/* Glowing orbs */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
-          background: 'rgba(180, 216, 232, 0.8)'
+          background: 'rgba(255,255,255,0.06)'
         }}></div>
         <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
-          background: 'rgba(200, 230, 245, 0.6)'
+          background: 'rgba(255,255,255,0.04)'
         }}></div>
 
         <div className="tab-inner-content relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
@@ -130,40 +117,28 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
             {/* Карточка Таблица лидеров */}
             <button
               onClick={() => handleTabChange('leaderboard')}
-              className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group h-32 flex items-center"
+              className="menu-card-enter w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group h-32 flex items-center"
               style={{
-                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.15) 50%, rgba(99, 102, 241, 0.2) 100%)',
+                animationDelay: `${CARD_STAGGER_DELAYS[0]}s`,
+                background: 'rgba(255, 255, 255, 0.06)',
                 backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
-                border: '2px solid rgba(139, 92, 246, 0.4)',
-                boxShadow: '0 0 30px rgba(139, 92, 246, 0.25), inset 0 0 30px rgba(139, 92, 246, 0.05)'
+                WebkitBackdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 24px rgba(0,0,0,0.4)'
               }}
             >
-              {/* Holographic shimmer effect */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
-                background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 255, 255, 0.15) 25%, rgba(124, 58, 237, 0.1) 50%, rgba(0, 255, 255, 0.15) 75%, rgba(0, 212, 255, 0.1) 100%)',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.04) 100%)',
                 backgroundSize: '200% 200%',
                 animation: 'holographic-shimmer 4s ease-in-out infinite'
               }}></div>
-              
               <div className="flex items-center justify-between w-full relative z-10">
                 <div className="flex-1">
-                  <h2
-                    className="text-3xl md:text-4xl font-tech font-bold"
-                    style={{
-                      color: '#e8f4f8',
-                      textShadow: '0 0 10px rgba(139, 92, 246, 0.4)'
-                    }}
-                  >
+                  <h2 className="text-3xl md:text-4xl font-tech font-bold" style={{ color: '#f4f4f5', textShadow: '0 0 12px rgba(255,255,255,0.15)' }}>
                     {t('menu.tabs.leaderboard')}
                   </h2>
                 </div>
-                <div
-                  className="flex-shrink-0"
-                  style={{
-                    color: 'rgba(139, 92, 246, 1)',
-                    filter: 'drop-shadow(0 0 10px rgba(139, 92, 246, 0.6))'
-                  }}
-                >
+                <div className="flex-shrink-0" style={{ color: 'rgba(255,255,255,0.9)', filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.2))' }}>
                   <Icon type="trophy" size={48} />
                 </div>
               </div>
@@ -173,48 +148,31 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
             <button
               onClick={() => handleTabChange('lootboxes')}
               disabled
-              className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 opacity-60 cursor-not-allowed group h-32 flex items-center"
+              className="menu-card-enter-disabled w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 cursor-not-allowed group h-32 flex items-center"
               style={{
-                background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.15) 0%, rgba(234, 88, 12, 0.1) 100%)',
+                animationDelay: `${CARD_STAGGER_DELAYS[1]}s`,
+                background: 'rgba(255, 255, 255, 0.05)',
                 backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
-                border: '2px solid rgba(251, 146, 60, 0.3)',
-                boxShadow: '0 0 20px rgba(251, 146, 60, 0.2), inset 0 0 20px rgba(251, 146, 60, 0.05)'
+                WebkitBackdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.4)'
               }}
             >
-              {/* Holographic shimmer effect для лут боксов */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
-                background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.15) 0%, rgba(255, 165, 0, 0.2) 25%, rgba(234, 88, 12, 0.15) 50%, rgba(255, 165, 0, 0.2) 75%, rgba(251, 146, 60, 0.15) 100%)',
+                background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.08) 0%, rgba(255, 165, 0, 0.1) 25%, rgba(234, 88, 12, 0.08) 50%, rgba(255, 165, 0, 0.1) 75%, rgba(251, 146, 60, 0.08) 100%)',
                 backgroundSize: '200% 200%',
                 animation: 'holographic-shimmer 4s ease-in-out infinite'
               }}></div>
-              
               <div className="flex items-center justify-between w-full relative z-10">
                 <div className="flex-1">
-                  <h2
-                    className="text-3xl md:text-4xl font-tech font-bold"
-                    style={{
-                      color: '#e8f4f8',
-                      textShadow: '0 0 10px rgba(251, 146, 60, 0.4)'
-                    }}
-                  >
+                  <h2 className="text-3xl md:text-4xl font-tech font-bold" style={{ color: '#f4f4f5' }}>
                     {t('menu.tabs.lootboxes')}
                   </h2>
-                  <p
-                    className="text-sm md:text-base font-tech mt-1"
-                    style={{
-                      color: 'rgba(220, 235, 245, 0.7)'
-                    }}
-                  >
+                  <p className="text-sm md:text-base font-tech mt-1" style={{ color: 'rgba(255,255,255,0.65)' }}>
                     {t('menu.lootboxes.comingSoon')}
                   </p>
                 </div>
-                <div
-                  className="flex-shrink-0"
-                  style={{
-                    color: 'rgba(251, 146, 60, 1)',
-                    filter: 'drop-shadow(0 0 8px rgba(251, 146, 60, 0.5))'
-                  }}
-                >
+                <div className="flex-shrink-0" style={{ color: 'rgba(255,255,255,0.85)' }}>
                   <Icon type="gift" size={48} />
                 </div>
               </div>
@@ -224,48 +182,31 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
             <button
               onClick={() => handleTabChange('inventory')}
               disabled
-              className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 opacity-60 cursor-not-allowed group h-32 flex items-center"
+              className="menu-card-enter-disabled w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 cursor-not-allowed group h-32 flex items-center"
               style={{
-                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(219, 39, 119, 0.1) 100%)',
+                animationDelay: `${CARD_STAGGER_DELAYS[2]}s`,
+                background: 'rgba(255, 255, 255, 0.05)',
                 backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
-                border: '2px solid rgba(236, 72, 153, 0.3)',
-                boxShadow: '0 0 20px rgba(236, 72, 153, 0.2), inset 0 0 20px rgba(236, 72, 153, 0.05)'
+                WebkitBackdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.4)'
               }}
             >
-              {/* Holographic shimmer effect для инвентаря */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
-                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(219, 39, 119, 0.2) 25%, rgba(168, 85, 247, 0.15) 50%, rgba(219, 39, 119, 0.2) 75%, rgba(236, 72, 153, 0.15) 100%)',
+                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.08) 0%, rgba(219, 39, 119, 0.1) 25%, rgba(168, 85, 247, 0.06) 50%, rgba(219, 39, 119, 0.1) 75%, rgba(236, 72, 153, 0.08) 100%)',
                 backgroundSize: '200% 200%',
                 animation: 'holographic-shimmer 4s ease-in-out infinite'
               }}></div>
-              
               <div className="flex items-center justify-between w-full relative z-10">
                 <div className="flex-1">
-                  <h2
-                    className="text-3xl md:text-4xl font-tech font-bold"
-                    style={{
-                      color: '#e8f4f8',
-                      textShadow: '0 0 10px rgba(236, 72, 153, 0.4)'
-                    }}
-                  >
+                  <h2 className="text-3xl md:text-4xl font-tech font-bold" style={{ color: '#f4f4f5' }}>
                     {t('menu.tabs.inventory')}
                   </h2>
-                  <p
-                    className="text-sm md:text-base font-tech mt-1"
-                    style={{
-                      color: 'rgba(220, 235, 245, 0.7)'
-                    }}
-                  >
+                  <p className="text-sm md:text-base font-tech mt-1" style={{ color: 'rgba(255,255,255,0.65)' }}>
                     {t('menu.inventory.comingSoon')}
                   </p>
                 </div>
-                <div
-                  className="flex-shrink-0"
-                  style={{
-                    color: 'rgba(236, 72, 153, 1)',
-                    filter: 'drop-shadow(0 0 8px rgba(236, 72, 153, 0.5))'
-                  }}
-                >
+                <div className="flex-shrink-0" style={{ color: 'rgba(255,255,255,0.85)' }}>
                   <Icon type="bag" size={48} />
                 </div>
               </div>
@@ -275,48 +216,31 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
             <button
               onClick={() => handleTabChange('guilds')}
               disabled
-              className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 opacity-60 cursor-not-allowed group h-32 flex items-center"
+              className="menu-card-enter-disabled w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 cursor-not-allowed group h-32 flex items-center"
               style={{
-                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%)',
+                animationDelay: `${CARD_STAGGER_DELAYS[3]}s`,
+                background: 'rgba(255, 255, 255, 0.05)',
                 backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
-                border: '2px solid rgba(34, 197, 94, 0.3)',
-                boxShadow: '0 0 20px rgba(34, 197, 94, 0.2), inset 0 0 20px rgba(34, 197, 94, 0.05)'
+                WebkitBackdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.4)'
               }}
             >
-              {/* Holographic shimmer effect для гильдий */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
-                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.2) 25%, rgba(16, 185, 129, 0.15) 50%, rgba(22, 163, 74, 0.2) 75%, rgba(34, 197, 94, 0.15) 100%)',
+                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(22, 163, 74, 0.1) 25%, rgba(16, 185, 129, 0.08) 50%, rgba(22, 163, 74, 0.1) 75%, rgba(34, 197, 94, 0.08) 100%)',
                 backgroundSize: '200% 200%',
                 animation: 'holographic-shimmer 4s ease-in-out infinite'
               }}></div>
-              
               <div className="flex items-center justify-between w-full relative z-10">
                 <div className="flex-1">
-                  <h2
-                    className="text-3xl md:text-4xl font-tech font-bold"
-                    style={{
-                      color: '#e8f4f8',
-                      textShadow: '0 0 10px rgba(34, 197, 94, 0.4)'
-                    }}
-                  >
+                  <h2 className="text-3xl md:text-4xl font-tech font-bold" style={{ color: '#f4f4f5' }}>
                     {t('menu.tabs.guilds')}
                   </h2>
-                  <p
-                    className="text-sm md:text-base font-tech mt-1"
-                    style={{
-                      color: 'rgba(220, 235, 245, 0.7)'
-                    }}
-                  >
+                  <p className="text-sm md:text-base font-tech mt-1" style={{ color: 'rgba(255,255,255,0.65)' }}>
                     {t('menu.guilds.comingSoon')}
                   </p>
                 </div>
-                <div
-                  className="flex-shrink-0"
-                  style={{
-                    color: 'rgba(34, 197, 94, 1)',
-                    filter: 'drop-shadow(0 0 8px rgba(34, 197, 94, 0.5))'
-                  }}
-                >
+                <div className="flex-shrink-0" style={{ color: 'rgba(255,255,255,0.85)' }}>
                   <Icon type="users-group" size={48} />
                 </div>
               </div>
@@ -326,49 +250,32 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
             <button
               onClick={() => handleTabChange('dungeons')}
               disabled
-              className="w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 opacity-60 cursor-not-allowed group h-32 flex items-center"
+              className="menu-card-enter-disabled w-full relative overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 cursor-not-allowed group h-32 flex items-center"
               style={{
-                background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%)',
+                animationDelay: `${CARD_STAGGER_DELAYS[4]}s`,
+                background: 'rgba(255, 255, 255, 0.05)',
                 backdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
-                border: '2px solid rgba(239, 68, 68, 0.3)',
-                boxShadow: '0 0 20px rgba(239, 68, 68, 0.2), inset 0 0 20px rgba(239, 68, 68, 0.05)'
+                WebkitBackdropFilter: `blur(${getOptimizedBlur('20px', '8px')})`,
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.4)'
               }}
             >
-              {/* Holographic shimmer effect для данжей */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
-                background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.2) 25%, rgba(248, 113, 113, 0.15) 50%, rgba(220, 38, 38, 0.2) 75%, rgba(239, 68, 68, 0.15) 100%)',
+                background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.1) 25%, rgba(248, 113, 113, 0.06) 50%, rgba(220, 38, 38, 0.1) 75%, rgba(239, 68, 68, 0.08) 100%)',
                 backgroundSize: '200% 200%',
                 animation: 'holographic-shimmer 4s ease-in-out infinite'
               }}></div>
-              
               <div className="flex items-center justify-between w-full relative z-10">
                 <div className="flex-1">
-                  <h2
-                    className="text-3xl md:text-4xl font-tech font-bold"
-                    style={{
-                      color: '#e8f4f8',
-                      textShadow: '0 0 10px rgba(239, 68, 68, 0.4)'
-                    }}
-                  >
+                  <h2 className="text-3xl md:text-4xl font-tech font-bold" style={{ color: '#f4f4f5' }}>
                     {t('menu.tabs.dungeons')}
                   </h2>
-                  <p
-                    className="text-sm md:text-base font-tech mt-1"
-                    style={{
-                      color: 'rgba(220, 235, 245, 0.7)'
-                    }}
-                  >
+                  <p className="text-sm md:text-base font-tech mt-1" style={{ color: 'rgba(255,255,255,0.65)' }}>
                     {t('menu.dungeons.comingSoon')}
                   </p>
                 </div>
-                <div
-                  className="flex-shrink-0"
-                  style={{
-                    color: 'rgba(239, 68, 68, 1)',
-                    filter: 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.5))'
-                  }}
-                >
-                  <Icon type="castle" size={48} />
+                <div className="flex-shrink-0" style={{ color: 'rgba(255,255,255,0.85)' }}>
+                  <Icon type="dungeon" size={48} />
                 </div>
               </div>
             </button>
@@ -383,11 +290,10 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
     return (
       <div
         className={cn(
-          "fixed inset-0 overflow-y-auto overflow-x-hidden",
+          "tab-page-wrapper fixed inset-0 overflow-y-auto overflow-x-hidden",
           contentLoaded ? 'tab-content-enter-active' : ''
         )}
         style={{
-          background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
           boxSizing: 'border-box',
           opacity: contentLoaded ? 1 : 0,
           transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
@@ -396,25 +302,12 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
           WebkitOverflowScrolling: 'touch',
         }}
       >
-        {/* Holographic grid background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `
-              linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px',
-            transform: 'perspective(500px) rotateX(60deg)',
-            transformOrigin: 'center center'
-          }}></div>
-        </div>
-
         {/* Glowing orbs */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
-          background: 'rgba(180, 216, 232, 0.8)'
+          background: 'rgba(255,255,255,0.06)'
         }}></div>
         <div className="absolute bottom-1/3 right-1/3 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-10" style={{
-          background: 'rgba(200, 230, 245, 0.6)'
+          background: 'rgba(255,255,255,0.04)'
         }}></div>
 
         <div className="tab-inner-content relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
@@ -425,8 +318,8 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
                 <h1
                   className="text-2xl sm:text-3xl md:text-4xl font-tech font-bold mb-3 tracking-tight"
                   style={{
-                    color: '#e8f4f8',
-                    textShadow: '0 0 8px rgba(180, 220, 240, 0.3)'
+                    color: '#f4f4f5',
+                    textShadow: '0 0 12px rgba(255,255,255,0.12)'
                   }}
                 >
                   {t('menu.leaderboard.title')}
@@ -435,7 +328,7 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
                 <p
                   className="mb-6 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto px-4"
                   style={{
-                    color: 'rgba(220, 235, 245, 0.7)'
+                    color: 'rgba(255,255,255,0.7)'
                   }}
                 >
                   {t('menu.leaderboard.subtitle')}
@@ -488,7 +381,7 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
       case 'guilds':
         return 'users-group';
       case 'dungeons':
-        return 'castle';
+        return 'dungeon';
       default:
         return 'bag';
     }
@@ -496,7 +389,7 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
 
   return (
     <div className="text-center py-12">
-      <div className="mx-auto mb-4" style={{ color: 'rgba(220, 235, 245, 0.5)' }}>
+      <div className="mx-auto mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>
         <Icon type={getIconForTab(tabMode)} size={64} />
       </div>
       <h3
@@ -511,7 +404,7 @@ const MenuTab: React.FC<MenuTabProps> = ({ isAuthenticated }) => {
       <p
         className="text-sm"
         style={{
-          color: 'rgba(220, 235, 245, 0.7)'
+          color: 'rgba(255,255,255,0.7)'
         }}
       >
         {t(`menu.${tabMode}.description`)}

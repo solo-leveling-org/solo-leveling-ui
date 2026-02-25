@@ -70,14 +70,14 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
               <div 
                 className="inline-flex items-center justify-center w-16 h-16 rounded-full"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.2) 0%, rgba(160, 210, 235, 0.15) 100%)',
-                  border: '2px solid rgba(220, 235, 245, 0.3)',
-                  boxShadow: '0 0 20px rgba(180, 220, 240, 0.3)'
+                  background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.28) 0%, rgba(160, 210, 235, 0.22) 100%)',
+                  border: '2px solid rgba(220, 235, 245, 0.4)',
+                  boxShadow: '0 0 24px rgba(180, 220, 240, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
                 }}
               >
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{
-                  color: '#e8f4f8',
-                  filter: 'drop-shadow(0 0 4px rgba(180, 220, 240, 0.5))'
+                  color: '#f0f8ff',
+                  filter: 'drop-shadow(0 0 6px rgba(180, 220, 240, 0.6))'
                 }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -89,8 +89,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
               <p 
                 className="text-lg leading-relaxed font-tech"
                 style={{
-                  color: '#e8f4f8',
-                  textShadow: '0 0 4px rgba(180, 220, 240, 0.2)'
+                  color: '#f0f8ff',
+                  textShadow: '0 0 6px rgba(180, 220, 240, 0.3)'
                 }}
               >
                 {message}
@@ -107,11 +107,11 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 onMouseDown={(e) => e.stopPropagation()}
                 className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%), linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.1) 100%)',
+                  background: 'rgba(255, 255, 255, 0.1), linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.1) 100%)',
                   backdropFilter: 'none',
                   borderColor: 'rgba(220, 38, 38, 0.3)',
                   boxShadow: '0 0 20px rgba(220, 38, 38, 0.2), inset 0 0 20px rgba(220, 38, 38, 0.05)',
-                  color: 'rgba(220, 235, 245, 0.8)',
+                  color: 'rgba(235, 245, 255, 0.9)',
                   outline: 'none'
                 }}
                 tabIndex={0}
@@ -139,11 +139,11 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 onMouseDown={(e) => e.stopPropagation()}
                 className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%), linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%)',
+                  background: 'rgba(255, 255, 255, 0.1), linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%)',
                   backdropFilter: 'none',
                   borderColor: 'rgba(34, 197, 94, 0.3)',
                   boxShadow: '0 0 20px rgba(34, 197, 94, 0.2), inset 0 0 20px rgba(34, 197, 94, 0.05)',
-                  color: 'rgba(220, 235, 245, 0.8)',
+                  color: 'rgba(235, 245, 255, 0.9)',
                   outline: 'none'
                 }}
                 tabIndex={0}
