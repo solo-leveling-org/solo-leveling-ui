@@ -833,6 +833,15 @@ body.mobile-version.android .day-streak-info-panel {
   top: 3.5rem !important;
 }
 
+/* TaskOverlay: отступ сверху под системные кнопки Telegram (мобильная) */
+body.mobile-version .task-overlay {
+  padding-top: 72px !important;
+}
+
+body.mobile-version.android .task-overlay {
+  padding-top: 56px !important;
+}
+
 /* TaskCompletionOverlay: отступ сверху под кнопки Telegram (мобильная), чуть меньше чем TopBar */
 body.mobile-version .task-completion-overlay {
   padding-top: 72px !important;
