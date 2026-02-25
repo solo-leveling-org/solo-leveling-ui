@@ -86,7 +86,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
           borderTop: '1px solid rgba(220, 235, 245, 0.15)',
           boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(220, 235, 245, 0.1)',
           // Не затемняем календарь - он должен быть полностью видимым
-          filter: isDialogOpen ? 'brightness(0.7)' : 'brightness(1)',
+          filter: isDialogOpen ? 'brightness(0.92)' : 'brightness(1)',
         }}
       >
       <div className="relative flex items-center justify-around py-3 px-2 md:px-4">

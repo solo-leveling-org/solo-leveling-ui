@@ -184,8 +184,9 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
           }
         }}
         style={{
-          background: 'radial-gradient(ellipse 100% 100% at 50% 50%, rgb(28, 28, 32) 0%, rgb(14, 14, 16) 50%, #000000 100%)',
-          backdropFilter: 'none',
+          background: 'rgba(0, 0, 0, 0.25)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           paddingTop: 'env(safe-area-inset-top, 0px)',
           paddingBottom: '5rem', // Отступ для BottomBar
           opacity: isVisible ? 1 : 0,

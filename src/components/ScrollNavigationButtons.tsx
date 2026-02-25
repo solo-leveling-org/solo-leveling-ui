@@ -152,11 +152,11 @@ const ScrollNavigationButtons: React.FC<ScrollNavigationButtonsProps> = ({
         onClick={scrollToTop}
         className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 border-2 relative"
         style={{
-          background: 'rgba(18, 18, 22, 0.92)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
+          background: 'rgba(60, 75, 95, 0.88)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
           borderColor: 'rgba(180, 220, 240, 0.4)',
-          boxShadow: '0 0 20px rgba(180, 220, 240, 0.25), 0 4px 12px rgba(0,0,0,0.4)',
+          boxShadow: '0 0 20px rgba(180, 220, 240, 0.25), 0 4px 12px rgba(0,0,0,0.3)',
           color: '#e8f4f8',
           outline: 'none',
           opacity: showTopButton ? 1 : 0,
@@ -174,11 +174,11 @@ const ScrollNavigationButtons: React.FC<ScrollNavigationButtonsProps> = ({
         onClick={scrollToLastPosition}
         className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 border-2 relative"
         style={{
-          background: 'rgba(18, 18, 22, 0.92)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
+          background: 'rgba(60, 75, 95, 0.88)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
           borderColor: 'rgba(180, 220, 240, 0.4)',
-          boxShadow: '0 0 20px rgba(180, 220, 240, 0.25), 0 4px 12px rgba(0,0,0,0.4)',
+          boxShadow: '0 0 20px rgba(180, 220, 240, 0.25), 0 4px 12px rgba(0,0,0,0.3)',
           color: '#e8f4f8',
           outline: 'none',
           opacity: showBottomButton ? 1 : 0,

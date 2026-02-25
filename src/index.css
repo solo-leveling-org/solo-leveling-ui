@@ -810,6 +810,21 @@ body.mobile-version.android .tab-inner-content.pt-20 {
   padding-top: 0 !important;
 }
 
+/* Профиль: на мобильной масштабируем контент, чтобы вмещался без скролла */
+@media (max-width: 768px) {
+  .profile-content-scaled {
+    transform: scale(0.9);
+    transform-origin: center center;
+  }
+}
+
+@media (max-height: 700px) {
+  .profile-content-scaled {
+    transform: scale(0.82);
+    transform-origin: center center;
+  }
+}
+
 /* Кнопка настроек в профиле — под TopBar на мобильной Telegram */
 body.mobile-version .profile-settings-btn {
   top: 168px !important;
