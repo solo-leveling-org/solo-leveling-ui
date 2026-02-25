@@ -1,24 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserAdditionalInfo } from '../contexts/UserAdditionalInfoContext';
-import { useStreakOverlay } from '../contexts/StreakOverlayContext';
 import Icon from './Icon';
 
 const TopBar: React.FC = () => {
   const navigate = useNavigate();
   const { photoUrl, dayStreak } = useUserAdditionalInfo();
-  const { isOpen: isStreakOverlayOpen, open: openStreakOverlay, close: closeStreakOverlay } = useStreakOverlay();
 
   const handlePhotoClick = () => {
     navigate('/profile');
   };
 
   const handleStreakClick = () => {
-    if (isStreakOverlayOpen) {
-      closeStreakOverlay();
-    } else {
-      openStreakOverlay();
-    }
+    navigate('/streak');
   };
 
   return (

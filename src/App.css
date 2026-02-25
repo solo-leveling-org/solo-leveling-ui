@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Inter');
 
-/* Слой фона: портал в body, под всем контентом #root. Мягкий градиент как у оверлеев. */
+/* Слой фона: портал в body, под всем контентом #root. Мягкий градиент + анимированный белый засвет. */
 .app-background-layer {
   position: fixed;
   inset: 0;
@@ -14,6 +14,53 @@
     rgb(14, 14, 16) 50%,
     #000000 100%
   );
+  overflow: hidden;
+}
+
+/* Движущиеся орбы засвета на всех табах: полноценное перемещение по экрану */
+.app-background-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  -webkit-filter: blur(60px);
+  opacity: 0.24;
+}
+@media (min-width: 768px) {
+  .app-background-glow {
+    filter: blur(80px);
+    -webkit-filter: blur(80px);
+  }
+}
+/* Размер орбов зависит от экрана: на мобилках компактнее, на десктопе крупнее */
+.app-background-glow-1 {
+  width: min(28rem, 40vmin);
+  height: min(28rem, 40vmin);
+  background: rgba(180, 216, 232, 0.9);
+  top: 15%;
+  left: 10%;
+  animation: background-glow-drift-1 48s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.app-background-glow-2 {
+  width: min(36rem, 55vmin);
+  height: min(36rem, 55vmin);
+  background: rgba(200, 230, 245, 0.8);
+  bottom: 15%;
+  right: 10%;
+  animation: background-glow-drift-2 50s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Траектории: орбы движутся по периметру в противоположных углах (орб1 по часовой, орб2 против) */
+@keyframes background-glow-drift-1 {
+  0%, 100% { transform: translate(0, 0); }           /* лево-верх */
+  25% { transform: translate(35vw, 0); }             /* право-верх */
+  50% { transform: translate(35vw, 38vh); }          /* право-низ */
+  75% { transform: translate(0, 38vh); }             /* лево-низ */
+}
+@keyframes background-glow-drift-2 {
+  0%, 100% { transform: translate(0, 0); }           /* право-низ */
+  25% { transform: translate(-35vw, 0); }            /* лево-низ */
+  50% { transform: translate(-35vw, -38vh); }        /* лево-верх */
+  75% { transform: translate(0, -38vh); }            /* право-верх */
 }
 
 /* Фон контента прозрачный, чтобы был виден слой .app-background-layer */

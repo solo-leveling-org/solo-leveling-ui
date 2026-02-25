@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTelegramWebApp } from '../useTelegram';
 import { useStreakOverlay } from '../contexts/StreakOverlayContext';
 import { globalBackButtonHandlerRef } from '../App';
@@ -11,9 +11,11 @@ import { globalBackButtonHandlerRef } from '../App';
  */
 export function BackButtonStreakSync() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { backButton } = useTelegramWebApp();
   const { isOpen: isStreakOverlayOpen, close: closeStreakOverlay } = useStreakOverlay();
   const isOnMenuTab = location.pathname === '/menu' || location.pathname === '/leaderboard';
+  const isOnDayStreakTab = location.pathname === '/day-streak';
 
   // Закрываем оверлей при смене маршрута (таб/профиль), чтобы не было кадра со старым табом
   useEffect(() => {
@@ -40,6 +42,25 @@ export function BackButtonStreakSync() {
       };
     }
 
+    if (isOnDayStreakTab) {
+      backButton.show();
+      const handleBack = () => {
+        navigate('/', { replace: true });
+        if (globalBackButtonHandlerRef.current) {
+          backButton.offClick(globalBackButtonHandlerRef.current);
+          globalBackButtonHandlerRef.current = null;
+        }
+      };
+      globalBackButtonHandlerRef.current = handleBack;
+      backButton.onClick(handleBack);
+      return () => {
+        if (globalBackButtonHandlerRef.current === handleBack) {
+          backButton.offClick(handleBack);
+          globalBackButtonHandlerRef.current = null;
+        }
+      };
+    }
+
     if (!isOnMenuTab) {
       if (globalBackButtonHandlerRef.current) {
         backButton.offClick(globalBackButtonHandlerRef.current);
@@ -47,7 +68,7 @@ export function BackButtonStreakSync() {
       }
       backButton.hide();
     }
-  }, [location.pathname, backButton, isStreakOverlayOpen, closeStreakOverlay, isOnMenuTab]);
+  }, [location.pathname, backButton, isStreakOverlayOpen, closeStreakOverlay, isOnMenuTab, isOnDayStreakTab, navigate]);
 
   return null;
 }

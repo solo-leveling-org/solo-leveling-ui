@@ -10,7 +10,7 @@ import MenuTab from './tabs/MenuTab';
 import BottomBar from './components/BottomBar';
 import {TelegramWidget} from './components/TelegramWidget';
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Routes,
   Route,
   Navigate,
@@ -33,8 +33,9 @@ import {useLocalization} from './hooks/useLocalization';
 import {UserAdditionalInfoProvider} from './contexts/UserAdditionalInfoContext';
 import {StreakOverlayProvider} from './contexts/StreakOverlayContext';
 import TopBar from './components/TopBar';
-import DayStreakOverlay from './components/DayStreakOverlay';
-import { DayStreakInfoPanel } from './components/DayStreakInfoPanel';
+import { DayStreakNavigator } from './components/DayStreakNavigator';
+import DayStreakTab from './tabs/DayStreakTab';
+import StreakCalendarTab from './tabs/StreakCalendarTab';
 import {BackButtonStreakSync} from './components/BackButtonStreakSync';
 
 // Глобальный ref для хранения обработчика кнопки "Назад" (экспортируем для использования в MenuTab)
@@ -159,10 +160,14 @@ function AppRoutes() {
                   >
                     <StreakOverlayProvider>
                       {isAuthenticated && (
-                        <div className="topbar-wrapper relative z-50 shrink-0">
+                        <>
                           <BackButtonStreakSync />
-                          <TopBar />
-                        </div>
+                          {location.pathname !== '/day-streak' && (
+                            <div className="topbar-wrapper relative z-50 shrink-0">
+                              <TopBar />
+                            </div>
+                          )}
+                        </>
                       )}
                       <main className={`tab-content custom-scrollbar flex flex-col relative z-0 ${isAuthenticated ? 'tab-content-with-top-bar' : ''} ${isBottomBarVisible ? 'tab-content-with-bottom-bar' : 'tab-content-without-bottom-bar'}`}>
                         <div className="relative flex-1 min-h-0 flex flex-col">
@@ -179,13 +184,21 @@ function AppRoutes() {
                                    element={<MenuTab isAuthenticated={isAuthenticated}/>}/>
                             <Route path="/balance"
                                    element={<BalanceTab isAuthenticated={isAuthenticated}/>}/>
+                            <Route path="/day-streak"
+                                   element={<DayStreakTab />}/>
+                            <Route path="/streak"
+                                   element={<StreakCalendarTab />}/>
                             <Route path="*" element={<Navigate to="/profile" replace/>}/>
                           </Routes>
-                          {isAuthenticated && <DayStreakInfoPanel />}
                         </div>
                       </main>
-                      {isAuthenticated && <BottomBar isAuthenticated={isAuthenticated} isVisible={isBottomBarVisible}/>}
-                      <DayStreakOverlay />
+                      {isAuthenticated && (
+                        <BottomBar
+                          isAuthenticated={isAuthenticated}
+                          isVisible={isBottomBarVisible && location.pathname !== '/day-streak'}
+                        />
+                      )}
+                      <DayStreakNavigator />
                     </StreakOverlayProvider>
                   </UserAdditionalInfoProvider>
               )}
@@ -196,7 +209,10 @@ function AppRoutes() {
 }
 
 const appBackground = (
-  <div className="app-background-layer" aria-hidden />
+  <div className="app-background-layer" aria-hidden>
+    <div className="app-background-glow app-background-glow-1" />
+    <div className="app-background-glow app-background-glow-2" />
+  </div>
 );
 
 export default function App() {
