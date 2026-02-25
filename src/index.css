@@ -810,18 +810,55 @@ body.mobile-version.android .tab-inner-content.pt-20 {
   padding-top: 0 !important;
 }
 
-/* Профиль: на мобильной масштабируем контент, чтобы вмещался без скролла */
+/* Профиль: на мобильной — только вертикальные отступы, ширина полная */
 @media (max-width: 768px) {
-  .profile-content-scaled {
-    transform: scale(0.9);
-    transform-origin: center center;
+  .profile-content-dense {
+    max-width: 100% !important;
+    width: 100% !important;
+    gap: 0.5rem !important;        /* вертикальный зазор между блоками */
+  }
+  .profile-content-dense .profile-hero {
+    padding-top: 0 !important;
+    padding-bottom: 0.5rem !important;
+  }
+  .profile-content-dense .profile-avatar-wrap {
+    margin-bottom: 0.5rem !important;
+  }
+  .profile-content-dense .profile-username {
+    margin-bottom: 0.25rem !important;
+  }
+  .profile-content-dense .profile-block {
+    padding: 0.625rem 1rem !important;  /* вертикаль меньше, горизонталь без изменений */
+  }
+  .profile-content-dense .profile-block-title {
+    margin-bottom: 0.375rem !important;
+  }
+  .profile-content-dense .profile-block-xp {
+    margin-bottom: 0.25rem !important;
+  }
+  .profile-content-dense .profile-chars-grid {
+    gap: 0.5rem !important;
+  }
+  .profile-content-dense .profile-char-card {
+    padding: 0.5rem 0.5rem !important;  /* компактнее по вертикали */
+  }
+  .profile-content-dense .profile-char-card .profile-icon-wrapper {
+    margin-bottom: 0.25rem !important;
   }
 }
 
 @media (max-height: 700px) {
-  .profile-content-scaled {
-    transform: scale(0.82);
-    transform-origin: center center;
+  .profile-content-dense {
+    gap: 0.375rem !important;
+  }
+  .profile-content-dense .profile-hero {
+    padding-bottom: 0.25rem !important;
+  }
+  .profile-content-dense .profile-avatar-wrap {
+    margin-bottom: 0.375rem !important;
+  }
+  .profile-content-dense .profile-block {
+    padding: 0.5rem 1rem !important;
   }
 }
 

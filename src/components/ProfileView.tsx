@@ -89,7 +89,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({
         }}
       >
         <div className="tab-inner-content relative z-10 flex-1 min-h-0 flex flex-col pt-16 md:pt-20 px-4 md:px-6 pb-24 overflow-hidden">
-          <div className="profile-content-scaled max-w-md mx-auto flex-1 min-h-0 flex flex-col justify-center space-y-6 overflow-hidden">
+          <div className="w-full max-w-md mx-auto flex-1 min-h-0 flex flex-col justify-center overflow-hidden profile-content-dense gap-6">
 
             {/* Settings — только для своего профиля */}
             {isOwnProfile && (
@@ -108,8 +108,8 @@ const ProfileView: React.FC<ProfileViewProps> = ({
             )}
 
             {/* Hero: аватар, уровень, имя, класс */}
-            <div className="flex flex-col items-center text-center pt-2 pb-4 flex-shrink-0">
-              <div className="relative flex-shrink-0 mb-4">
+            <div className="flex flex-col items-center text-center pt-2 pb-4 md:pb-4 flex-shrink-0 profile-hero">
+              <div className="relative flex-shrink-0 mb-4 profile-avatar-wrap">
                 <Avatar
                   className="relative w-28 h-28 md:w-32 md:h-32 border-2"
                   style={{
@@ -144,7 +144,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({
                 {user.firstName || ''} {user.lastName || ''}
               </h1>
               {isOwnProfile && user.username && (
-                <p className="text-sm font-tech mb-3" style={{ color: 'rgba(220, 235, 245, 0.65)' }}>
+                <p className="text-sm font-tech mb-2 md:mb-3 profile-username" style={{ color: 'rgba(220, 235, 245, 0.65)' }}>
                   @{user.username}
                 </p>
               )}
@@ -161,15 +161,15 @@ const ProfileView: React.FC<ProfileViewProps> = ({
             </div>
 
             {/* Блок: Прогресс */}
-            <div className="rounded-2xl p-4 md:p-5 flex-shrink-0" style={blockStyle}>
+            <div className="rounded-2xl p-4 md:p-5 flex-shrink-0 profile-block" style={blockStyle}>
               <h2
-                className="text-sm font-tech font-bold flex items-center mb-3"
+                className="text-sm font-tech font-bold flex items-center mb-3 profile-block-title"
                 style={sectionTitleStyle}
               >
                 <span className="mr-2 inline-flex" style={{ color: 'rgba(180, 220, 240, 0.85)' }}><Icon type="star" size={18} /></span>
                 {t('profile.stats.progress')}
               </h2>
-              <div className="flex justify-between items-center mb-2">
+              <div className="flex justify-between items-center mb-2 profile-block-xp">
                 <span className="text-xs font-tech" style={{ color: 'rgba(220, 235, 245, 0.7)' }}>
                   {currentExp} / {maxExp} XP
                 </span>
@@ -185,17 +185,17 @@ const ProfileView: React.FC<ProfileViewProps> = ({
             </div>
 
             {/* Блок: Характеристики */}
-            <div className="rounded-2xl p-4 md:p-5 flex-shrink-0" style={blockStyle}>
+            <div className="rounded-2xl p-4 md:p-5 flex-shrink-0 profile-block" style={blockStyle}>
               <h2
-                className="text-sm font-tech font-bold flex items-center mb-4"
+                className="text-sm font-tech font-bold flex items-center mb-4 profile-block-title"
                 style={sectionTitleStyle}
               >
                 <span className="mr-2 inline-flex" style={{ color: 'rgba(180, 220, 240, 0.85)' }}><Icon type="target" size={18} /></span>
                 {t('profile.stats.characteristics', { defaultValue: 'Характеристики' })}
               </h2>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-3 profile-chars-grid">
                 <div
-                  className="rounded-xl p-4 text-center border transition-transform duration-200 hover:scale-[1.02]"
+                  className="rounded-xl p-4 text-center border transition-transform duration-200 hover:scale-[1.02] profile-char-card"
                   style={{
                     background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.08) 0%, rgba(185, 28, 28, 0.04) 100%)',
                     border: '1px solid rgba(220, 38, 38, 0.25)',
