@@ -143,8 +143,9 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
           isVisible ? 'opacity-100' : 'opacity-0'
         }`}
         style={{
-          background: 'radial-gradient(ellipse 100% 100% at 50% 50%, rgb(28, 28, 32) 0%, rgb(14, 14, 16) 50%, #000000 100%)',
-          backdropFilter: 'none',
+          background: 'transparent',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
           transition: 'opacity 0.3s ease-out',
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}

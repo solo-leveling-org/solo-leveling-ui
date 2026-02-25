@@ -60,9 +60,9 @@ const ProfileView: React.FC<ProfileViewProps> = ({
 
   const blockStyle = {
     background: 'rgba(255, 255, 255, 0.06)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
     borderRadius: '1rem',
-    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06)',
+    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3)',
   };
 
   const sectionTitleStyle = {
@@ -191,7 +191,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({
                 style={sectionTitleStyle}
               >
                 <span className="mr-2 inline-flex" style={{ color: 'rgba(180, 220, 240, 0.85)' }}><Icon type="target" size={18} /></span>
-                {t('profile.stats.characteristics', { defaultValue: 'Характеристики' })}
+                {t('profile.stats.characteristics')}
               </h2>
               <div className="grid grid-cols-3 gap-3 profile-chars-grid">
                 <div
@@ -260,23 +260,25 @@ const ProfileView: React.FC<ProfileViewProps> = ({
 
 export const ProfileSkeleton: React.FC = () => (
   <div className="profile-view tab-page-wrapper fixed inset-0 overflow-hidden flex flex-col">
-    <div className="tab-inner-content relative z-10 min-h-screen pt-16 md:pt-20 px-4 md:px-6 pb-24">
-      <div className="max-w-md mx-auto space-y-6">
-        <div className="flex flex-col items-center text-center pt-2 pb-4">
-          <Skeleton
-            className="w-28 h-28 md:w-32 md:h-32 rounded-full mb-4"
-            style={{ background: 'rgba(255, 255, 255, 0.08)' }}
-          />
-          <Skeleton className="h-7 w-48 mb-2" style={{ background: 'rgba(255, 255, 255, 0.08)' }} />
+    <div className="tab-inner-content relative z-10 flex-1 min-h-0 flex flex-col pt-16 md:pt-20 px-4 md:px-6 pb-24 overflow-hidden">
+      <div className="w-full max-w-md mx-auto flex-1 min-h-0 flex flex-col justify-center overflow-hidden profile-content-dense gap-6">
+        <div className="flex flex-col items-center text-center pt-2 pb-4 profile-hero">
+          <div className="relative flex-shrink-0 mb-4 profile-avatar-wrap">
+            <Skeleton
+              className="w-28 h-28 md:w-32 md:h-32 rounded-full"
+              style={{ background: 'rgba(255, 255, 255, 0.08)' }}
+            />
+          </div>
+          <Skeleton className="h-7 w-48 mb-1" style={{ background: 'rgba(255, 255, 255, 0.08)' }} />
           <Skeleton className="h-4 w-24 mb-3" style={{ background: 'rgba(255, 255, 255, 0.08)' }} />
           <Skeleton className="h-6 w-16 rounded-full" style={{ background: 'rgba(255, 255, 255, 0.08)' }} />
         </div>
 
         <div
-          className="rounded-2xl p-4 md:p-5"
+          className="rounded-2xl p-4 md:p-5 flex-shrink-0 profile-block"
           style={{
             background: 'rgba(255, 255, 255, 0.06)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
           }}
         >
           <Skeleton className="h-4 w-24 mb-3" style={{ background: 'rgba(255, 255, 255, 0.08)' }} />
@@ -284,16 +286,16 @@ export const ProfileSkeleton: React.FC = () => (
         </div>
 
         <div
-          className="rounded-2xl p-4 md:p-5"
+          className="rounded-2xl p-4 md:p-5 flex-shrink-0 profile-block"
           style={{
             background: 'rgba(255, 255, 255, 0.06)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
           }}
         >
           <Skeleton className="h-4 w-32 mb-4" style={{ background: 'rgba(255, 255, 255, 0.08)' }} />
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3 profile-chars-grid">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-xl p-4 text-center">
+              <div key={i} className="rounded-xl p-4 text-center profile-char-card">
                 <Skeleton className="w-8 h-8 mx-auto mb-2 rounded" style={{ background: 'rgba(255, 255, 255, 0.08)' }} />
                 <Skeleton className="h-5 w-8 mx-auto mb-1" style={{ background: 'rgba(255, 255, 255, 0.08)' }} />
                 <Skeleton className="h-3 w-12 mx-auto" style={{ background: 'rgba(255, 255, 255, 0.08)' }} />

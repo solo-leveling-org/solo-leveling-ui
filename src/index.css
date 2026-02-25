@@ -810,6 +810,15 @@ body.mobile-version.android .tab-inner-content.pt-20 {
   padding-top: 0 !important;
 }
 
+/* Профиль: контент — прозрачный фон как у приложения, без лишнего слоя и обводок */
+.profile-view .profile-content-dense,
+.profile-view .tab-inner-content {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
 /* Профиль: на мобильной — только вертикальные отступы, ширина полная */
 @media (max-width: 768px) {
   .profile-content-dense {

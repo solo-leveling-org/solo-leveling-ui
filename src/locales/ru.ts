@@ -85,6 +85,15 @@ export const ru = {
       saturday: 'Суббота',
       sunday: 'Воскресенье'
     },
+    daysShort: {
+      monday: 'Пн',
+      tuesday: 'Вт',
+      wednesday: 'Ср',
+      thursday: 'Чт',
+      friday: 'Пт',
+      saturday: 'Сб',
+      sunday: 'Вс'
+    },
   },
 
   // Навигация
@@ -256,6 +265,7 @@ export const ru = {
       intelligence: 'Интеллект',
       progress: 'Прогресс',
       class: 'Класс',
+      characteristics: 'Характеристики',
     },
     balance: {
       recentTransactions: 'Последние транзакции',

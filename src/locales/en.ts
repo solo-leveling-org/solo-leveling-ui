@@ -85,6 +85,15 @@ export const en = {
       saturday: 'Saturday',
       sunday: 'Sunday'
     },
+    daysShort: {
+      monday: 'Mon',
+      tuesday: 'Tue',
+      wednesday: 'Wed',
+      thursday: 'Thu',
+      friday: 'Fri',
+      saturday: 'Sat',
+      sunday: 'Sun'
+    },
   },
 
   // Navigation
@@ -257,6 +266,7 @@ export const en = {
       intelligence: 'Intelligence',
       progress: 'Progress',
       class: 'Class',
+      characteristics: 'Characteristics',
     },
     balance: {
       recentTransactions: 'Recent Transactions',

@@ -209,10 +209,10 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
           transition: isVisible 
             ? `transform ${isMobile ? '0.4s' : '0.35s'} cubic-bezier(0.16, 1, 0.3, 1), opacity ${isMobile ? '0.4s' : '0.35s'} ease-out`
             : 'transform 0.2s ease-in, opacity 0.2s ease-in',
-          background: 'rgba(18, 18, 18, 0.98)',
+          background: 'rgba(36, 38, 44, 0.98)',
           backdropFilter: 'none',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06)',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+          boxShadow: '0 4px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
           // Дополнительные свойства для четкого рендеринга
           WebkitFontSmoothing: 'antialiased',
           MozOsxFontSmoothing: 'grayscale',

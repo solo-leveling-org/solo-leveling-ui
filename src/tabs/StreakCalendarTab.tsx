@@ -4,7 +4,9 @@ import Icon from '../components/Icon';
 import { useLocalization } from '../hooks/useLocalization';
 import { useUserAdditionalInfo } from '../contexts/UserAdditionalInfoContext';
 
-const WEEKDAY_LABELS = [0, 1, 2, 3, 4, 5, 6];
+const WEEKDAY_ORDER: Array<'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday'> = [
+  'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'
+];
 const MONTH_KEYS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'] as const;
 
 /**
@@ -267,13 +269,13 @@ const StreakCalendarTab: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-7 gap-2 max-w-md mx-auto mb-1">
-          {WEEKDAY_LABELS.map((i) => (
+          {WEEKDAY_ORDER.map((dayKey) => (
             <div
-              key={`wd-${i}`}
+              key={dayKey}
               className="aspect-square min-h-0 flex items-center justify-center text-[11px] font-tech font-semibold"
               style={{ color: 'rgba(220, 235, 245, 0.45)' }}
             >
-              {['S', 'M', 'T', 'W', 'T', 'F', 'S'][i]}
+              {t(`common.daysShort.${dayKey}`)}
             </div>
           ))}
         </div>
