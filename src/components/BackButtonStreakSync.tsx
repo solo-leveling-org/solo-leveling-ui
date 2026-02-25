@@ -1,23 +1,23 @@
 import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useTelegramWebApp } from '../useTelegram';
 import { useStreakOverlay } from '../contexts/StreakOverlayContext';
+import { useDayStreakOverlay } from '../contexts/DayStreakOverlayContext';
 import { globalBackButtonHandlerRef } from '../App';
 
 /**
- * Синхронизация кнопки "Назад" в Telegram с оверлеем стрика.
- * При открытом оверлее показывает Back и закрывает оверлей по нажатию.
+ * Синхронизация кнопки "Назад" в Telegram с оверлеями стрика.
+ * При открытом DayStreakOverlay или StreakOverlay показывает Back и закрывает по нажатию.
  * При закрытом оверлее на табах кроме menu/leaderboard скрывает Back.
  */
 export function BackButtonStreakSync() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { backButton } = useTelegramWebApp();
   const { isOpen: isStreakOverlayOpen, close: closeStreakOverlay } = useStreakOverlay();
+  const { isOpen: isDayStreakOverlayOpen, close: closeDayStreakOverlay } = useDayStreakOverlay();
   const isOnMenuTab = location.pathname === '/menu' || location.pathname === '/leaderboard';
-  const isOnDayStreakTab = location.pathname === '/day-streak';
 
-  // Закрываем оверлей при смене маршрута (таб/профиль), чтобы не было кадра со старым табом
+  // Закрываем StreakOverlay при смене маршрута (таб/профиль), чтобы не было кадра со старым табом
   useEffect(() => {
     closeStreakOverlay();
   }, [location.pathname, closeStreakOverlay]);
@@ -42,10 +42,10 @@ export function BackButtonStreakSync() {
       };
     }
 
-    if (isOnDayStreakTab) {
+    if (isDayStreakOverlayOpen) {
       backButton.show();
       const handleBack = () => {
-        navigate('/', { replace: true });
+        closeDayStreakOverlay();
         if (globalBackButtonHandlerRef.current) {
           backButton.offClick(globalBackButtonHandlerRef.current);
           globalBackButtonHandlerRef.current = null;
@@ -68,7 +68,7 @@ export function BackButtonStreakSync() {
       }
       backButton.hide();
     }
-  }, [location.pathname, backButton, isStreakOverlayOpen, closeStreakOverlay, isOnMenuTab, isOnDayStreakTab, navigate]);
+  }, [location.pathname, backButton, isStreakOverlayOpen, closeStreakOverlay, isDayStreakOverlayOpen, closeDayStreakOverlay, isOnMenuTab]);
 
   return null;
 }

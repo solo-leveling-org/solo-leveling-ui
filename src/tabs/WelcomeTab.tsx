@@ -4,14 +4,25 @@ import TextType from '../blocks/TextAnimations/TextType/TextType';
 import { useLocalization } from '../hooks/useLocalization';
 import { cn } from '../utils';
 
-const WelcomeTab: React.FC = () => {
+type WelcomeTabProps = {
+  canStartAnimation?: boolean;
+};
+
+const WelcomeTab: React.FC<WelcomeTabProps> = ({ canStartAnimation = true }) => {
   const navigate = useNavigate();
   const { t } = useLocalization();
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [contentVisible, setContentVisible] = useState(false);
 
+  // Показываем контент и монтируем TextType только после закрытия экрана загрузки + 1 кадр
   useEffect(() => {
-    setIsLoaded(true);
-  }, []);
+    if (!canStartAnimation) return;
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setContentVisible(true);
+      });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [canStartAnimation]);
 
   const handleStartGame = () => {
     navigate('/tasks');
@@ -26,19 +37,28 @@ const WelcomeTab: React.FC = () => {
       <div
         className={cn(
           'relative w-full max-w-2xl flex flex-col items-center text-center transition-all duration-700 ease-out',
-          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+          contentVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
         )}
       >
         <div className="welcome-hero-title min-h-[3rem] sm:min-h-[4rem] md:min-h-[4.5rem] flex items-center justify-center mb-4 md:mb-6">
-          <TextType
-            text={[t('welcome.title')]}
-            typingSpeed={80}
-            pauseDuration={2000}
-            showCursor={true}
-            cursorCharacter="_"
-            className="font-tech font-bold uppercase tracking-[0.12em] md:tracking-[0.18em] !whitespace-nowrap text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
-            textColors={['#e8f4f8']}
-          />
+          {contentVisible ? (
+            <TextType
+              key="welcome-title-animated"
+              text={[t('welcome.title')]}
+              typingSpeed={80}
+              initialDelay={200}
+              pauseDuration={2000}
+              showCursor={true}
+              cursorCharacter="_"
+              loop={false}
+              className="font-tech font-bold uppercase tracking-[0.12em] md:tracking-[0.18em] !whitespace-nowrap text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
+              textColors={['#e8f4f8']}
+            />
+          ) : (
+            <span className="font-tech font-bold uppercase tracking-[0.12em] md:tracking-[0.18em] whitespace-nowrap text-3xl sm:text-4xl md:text-5xl lg:text-6xl opacity-0" style={{ color: '#e8f4f8' }} aria-hidden>
+              _
+            </span>
+          )}
         </div>
         <style>{`
           .welcome-hero-title span {
@@ -73,7 +93,7 @@ const WelcomeTab: React.FC = () => {
       <p
         className={cn(
           'absolute bottom-8 left-4 right-4 text-center font-tech text-[10px] md:text-xs tracking-wide transition-opacity duration-500',
-          isLoaded ? 'opacity-100' : 'opacity-0'
+          contentVisible ? 'opacity-100' : 'opacity-0'
         )}
         style={{ color: 'rgba(220, 235, 245, 0.4)' }}
       >

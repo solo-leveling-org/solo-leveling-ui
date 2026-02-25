@@ -1,42 +1,41 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useUserAdditionalInfo } from '../contexts/UserAdditionalInfoContext';
+import { useDayStreakOverlay } from '../contexts/DayStreakOverlayContext';
 import { UserService } from '../api';
 import { useLocalization } from '../hooks/useLocalization';
+import { useFullscreenOverlay } from '../hooks/useFullscreenOverlay';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 const STREAK_NUMBER_DURATION_MS = 1000;
 
 /**
- * Таб «Стрик продлён» — показывается вместо оверлея при day-streak-notification.
- * Прозрачный фон, орбы видны как на остальных табах.
+ * Оверлей «Стрик продлён» — показывается по day-streak-notification поверх текущего таба.
+ * Закрытие без навигации — просто скрывает оверлей, таб остаётся без перезагрузки.
  */
-const DayStreakTab: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+export function DayStreakOverlay() {
+  const { isOpen, message: notificationMessage, close } = useDayStreakOverlay();
   const { dayStreak: contextStreak, refetch } = useUserAdditionalInfo();
   const { t } = useLocalization();
   const [mounted, setMounted] = useState(false);
   const [streakBefore, setStreakBefore] = useState<number>(0);
   const [streakAfter, setStreakAfter] = useState<number>(0);
   const [phase, setPhase] = useState<'before' | 'after'>('before');
-  const notificationMessage = (location.state as { message?: string } | null)?.message ?? null;
-  const fireLottieSrc = `${process.env.PUBLIC_URL || ''}/lottie/Fire.lottie`;
-
-  const fromNotification = (location.state as { fromNotification?: boolean } | null)?.fromNotification === true;
-
-  // Редирект, если зашли не по уведомлению
-  useEffect(() => {
-    if (!fromNotification) {
-      navigate('/', { replace: true });
-      return;
-    }
-  }, [fromNotification, navigate]);
-
   const initRef = useRef(false);
+  const fireLottieSrc = `${process.env.PUBLIC_URL || ''}/lottie/Fire.lottie`;
   const streakCurrent = contextStreak?.current ?? 0;
+
+  useFullscreenOverlay(isOpen);
+  useScrollLock(isOpen);
+
   useEffect(() => {
-    if (!fromNotification || initRef.current) return;
+    if (!isOpen) return;
+    initRef.current = false;
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || initRef.current) return;
     initRef.current = true;
     setStreakBefore(streakCurrent);
     setStreakAfter(streakCurrent + 1);
@@ -45,10 +44,10 @@ const DayStreakTab: React.FC = () => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setMounted(true));
     });
-  }, [fromNotification, streakCurrent]);
+  }, [isOpen, streakCurrent]);
 
   useEffect(() => {
-    if (!fromNotification) return;
+    if (!isOpen) return;
     let cancelled = false;
     (async () => {
       try {
@@ -66,19 +65,29 @@ const DayStreakTab: React.FC = () => {
       cancelled = true;
       clearTimeout(t1);
     };
-  }, [fromNotification, refetch, streakBefore]);
+  }, [isOpen, refetch, streakBefore]);
 
   const handleContinue = () => {
     setMounted(false);
-    setTimeout(() => navigate('/', { replace: true }), 280);
+    setTimeout(() => close(), 280);
   };
 
-  if (!fromNotification) return null;
+  if (!isOpen) return null;
 
-  return (
+  const overlayContent = (
     <div
-      className="tab-page-wrapper fixed inset-0 flex flex-col overflow-hidden"
-      style={{ boxSizing: 'border-box', zIndex: 1, background: 'transparent' }}
+      className="day-streak-overlay fixed inset-0 flex flex-col overflow-hidden"
+      style={{
+        boxSizing: 'border-box',
+        zIndex: 10000,
+        width: '100%',
+        height: '100%',
+        minHeight: '100vh',
+        background: 'radial-gradient(ellipse 100% 100% at 50% 50%, rgb(28, 28, 32) 0%, rgb(14, 14, 16) 50%, #000000 100%)',
+        paddingLeft: 'env(safe-area-inset-left, 0)',
+        paddingRight: 'env(safe-area-inset-right, 0)',
+        paddingTop: 'env(safe-area-inset-top, 0)',
+      }}
     >
       <div
         className="flex-1 flex flex-col items-center justify-center min-h-0 px-6"
@@ -203,6 +212,6 @@ const DayStreakTab: React.FC = () => {
       `}</style>
     </div>
   );
-};
 
-export default React.memo(DayStreakTab);
+  return createPortal(overlayContent, document.body);
+}
