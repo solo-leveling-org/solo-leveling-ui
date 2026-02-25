@@ -188,7 +188,7 @@ function AppRoutes() {
                                    element={<DayStreakTab />}/>
                             <Route path="/streak"
                                    element={<StreakCalendarTab />}/>
-                            <Route path="*" element={<Navigate to="/profile" replace/>}/>
+                            <Route path="*" element={<Navigate to="/" replace/>}/>
                           </Routes>
                         </div>
                       </main>
