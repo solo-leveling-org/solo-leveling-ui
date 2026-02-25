@@ -596,8 +596,8 @@ const TopicsSectionSkeleton: React.FC = () => {
   const allTopics = Object.values(TaskTopic);
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+    <>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
         {allTopics.map((topic) => (
           <div
             key={topic}
@@ -659,7 +659,32 @@ const TopicsSectionSkeleton: React.FC = () => {
           </div>
         ))}
       </div>
-    </div>
+
+      {/* Skeleton нижней плашки (Preference Settings) — те же отступы что в обычной версии без кнопки Save */}
+      <div className="flex justify-center mb-8 md:mb-10 mt-20 md:mt-24 pb-24 md:pb-28">
+        <div
+          className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 max-w-2xl w-full animate-pulse"
+          style={{
+            background: 'rgba(255, 255, 255, 0.06)',
+            backdropFilter: 'blur(20px)',
+            border: '2px solid rgba(220, 235, 245, 0.2)',
+            boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
+          }}
+        >
+          <div className="flex items-start">
+            <div
+              className="w-10 h-10 rounded-2xl flex-shrink-0 mr-4"
+              style={{ background: 'rgba(220, 235, 245, 0.1)' }}
+            />
+            <div className="flex-1 min-w-0 space-y-2">
+              <div className="h-5 w-48 rounded" style={{ background: 'rgba(220, 235, 245, 0.1)' }} />
+              <div className="h-4 w-full max-w-md rounded" style={{ background: 'rgba(220, 235, 245, 0.1)' }} />
+              <div className="h-4 w-3/4 max-w-sm rounded" style={{ background: 'rgba(220, 235, 245, 0.1)' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

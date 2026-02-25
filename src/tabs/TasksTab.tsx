@@ -117,11 +117,11 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
       setIsTabTransitioning(true);
       setTimeout(() => {
         setTabMode('topics');
+        setDisplayTabMode('topics');
         setTimeout(() => {
           setIsTabTransitioning(false);
-          setDisplayTabMode('topics');
-        }, 25);
-      }, 100);
+        }, 50);
+      }, 220);
     }
   }, [tabMode]);
 
@@ -131,11 +131,11 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
       setIsTabTransitioning(true);
       setTimeout(() => {
         setTabMode('tasks');
+        setDisplayTabMode('tasks');
         setTimeout(() => {
           setIsTabTransitioning(false);
-          setDisplayTabMode('tasks');
-        }, 25);
-      }, 100);
+        }, 50);
+      }, 220);
     }
   }, [tabMode]);
 
@@ -153,25 +153,19 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
             setTasks(res.tasks);
             setStamina(res.stamina);
             setFirstTime(res.isFirstTime);
-            setTimeout(() => {
-              setIsTabTransitioning(false);
-              setDisplayTabMode('tasks');
-            }, 25);
           })
           .catch((error) => {
             console.error('Error getting tasks after topics save:', error);
-            setTimeout(() => {
-              setIsTabTransitioning(false);
-              setDisplayTabMode('tasks');
-            }, 25);
+          })
+          .finally(() => {
+            setDisplayTabMode('tasks');
+            setTimeout(() => setIsTabTransitioning(false), 50);
           });
       } else {
-        setTimeout(() => {
-          setIsTabTransitioning(false);
-          setDisplayTabMode('tasks');
-        }, 25);
+        setDisplayTabMode('tasks');
+        setTimeout(() => setIsTabTransitioning(false), 50);
       }
-    }, 100);
+    }, 220);
   }, [isAuthenticated]);
 
   // Полностраничный skeleton только при первом открытии таба (loading = true только в начальном useEffect)
@@ -370,9 +364,16 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
               </div>
             </div>
 
-            {/* Task View Mode Toggle — отступ от краёв экрана (десктоп и мобильный) */}
+            {/* Task View Mode Toggle — только когда уже на задачах; не показывать при переходе topics->tasks, чтобы не сдвигать топики вниз */}
             {displayTabMode === 'tasks' && !firstTime && (
-              <div className="flex justify-center mb-6 overflow-x-auto px-4 md:px-8">
+              <div
+                className="flex justify-center mb-6 overflow-x-auto px-4 md:px-8"
+                style={{
+                  opacity: isTabTransitioning ? 0 : 1,
+                  transform: isTabTransitioning ? 'translateY(12px)' : 'translateY(0)',
+                  transition: 'opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
+              >
                 <div
                   className="inline-flex rounded-full p-1 flex-nowrap gap-1.5 sm:gap-2 px-2 sm:px-3 md:px-4"
                   style={{
@@ -580,9 +581,15 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
               </div>
             )}
 
-            {/* Stamina Indicator - только для активных; скелетон при начальной загрузке или при подгрузке при переключении на «Активные» */}
+            {/* Stamina Indicator - только когда уже на задачах; не показывать при переходе topics->tasks, чтобы не сдвигать топики вниз */}
             {displayTabMode === 'tasks' && !firstTime && displayTaskViewMode === 'active' && (
-              <>
+              <div
+                style={{
+                  opacity: (isTransitioning || isTabTransitioning) ? 0 : 1,
+                  transform: (isTransitioning || isTabTransitioning) ? 'translateY(12px)' : 'translateY(0)',
+                  transition: 'opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
+              >
                 {(loading || activeViewLoading) ? (
                   <div className="mb-6 md:flex md:justify-center">
                     <div className="w-full max-w-md mx-auto md:mx-0">
@@ -590,14 +597,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                     </div>
                   </div>
                 ) : stamina ? (
-                  <div 
-                    className="mb-6 md:flex md:justify-center"
-                    style={{
-                      opacity: isTransitioning ? 0 : 1,
-                      transform: isTransitioning ? 'translateY(10px)' : 'translateY(0)',
-                      transition: 'opacity 0.15s ease-out, transform 0.15s ease-out'
-                    }}
-                  >
+                  <div className="mb-6 md:flex md:justify-center">
                     <div className="w-full max-w-md mx-auto md:mx-0">
                       <StaminaIndicator 
                         stamina={stamina} 
@@ -608,7 +608,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                     </div>
                   </div>
                 ) : null}
-              </>
+              </div>
             )}
           </div>
 
@@ -616,8 +616,8 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
           <div
             style={{
               opacity: isTabTransitioning ? 0 : 1,
-              transform: isTabTransitioning ? 'translateY(10px)' : 'translateY(0)',
-              transition: 'opacity 0.15s ease-out, transform 0.15s ease-out'
+              transform: isTabTransitioning ? 'translateY(12px)' : 'translateY(0)',
+              transition: 'opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
             }}
           >
             {displayTabMode === 'topics' ? (

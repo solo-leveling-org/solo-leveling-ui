@@ -44,15 +44,21 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
   const topicProgress = playerAfter.taskTopics || [];
   const topicsInTask = new Set(completedTask?.topics || []);
   const filteredTopicProgress = topicProgress.filter(tp => tp.taskTopic && topicsInTask.has(tp.taskTopic));
-  const perTopicExpGain = (completedTask?.topics && completedTask.topics.length > 0)
-    ? Math.floor((completedTask?.experience || 0) / completedTask.topics.length)
-    : 0;
 
   const beforeTopicLevelMap = new Map(
     (playerBefore.taskTopics || [])
       .filter(tp => tp.taskTopic)
       .map(tp => [tp.taskTopic!, tp.level])
   );
+
+  const topicExpGainMap = new Map<TaskTopic, number>();
+  for (const tp of filteredTopicProgress) {
+    if (!tp.taskTopic) continue;
+    const beforeTotal = beforeTopicLevelMap.get(tp.taskTopic)?.totalExperience ?? 0;
+    const afterTotal = tp.level?.totalExperience ?? 0;
+    const gain = afterTotal - beforeTotal;
+    topicExpGainMap.set(tp.taskTopic, gain);
+  }
 
   const handleClose = () => {
     setOverlayMounted(false);
@@ -64,7 +70,8 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
     level: { level?: number; currentExperience?: number; experienceToNextLevel?: number } | undefined,
     rowHidden: boolean,
     currentExp: number,
-    maxExp: number
+    maxExp: number,
+    expGain: number
   ) => {
     const topicLevelGain = topic && level ? (level?.level || 0) - (beforeTopicLevelMap.get(topic)?.level || 0) : 0;
     return (
@@ -113,7 +120,7 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
           <span>{t('taskCompletion.experience')}</span>
           <span className="flex items-center">
             {currentExp}/{maxExp}
-            {perTopicExpGain > 0 && !rowHidden && (
+            {expGain > 0 && !rowHidden && (
               <span
                 className="ml-1 font-bold"
                 style={{
@@ -121,7 +128,7 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
                   textShadow: '0 0 6px rgba(34, 197, 94, 0.6)',
                 }}
               >
-                +{perTopicExpGain}
+                +{expGain}
               </span>
             )}
           </span>
@@ -321,6 +328,7 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
                         const rowHidden = !topic || !level;
                         const currentExp = level?.currentExperience || 0;
                         const maxExp = level?.experienceToNextLevel || 100;
+                        const expGain = topic ? (topicExpGainMap.get(topic) ?? 0) : 0;
                         return (
                           <div
                             key={topic ?? `empty-topic-${i}`}
@@ -328,7 +336,7 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
                             style={rowHidden ? { opacity: 0, pointerEvents: 'none' } : undefined}
                             aria-hidden={rowHidden}
                           >
-                            {renderTopicRow(topic, level, rowHidden, currentExp, maxExp)}
+                            {renderTopicRow(topic, level, rowHidden, currentExp, maxExp, expGain)}
                           </div>
                         );
                       })
@@ -338,9 +346,10 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
                         if (!topic || !level) return null;
                         const currentExp = level?.currentExperience || 0;
                         const maxExp = level?.experienceToNextLevel || 100;
+                        const expGain = topicExpGainMap.get(topic) ?? 0;
                         return (
                           <div key={topic} className="rounded-lg p-1.5 w-full">
-                            {renderTopicRow(topic, level, false, currentExp, maxExp)}
+                            {renderTopicRow(topic, level, false, currentExp, maxExp, expGain)}
                           </div>
                         );
                       })}
