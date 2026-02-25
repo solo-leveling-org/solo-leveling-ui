@@ -315,7 +315,7 @@ export const NotificationContainer: React.FC = () => {
   return (
     <div
       className="fixed top-[4rem] right-4 left-4 sm:left-auto sm:right-4 z-50 space-y-3 pointer-events-none notification-container"
-      style={{ visibility: isOverlayOpen ? 'hidden' : undefined }}
+      style={{ zIndex: isOverlayOpen ? 0 : undefined }}
     >
       {notifications.map((notification) => (
         <div key={notification.id} className="pointer-events-auto w-full sm:w-auto">

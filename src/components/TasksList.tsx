@@ -456,7 +456,8 @@ const TasksList: React.FC<TasksListProps> = ({
         style={{
           opacity: showContent ? 1 : 0,
           transform: showContent ? 'translateY(0)' : 'translateY(10px)',
-          transition: 'opacity 0.3s ease-out, transform 0.3s ease-out'
+          transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
+          isolation: 'isolate',
         }}
       >
         <TasksGrid

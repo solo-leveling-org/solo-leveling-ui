@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, startTransition } from 'react';
 import type { PlayerTask, Stamina } from '../api';
 import { api } from '../services';
 import { useLocalization } from '../hooks/useLocalization';
@@ -116,12 +116,12 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     if (tabMode !== 'topics') {
       setIsTabTransitioning(true);
       setTimeout(() => {
-        setTabMode('topics');
-        setDisplayTabMode('topics');
-        setTimeout(() => {
-          setIsTabTransitioning(false);
-        }, 50);
-      }, 220);
+        startTransition(() => {
+          setTabMode('topics');
+          setDisplayTabMode('topics');
+        });
+        setTimeout(() => setIsTabTransitioning(false), 50);
+      }, 180);
     }
   }, [tabMode]);
 
@@ -130,12 +130,12 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
     if (tabMode !== 'tasks') {
       setIsTabTransitioning(true);
       setTimeout(() => {
-        setTabMode('tasks');
-        setDisplayTabMode('tasks');
-        setTimeout(() => {
-          setIsTabTransitioning(false);
-        }, 50);
-      }, 220);
+        startTransition(() => {
+          setTabMode('tasks');
+          setDisplayTabMode('tasks');
+        });
+        setTimeout(() => setIsTabTransitioning(false), 50);
+      }, 180);
     }
   }, [tabMode]);
 
@@ -633,6 +633,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                   transform: isTransitioning ? 'translateY(10px)' : 'translateY(0)',
                   transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
                   willChange: isTransitioning ? 'opacity, transform' : 'auto',
+                  isolation: 'isolate',
                   minHeight: isTransitioning && contentHeightRef.current > 0 
                     ? `${contentHeightRef.current}px` 
                     : 'auto'

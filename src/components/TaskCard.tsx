@@ -120,9 +120,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, stamina, onClick, onCom
     return `${day} ${monthName} ${year}, ${hours}:${minutes}`;
   };
   
-  // Отслеживаем переход из PREPARING в IN_PROGRESS
+  // Отслеживаем переход из PREPARING в IN_PROGRESS (только при смене статуса, не при первом монтировании)
+  const prevStatusRef = React.useRef(status);
   React.useEffect(() => {
-    if (status === PlayerTaskStatus.IN_PROGRESS) {
+    const prevStatus = prevStatusRef.current;
+    prevStatusRef.current = status;
+    if (prevStatus !== PlayerTaskStatus.IN_PROGRESS && status === PlayerTaskStatus.IN_PROGRESS) {
       setIsTransitioning(true);
       const timer = setTimeout(() => setIsTransitioning(false), 600);
       return () => clearTimeout(timer);
@@ -309,12 +312,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, stamina, onClick, onCom
           </p>
         </div>
 
-        {/* Topics with modern pill design */}
+        {/* Topics with modern pill design — без backdrop-blur для стабильного отображения при анимации */}
         <div className="flex flex-wrap gap-2 mb-6">
           {(task?.topics || []).slice(0, 2).map((topic) => (
             <span
               key={topic}
-              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-tech font-semibold tracking-wide backdrop-blur-sm border"
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-tech font-semibold tracking-wide border"
               style={{
                 background: 'rgba(220, 235, 245, 0.1)',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -327,7 +330,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, stamina, onClick, onCom
           ))}
           {(task?.topics || []).length > 2 && (
             <span 
-              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-tech font-semibold tracking-wide backdrop-blur-sm border"
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-tech font-semibold tracking-wide border"
               style={{
                 background: 'rgba(220, 235, 245, 0.08)',
                 border: '1px solid rgba(220, 235, 245, 0.15)',
@@ -384,7 +387,6 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, stamina, onClick, onCom
                   background: canComplete 
                     ? 'rgba(255, 255, 255, 0.08)'
                     : 'rgba(255, 255, 255, 0.05)',
-                  backdropFilter: 'blur(20px)',
                   border: canComplete 
                     ? '2px solid rgba(160, 210, 235, 0.4)'
                     : '2px solid rgba(255, 255, 255, 0.12)',
@@ -431,7 +433,6 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, stamina, onClick, onCom
                   background: canSkip 
                     ? 'rgba(255, 255, 255, 0.08)'
                     : 'rgba(255, 255, 255, 0.05)',
-                  backdropFilter: 'blur(20px)',
                   border: canSkip 
                     ? '2px solid rgba(180, 220, 240, 0.4)'
                     : '2px solid rgba(255, 255, 255, 0.12)',

@@ -5,6 +5,7 @@ import { api } from '../services';
 import TopicIcon from './TopicIcons';
 import { useLocalization } from '../hooks/useLocalization';
 import { ExperienceProgressBar } from './ui/experience-progress-bar';
+import { getOptimizedBlur } from '../utils/performance';
 
 type TopicsSectionProps = {
   isAuthenticated: boolean;
@@ -19,6 +20,7 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const { t } = useLocalization();
+  const backdropBlur = getOptimizedBlur('20px', '4px');
 
   // Определяем заблокированные топики
   const getIsDisabled = (topic: TaskTopic): boolean => {
@@ -282,7 +284,7 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
                 background: isSelected && !isDisabled
                   ? colorScheme.selectedBgGradient
                   : 'rgba(255, 255, 255, 0.06)',
-                backdropFilter: 'blur(20px)',
+                backdropFilter: `blur(${backdropBlur})`,
                 border: isSelected && !isDisabled
                   ? `2px solid ${colorScheme.borderColor}`
                   : '2px solid rgba(220, 235, 245, 0.2)',
@@ -450,7 +452,7 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
           className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 max-w-2xl w-full"
           style={{
             background: 'rgba(255, 255, 255, 0.06)',
-            backdropFilter: 'blur(20px)',
+            backdropFilter: `blur(${backdropBlur})`,
             border: '2px solid rgba(220, 235, 245, 0.2)',
             boxShadow: `
               0 0 20px rgba(180, 220, 240, 0.15),
@@ -594,6 +596,7 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
 // Skeleton component for TopicsSection
 const TopicsSectionSkeleton: React.FC = () => {
   const allTopics = Object.values(TaskTopic);
+  const backdropBlur = getOptimizedBlur('20px', '4px');
 
   return (
     <>
@@ -604,7 +607,7 @@ const TopicsSectionSkeleton: React.FC = () => {
             className="relative p-4 sm:p-6 rounded-2xl md:rounded-3xl animate-pulse"
             style={{
               background: 'rgba(255, 255, 255, 0.06)',
-              backdropFilter: 'blur(20px)',
+              backdropFilter: `blur(${backdropBlur})`,
               border: '2px solid rgba(220, 235, 245, 0.2)',
               boxShadow: '0 0 15px rgba(180, 220, 240, 0.1), inset 0 0 20px rgba(200, 230, 245, 0.02)',
             }}
@@ -666,7 +669,7 @@ const TopicsSectionSkeleton: React.FC = () => {
           className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 max-w-2xl w-full animate-pulse"
           style={{
             background: 'rgba(255, 255, 255, 0.06)',
-            backdropFilter: 'blur(20px)',
+            backdropFilter: `blur(${backdropBlur})`,
             border: '2px solid rgba(220, 235, 245, 0.2)',
             boxShadow: '0 0 20px rgba(180, 220, 240, 0.15), inset 0 0 20px rgba(200, 230, 245, 0.03)'
           }}

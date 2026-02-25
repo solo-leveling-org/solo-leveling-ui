@@ -346,6 +346,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
                 opacity: showActiveContent ? 1 : 0,
                 transform: showActiveContent ? 'translateY(0)' : 'translateY(10px)',
                 transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
+                isolation: 'isolate',
               }}
             >
               <TasksGrid
