@@ -21,7 +21,13 @@ const StreakCalendarTab: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
   const [activeDays, setActiveDays] = useState<number[]>([]);
   const [openDropdown, setOpenDropdown] = useState<'month' | 'year' | null>(null);
+  const [contentLoaded, setContentLoaded] = useState(false);
   const dropdownWrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setContentLoaded(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (openDropdown === null) return;
@@ -144,8 +150,15 @@ const StreakCalendarTab: React.FC = () => {
 
   return (
     <div
-      className="tab-page-wrapper fixed inset-0 flex flex-col overflow-y-auto overflow-x-hidden"
-      style={{ boxSizing: 'border-box', zIndex: 1, background: 'transparent' }}
+      className={`tab-page-wrapper fixed inset-0 flex flex-col overflow-y-auto overflow-x-hidden ${contentLoaded ? 'tab-content-enter-active' : ''}`}
+      style={{
+        boxSizing: 'border-box',
+        zIndex: 1,
+        background: 'transparent',
+        opacity: contentLoaded ? 1 : 0,
+        transform: contentLoaded ? 'translateY(0)' : 'translateY(12px)',
+        transition: 'opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+      }}
     >
       <div
         className="tab-inner-content p-4 pb-6 space-y-4 flex-1 max-w-lg mx-auto w-full box-border pt-16 md:pt-20"
@@ -180,19 +193,21 @@ const StreakCalendarTab: React.FC = () => {
           </div>
         )}
 
-        <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center justify-between gap-2 flex-wrap max-w-md mx-auto w-full">
           <button
             type="button"
             onClick={goPrevMonth}
-            className="p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[rgba(180,220,240,0.5)] shrink-0"
+            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[rgba(180,220,240,0.5)]"
             style={{
               background: 'rgba(220, 235, 245, 0.08)',
               color: '#e8f4f8',
-              border: '1px solid rgba(220, 235, 245, 0.15)',
+              border: '1px solid rgba(220, 235, 245, 0.2)',
             }}
             aria-label={t('common.prev')}
           >
-            <span className="inline-block text-lg font-bold leading-none" style={{ color: 'inherit' }}>‹</span>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+            </svg>
           </button>
           <div ref={dropdownWrapRef} className="flex items-center gap-2 flex-1 justify-center min-w-0 max-w-[280px]">
             <div className="relative flex-none p-0 m-0 w-max">
@@ -256,15 +271,17 @@ const StreakCalendarTab: React.FC = () => {
             type="button"
             onClick={goNextMonth}
             disabled={!canGoNext}
-            className="p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[rgba(180,220,240,0.5)] disabled:opacity-40 disabled:pointer-events-none shrink-0"
+            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[rgba(180,220,240,0.5)] disabled:opacity-40 disabled:pointer-events-none disabled:hover:scale-100"
             style={{
               background: 'rgba(220, 235, 245, 0.08)',
               color: '#e8f4f8',
-              border: '1px solid rgba(220, 235, 245, 0.15)',
+              border: '1px solid rgba(220, 235, 245, 0.2)',
             }}
             aria-label={t('common.next')}
           >
-            <span className="inline-block text-lg font-bold leading-none" style={{ color: 'inherit' }}>›</span>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+            </svg>
           </button>
         </div>
 
