@@ -810,6 +810,15 @@ body.mobile-version.android .tab-inner-content.pt-20 {
   padding-top: 0 !important;
 }
 
+/* Кнопка настроек в профиле — под TopBar на мобильной Telegram */
+body.mobile-version .profile-settings-btn {
+  top: 168px !important;
+}
+
+body.mobile-version.android .profile-settings-btn {
+  top: 148px !important;
+}
+
 /* Оверлей стрика — под TopBar с отступом */
 /* Панель стрика (календарь) — без отступа под TopBar */
 .mobile-version .day-streak-info-panel {

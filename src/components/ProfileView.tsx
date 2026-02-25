@@ -95,7 +95,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({
             {isOwnProfile && (
               <button
                 onClick={() => setShowSettings(true)}
-                className="absolute top-20 right-4 md:top-24 md:right-6 z-20 p-2 rounded-xl transition-all duration-200 hover:scale-110 active:scale-95"
+                className="profile-settings-btn absolute top-20 right-4 md:top-24 md:right-6 z-20 p-2 rounded-xl transition-all duration-200 hover:scale-110 active:scale-95"
                 style={{
                   background: 'rgba(255, 255, 255, 0.08)',
                   border: '1px solid rgba(255, 255, 255, 0.12)',

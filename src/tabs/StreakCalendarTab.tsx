@@ -146,9 +146,8 @@ const StreakCalendarTab: React.FC = () => {
       style={{ boxSizing: 'border-box', zIndex: 1, background: 'transparent' }}
     >
       <div
-        className="p-4 pb-6 space-y-4 flex-1 max-w-lg mx-auto w-full box-border"
+        className="tab-inner-content p-4 pb-6 space-y-4 flex-1 max-w-lg mx-auto w-full box-border pt-16 md:pt-20"
         style={{
-          paddingTop: 'max(4.5rem, calc(3.5rem + env(safe-area-inset-top, 0px)))',
           paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom, 0px))',
         }}
       >
