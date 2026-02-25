@@ -7,7 +7,7 @@ import TasksGrid from './TasksGrid';
 import TasksList from './TasksList';
 import TaskCardSkeleton from './TaskCardSkeleton';
 import DailyTasksGrid from './DailyTasksGrid';
-import TaskDialog from './TaskDialog';
+import TaskOverlay from './TaskOverlay';
 import TaskCompletionOverlay from './TaskCompletionOverlay';
 import DateFilter from './DateFilter';
 import FilterDropdown from './FilterDropdown';
@@ -276,7 +276,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
                 onClick={onGoToTopics}
                 className="group relative overflow-hidden px-8 py-4 rounded-2xl font-tech text-sm tracking-[0.15em] uppercase transition-all duration-300"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                  background: 'rgba(255, 255, 255, 0.07)',
                   backdropFilter: 'blur(20px)',
                   border: '2px solid rgba(220, 235, 245, 0.3)',
                   boxShadow: '0 0 20px rgba(180, 220, 240, 0.2)',
@@ -379,7 +379,7 @@ const TasksSection: React.FC<TasksSectionProps> = ({
       )}
 
       {dialogTask && dialogTask.task && (
-        <TaskDialog
+        <TaskOverlay
           task={dialogTask.task}
           status={dialogTask.status}
           createdAt={dialogTask.createdAt}

@@ -249,7 +249,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
   // Вспомогательные функции для получения стилей топ-3 через switch case
   const getTopThreeBackground = (position: number, isTopThree: boolean): string => {
     if (!isTopThree) {
-      return 'linear-gradient(135deg, rgba(10, 14, 39, 0.98) 0%, rgba(5, 8, 18, 0.99) 100%)';
+      return 'rgba(255, 255, 255, 0.09)';
     }
     switch (position) {
       case 1:
@@ -259,13 +259,13 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       case 3:
         return 'linear-gradient(135deg, rgba(205, 127, 50, 0.2) 0%, rgba(160, 82, 45, 0.15) 50%, rgba(220, 150, 80, 0.1) 100%)';
       default:
-        return 'linear-gradient(135deg, rgba(10, 14, 39, 0.98) 0%, rgba(5, 8, 18, 0.99) 100%)';
+        return 'rgba(255, 255, 255, 0.09)';
     }
   };
 
   const getTopThreeBorder = (position: number, isTopThree: boolean): string => {
     if (!isTopThree) {
-      return position === 0 ? '2px solid rgba(180, 220, 240, 0.5)' : '1px solid rgba(220, 235, 245, 0.2)';
+      return position === 0 ? '2px solid rgba(180, 220, 240, 0.5)' : '1px solid rgba(255, 255, 255, 0.12)';
     }
     switch (position) {
       case 1:
@@ -275,7 +275,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       case 3:
         return '2px solid rgba(205, 127, 50, 0.6)';
       default:
-        return '1px solid rgba(220, 235, 245, 0.2)';
+        return '1px solid rgba(255, 255, 255, 0.12)';
     }
   };
 
@@ -364,7 +364,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
 
   const getTopThreePositionColor = (position: number, isTopThree: boolean): string => {
     if (!isTopThree) {
-      return '#e8f4f8';
+      return '#f4f4f5';
     }
     switch (position) {
       case 1:
@@ -374,7 +374,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       case 3:
         return '#CD7F32';
       default:
-        return '#e8f4f8';
+        return '#f4f4f5';
     }
   };
 
@@ -537,13 +537,13 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
               style={leaderboardType === type ? {
                 background: 'linear-gradient(135deg, rgba(180, 220, 240, 0.25) 0%, rgba(160, 210, 235, 0.15) 100%)',
                 border: '2px solid rgba(180, 220, 240, 0.4)',
-                color: '#e8f4f8',
+                color: '#f4f4f5',
                 boxShadow: '0 0 20px rgba(180, 220, 240, 0.3), inset 0 0 20px rgba(200, 230, 245, 0.05)',
                 textShadow: '0 0 4px rgba(180, 220, 240, 0.3)',
                 backdropFilter: 'blur(20px)'
               } : {
-                background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.4) 0%, rgba(5, 8, 18, 0.6) 100%)',
-                border: '1px solid rgba(220, 235, 245, 0.2)',
+                background: 'rgba(255, 255, 255, 0.04)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
                 color: 'rgba(220, 235, 245, 0.6)',
                 backdropFilter: 'blur(10px)'
               }}
@@ -651,7 +651,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                   <div
                     className="font-tech font-semibold text-base mb-1 truncate"
                     style={{
-                      color: '#e8f4f8',
+                      color: '#f4f4f5',
                       textShadow: getTopThreeNameTextShadow(position, isTopThree)
                     }}
                   >
@@ -709,7 +709,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                 className="flex-shrink-0 w-12 h-12 rounded-full"
                 style={{
                   background: 'rgba(220, 235, 245, 0.1)',
-                  border: '1px solid rgba(220, 235, 245, 0.2)'
+                  border: '1px solid rgba(255, 255, 255, 0.12)'
                 }}
               ></div>
               {/* Avatar skeleton */}
@@ -717,7 +717,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                 className="flex-shrink-0 w-12 h-12 rounded-full"
                 style={{
                   background: 'rgba(220, 235, 245, 0.1)',
-                  border: '1px solid rgba(220, 235, 245, 0.2)'
+                  border: '1px solid rgba(255, 255, 255, 0.12)'
                 }}
               ></div>
               {/* User info skeleton */}
@@ -818,7 +818,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                     background: i < 3 
                       ? 'rgba(220, 235, 245, 0.15)' 
                       : 'rgba(220, 235, 245, 0.1)',
-                    border: '1px solid rgba(220, 235, 245, 0.2)'
+                    border: '1px solid rgba(255, 255, 255, 0.12)'
                   }}
                 ></div>
                 {/* Avatar skeleton */}
@@ -826,7 +826,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                   className="flex-shrink-0 w-12 h-12 rounded-full"
                   style={{
                     background: 'rgba(220, 235, 245, 0.1)',
-                    border: '1px solid rgba(220, 235, 245, 0.2)'
+                    border: '1px solid rgba(255, 255, 255, 0.12)'
                   }}
                 ></div>
                 {/* User info skeleton */}
@@ -908,7 +908,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                           : 'rgba(220, 235, 245, 0.1)',
                         border: isTopThree
                           ? getTopThreePositionBorder(position, isTopThree)
-                          : '1px solid rgba(220, 235, 245, 0.2)',
+                          : '1px solid rgba(255, 255, 255, 0.12)',
                         color: getTopThreePositionColor(position, isTopThree),
                         boxShadow: isTopThree
                           ? getTopThreeListPositionBoxShadow(position, isTopThree)
@@ -951,7 +951,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                       <div
                         className="font-tech font-semibold text-base mb-1 truncate"
                         style={{
-                          color: '#e8f4f8',
+                          color: '#f4f4f5',
                           textShadow: getTopThreeNameTextShadow(position, isTopThree)
                         }}
                       >
@@ -991,7 +991,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
               <div 
                 className="animate-spin rounded-full h-6 w-6 border-2"
                 style={{
-                  borderColor: 'rgba(220, 235, 245, 0.2)',
+                  borderColor: 'rgba(255, 255, 255, 0.12)',
                   borderTopColor: 'rgba(180, 220, 240, 0.6)'
                 }}
               ></div>

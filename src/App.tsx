@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import { createPortal } from 'react-dom';
 import './App.css';
 import { config } from './config/environment';
 import MaintenanceScreen from './components/MaintenanceScreen';
@@ -172,7 +173,7 @@ function AppRoutes() {
                                    element={<TasksTab isAuthenticated={isAuthenticated}/>}/>
                             <Route path="/profile"
                                    element={<ProfileTab isAuthenticated={isAuthenticated}/>}/>
-                            <Route path="/collections"
+                            <Route path="/menu"
                                    element={<MenuTab isAuthenticated={isAuthenticated}/>}/>
                             <Route path="/leaderboard"
                                    element={<MenuTab isAuthenticated={isAuthenticated}/>}/>
@@ -194,18 +195,30 @@ function AppRoutes() {
   );
 }
 
+const appBackground = (
+  <div className="app-background-layer" aria-hidden />
+);
+
 export default function App() {
   if (config.isMaintenanceMode) {
-    return <MaintenanceScreen />;
+    return (
+      <>
+        {createPortal(appBackground, document.body)}
+        <MaintenanceScreen />
+      </>
+    );
   }
 
   return (
-      <ModalProvider>
-      <NotificationProvider>
-          <Router>
-            <AppRoutes/>
-          </Router>
-        </NotificationProvider>
+      <>
+        {createPortal(appBackground, document.body)}
+        <ModalProvider>
+          <NotificationProvider>
+            <Router>
+              <AppRoutes/>
+            </Router>
+          </NotificationProvider>
         </ModalProvider>
+      </>
   );
 }

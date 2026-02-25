@@ -377,7 +377,7 @@ const StaminaIndicator: React.FC<StaminaIndicatorProps> = ({ stamina, onStaminaU
         <div
           className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-4 py-3 rounded-lg backdrop-blur-md z-50 pointer-events-none whitespace-nowrap"
           style={{
-            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            background: 'rgba(255, 255, 255, 0.08)',
             border: '1px solid rgba(180, 220, 240, 0.3)',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(180, 220, 240, 0.2)',
             minWidth: '280px',

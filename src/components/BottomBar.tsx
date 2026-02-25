@@ -37,7 +37,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
     },
     {
       key: 'menu',
-      path: '/collections',
+      path: '/menu',
       icon: 'menu',
       label: t('navigation.menu')
     },
@@ -80,8 +80,8 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
         className={`fixed bottom-0 left-0 right-0 z-40 transition-all duration-300 ${isDialogOpen ? 'pointer-events-none' : ''}`}
         style={{
           background: isDialogOpen 
-            ? 'linear-gradient(135deg, rgba(5, 8, 18, 0.98) 0%, rgba(10, 14, 39, 0.99) 100%)'
-            : 'linear-gradient(135deg, rgba(5, 8, 18, 0.95) 0%, rgba(10, 14, 39, 0.98) 100%)',
+            ? 'rgba(255, 255, 255, 0.08)'
+            : 'rgba(255, 255, 255, 0.07)',
           backdropFilter: isDialogOpen ? 'blur(8px)' : 'blur(20px)',
           borderTop: '1px solid rgba(220, 235, 245, 0.15)',
           boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(220, 235, 245, 0.1)',
@@ -89,17 +89,6 @@ const BottomBar: React.FC<BottomBarProps> = ({ isAuthenticated, isVisible = true
           filter: isDialogOpen ? 'brightness(0.7)' : 'brightness(1)',
         }}
       >
-      {/* Subtle holographic grid overlay */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '20px 20px'
-        }}></div>
-      </div>
-
       <div className="relative flex items-center justify-around py-3 px-2 md:px-4">
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path;

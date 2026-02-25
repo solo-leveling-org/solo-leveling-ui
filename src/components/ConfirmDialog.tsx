@@ -107,7 +107,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 onMouseDown={(e) => e.stopPropagation()}
                 className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%), linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.1) 100%)',
+                  background: 'rgba(255, 255, 255, 0.1), linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.1) 100%)',
                   backdropFilter: 'none',
                   borderColor: 'rgba(220, 38, 38, 0.3)',
                   boxShadow: '0 0 20px rgba(220, 38, 38, 0.2), inset 0 0 20px rgba(220, 38, 38, 0.05)',
@@ -139,7 +139,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 onMouseDown={(e) => e.stopPropagation()}
                 className="flex-1 px-6 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%), linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%)',
+                  background: 'rgba(255, 255, 255, 0.1), linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%)',
                   backdropFilter: 'none',
                   borderColor: 'rgba(34, 197, 94, 0.3)',
                   boxShadow: '0 0 20px rgba(34, 197, 94, 0.2), inset 0 0 20px rgba(34, 197, 94, 0.05)',

@@ -178,9 +178,8 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
   if (loading && tabMode === 'tasks') {
     return (
       <div 
-        className="fixed inset-0 overflow-y-auto overflow-x-hidden"
+        className="tab-page-wrapper fixed inset-0 overflow-y-auto overflow-x-hidden"
         style={{ 
-          background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
           boxSizing: 'border-box'
         }}
       >
@@ -274,9 +273,8 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
 
   return (
     <div 
-      className={`fixed inset-0 overflow-y-auto overflow-x-hidden ${contentLoaded ? 'tab-content-enter-active' : ''}`}
+      className={`tab-page-wrapper fixed inset-0 overflow-y-auto overflow-x-hidden ${contentLoaded ? 'tab-content-enter-active' : ''}`}
       style={{ 
-        background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
         boxSizing: 'border-box',
         opacity: contentLoaded ? 1 : 0,
         transform: contentLoaded ? 'translateY(0)' : 'translateY(10px)',
@@ -437,7 +435,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                         textShadow: '0 0 4px rgba(180, 220, 240, 0.3)',
                         backdropFilter: 'blur(20px)'
                       } : {
-                        background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.4) 0%, rgba(5, 8, 18, 0.6) 100%)',
+                        background: 'rgba(255, 255, 255, 0.04)',
                         border: '2px solid rgba(220, 235, 245, 0.2)',
                         color: 'rgba(220, 235, 245, 0.6)',
                         backdropFilter: 'blur(10px)'
@@ -508,7 +506,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                         textShadow: '0 0 4px rgba(180, 220, 240, 0.3)',
                         backdropFilter: 'blur(20px)'
                       } : {
-                        background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.4) 0%, rgba(5, 8, 18, 0.6) 100%)',
+                        background: 'rgba(255, 255, 255, 0.04)',
                         border: '2px solid rgba(220, 235, 245, 0.2)',
                         color: 'rgba(220, 235, 245, 0.6)',
                         backdropFilter: 'blur(10px)'
@@ -570,7 +568,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ isAuthenticated }) => {
                         textShadow: '0 0 4px rgba(180, 220, 240, 0.3)',
                         backdropFilter: 'blur(20px)'
                       } : {
-                        background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.4) 0%, rgba(5, 8, 18, 0.6) 100%)',
+                        background: 'rgba(255, 255, 255, 0.04)',
                         border: '2px solid rgba(220, 235, 245, 0.2)',
                         color: 'rgba(220, 235, 245, 0.6)',
                         backdropFilter: 'blur(10px)'

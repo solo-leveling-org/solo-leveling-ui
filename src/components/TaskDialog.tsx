@@ -22,7 +22,7 @@ type TaskDialogProps = {
 const getStatusColorScheme = (status?: PlayerTaskStatus) => {
   if (!status) {
     return {
-      bg: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+      bg: 'rgba(255, 255, 255, 0.1)',
       border: 'rgba(220, 235, 245, 0.2)',
     };
   }
@@ -30,21 +30,21 @@ const getStatusColorScheme = (status?: PlayerTaskStatus) => {
   switch (status) {
     case TaskStatus.COMPLETED:
       return {
-        bg: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%), linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%)',
+        bg: 'rgba(255, 255, 255, 0.1), linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%)',
         border: 'rgba(34, 197, 94, 0.3)',
         innerBg: 'linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(22, 163, 74, 0.05) 100%)',
         innerBorder: 'rgba(34, 197, 94, 0.2)',
       };
     case TaskStatus.SKIPPED:
       return {
-        bg: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%), linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.1) 100%)',
+        bg: 'rgba(255, 255, 255, 0.1), linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.1) 100%)',
         border: 'rgba(220, 38, 38, 0.3)',
         innerBg: 'linear-gradient(135deg, rgba(220, 38, 38, 0.08) 0%, rgba(185, 28, 28, 0.05) 100%)',
         innerBorder: 'rgba(220, 38, 38, 0.2)',
       };
     default:
       return {
-        bg: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+        bg: 'rgba(255, 255, 255, 0.1)',
         border: 'rgba(220, 235, 245, 0.2)',
         innerBg: 'rgba(220, 235, 245, 0.05)',
         innerBorder: 'rgba(220, 235, 245, 0.15)',

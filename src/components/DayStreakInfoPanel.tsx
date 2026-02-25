@@ -121,9 +121,9 @@ const DayStreakInfoPanelContent: React.FC<DayStreakInfoPanelContentProps> = ({ d
     gap: '8px',
   };
   const listStyle = {
-    background: 'rgb(10, 14, 39)',
-    border: '1px solid rgba(220, 235, 245, 0.2)',
-    borderRadius: '8px',
+    background: 'rgba(18, 18, 22, 0.98)',
+    border: '1px solid rgba(255, 255, 255, 0.12)',
+    borderRadius: '12px',
     boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
     maxHeight: '220px',
     overflowY: 'auto' as const,
@@ -156,8 +156,9 @@ const DayStreakInfoPanelContent: React.FC<DayStreakInfoPanelContentProps> = ({ d
       className="day-streak-info-panel fixed left-0 right-0 z-40 flex flex-col overflow-y-auto overflow-x-hidden"
       style={{
         bottom: '5rem',
-        background: 'linear-gradient(180deg, rgb(5, 8, 18) 0%, rgb(10, 14, 39) 100%)',
-        borderTop: '1px solid rgba(220, 235, 245, 0.08)',
+        background: 'radial-gradient(ellipse 100% 80% at 50% 100%, rgb(28, 28, 32) 0%, rgb(14, 14, 16) 50%, #0a0a0c 100%)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 -8px 32px rgba(0,0,0,0.4)',
       }}
     >
       <div className="p-4 pb-6 space-y-4 flex-1 max-w-lg mx-auto w-full box-border">
@@ -276,32 +277,25 @@ const DayStreakInfoPanelContent: React.FC<DayStreakInfoPanelContentProps> = ({ d
           </button>
         </div>
 
-        <div
-          className="grid grid-cols-7 gap-1.5 max-w-md mx-auto"
-          style={{
-            gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
-            gridAutoRows: 'minmax(0, 1fr)',
-          }}
-        >
+        {/* Weekday headers */}
+        <div className="grid grid-cols-7 gap-2 max-w-md mx-auto mb-1">
           {WEEKDAY_LABELS.map((i) => (
             <div
               key={`wd-${i}`}
-              className="aspect-square min-h-0 flex items-center justify-center text-[10px] font-tech"
-              style={{ color: 'rgba(220, 235, 245, 0.5)' }}
+              className="aspect-square min-h-0 flex items-center justify-center text-[11px] font-tech font-semibold"
+              style={{ color: 'rgba(220, 235, 245, 0.45)' }}
             >
               {['S', 'M', 'T', 'W', 'T', 'F', 'S'][i]}
             </div>
           ))}
+        </div>
+        <div
+          className="grid grid-cols-7 gap-2 max-w-md mx-auto"
+          style={{ gridTemplateColumns: 'repeat(7, minmax(0, 1fr))' }}
+        >
           {calendarCells.map((day, idx) => {
             if (day === null) {
-              return (
-                <div
-                  key={`empty-${idx}`}
-                  className="aspect-square min-w-0 min-h-0 rounded-lg"
-                  style={{ background: 'transparent' }}
-                  aria-hidden
-                />
-              );
+              return <div key={`empty-${idx}`} className="aspect-square min-w-0 min-h-0" aria-hidden />;
             }
             const isActive = activeDays.includes(day);
             const isCurrentDay =
@@ -309,17 +303,18 @@ const DayStreakInfoPanelContent: React.FC<DayStreakInfoPanelContentProps> = ({ d
             return (
               <div
                 key={day}
-                className="aspect-square min-w-0 min-h-0 w-full flex items-center justify-center rounded-lg text-sm font-tech transition-colors duration-200 box-border"
+                className="aspect-square min-w-0 w-full flex items-center justify-center rounded-xl text-sm font-tech font-medium transition-all duration-200"
                 style={{
                   background: isActive
-                    ? 'linear-gradient(135deg, rgba(251, 146, 60, 0.35) 0%, rgba(234, 88, 12, 0.25) 100%)'
-                    : 'rgba(220, 235, 245, 0.06)',
+                    ? 'linear-gradient(145deg, rgba(251, 146, 60, 0.28) 0%, rgba(234, 88, 12, 0.18) 100%)'
+                    : 'rgba(255, 255, 255, 0.05)',
                   border: isCurrentDay
-                    ? '2px solid rgba(180, 220, 240, 0.9)'
+                    ? '2px solid rgba(180, 220, 240, 0.6)'
                     : isActive
-                      ? '1px solid rgba(251, 146, 60, 0.5)'
-                      : '1px solid rgba(220, 235, 245, 0.1)',
-                  color: isActive ? '#fb923c' : 'rgba(220, 235, 245, 0.7)',
+                      ? '1px solid rgba(251, 146, 60, 0.4)'
+                      : '1px solid rgba(255, 255, 255, 0.08)',
+                  color: isActive ? '#fbbf24' : isCurrentDay ? '#e8f4f8' : 'rgba(220, 235, 245, 0.75)',
+                  boxShadow: isActive ? '0 0 12px rgba(251, 146, 60, 0.2)' : 'none',
                 }}
               >
                 {day}

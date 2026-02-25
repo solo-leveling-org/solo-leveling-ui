@@ -21,38 +21,38 @@ const getStatusColorScheme = (status: PlayerTaskStatus) => {
     switch (status) {
       case PlayerTaskStatus.PREPARING:
         return {
-          bg: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
-          border: 'rgba(220, 235, 245, 0.15)',
+          bg: 'rgba(255, 255, 255, 0.06)',
+          border: 'rgba(255, 255, 255, 0.12)',
           accentColor: 'rgba(220, 235, 245, 0.3)',
-          textColor: '#e8f4f8',
+          textColor: '#f4f4f5',
         };
       case PlayerTaskStatus.IN_PROGRESS:
         return {
-          bg: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
-          border: 'rgba(180, 220, 240, 0.3)',
+          bg: 'rgba(255, 255, 255, 0.07)',
+          border: 'rgba(255, 255, 255, 0.18)',
           accentColor: 'rgba(180, 220, 240, 0.4)',
-          textColor: '#e8f4f8',
+          textColor: '#f4f4f5',
         };
       case PlayerTaskStatus.COMPLETED:
         return {
           bg: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%)',
           border: 'rgba(34, 197, 94, 0.3)',
           accentColor: 'rgba(34, 197, 94, 0.5)',
-          textColor: 'rgba(220, 235, 245, 0.6)',
+          textColor: 'rgba(255, 255, 255, 0.65)',
         };
       case PlayerTaskStatus.SKIPPED:
         return {
           bg: 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.05) 100%)',
           border: 'rgba(220, 38, 38, 0.3)',
           accentColor: 'rgba(220, 38, 38, 0.5)',
-          textColor: 'rgba(220, 235, 245, 0.6)',
+          textColor: 'rgba(255, 255, 255, 0.65)',
         };
       default:
         return {
-          bg: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
-          border: 'rgba(220, 235, 245, 0.2)',
+          bg: 'rgba(255, 255, 255, 0.06)',
+          border: 'rgba(255, 255, 255, 0.12)',
           accentColor: 'rgba(220, 235, 245, 0.3)',
-          textColor: '#e8f4f8',
+          textColor: '#f4f4f5',
         };
     }
   };
@@ -229,7 +229,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, stamina, onClick, onCom
               <div 
                 className="w-12 h-12 border-4 rounded-full animate-spin"
                 style={{
-                  borderColor: 'rgba(220, 235, 245, 0.2)',
+                  borderColor: 'rgba(255, 255, 255, 0.12)',
                   borderTopColor: 'rgba(180, 220, 240, 0.6)'
                 }}
               ></div>
@@ -317,8 +317,8 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, stamina, onClick, onCom
               className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-tech font-semibold tracking-wide backdrop-blur-sm border"
               style={{
                 background: 'rgba(220, 235, 245, 0.1)',
-                border: '1px solid rgba(220, 235, 245, 0.2)',
-                color: '#e8f4f8',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                color: '#f4f4f5',
               }}
             >
               <TopicIcon topic={topic} size={16} className="mr-1.5 text-sm" />
@@ -382,12 +382,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, stamina, onClick, onCom
                 }`}
                 style={{
                   background: canComplete 
-                    ? 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)'
-                    : 'linear-gradient(135deg, rgba(10, 14, 39, 0.6) 0%, rgba(5, 8, 18, 0.7) 100%)',
+                    ? 'rgba(255, 255, 255, 0.08)'
+                    : 'rgba(255, 255, 255, 0.05)',
                   backdropFilter: 'blur(20px)',
                   border: canComplete 
                     ? '2px solid rgba(160, 210, 235, 0.4)'
-                    : '2px solid rgba(220, 235, 245, 0.2)',
+                    : '2px solid rgba(255, 255, 255, 0.12)',
                   boxShadow: canComplete 
                     ? '0 0 15px rgba(160, 210, 235, 0.3)'
                     : 'none',
@@ -429,12 +429,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ playerTask, stamina, onClick, onCom
                 }`}
                 style={{
                   background: canSkip 
-                    ? 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)'
-                    : 'linear-gradient(135deg, rgba(10, 14, 39, 0.6) 0%, rgba(5, 8, 18, 0.7) 100%)',
+                    ? 'rgba(255, 255, 255, 0.08)'
+                    : 'rgba(255, 255, 255, 0.05)',
                   backdropFilter: 'blur(20px)',
                   border: canSkip 
                     ? '2px solid rgba(180, 220, 240, 0.4)'
-                    : '2px solid rgba(220, 235, 245, 0.2)',
+                    : '2px solid rgba(255, 255, 255, 0.12)',
                   boxShadow: canSkip 
                     ? '0 0 15px rgba(180, 220, 240, 0.3)'
                     : 'none',

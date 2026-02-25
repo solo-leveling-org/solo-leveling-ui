@@ -57,7 +57,7 @@ const BaseFilter: React.FC<BaseFilterProps> = ({
          style={{
            background: hasValue
              ? 'linear-gradient(135deg, rgba(180, 220, 240, 0.15) 0%, rgba(160, 210, 235, 0.08) 100%)'
-             : 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+             : 'rgba(255, 255, 255, 0.06)',
            backdropFilter: 'blur(20px)',
            border: hasValue
              ? '2px solid rgba(180, 220, 240, 0.4)'

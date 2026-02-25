@@ -4,7 +4,7 @@ const TaskCardSkeleton: React.FC = () => (
   <div 
     className="group relative overflow-hidden cursor-default animate-fadeIn"
     style={{
-      background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+      background: 'rgba(255, 255, 255, 0.06)',
       backdropFilter: 'blur(20px)',
       border: '2px solid rgba(220, 235, 245, 0.2)',
       borderRadius: '24px',

@@ -307,7 +307,7 @@ const Calendar: React.FC<CalendarProps> = ({
               }}
               className="flex-1 px-4 py-2 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95 select-none"
               style={{
-              background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+              background: 'rgba(255, 255, 255, 0.1)',
                 border: '1px solid rgba(220, 235, 245, 0.3)',
                 color: '#e8f4f8',
                 boxShadow: '0 0 10px rgba(180, 220, 240, 0.2)'

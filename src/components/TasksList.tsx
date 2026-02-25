@@ -364,7 +364,7 @@ const TasksList: React.FC<TasksListProps> = ({
           onClick={() => loadTasks(0, true)}
           className="px-6 py-3 rounded-xl font-tech font-semibold transition-all duration-300 hover:scale-105 active:scale-95"
           style={{
-            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            background: 'rgba(255, 255, 255, 0.07)',
             border: '2px solid rgba(220, 235, 245, 0.3)',
             color: '#e8f4f8',
             boxShadow: '0 0 15px rgba(180, 220, 240, 0.2)'
@@ -389,7 +389,7 @@ const TasksList: React.FC<TasksListProps> = ({
         <div 
           className="relative inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 mx-auto"
           style={{
-            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            background: 'rgba(255, 255, 255, 0.06)',
             border: '2px solid rgba(220, 235, 245, 0.2)',
             boxShadow: '0 0 20px rgba(180, 220, 240, 0.15)'
           }}

@@ -83,7 +83,7 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
             <span
               className="text-[10px] font-tech font-bold px-2 py-0.5 rounded-full whitespace-nowrap"
               style={{
-                background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+                background: 'rgba(255, 255, 255, 0.1)',
                 border: '1px solid rgba(220, 235, 245, 0.3)',
                 color: '#e8f4f8',
               }}
@@ -145,8 +145,8 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
         width: '100%',
         height: '100%',
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, rgba(5, 8, 18, 0.98) 0%, rgba(10, 14, 39, 0.99) 100%)',
-        backdropFilter: 'blur(12px)',
+        background: 'radial-gradient(ellipse 100% 100% at 50% 50%, rgb(28, 28, 32) 0%, rgb(14, 14, 16) 50%, #000000 100%)',
+        backdropFilter: 'none',
         paddingLeft: 'env(safe-area-inset-left, 0)',
         paddingRight: 'env(safe-area-inset-right, 0)',
         paddingTop: 'env(safe-area-inset-top, 0)',
@@ -187,19 +187,19 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
         }
       `}</style>
 
-      {/* Область контента: заголовок сверху, всё остальное ниже, без скролла */}
-      <div className="task-completion-overlay flex-1 flex flex-col min-h-0 overflow-hidden px-4">
+      {/* Область контента: на мобильных — сверху, на десктопе — по центру вертикали */}
+      <div className="task-completion-overlay flex-1 flex flex-col min-h-0 overflow-hidden px-4 justify-start md:justify-center">
         <div
-          className="task-completion-overlay-content relative z-10 flex flex-col max-w-md w-full mx-auto min-h-0"
+          className="task-completion-overlay-content relative z-10 flex flex-col max-w-md w-full mx-auto min-h-0 md:max-h-[72vh]"
           style={{
             opacity: overlayMounted ? 1 : 0,
             transform: overlayMounted ? 'translateY(0)' : 'translateY(14px)',
             transition: 'opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1), transform 0.5s cubic-bezier(0.33, 1, 0.68, 1)',
           }}
         >
-          {/* Заголовок: всегда видим сверху; отступ меньше на десктопе — через .task-completion-title в index.css */}
+          {/* Заголовок: мягкий отступ сверху, чтобы не резало глаз */}
           <div
-            className={`task-completion-title relative z-10 flex-shrink-0 text-center pt-4 pb-2 ${overlayMounted ? 'task-completion-block-in' : ''}`}
+            className={`task-completion-title relative z-10 flex-shrink-0 text-center pt-6 md:pt-8 pb-2 ${overlayMounted ? 'task-completion-block-in' : ''}`}
             style={overlayMounted ? { animationDelay: '0s' } : undefined}
           >
             <h2
@@ -232,7 +232,7 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
                   <div
                     className="text-lg font-tech font-bold rounded-full pl-4 pr-4 py-1.5"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+                      background: 'rgba(255, 255, 255, 0.1)',
                       border: '2px solid rgba(220, 235, 245, 0.4)',
                       color: '#e8f4f8',
                       boxShadow: '0 0 15px rgba(180, 220, 240, 0.3)',
@@ -557,7 +557,7 @@ const TaskCompletionOverlay: React.FC<TaskCompletionOverlayProps> = ({ response,
           paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0px))',
           paddingLeft: 'env(safe-area-inset-left, 0)',
           paddingRight: 'env(safe-area-inset-right, 0)',
-          background: 'linear-gradient(180deg, transparent 0%, rgba(5, 8, 18, 0.7) 100%)',
+          background: 'linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.7) 100%)',
           opacity: overlayMounted ? 1 : 0,
           transform: overlayMounted ? 'translateY(0)' : 'translateY(10px)',
           transition: 'opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1) 0.08s, transform 0.5s cubic-bezier(0.33, 1, 0.68, 1) 0.08s',

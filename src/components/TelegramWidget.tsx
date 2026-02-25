@@ -24,23 +24,10 @@ export const TelegramWidget: React.FC<TelegramWidgetProps> = ({ type, errorMessa
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden"
       style={{
-        background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
+        background: '#000000',
         boxSizing: 'border-box'
       }}
     >
-      {/* Holographic grid background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(rgba(200, 230, 245, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(200, 230, 245, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-          transform: 'perspective(500px) rotateX(60deg)',
-          transformOrigin: 'center center'
-        }}></div>
-      </div>
-
       {/* Glowing orbs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-15" style={{
         background: isAuthError ? 'rgba(220, 38, 38, 0.8)' : 'rgba(180, 216, 232, 0.8)'
@@ -52,7 +39,7 @@ export const TelegramWidget: React.FC<TelegramWidgetProps> = ({ type, errorMessa
       <div 
         className="relative max-w-md mx-4 p-8 rounded-2xl md:rounded-3xl overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(5, 8, 18, 0.98) 100%)',
+          background: 'rgba(255, 255, 255, 0.08)',
           backdropFilter: 'blur(20px)',
           border: isAuthError 
             ? '2px solid rgba(220, 38, 38, 0.4)' 

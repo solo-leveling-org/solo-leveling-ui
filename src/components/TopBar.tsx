@@ -26,7 +26,7 @@ const TopBar: React.FC = () => {
       <div
         className="app-topbar sticky top-0 left-0 right-0 z-40 flex items-center justify-between h-14 px-4 md:px-6"
         style={{
-          background: 'linear-gradient(135deg, rgba(5, 8, 18, 0.95) 0%, rgba(10, 14, 39, 0.98) 100%)',
+          background: 'rgba(255, 255, 255, 0.08)',
           backdropFilter: 'blur(20px)',
           borderBottom: '1px solid rgba(220, 235, 245, 0.12)',
           boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3)',

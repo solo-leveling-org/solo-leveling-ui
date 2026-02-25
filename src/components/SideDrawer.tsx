@@ -50,7 +50,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({open, tabs, onClose}) => {
       <>
         {/* Backdrop */}
         <div
-            className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000] transition-all duration-300 ${
+            className={`fixed inset-0 overlay-backdrop-soft z-[1000] transition-all duration-300 ${
                 open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
             }`}
             onClick={onClose}

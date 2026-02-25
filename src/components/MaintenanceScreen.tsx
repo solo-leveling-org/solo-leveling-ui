@@ -9,7 +9,7 @@ const MaintenanceScreen: React.FC = () => {
     <div
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center min-h-screen"
       style={{
-        background: 'linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #0d1220 100%)',
+        background: '#000000',
       }}
     >
       {/* Aura effect — в стиле AuthLoadingScreen */}

@@ -128,8 +128,8 @@ const DayStreakOverlay: React.FC = () => {
         width: '100%',
         height: '100%',
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, rgba(5, 8, 18, 0.97) 0%, rgba(10, 14, 39, 0.98) 100%)',
-        backdropFilter: 'blur(16px)',
+        background: 'radial-gradient(ellipse 120% 120% at 50% 40%, rgb(36, 36, 40) 0%, rgb(22, 22, 26) 45%, rgb(12, 12, 14) 100%)',
+        backdropFilter: 'none',
         paddingLeft: 'env(safe-area-inset-left, 0)',
         paddingRight: 'env(safe-area-inset-right, 0)',
         paddingTop: 'env(safe-area-inset-top, 0)',
@@ -137,7 +137,7 @@ const DayStreakOverlay: React.FC = () => {
         transition: 'opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1)',
       }}
     >
-      {/* Контент по центру (как в TaskCompletionOverlay — контент сверху, кнопка отдельно снизу) */}
+      {/* Контент всегда по центру по вертикали */}
       <div className="flex-1 flex flex-col items-center justify-center min-h-0 px-6">
         <div
           className="relative z-10 flex flex-col items-center gap-6"
@@ -209,7 +209,7 @@ const DayStreakOverlay: React.FC = () => {
           paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0px))',
           paddingLeft: 'env(safe-area-inset-left, 0)',
           paddingRight: 'env(safe-area-inset-right, 0)',
-          background: 'linear-gradient(180deg, transparent 0%, rgba(5, 8, 18, 0.7) 100%)',
+          background: 'linear-gradient(180deg, transparent 0%, rgba(18, 18, 22, 0.95) 100%)',
           opacity: overlayMounted ? 1 : 0,
           transform: overlayMounted ? 'translateY(0)' : 'translateY(10px)',
           transition: 'opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1) 0.08s, transform 0.5s cubic-bezier(0.33, 1, 0.68, 1) 0.08s',

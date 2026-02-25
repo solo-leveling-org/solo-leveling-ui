@@ -281,7 +281,7 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
               style={{
                 background: isSelected && !isDisabled
                   ? colorScheme.selectedBgGradient
-                  : 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+                  : 'rgba(255, 255, 255, 0.06)',
                 backdropFilter: 'blur(20px)',
                 border: isSelected && !isDisabled
                   ? `2px solid ${colorScheme.borderColor}`
@@ -449,7 +449,7 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
         <div
           className="relative overflow-hidden rounded-2xl md:rounded-3xl p-6 max-w-2xl w-full"
           style={{
-            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            background: 'rgba(255, 255, 255, 0.06)',
             backdropFilter: 'blur(20px)',
             border: '2px solid rgba(220, 235, 245, 0.2)',
             boxShadow: `
@@ -541,7 +541,7 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
                 style={{
                   background: 'linear-gradient(135deg, rgba(180, 220, 240, 1) 0%, rgba(160, 210, 235, 0.95) 100%)',
                   border: '2px solid rgba(180, 220, 240, 1)',
-                  color: '#0a0e1a',
+                  color: '#000000',
                   boxShadow: '0 0 35px rgba(180, 220, 240, 0.7), 0 0 70px rgba(180, 220, 240, 0.4), inset 0 0 25px rgba(180, 220, 240, 0.15)',
                   textShadow: '0 0 12px rgba(180, 220, 240, 0.6)',
                   minWidth: '160px',
@@ -603,7 +603,7 @@ const TopicsSectionSkeleton: React.FC = () => {
             key={topic}
             className="relative p-4 sm:p-6 rounded-2xl md:rounded-3xl animate-pulse"
             style={{
-              background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.85) 0%, rgba(5, 8, 18, 0.95) 100%)',
+              background: 'rgba(255, 255, 255, 0.06)',
               backdropFilter: 'blur(20px)',
               border: '2px solid rgba(220, 235, 245, 0.2)',
               boxShadow: '0 0 15px rgba(180, 220, 240, 0.1), inset 0 0 20px rgba(200, 230, 245, 0.02)',

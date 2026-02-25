@@ -7,13 +7,13 @@ import { globalBackButtonHandlerRef } from '../App';
 /**
  * Синхронизация кнопки "Назад" в Telegram с оверлеем стрика.
  * При открытом оверлее показывает Back и закрывает оверлей по нажатию.
- * При закрытом оверлее на табах кроме collections/leaderboard скрывает Back.
+ * При закрытом оверлее на табах кроме menu/leaderboard скрывает Back.
  */
 export function BackButtonStreakSync() {
   const location = useLocation();
   const { backButton } = useTelegramWebApp();
   const { isOpen: isStreakOverlayOpen, close: closeStreakOverlay } = useStreakOverlay();
-  const isOnMenuTab = location.pathname === '/collections' || location.pathname === '/leaderboard';
+  const isOnMenuTab = location.pathname === '/menu' || location.pathname === '/leaderboard';
 
   // Закрываем оверлей при смене маршрута (таб/профиль), чтобы не было кадра со старым табом
   useEffect(() => {

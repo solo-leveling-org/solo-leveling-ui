@@ -129,7 +129,7 @@ const RarityIndicator: React.FC<RarityIndicatorProps> = ({
           className={`font-tech font-bold ${sizeClasses.text} rounded-full backdrop-blur-sm border relative`}
           style={{
             color: colorScheme.neon,
-            background: 'linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 8, 18, 0.95) 100%)',
+            background: 'rgba(255, 255, 255, 0.07)',
             borderColor: colorScheme.neon,
             boxShadow: `0 0 8px ${colorScheme.neon}`,
             textShadow: `0 0 4px ${colorScheme.neon}`,

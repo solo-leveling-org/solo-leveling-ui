@@ -152,7 +152,7 @@ const ScrollNavigationButtons: React.FC<ScrollNavigationButtonsProps> = ({
         onClick={scrollToTop}
         className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 border-2 relative"
         style={{
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+          background: 'rgba(255, 255, 255, 0.1)',
           backdropFilter: 'none',
           borderColor: 'rgba(180, 220, 240, 0.4)',
           boxShadow: '0 0 20px rgba(180, 220, 240, 0.25)',
@@ -173,7 +173,7 @@ const ScrollNavigationButtons: React.FC<ScrollNavigationButtonsProps> = ({
         onClick={scrollToLastPosition}
         className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 border-2 relative"
         style={{
-          background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+          background: 'rgba(255, 255, 255, 0.1)',
           backdropFilter: 'none',
           borderColor: 'rgba(180, 220, 240, 0.4)',
           boxShadow: '0 0 20px rgba(180, 220, 240, 0.25)',

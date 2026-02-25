@@ -89,7 +89,7 @@ const SessionExpiredDialog: React.FC<SessionExpiredDialogProps> = ({
             onMouseDown={(e) => e.stopPropagation()}
             className="px-8 py-3 font-tech text-sm tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 relative"
             style={{
-              background: 'linear-gradient(135deg, rgba(10, 14, 39, 1) 0%, rgba(5, 8, 18, 1) 100%)',
+              background: 'rgba(255, 255, 255, 0.1)',
               backdropFilter: 'none',
               borderColor: 'rgba(180, 220, 240, 0.4)',
               boxShadow: '0 0 20px rgba(180, 220, 240, 0.25)',
