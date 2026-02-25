@@ -379,6 +379,11 @@ const TasksList: React.FC<TasksListProps> = ({
   // Показываем пустое состояние только если загрузка была завершена и данных нет
   // Не показываем, если загрузка еще не начиналась (hasAttemptedLoadRef.current === false)
   if (tasks.length === 0 && !loading && hasAttemptedLoadRef.current && !error) {
+    const hasActiveFilters =
+      (dateFilters.from && dateFilters.to) ||
+      Object.values(enumFilters).some((arr) => Array.isArray(arr) && arr.length > 0);
+    const emptyDescription = hasActiveFilters ? t('tasks.noCompletedTasksByFilterDescription') : t('tasks.noCompletedTasksDescription');
+
     return (
       <div className="text-center py-12">
         <div 
@@ -414,7 +419,7 @@ const TasksList: React.FC<TasksListProps> = ({
             color: 'rgba(220, 235, 245, 0.7)'
           }}
         >
-          {t('tasks.noCompletedTasksDescription')}
+          {emptyDescription}
         </p>
       </div>
     );

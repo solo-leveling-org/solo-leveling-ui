@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useModal } from '../contexts/ModalContext';
 import { useUserAdditionalInfo } from '../contexts/UserAdditionalInfoContext';
@@ -9,9 +9,20 @@ import { useLocalization } from '../hooks/useLocalization';
 const STREAK_NUMBER_DURATION_MS = 1000;
 
 /**
- * Полноэкранный оверлей продления ежедневного стрика (перекрывает весь экран).
- * Реализует контракт Fullscreen Overlay: пока открыт — таймеры уведомлений замирают.
- * Текст заголовка берётся из notification.message (source=dayStreak), иначе из локали.
+ * Окно в мс, в течение которого даём любому полноэкранному оверлею (TaskCompletionOverlay и др.)
+ * время зарегистрироваться в ModalContext (useFullscreenOverlay). Если по истечении этого времени
+ * isOverlayOpen всё ещё false — показываем оверлей стрика (сценарии не из завершения задачи).
+ * Новые оверлеи, которые должны блокировать показ стрика до своего закрытия, достаточно
+ * подключать через useFullscreenOverlay(visible) — менять логику здесь не нужно.
+ */
+const PENDING_OVERLAY_REGISTRATION_MS = 250;
+
+/**
+ * Полноэкранный оверлей продления ежедневного стрика.
+ * Показ зависит только от isOverlayOpen (ModalContext): если открыт другой полноэкранный оверлей —
+ * показываем стрик только после его закрытия (переход isOverlayOpen true→false).
+ * Если оверлея не было (или он не успел зарегистрироваться за PENDING_OVERLAY_REGISTRATION_MS) —
+ * показываем после окна регистрации. Так же будет работать с любыми будущими оверлеями на useFullscreenOverlay.
  */
 const DayStreakOverlay: React.FC = () => {
   const { isDialogOpen, isOverlayOpen } = useModal();
@@ -25,10 +36,12 @@ const DayStreakOverlay: React.FC = () => {
   const [streakAfter, setStreakAfter] = useState<number>(0);
   const [phase, setPhase] = useState<'before' | 'after'>('before');
   const mountedRef = useRef(true);
+  const prevOverlayOpenRef = useRef(false);
   const fireLottieSrc = `${process.env.PUBLIC_URL || ''}/lottie/Fire.lottie`;
 
   useFullscreenOverlay(visible);
 
+  // По событию только сохраняем pending, оверлей не показываем (показ — по переходам isOverlayOpen или по окну регистрации)
   useEffect(() => {
     mountedRef.current = true;
     const handler = (e: Event) => {
@@ -43,8 +56,7 @@ const DayStreakOverlay: React.FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!pending || isDialogOpen || isOverlayOpen) return;
+  const showStreakOverlay = useCallback(() => {
     setPending(false);
     const before = contextStreak?.current ?? 0;
     setStreakBefore(before);
@@ -55,7 +67,31 @@ const DayStreakOverlay: React.FC = () => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setOverlayMounted(true));
     });
-  }, [pending, isDialogOpen, isOverlayOpen, contextStreak]);
+  }, [contextStreak]);
+
+  // Показ только после закрытия другого полноэкранного оверлея (isOverlayOpen: true → false)
+  useEffect(() => {
+    const wasOverlayOpen = prevOverlayOpenRef.current;
+    prevOverlayOpenRef.current = isOverlayOpen;
+
+    if (wasOverlayOpen && !isOverlayOpen && pending && !isDialogOpen) {
+      showStreakOverlay();
+    }
+  }, [pending, isDialogOpen, isOverlayOpen, showStreakOverlay]);
+
+  // Показ, когда pending и нет открытого оверлея: даём окно на регистрацию любого useFullscreenOverlay, затем показываем
+  useEffect(() => {
+    if (!pending || isDialogOpen || isOverlayOpen) return;
+    const t = setTimeout(() => {
+      if (!mountedRef.current) return;
+      setPending((p) => {
+        if (!p) return p;
+        showStreakOverlay();
+        return false;
+      });
+    }, PENDING_OVERLAY_REGISTRATION_MS);
+    return () => clearTimeout(t);
+  }, [pending, isDialogOpen, isOverlayOpen, showStreakOverlay]);
 
   useEffect(() => {
     if (!visible) return;

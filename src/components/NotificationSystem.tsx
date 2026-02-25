@@ -345,7 +345,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const newNotification: Notification = {
       ...notification,
       id,
-      duration: notification.duration ?? 5000, // По умолчанию 5 секунд
+      duration: notification.duration ?? 2500, // По умолчанию 2.5 секунды
     };
     
     setNotifications(prev => [...prev, newNotification]);

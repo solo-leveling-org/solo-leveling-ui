@@ -7,6 +7,8 @@ export interface EnvironmentConfig {
   isDevelopment: boolean;
   isProduction: boolean;
   useMocks: boolean;
+  /** Включён ли режим «технические работы» (показывается только экран обслуживания) */
+  isMaintenanceMode: boolean;
 }
 
 // Проверяем, нужно ли использовать моки
@@ -26,16 +28,20 @@ const shouldUseMocks = (): boolean => {
   return false;
 };
 
+const readMaintenanceMode = (): boolean =>
+  process.env.REACT_APP_MAINTENANCE_MODE === 'true' || process.env.REACT_APP_MAINTENANCE_MODE === '1';
+
 const developmentConfig: EnvironmentConfig = {
   env: 'development',
-  apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'https://solo-leveling-gateway.ru.tuna.am',
-  wsUrl: process.env.REACT_APP_WS_URL || 'wss://solo-leveling-gateway.ru.tuna.am/ws',
+  apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'https://soloist-gateway.ru.tuna.am',
+  wsUrl: process.env.REACT_APP_WS_URL || 'wss://soloist-gateway.ru.tuna.am/ws',
   isDevelopment: true,
   isProduction: false,
   useMocks: shouldUseMocks(),
+  isMaintenanceMode: readMaintenanceMode(),
 };
 
-const PROD_HOST = 'gateway.solo-leveling.org';
+const PROD_HOST = 'gateway.soloist-ai.com';
 
 const productionConfig: EnvironmentConfig = {
   env: 'production',
@@ -44,6 +50,7 @@ const productionConfig: EnvironmentConfig = {
   isDevelopment: false,
   isProduction: true,
   useMocks: false, // В production никогда не используем моки
+  isMaintenanceMode: readMaintenanceMode(),
 };
 
 // Определяем текущее окружение
@@ -100,7 +107,7 @@ if (typeof window !== 'undefined') {
 }
 
 // Экспортируем отдельные значения для удобства
-export const { env, apiBaseUrl, wsUrl, isDevelopment, isProduction, useMocks } = config;
+export const { env, apiBaseUrl, wsUrl, isDevelopment, isProduction, useMocks, isMaintenanceMode } = config;
 
 // Функция для получения конфигурации по имени окружения
 export const getConfigByEnvironment = (environment: Environment): EnvironmentConfig => {

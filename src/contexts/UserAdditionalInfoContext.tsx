@@ -23,14 +23,17 @@ export const useUserAdditionalInfo = () => {
 interface UserAdditionalInfoProviderProps {
   children: React.ReactNode;
   isAuthenticated: boolean;
+  /** Данные с первого запроса getAdditionalInfo (из useLocaleSync); при передаче повторный запрос при монтировании не выполняется */
+  initialData?: UserAdditionalInfoResponse | null;
 }
 
 export const UserAdditionalInfoProvider: React.FC<UserAdditionalInfoProviderProps> = ({
   children,
   isAuthenticated,
+  initialData = null,
 }) => {
-  const [photoUrl, setPhotoUrl] = useState<string | undefined>(undefined);
-  const [dayStreak, setDayStreak] = useState<DayStreak | null>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | undefined>(initialData?.photoUrl);
+  const [dayStreak, setDayStreak] = useState<DayStreak | null>(initialData?.dayStreak ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -59,13 +62,22 @@ export const UserAdditionalInfoProvider: React.FC<UserAdditionalInfoProviderProp
   }, [isAuthenticated]);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchInfo();
-    } else {
+    if (!isAuthenticated) {
       setPhotoUrl(undefined);
       setDayStreak(null);
+      return;
     }
-  }, [isAuthenticated, fetchInfo]);
+    if (initialData != null) {
+      setPhotoUrl(initialData.photoUrl);
+      setDayStreak(initialData.dayStreak ?? null);
+      if (initialData.photoUrl) {
+        const img = new Image();
+        img.src = initialData.photoUrl;
+      }
+      return;
+    }
+    fetchInfo();
+  }, [isAuthenticated, initialData, fetchInfo]);
 
   const value: UserAdditionalInfoContextType = {
     photoUrl,

@@ -14,6 +14,9 @@ export type FullscreenOverlayContract = {
  * Контракт полноэкранного Overlay:
  * - Перекрывает весь экран (включая TopBar и BottomBar).
  * - Пока такой overlay открыт, все Notification (справа сверху) замирают — таймеры не истекают.
+ * - Оверлеи с отложенным показом (например DayStreakOverlay по событию day-streak-notification)
+ *   показываются только после закрытия текущего — достаточно вызвать useFullscreenOverlay(visible),
+ *   дублировать логику «pending до закрытия» в новых overlay не нужно.
  *
  * Использование: в компоненте полноэкранного overlay вызовите этот хук, передав текущее состояние видимости.
  * При добавлении нового полноэкранного overlay достаточно вызвать useFullscreenOverlay(visible).

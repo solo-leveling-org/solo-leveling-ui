@@ -206,7 +206,7 @@ class WebSocketManager {
       // Используем wsUrl из конфигурации окружения вместо формирования из OpenAPI.BASE
       // Важно: всегда читаем актуальное значение из config, чтобы гарантировать правильный URL
       // Никогда не формируем URL из window.location или OpenAPI.BASE
-      const wsBaseUrl = config.wsUrl || 'wss://solo-leveling-gateway.ru.tuna.am/ws';
+      const wsBaseUrl = config.wsUrl || 'wss://soloist-gateway.ru.tuna.am/ws';
       
       // Убеждаемся, что URL абсолютный (начинается с ws:// или wss://)
       if (!wsBaseUrl.startsWith('ws://') && !wsBaseUrl.startsWith('wss://')) {
@@ -352,7 +352,7 @@ class WebSocketManager {
 
     // Логируем, какой URL будет использован при переподключении
     // Важно: читаем актуальное значение из config при каждом переподключении
-    const currentWsUrl = config.wsUrl || 'wss://solo-leveling-gateway.ru.tuna.am/ws';
+    const currentWsUrl = config.wsUrl || 'wss://soloist-gateway.ru.tuna.am/ws';
     console.log(`[WS Manager] Scheduling reconnect in ${this.reconnectInterval / 1000}s to: ${currentWsUrl}`);
     
     this.reconnectTimer = setTimeout(() => {

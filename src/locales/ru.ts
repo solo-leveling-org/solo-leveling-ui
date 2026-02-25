@@ -95,7 +95,7 @@ export const ru = {
     tasks: 'Задачи',
     topics: 'Темы',
     welcome: 'Главная',
-    games: 'Сервисы',
+    menu: 'Меню',
   },
 
   dayStreak: {
@@ -112,7 +112,7 @@ export const ru = {
 
   // Приветственная страница
   welcome: {
-    title: 'Solo Leveling AI',
+    title: 'Soloist AI',
     subtitle: 'Level Up Your Reality',
     startButton: 'К задачам',
     feedback: {
@@ -196,6 +196,7 @@ export const ru = {
     },
     noCompletedTasks: 'Нет завершенных задач',
     noCompletedTasksDescription: 'Выполняйте задачи, чтобы увидеть их здесь!',
+    noCompletedTasksByFilterDescription: 'По выбранным фильтрам ничего не найдено.',
     filters: {
       reset: 'Сбросить фильтры',
     },
@@ -286,13 +287,14 @@ export const ru = {
     title: 'Баланс',
     subtitle: 'Ваш текущий баланс и история транзакций',
     totalBalance: 'Общий баланс',
-    currencyName: 'Solo Leveling Coin',
+    currencyName: 'Soloist Coin',
     topUp: 'Пополнить',
     transfer: 'Перевести',
     transactions: {
       title: 'История транзакций',
       empty: 'Транзакции не найдены',
-      emptyDescription: 'Выполняйте задачи, чтобы заработать награды!'
+      emptyDescription: 'Выполняйте задачи, чтобы заработать награды!',
+      emptyByFilterDescription: 'По выбранным фильтрам ничего не найдено.'
     },
     empty: 'Пока нет транзакций',
     causes: {
@@ -332,6 +334,11 @@ export const ru = {
       refreshButton: 'Обновить',
       laterButton: 'Позже',
     },
+  },
+
+  maintenance: {
+    title: 'Технические работы',
+    description: 'Проводятся технические работы. Пожалуйста, попробуйте позже.',
   },
 
   // Ошибки и сообщения
@@ -374,8 +381,8 @@ export const ru = {
     continue: 'Продолжить',
   },
 
-  // Сервисы
-  services: {
+  // Меню
+  menu: {
     tabs: {
       leaderboard: 'ТАБЛИЦА ЛИДЕРОВ',
       lootboxes: 'ЛУТ БОКСЫ',

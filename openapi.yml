@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Solo leveling gateway openapi
+  title: Soloist gateway openapi
   version: 1.0.0
 
 paths:

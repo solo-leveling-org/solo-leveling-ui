@@ -1,4 +1,4 @@
-# Solo Leveling UI
+# Soloist UI
 
 React Telegram Mini App с поддержкой локальной разработки и моков для независимой разработки frontend.
 
@@ -16,12 +16,12 @@ npm start
 # или явно
 npm run start:dev
 
-tuna http 3000 --subdomain=solo-leveling-ui
+tuna http 3000 --subdomain=soloist-ui
 ```
 
 **Development настройки:**
-- API URL: `https://solo-leveling-gateway.ru.tuna.am`
-- WebSocket: `wss://solo-leveling-gateway.ru.tuna.am/ws`
+- API URL: `https://soloist-gateway.ru.tuna.am`
+- WebSocket: `wss://soloist-gateway.ru.tuna.am/ws`
 - Индикатор: Желтый бейдж "DEVELOPMENT" в правом нижнем углу
 
 ### Локальная разработка с моками (без backend)
@@ -52,8 +52,8 @@ npm run start:prod
 ```
 
 **Production настройки:**
-- API URL: `https://gateway.solo-leveling.org`
-- WebSocket: `wss://gateway.solo-leveling.org/ws`
+- API URL: `https://gateway.soloist-ai.com`
+- WebSocket: `wss://gateway.soloist-ai.com/ws`
 - Индикатор: Зеленый бейдж "PRODUCTION" в правом нижнем углу
 
 ## Профили окружения
@@ -83,10 +83,10 @@ REACT_APP_ENV=development
 REACT_APP_USE_MOCKS=true
 
 # API Base URL
-REACT_APP_API_BASE_URL=https://solo-leveling-gateway.ru.tuna.am
+REACT_APP_API_BASE_URL=https://soloist-gateway.ru.tuna.am
 
 # WebSocket URL
-REACT_APP_WS_URL=wss://solo-leveling-gateway.ru.tuna.am/ws
+REACT_APP_WS_URL=wss://soloist-gateway.ru.tuna.am/ws
 ```
 
 **Автоматическое определение моков:**
@@ -195,8 +195,8 @@ REACT_APP_USE_MOCKS=false
 
 Development режим использует HTTPS dev-gateway:
 
-- **API**: `https://solo-leveling-gateway.ru.tuna.am`
-- **WebSocket**: `wss://solo-leveling-gateway.ru.tuna.am/ws`
+- **API**: `https://soloist-gateway.ru.tuna.am`
+- **WebSocket**: `wss://soloist-gateway.ru.tuna.am/ws`
 
 Это позволяет тестировать приложение как локально, так и в Telegram WebApp без CORS проблем.
 
@@ -205,7 +205,7 @@ Development режим использует HTTPS dev-gateway:
 ### Docker сборка
 ```bash
 # Сборка production образа
-docker build -t solo-leveling-ui:latest .
+docker build -t soloist-ui:latest .
 ```
 
 ### Kubernetes деплой
@@ -217,11 +217,11 @@ kubectl apply -f k8s/
 ### Production настройки в Docker
 - **NODE_ENV**: `production`
 - **REACT_APP_ENV**: `production`
-- **API URL**: `https://gateway.solo-leveling.org`
-- **WebSocket**: `wss://gateway.solo-leveling.org/ws`
+- **API URL**: `https://gateway.soloist-ai.com`
+- **WebSocket**: `wss://gateway.soloist-ai.com/ws`
 
 ## Требования
 
 - Node.js 16+
 - npm или yarn
-- HTTPS dev-gateway на `solo-leveling-gateway.ru.tuna.am`
+- HTTPS dev-gateway на `soloist-gateway.ru.tuna.am`

@@ -1,55 +1,58 @@
 import { useState, useEffect } from 'react';
+import { UserService } from '../api';
+import type { UserAdditionalInfoResponse } from '../api';
 import { useSettings } from './useSettings';
-import { fetchAndUpdateUserLocale } from '../utils/localeUtils';
+import { applyLocaleFromAdditionalInfoResponse } from '../utils/localeUtils';
 
 export const useLocaleSync = (isAuthenticated: boolean) => {
   const [localeFetched, setLocaleFetched] = useState(false);
   const [isLocaleLoading, setIsLocaleLoading] = useState(false);
+  const [additionalInfoData, setAdditionalInfoData] = useState<UserAdditionalInfoResponse | null>(null);
   const { updateSettings, setLocaleLoaded, localeLoaded } = useSettings();
 
-  // После успешной авторизации загружаем локаль пользователя с бэкенда (только один раз)
+  // Один запрос getAdditionalInfo после авторизации: по нему обновляем локаль и отдаём данные в UserAdditionalInfoProvider
   useEffect(() => {
-    // Запрос отправляется ТОЛЬКО после успешной авторизации
     if (!isAuthenticated || localeFetched) {
       setIsLocaleLoading(false);
       return;
     }
-    
-    // Добавляем небольшую задержку, чтобы избежать конфликта с авторизацией
+
     const timeoutId = setTimeout(() => {
       let isCancelled = false;
       setIsLocaleLoading(true);
-      
+
       (async () => {
         try {
           if (isCancelled) return;
-          
-          console.log('[Locale] Fetching user locale from backend...');
-          await fetchAndUpdateUserLocale(updateSettings, setLocaleLoaded);
+          console.log('[Locale] Fetching user additional info (locale + profile)...');
+          const response = await UserService.getUserAdditionalInfo();
+          if (isCancelled) return;
+          applyLocaleFromAdditionalInfoResponse(response, updateSettings, setLocaleLoaded);
+          setAdditionalInfoData(response);
           setLocaleFetched(true);
-          setIsLocaleLoading(false);
         } catch (e) {
-          // Не блокируем UI, просто логируем
-          console.error('Failed to fetch user locale from backend:', e);
-          setLocaleFetched(true); // Помечаем как выполненное даже при ошибке
-          setLocaleLoaded(true); // Разрешаем показ контента даже при ошибке
-          setIsLocaleLoading(false);
+          console.error('Failed to fetch user additional info:', e);
+          if (isCancelled) return;
+          setLocaleLoaded(true);
+          setLocaleFetched(true);
+        } finally {
+          if (!isCancelled) setIsLocaleLoading(false);
         }
       })();
-      
-      return () => { isCancelled = true; };
-    }, 100); // 100ms задержка
 
-    return () => { 
+      return () => { isCancelled = true; };
+    }, 100);
+
+    return () => {
       clearTimeout(timeoutId);
       setIsLocaleLoading(false);
     };
   }, [isAuthenticated, localeFetched, updateSettings, setLocaleLoaded]);
 
-  // Сбрасываем флаг при изменении авторизации
   useEffect(() => {
     if (!isAuthenticated) {
       setLocaleFetched(false);
+      setAdditionalInfoData(null);
       setIsLocaleLoading(false);
     }
   }, [isAuthenticated]);
@@ -58,5 +61,6 @@ export const useLocaleSync = (isAuthenticated: boolean) => {
     localeFetched,
     isLocaleLoading,
     localeLoaded,
+    additionalInfoData,
   };
 };

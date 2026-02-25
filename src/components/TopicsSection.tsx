@@ -163,7 +163,6 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ isAuthenticated, onSave }
     setOriginalTopics(topicsWithDisabled);
   }, [firstTime, onSave, playerTopics, originalTopics]);
 
-  // Мемоизируем цветовые схемы для разных топиков в стиле Solo Leveling
   const topicColorSchemes = useMemo(() => ({
       PHYSICAL_ACTIVITY: {
         accentColor: 'rgba(220, 38, 38, 0.6)',

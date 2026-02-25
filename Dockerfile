@@ -6,6 +6,10 @@ WORKDIR /app
 ARG GIT_COMMIT_SHA
 ENV GIT_COMMIT_SHA=$GIT_COMMIT_SHA
 
+# Режим «технические работы»: при true приложение показывает только экран обслуживания
+ARG REACT_APP_MAINTENANCE_MODE=false
+ENV REACT_APP_MAINTENANCE_MODE=$REACT_APP_MAINTENANCE_MODE
+
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps
 COPY . .

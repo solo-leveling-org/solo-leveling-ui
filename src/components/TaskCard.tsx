@@ -17,7 +17,6 @@ type TaskCardProps = {
   index?: number;
 };
 
-// Определяем цветовые схемы для разных статусов в стилистике Solo Leveling (вынесено наружу для оптимизации)
 const getStatusColorScheme = (status: PlayerTaskStatus) => {
     switch (status) {
       case PlayerTaskStatus.PREPARING:

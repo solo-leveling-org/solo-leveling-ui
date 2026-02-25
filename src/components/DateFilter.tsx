@@ -62,7 +62,6 @@ const DateFilter: React.FC<DateFilterProps> = ({
 
   return (
     <div className={`relative flex-shrink-0 ${className}`} ref={dropdownRef}>
-      {/* Кнопка фильтра - Solo Leveling Style */}
       <button
         onClick={handleToggle}
         className="w-full max-w-fit flex items-center px-4 py-3 rounded-xl font-tech font-semibold text-xs md:text-sm transition-all duration-300 hover:scale-[1.01] active:scale-95 select-none"

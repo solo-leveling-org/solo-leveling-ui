@@ -1,22 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: solo-leveling-ui
+  name: soloist-ui
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: solo-leveling-ui
+      app: soloist-ui
   template:
     metadata:
       labels:
-        app: solo-leveling-ui
+        app: soloist-ui
       annotations:
         commit.sha: "${GIT_COMMIT_SHA}"
+        maintenance-mode: "${MAINTENANCE_MODE}"
     spec:
       containers:
         - name: app
-          image: $DOCKERHUB_USER/solo-leveling-ui:$GIT_COMMIT_SHA
+          image: $DEPLOY_IMAGE
           ports:
             - containerPort: 80
           livenessProbe:

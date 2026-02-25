@@ -14,7 +14,7 @@ const defaultSettings: Settings = {
   isManual: false,
 };
 
-const STORAGE_KEY = 'solo-leveling-settings';
+const STORAGE_KEY = 'app-settings';
 
 // Утилитарная функция для получения языка из localStorage
 export const getLanguageFromStorage = (): Language => {

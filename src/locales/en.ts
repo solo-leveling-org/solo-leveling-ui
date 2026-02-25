@@ -95,7 +95,7 @@ export const en = {
     tasks: 'Tasks',
     topics: 'Topics',
     welcome: 'Home',
-    games: 'Services',
+    menu: 'Menu',
   },
 
   dayStreak: {
@@ -113,7 +113,7 @@ export const en = {
 
   // Welcome page
   welcome: {
-    title: 'Solo Leveling AI',
+    title: 'Soloist AI',
     subtitle: 'Level Up Your Reality',
     startButton: 'To Tasks',
     feedback: {
@@ -197,6 +197,7 @@ export const en = {
     },
     noCompletedTasks: 'No completed tasks',
     noCompletedTasksDescription: 'Complete tasks to see them here!',
+    noCompletedTasksByFilterDescription: 'Nothing found for the selected filters.',
     filters: {
       reset: 'Reset Filters',
     },
@@ -287,13 +288,14 @@ export const en = {
     title: 'Balance',
     subtitle: 'Your current balance and transaction history',
     totalBalance: 'Total Balance',
-    currencyName: 'Solo Leveling Coin',
+    currencyName: 'Soloist Coin',
     topUp: 'Top Up',
     transfer: 'Transfer',
     transactions: {
       title: 'Transaction History',
-      empty: 'No transactions found',
-      emptyDescription: 'Complete tasks to earn rewards!'
+      empty: 'No transactions yet',
+      emptyDescription: 'Complete tasks to earn rewards!',
+      emptyByFilterDescription: 'Nothing found for the selected filters.'
     },
     empty: 'No transactions yet',
     causes: {
@@ -333,6 +335,11 @@ export const en = {
       refreshButton: 'Refresh',
       laterButton: 'Later',
     },
+  },
+
+  maintenance: {
+    title: 'Technical maintenance',
+    description: 'We are carrying out technical work. Please try again later.',
   },
 
   // Errors and messages
@@ -375,8 +382,8 @@ export const en = {
     continue: 'Continue',
   },
 
-  // Services
-  services: {
+  // Menu
+  menu: {
     tabs: {
       leaderboard: 'LEADERBOARD',
       lootboxes: 'LOOT BOXES',
