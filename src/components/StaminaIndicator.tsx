@@ -372,54 +372,58 @@ const StaminaIndicator: React.FC<StaminaIndicatorProps> = ({ stamina, onStaminaU
         </div>
       )}
 
-      {/* Tooltip with full regeneration info - appears on hover */}
+      {/* Tooltip with full regeneration info - appears on hover/click */}
       {showTooltip && displayStamina.fullRegenAt && formatFullRegenTime && (
         <div
-          className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-4 py-3 rounded-lg backdrop-blur-md z-50 pointer-events-none whitespace-nowrap"
+          className="stamina-tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-4 py-3.5 rounded-2xl z-50 pointer-events-none whitespace-nowrap"
           style={{
-            background: 'rgba(255, 255, 255, 0.08)',
-            border: '1px solid rgba(180, 220, 240, 0.3)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(180, 220, 240, 0.2)',
+            background: 'rgb(38, 44, 54)',
+            border: '1px solid rgba(220, 235, 245, 0.35)',
+            boxShadow: `
+              0 16px 48px rgba(0, 0, 0, 0.35),
+              0 0 24px rgba(180, 220, 240, 0.08),
+              inset 0 1px 0 rgba(255, 255, 255, 0.12)
+            `,
             minWidth: '280px',
+            animation: 'staminaTooltipIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            transformOrigin: 'bottom center',
           }}
         >
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {displayStamina.fullRegenAt && formatFullRegenTime && (
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-xs font-tech whitespace-nowrap" style={{ color: 'rgba(220, 235, 245, 0.7)' }}>
+              <div className="flex items-center justify-between gap-6">
+                <span className="text-xs font-tech whitespace-nowrap" style={{ color: 'rgba(220, 235, 245, 0.9)' }}>
                   {t('tasks.stamina.fullRegen')}:
                 </span>
-                <span className="text-xs font-tech font-bold whitespace-nowrap" style={{ color: 'rgba(180, 220, 240, 0.9)' }}>
+                <span className="text-sm font-tech font-bold whitespace-nowrap" style={{ color: '#e8f4f8', textShadow: '0 0 12px rgba(180, 220, 240, 0.3)' }}>
                   {formatFullRegenTime}
                 </span>
               </div>
             )}
             {displayStamina.isRegenerating && (
-              <div className="pt-2 border-t border-white/10">
-                <div className="text-xs font-tech whitespace-nowrap text-center" style={{ color: 'rgba(220, 235, 245, 0.6)' }}>
+              <div className="pt-2.5 border-t" style={{ borderColor: 'rgba(220, 235, 245, 0.2)' }}>
+                <div className="text-xs font-tech whitespace-nowrap text-center" style={{ color: 'rgba(180, 220, 240, 0.95)' }}>
                   +{displayStamina.regenRate} {t('tasks.stamina.every')} {formatRegenInterval}
                 </div>
               </div>
             )}
           </div>
-          
-          {/* Tooltip arrow */}
-          <div
-            className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-px"
-            style={{
-              width: 0,
-              height: 0,
-              borderLeft: '6px solid transparent',
-              borderRight: '6px solid transparent',
-              borderTop: '6px solid rgba(180, 220, 240, 0.3)',
-            }}
-          />
         </div>
       )}
 
 
       {/* CSS animations */}
       <style>{`
+        @keyframes staminaTooltipIn {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, 8px) scale(0.97);
+          }
+          100% {
+            opacity: 1;
+            transform: translate(-50%, 0) scale(1);
+          }
+        }
         @keyframes shimmer {
           0% {
             background-position: -100% 0%;

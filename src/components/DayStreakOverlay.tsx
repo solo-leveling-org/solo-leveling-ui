@@ -132,8 +132,8 @@ export function DayStreakOverlay() {
               <span
                 className="day-streak-number inline-block text-6xl font-bold tabular-nums leading-none"
                 style={{
-                  color: '#e8f4f8',
-                  textShadow: '0 0 12px rgba(180, 220, 240, 0.2)',
+                  color: '#fb923c',
+                  textShadow: '0 0 12px rgba(251, 146, 60, 0.4)',
                 }}
               >
                 {streakBefore}
@@ -143,8 +143,8 @@ export function DayStreakOverlay() {
               <span
                 className="day-streak-result inline-block text-6xl font-bold tabular-nums leading-none"
                 style={{
-                  color: '#e8f4f8',
-                  textShadow: '0 0 12px rgba(180, 220, 240, 0.2)',
+                  color: '#fb923c',
+                  textShadow: '0 0 12px rgba(251, 146, 60, 0.4)',
                 }}
               >
                 {streakAfter}
